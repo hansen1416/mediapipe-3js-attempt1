@@ -11,6 +11,7 @@ import geopandas as gpd
 from geopandas import GeoDataFrame
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+import pyproj
 
 load_dotenv()
 
@@ -40,6 +41,60 @@ class GeoPlot:
             "deltaJ": 2.0,
             "deltaK": 2.0
         }
+
+    def muids_to_3857(self):
+
+        with open(os.path.join('./', 'muids.json'), 'r') as f:
+            muids = json.load(f)
+            muids_np = np.array([list(map(float, x.split(',')))
+                                for x in muids], dtype=float)
+
+        # logger.info(muids_np)
+
+        muids_np = np.append(
+            muids_np,
+            [
+                [0, 0],
+                [self.grid2D['numJ'], self.grid2D['numK']]
+            ], axis=0)
+
+        muids_np[:, 0] *= self.grid2D['deltaJ']
+        muids_np[:, 1] *= self.grid2D['deltaK']
+
+        muids_np[:, 0] += self.grid2D['j0']
+        muids_np[:, 1] += self.grid2D['k0']
+
+        #
+
+        # logger.info(muids_np)
+
+        logger.info("muids.json loaded")
+
+        result = self.to_3857(muids_np)
+
+        filename = 'muids_3857.npy'
+
+        np.save(filename, result)
+
+        logger.info("result saved to {}".format(filename))
+
+    def to_3857(self, grids):
+
+        wkt_dhi = 'PROJCS[\"CGCS2000 / 3-degree Gauss-Kruger CM 120E\",GEOGCS[\"China Geodetic Coordinate System 2000\",DATUM[\"China_2000\",SPHEROID[\"CGCS2000\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"1024\"]],AUTHORITY[\"EPSG\",\"1043\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4490\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",120],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AUTHORITY[\"EPSG\",\"4549\"]]'
+        # wht_tdt_mkt = "EPSG:4490", "GEOGCS[\"China Geodetic Coordinate System 2000\",DATUM[\"China_2000\",SPHEROID[\"CGCS2000\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"1024\"]],AUTHORITY[\"EPSG\",\"1043\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4490\"]]")
+
+        crs_CGCS2000 = pyproj.CRS.from_wkt(wkt_dhi)
+        crs_3857 = pyproj.CRS.from_epsg(3857)
+
+        transformer = pyproj.Transformer.from_crs(crs_CGCS2000, crs_3857)
+
+        x, y = transformer.transform(grids[:, 0], grids[:, 1])
+
+        # logger.info(x)
+
+        result = np.dstack([x, y])[0]
+
+        return result
 
     def plot_img(self):
 
@@ -103,4 +158,6 @@ if __name__ == "__main__":
 
     gp = GeoPlot()
 
-    gp.shp_img()
+    gp.muids_to_3857()
+
+    # gp.shp_img()

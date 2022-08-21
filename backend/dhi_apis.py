@@ -130,6 +130,15 @@ class DHIApis:
         # self.threadpool_executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
         self.img_ext = '.png'
 
+        self.grid2D = {
+            "j0": 580147.91,
+            "k0": 3321376.71,
+            "numJ": 3764,
+            "numK": 2698,
+            "deltaJ": 2.0,
+            "deltaK": 2.0
+        }
+
     def __getattr__(self, name):
         return API_BASE_URL + globals()[name]
 
@@ -480,6 +489,38 @@ class DHIApis:
 
         return x, y
 
+    def png3857(self):
+
+        muids = np.load('muids_3857.npy')
+
+        # offset j0, k0
+        muids[:, 0] -= muids[-2][0]
+        muids[:, 1] -= muids[-2][1]
+
+        with open(os.path.join('./', 'flooding1660064400.json')) as f:
+            flooding_num = json.load(f)
+
+            flooding_num = np.array(flooding_num['data'][0])
+
+        flooding_num = np.append(flooding_num, [1.5, 1.5])
+
+        logger.info("load flooding data of size {}".format(len(flooding_num)))
+
+        plt.figure(
+            figsize=(self.grid2D['numJ'] / 500, self.grid2D['numK'] / 500))
+        plt.axis('off')
+
+        plt.tight_layout()
+
+        plt.scatter(muids[:, 0], muids[:, 1], s=1, c=flooding_num, alpha=0.3,
+                    cmap=self.get_cmap(), vmin=0, vmax=1.5)
+
+        image_file = 'flooding1660064400.3857.png'
+
+        plt.savefig(image_file, transparent=True, dpi=200)
+
+        logger.info("PNG saved to {}".format(image_file))
+
 
 if __name__ == "__main__":
 
@@ -487,6 +528,6 @@ if __name__ == "__main__":
 
     gp = DHIApis(scenario_id)
 
-    gp.latlng_to_xy()
+    gp.png3857()
 
     # gp.get_corners()
