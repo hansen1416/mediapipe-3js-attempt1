@@ -434,6 +434,10 @@ class DHIApis:
 
         c = ['#00000000', '#0000ff80', '#64aaff80', '#00ff0080',
              '#55ff0080', '#aaff0080', '#ffff0080', '#ff000080']
+
+        c = ['#00000000', '#0000ff', '#64aaff', '#00ff00',
+             '#55ff00', '#aaff00', '#ffff00', '#ff0000']
+
         v = [0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 1.0]
 
         return LinearSegmentedColormap.from_list(
@@ -581,9 +585,12 @@ class DHIApis:
 
         newnp = np.zeros(newshp)
 
-        newnp[muids[:, 0], muids[:, 1]] = flooding_num
+        newnp[muids[:, 0], muids[:, 1]] = flooding_num*10
 
-        logger.info(newnp)
+        newnp = newnp.transpose()
+
+        logger.info(muids.shape)
+        logger.info(newnp.shape)
 
         plt.figure(
             figsize=(self.grid2D['numJ'] / 500, self.grid2D['numK'] / 500))
