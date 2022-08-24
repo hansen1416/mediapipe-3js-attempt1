@@ -18,12 +18,22 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+import datashader as ds
 
 load_dotenv()
 
+formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
+                                  datefmt='%Y-%m-%d %H:%M:%S')
+
+screen_handler = logging.StreamHandler(stream=sys.stdout)
+screen_handler.setFormatter(formatter)
+
 # log to stdout
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+# logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger()
+
+logger.setLevel(logging.INFO)
+logger.addHandler(screen_handler)
 
 API_BASE_URL = os.getenv('DHI_API_BASE_URL')
 USER_NAME = os.getenv('DHI_USER_NAME')
@@ -521,6 +531,78 @@ class DHIApis:
 
         logger.info("PNG saved to {}".format(image_file))
 
+    def plot_to_buf(self, data, height=2800, width=2800, inc=0.3):
+        xlims = (data[:, 0].min(), data[:, 0].max())
+        ylims = (data[:, 1].min(), data[:, 1].max())
+        dxl = xlims[1] - xlims[0]
+        dyl = ylims[1] - ylims[0]
+
+        print('xlims: (%f, %f)' % xlims)
+        print('ylims: (%f, %f)' % ylims)
+
+        buffer = np.zeros((height+1, width+1))
+        for i, p in enumerate(data):
+            print('\rloading: %03d' % (float(i)/data.shape[0]*100), end=' ')
+            x0 = int(round(((p[0] - xlims[0]) / dxl) * width))
+            y0 = int(round((1 - (p[1] - ylims[0]) / dyl) * height))
+            buffer[y0, x0] += inc
+            if buffer[y0, x0] > 1.0:
+                buffer[y0, x0] = 1.0
+        return xlims, ylims, buffer
+
+    def png3857_hm(self):
+
+        logger.info("starting png3857_hm")
+
+        muids = np.load('muids_3857.npy')
+
+        # offset j0, k0
+        muids[:, 0] -= muids[-2][0]
+        muids[:, 1] -= muids[-2][1]
+
+        logger.info("npy loaded format {}".format(muids.shape))
+        logger.info("starting load json")
+
+        with open(os.path.join('./', 'flooding1660064400.json')) as f:
+            flooding_num = json.load(f)
+
+            flooding_num = np.array(flooding_num['data'][0])
+
+        logger.info("json loaded format {}".format(flooding_num.shape))
+
+        flooding_num = np.append(flooding_num, [1.5, 1.5])
+
+        muids = muids.astype(int)
+
+        amins = np.amin(muids, axis=0)
+        amaxs = np.amax(muids, axis=0)
+
+        newshp = amaxs[0] - amins[0]+1, amaxs[1] - amins[1]+1
+
+        newnp = np.zeros(newshp)
+
+        newnp[muids[:, 0], muids[:, 1]] = flooding_num
+
+        logger.info(newnp)
+
+        plt.figure(
+            figsize=(self.grid2D['numJ'] / 500, self.grid2D['numK'] / 500))
+        plt.axis('off')
+
+        plt.tight_layout()
+
+        # plt.scatter(muids[:, 0], muids[:, 1], s=0.1, c=flooding_num,
+        #             cmap=self.get_cmap(),
+        #             vmin=0, vmax=1.5)
+
+        plt.imshow(newnp, cmap=self.get_cmap(), vmin=0, vmax=1.5)
+
+        image_file = 'flooding1660064400.3857.png'
+
+        plt.savefig(image_file, transparent=True, dpi=200)
+
+        logger.info("PNG saved to {}".format(image_file))
+
 
 if __name__ == "__main__":
 
@@ -528,6 +610,6 @@ if __name__ == "__main__":
 
     gp = DHIApis(scenario_id)
 
-    gp.png3857()
+    gp.png3857_hm()
 
     # gp.get_corners()
