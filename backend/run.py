@@ -4,6 +4,7 @@ import tempfile
 
 import cv2
 import mediapipe as mp
+from mediapipe.python.solutions import pose
 import imageio.v3 as iio
 import numpy as np
 from PIL import Image
@@ -12,7 +13,7 @@ MEDIA_DIR = os.path.join('.', 'media')
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
-mp_pose = mp.solutions.pose
+mp_pose: pose = mp.solutions.pose
 
 
 class PoseDetector:
@@ -53,6 +54,7 @@ class PoseDetector:
 
 
 if __name__ == "__main__":
+
     video_file = os.path.join(MEDIA_DIR, '6packs.mp4')
 
     for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
@@ -70,7 +72,7 @@ if __name__ == "__main__":
 
         image_height, image_width, _ = frame.shape
 
-        with mp_pose.Pose(static_image_mode=True,
+        with mp_pose.Pose(static_image_mode=False,
                           model_complexity=2,
                           enable_segmentation=True,
                           min_detection_confidence=0.5) as pose:
@@ -120,6 +122,7 @@ if __name__ == "__main__":
             # Plot pose world landmarks.
             # for i in results.pose_world_landmarks:
 
-            print(results)
+            # print(results.pose_landmarks)
+            print(results.pose_world_landmarks)
 
         break
