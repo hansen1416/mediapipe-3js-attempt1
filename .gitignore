@@ -31,6 +31,7 @@ node_modules
 *.gpkg
 *.shp
 *.shx
-*.json
 *.csv
+*.npy
+*.png
 .env
