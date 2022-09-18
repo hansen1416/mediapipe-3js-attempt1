@@ -25,13 +25,7 @@ yarn-error.log*
 __pycache__
 venv
 node_modules
+media
 
-*.cpg
-*.dbf
-*.gpkg
-*.shp
-*.shx
-*.csv
-*.npy
-*.png
+tmp/
 .env
