@@ -13,6 +13,8 @@ from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark
 # from mediapipe.framework.formats.landmark_pb2 import LandmarkList
 # from google.protobuf.pyext._message import RepeatedCompositeContainer
 
+from logger import logger
+
 MEDIA_DIR = os.path.join('.', 'media')
 
 mp_drawing = mp.solutions.drawing_utils
@@ -57,82 +59,155 @@ class PoseDetector:
         return lmList
 
 
+class PreprocessVideo():
+
+    def __init__(self, video_path) -> None:
+        self.cap = cv2.VideoCapture(video_path)
+
+        # logger.info(sys.getsizeof(cap))
+
+        total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        print('video frames :', total_frames)
+
+        fps = self.cap.get(cv2.CAP_PROP_FPS)
+        print('video fps :', fps)
+
+    def save_poses(self, frames_steps=5):
+        count = 0
+
+        pose_data = []
+
+        with mp_pose.Pose(static_image_mode=False,
+                          model_complexity=2,
+                          # enable_segmentation=True,
+                          min_detection_confidence=0.5) as pose:
+
+            while self.cap.isOpened():
+                ret, frame = self.cap.read()
+
+                if ret:
+
+                    results = pose.process(
+                        cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
+                    if not results.pose_landmarks:
+                        frame_pose = np.zeros((len(PoseLandmark), 4))
+
+                    else:
+
+                        p_lm = results.pose_landmarks.landmark
+
+                        frame_pose = []
+
+                        for pose_name in PoseLandmark:
+
+                            single_pose = p_lm[PoseLandmark[pose_name.name].value]
+
+                            # print(single_pose)
+
+                            frame_pose.append([
+                                single_pose.x,
+                                single_pose.y,
+                                single_pose.z,
+                                single_pose.visibility,
+                            ])
+
+                    pose_data.append(frame_pose)
+
+                    # logger.info(ret)
+                    # logger.info(frame.shape)
+                    # cv2.imwrite('frame{:d}.jpg'.format(count), frame)
+                    count += frames_steps  # i.e. at 30 fps, this advances one second
+                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+                else:
+                    self.cap.release()
+                    break
+
+                # break
+
+        np.save('pose_data.npy', pose_data)
+
+
 if __name__ == "__main__":
 
     video_file = os.path.join(MEDIA_DIR, '6packs.mp4')
 
-    for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
+    processer = PreprocessVideo(video_file)
 
-        # with tempfile.NamedTemporaryFile() as f:
+    processer.save_poses()
 
-        # print(frame.shape)
+    # for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
 
-        # img = Image.fromarray(frame)
-        # img.save(f, format='jpeg')
+    #     # with tempfile.NamedTemporaryFile() as f:
 
-        # imgf = cv2.imread(f.name)
+    #     # print(frame.shape)
 
-        # print(imgf.shape)
+    #     # img = Image.fromarray(frame)
+    #     # img.save(f, format='jpeg')
 
-        image_height, image_width, _ = frame.shape
+    #     # imgf = cv2.imread(f.name)
 
-        with mp_pose.Pose(static_image_mode=False,
-                          model_complexity=2,
-                          enable_segmentation=True,
-                          min_detection_confidence=0.5) as pose:
+    #     # print(imgf.shape)
 
-            results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    #     image_height, image_width, _ = frame.shape
 
-            if not results.pose_landmarks:
-                continue
-            # print(
-            #     f'Nose coordinates: ('
-            #     f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
-            #     f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_height})'
-            # )
+    #     with mp_pose.Pose(static_image_mode=False,
+    #                       model_complexity=2,
+    #                       enable_segmentation=True,
+    #                       min_detection_confidence=0.5) as pose:
 
-            pose_lm: PoseLandmark = results.pose_landmarks.landmark
-            pose_wolrd_lm = results.pose_world_landmarks
-            segm_mask: np.ndarray = results.segmentation_mask
+    #         results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-            print(pose_lm[mp_pose.PoseLandmark.LEFT_ELBOW])
+    #         if not results.pose_landmarks:
+    #             continue
+    #         # print(
+    #         #     f'Nose coordinates: ('
+    #         #     f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
+    #         #     f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_height})'
+    #         # )
 
-            print(pose_lm[mp_pose.PoseLandmark.NOSE])
-            # print(pose_wolrd_lm)
-            print(PoseLandmark)
+    #         pose_lm: PoseLandmark = results.pose_landmarks.landmark
+    #         pose_wolrd_lm = results.pose_world_landmarks
+    #         segm_mask: np.ndarray = results.segmentation_mask
 
-            # print(results.segmentation_mask.shape)
-            # annotated_image = results.segmentation_mask
-            # annotated_image = frame.copy()
-            # bg_image = np.zeros(frame.shape, dtype=np.uint8)
+    #         print(pose_lm[mp_pose.PoseLandmark.LEFT_ELBOW])
 
-            # condition = np.stack(
-            #     (results.segmentation_mask,) * 3, axis=-1) > 0.1
+    #         print(pose_lm[mp_pose.PoseLandmark.NOSE])
+    #         # print(pose_wolrd_lm)
+    #         for poselm in PoseLandmark:
+    #             print(PoseLandmark[poselm.name].value)
 
-            # annotated_image = np.where(condition, annotated_image, bg_image)
+    #         # print(results.segmentation_mask.shape)
+    #         # annotated_image = results.segmentation_mask
+    #         # annotated_image = frame.copy()
+    #         # bg_image = np.zeros(frame.shape, dtype=np.uint8)
 
-            # # print(annotated_image.shape)
+    #         # condition = np.stack(
+    #         #     (results.segmentation_mask,) * 3, axis=-1) > 0.1
 
-            # # Draw pose landmarks on the image.
-            # mp_drawing.draw_landmarks(
-            #     annotated_image,
-            #     results.pose_landmarks,
-            #     mp_pose.POSE_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
-            # cv2.imwrite('./tmp/annotated_image0.png', annotated_image)
+    #         # annotated_image = np.where(condition, annotated_image, bg_image)
 
-            # lines = np.stack((results.segmentation_mask,) * 3, axis=-1)
+    #         # # print(annotated_image.shape)
 
-            # # Draw pose landmarks on the image.
-            # mp_drawing.draw_landmarks(
-            #     lines,
-            #     results.pose_landmarks,
-            #     mp_pose.POSE_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
-            # cv2.imwrite('./tmp/lines_image0.png', lines)
+    #         # # Draw pose landmarks on the image.
+    #         # mp_drawing.draw_landmarks(
+    #         #     annotated_image,
+    #         #     results.pose_landmarks,
+    #         #     mp_pose.POSE_CONNECTIONS,
+    #         #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+    #         # cv2.imwrite('./tmp/annotated_image0.png', annotated_image)
 
-            # Plot pose world landmarks.
-            # for i in results.pose_world_landmarks:
+    #         # lines = np.stack((results.segmentation_mask,) * 3, axis=-1)
 
+    #         # # Draw pose landmarks on the image.
+    #         # mp_drawing.draw_landmarks(
+    #         #     lines,
+    #         #     results.pose_landmarks,
+    #         #     mp_pose.POSE_CONNECTIONS,
+    #         #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+    #         # cv2.imwrite('./tmp/lines_image0.png', lines)
 
-        break
+    #         # Plot pose world landmarks.
+    #         # for i in results.pose_world_landmarks:
+
+    #     break
