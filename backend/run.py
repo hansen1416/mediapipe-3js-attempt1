@@ -4,10 +4,14 @@ import tempfile
 
 import cv2
 import mediapipe as mp
-from mediapipe.python.solutions import pose
 import imageio.v3 as iio
 import numpy as np
 from PIL import Image
+from mediapipe.python.solutions import pose
+from mediapipe.python.solutions.pose import PoseLandmark
+from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark
+# from mediapipe.framework.formats.landmark_pb2 import LandmarkList
+# from google.protobuf.pyext._message import RepeatedCompositeContainer
 
 MEDIA_DIR = os.path.join('.', 'media')
 
@@ -79,15 +83,23 @@ if __name__ == "__main__":
 
             results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-            # print(results)
-
             if not results.pose_landmarks:
                 continue
-            print(
-                f'Nose coordinates: ('
-                f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
-                f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_height})'
-            )
+            # print(
+            #     f'Nose coordinates: ('
+            #     f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
+            #     f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_height})'
+            # )
+
+            pose_lm: PoseLandmark = results.pose_landmarks.landmark
+            pose_wolrd_lm = results.pose_world_landmarks
+            segm_mask: np.ndarray = results.segmentation_mask
+
+            print(pose_lm[mp_pose.PoseLandmark.LEFT_ELBOW])
+
+            print(pose_lm[mp_pose.PoseLandmark.NOSE])
+            # print(pose_wolrd_lm)
+            print(PoseLandmark)
 
             # print(results.segmentation_mask.shape)
             # annotated_image = results.segmentation_mask
@@ -122,7 +134,5 @@ if __name__ == "__main__":
             # Plot pose world landmarks.
             # for i in results.pose_world_landmarks:
 
-            # print(results.pose_landmarks)
-            print(results.pose_world_landmarks)
 
         break
