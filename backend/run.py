@@ -16,6 +16,7 @@ from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark
 from logger import logger
 
 MEDIA_DIR = os.path.join('.', 'media')
+POSE_DATA_DIR = os.path.join('.', 'pose_data')
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -127,6 +128,12 @@ class PreprocessVideo():
 
         np.save('pose_data.npy', pose_data)
 
+    def load_pose(self, npy_path):
+
+        pose_data = np.load(npy_path)
+
+        logger.info(pose_data.shape)
+
 
 if __name__ == "__main__":
 
@@ -134,7 +141,7 @@ if __name__ == "__main__":
 
     processer = PreprocessVideo(video_file)
 
-    processer.save_poses()
+    processer.load_pose(os.path.join(POSE_DATA_DIR, 'pose_data.npy'))
 
     # for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
 
