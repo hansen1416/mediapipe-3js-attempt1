@@ -74,7 +74,7 @@ class PreprocessVideo():
         fps = self.cap.get(cv2.CAP_PROP_FPS)
         print('video fps :', fps)
 
-        self.frames_steps=5
+        self.frames_steps = 5
 
     def __del__(self):
         self.cap.release()
@@ -156,10 +156,11 @@ class PreprocessVideo():
         pose_data = np.load(pose_npy_path, allow_pickle=True)
 
         frame_pose_landmark = pose_data[frame_index]
-        
+
         if frame_pose_landmark is None:
             logger.info("no pose for frame {}".format(frame_index))
-            cv2.imwrite('./tmp/frame_pose{}_empty.png'.format(frame_index), video_frame)
+            cv2.imwrite(
+                './tmp/frame_pose{}_empty.png'.format(frame_index), video_frame)
             return
 
         frame_pose_landmark: PoseLandmark = pickle.loads(frame_pose_landmark)
@@ -170,8 +171,26 @@ class PreprocessVideo():
             frame_pose_landmark,
             mp_pose.POSE_CONNECTIONS,
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
-    
+
         cv2.imwrite('./tmp/frame_pose{}.png'.format(frame_index), video_frame)
+
+    def calculate_static_pose(self):
+
+        PoseLandmark.NOSE
+
+        PoseLandmark.LEFT_SHOULDER
+        PoseLandmark.RIGHT_SHOULDER
+        PoseLandmark.LEFT_ELBOW
+        PoseLandmark.RIGHT_ELBOW
+        PoseLandmark.LEFT_WRIST
+        PoseLandmark.RIGHT_WRIST
+
+        PoseLandmark.LEFT_HIP
+        PoseLandmark.RIGHT_HIP
+        PoseLandmark.LEFT_KNEE
+        PoseLandmark.RIGHT_KNEE
+        PoseLandmark.LEFT_ANKLE
+        PoseLandmark.RIGHT_ANKLE
 
 
 if __name__ == "__main__":
@@ -182,8 +201,9 @@ if __name__ == "__main__":
 
     # processer.save_poses()
 
-    for i in range(109, 110):
-        processer.show_pose_for_frame(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), i)
+    for i in range(100, 131):
+        processer.show_pose_for_frame(os.path.join(
+            POSE_DATA_DIR, 'pose_data_bytes.npy'), i)
 
     # for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
 
