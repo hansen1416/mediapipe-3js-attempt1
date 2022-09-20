@@ -7,6 +7,7 @@ import mediapipe as mp
 import imageio.v3 as iio
 import numpy as np
 from PIL import Image
+import pickle
 from mediapipe.python.solutions import pose
 from mediapipe.python.solutions.pose import PoseLandmark
 from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark
@@ -73,7 +74,9 @@ class PreprocessVideo():
         fps = self.cap.get(cv2.CAP_PROP_FPS)
         print('video fps :', fps)
 
-    def save_poses(self, frames_steps=5):
+        self.frames_steps=5
+
+    def save_poses(self):
         count = 0
 
         pose_data = []
@@ -92,47 +95,78 @@ class PreprocessVideo():
                         cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
                     if not results.pose_landmarks:
-                        frame_pose = np.zeros((len(PoseLandmark), 4))
+                        frame_pose = None
 
                     else:
 
-                        p_lm = results.pose_landmarks.landmark
+                        frame_pose = pickle.dumps(results.pose_landmarks)
 
-                        frame_pose = []
+                        # p_lm = results.pose_landmarks.landmark
 
-                        for pose_name in PoseLandmark:
+                        # frame_pose = []
 
-                            single_pose = p_lm[PoseLandmark[pose_name.name].value]
+                        # for pose_name in PoseLandmark:
 
-                            # print(single_pose)
+                        #     single_pose = p_lm[PoseLandmark[pose_name.name].value]
 
-                            frame_pose.append([
-                                single_pose.x,
-                                single_pose.y,
-                                single_pose.z,
-                                single_pose.visibility,
-                            ])
+                        #     # print(single_pose)
+
+                        #     frame_pose.append([
+                        #         single_pose.x,
+                        #         single_pose.y,
+                        #         single_pose.z,
+                        #         single_pose.visibility,
+                        #     ])
 
                     pose_data.append(frame_pose)
 
                     # logger.info(ret)
                     # logger.info(frame.shape)
                     # cv2.imwrite('frame{:d}.jpg'.format(count), frame)
-                    count += frames_steps  # i.e. at 30 fps, this advances one second
+                    count += self.frames_steps  # i.e. at 30 fps, this advances one second
                     self.cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+
+                    logger.info(count)
                 else:
                     self.cap.release()
                     break
 
                 # break
 
-        np.save('pose_data.npy', pose_data)
+        np.save(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), pose_data)
 
-    def load_pose(self, npy_path):
+    def show_pose_for_frame(self, pose_npy_path, frame_index):
 
-        pose_data = np.load(npy_path)
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index*self.frames_steps)
 
-        logger.info(pose_data.shape)
+        ret, video_frame = self.cap.read()
+
+        if not ret:
+            return
+
+        self.cap.release()
+
+        logger.info(video_frame.shape)
+
+        pose_data = np.load(pose_npy_path, allow_pickle=True)
+
+        frame_pose_landmark = pose_data[frame_index]
+        
+        if frame_pose_landmark is None:
+            logger.info("no pose for frame {}".format(frame_index))
+            cv2.imwrite('./tmp/frame_pose{}_empty.png'.format(frame_index), video_frame)
+            return
+
+        frame_pose_landmark = pickle.loads(frame_pose_landmark)
+
+        # Draw pose landmarks on the image.
+        mp_drawing.draw_landmarks(
+            video_frame,
+            frame_pose_landmark,
+            mp_pose.POSE_CONNECTIONS,
+            landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+    
+        cv2.imwrite('./tmp/frame_pose{}.png'.format(frame_index), video_frame)
 
 
 if __name__ == "__main__":
@@ -141,7 +175,8 @@ if __name__ == "__main__":
 
     processer = PreprocessVideo(video_file)
 
-    processer.load_pose(os.path.join(POSE_DATA_DIR, 'pose_data.npy'))
+    # processer.save_poses()
+    processer.show_pose_for_frame(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), 112)
 
     # for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
 
