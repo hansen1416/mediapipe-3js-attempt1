@@ -76,6 +76,10 @@ class PreprocessVideo():
 
         self.frames_steps=5
 
+    def __del__(self):
+        self.cap.release()
+        logger.info("Release video")
+
     def save_poses(self):
         count = 0
 
@@ -128,7 +132,8 @@ class PreprocessVideo():
 
                     logger.info(count)
                 else:
-                    self.cap.release()
+                    # set to video start
+                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     break
 
                 # break
@@ -142,9 +147,9 @@ class PreprocessVideo():
         ret, video_frame = self.cap.read()
 
         if not ret:
+            logger.info("Read video frame false")
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             return
-
-        self.cap.release()
 
         logger.info(video_frame.shape)
 
@@ -157,7 +162,7 @@ class PreprocessVideo():
             cv2.imwrite('./tmp/frame_pose{}_empty.png'.format(frame_index), video_frame)
             return
 
-        frame_pose_landmark = pickle.loads(frame_pose_landmark)
+        frame_pose_landmark: PoseLandmark = pickle.loads(frame_pose_landmark)
 
         # Draw pose landmarks on the image.
         mp_drawing.draw_landmarks(
@@ -176,7 +181,9 @@ if __name__ == "__main__":
     processer = PreprocessVideo(video_file)
 
     # processer.save_poses()
-    processer.show_pose_for_frame(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), 112)
+
+    for i in range(109, 110):
+        processer.show_pose_for_frame(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), i)
 
     # for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
 
