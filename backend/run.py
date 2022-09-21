@@ -1,6 +1,7 @@
 import os
 import sys
 import tempfile
+import time
 
 import cv2
 import mediapipe as mp
@@ -80,14 +81,17 @@ class PreprocessVideo():
         self.cap.release()
         logger.info("Release video")
 
-    def save_poses(self):
+    def save_video_poses(self):
+
         count = 0
 
-        pose_data = []
+        pose_landmarks = []
+        pose_world_landmarks = []
+        segment_masks = []
 
         with mp_pose.Pose(static_image_mode=False,
                           model_complexity=2,
-                          # enable_segmentation=True,
+                          enable_segmentation=True,
                           min_detection_confidence=0.5) as pose:
 
             while self.cap.isOpened():
@@ -105,23 +109,6 @@ class PreprocessVideo():
 
                         frame_pose = pickle.dumps(results.pose_landmarks)
 
-                        # p_lm = results.pose_landmarks.landmark
-
-                        # frame_pose = []
-
-                        # for pose_name in PoseLandmark:
-
-                        #     single_pose = p_lm[PoseLandmark[pose_name.name].value]
-
-                        #     # print(single_pose)
-
-                        #     frame_pose.append([
-                        #         single_pose.x,
-                        #         single_pose.y,
-                        #         single_pose.z,
-                        #         single_pose.visibility,
-                        #     ])
-
                     pose_data.append(frame_pose)
 
                     # logger.info(ret)
@@ -136,9 +123,20 @@ class PreprocessVideo():
                     self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     break
 
-                # break
+                break
 
         np.save(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), pose_data)
+
+    def display_pose_for_frame(self, video_frame, pose_landmark, segmentation_mask=None):
+
+        # Draw pose landmarks on the image.
+        mp_drawing.draw_landmarks(
+            video_frame,
+            pose_landmark,
+            mp_pose.POSE_CONNECTIONS,
+            landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+
+        cv2.imwrite('./tmp/frame_pose{}.png'.format(int(time.time())), video_frame)
 
     def show_pose_for_frame(self, pose_npy_path, frame_index):
 
@@ -195,15 +193,15 @@ class PreprocessVideo():
 
 if __name__ == "__main__":
 
-    video_file = os.path.join(MEDIA_DIR, '6packs.mp4')
+    video_file = os.path.join(MEDIA_DIR, 'yoga.mp4')
 
     processer = PreprocessVideo(video_file)
 
-    # processer.save_poses()
+    processer.save_video_poses()
 
-    for i in range(100, 131):
-        processer.show_pose_for_frame(os.path.join(
-            POSE_DATA_DIR, 'pose_data_bytes.npy'), i)
+    # for i in range(100, 131):
+    #     processer.show_pose_for_frame(os.path.join(
+    #         POSE_DATA_DIR, 'pose_data_bytes.npy'), i)
 
     # for frame in iio.imiter(video_file, plugin="pyav", format="rgb24", thread_type="FRAME"):
 
