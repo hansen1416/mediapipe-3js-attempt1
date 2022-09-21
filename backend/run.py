@@ -1,9 +1,11 @@
+from concurrent.futures import process
 import os
 import sys
 import tempfile
 import time
 
 import cv2
+import matplotlib.pyplot as plt
 import mediapipe as mp
 import imageio.v3 as iio
 import numpy as np
@@ -97,7 +99,6 @@ class PreprocessVideo():
             while self.cap.isOpened():
                 ret, frame = self.cap.read()
 
-                
                 # count += self.frames_steps  # i.e. at 30 fps, this advances one second
                 # self.cap.set(cv2.CAP_PROP_POS_FRAMES, count)
 
@@ -111,37 +112,49 @@ class PreprocessVideo():
                         pose_world_landmarks.append(pickle.dumps(None))
                         segment_masks.append(results.segmentation_mask)
                     else:
-                        pose_landmarks.append(pickle.dumps(results.pose_landmarks))
-                        pose_world_landmarks.append(pickle.dumps(results.pose_world_landmarks))
-                        segment_masks.append(np.zeros(frame.shape, dtype=np.uint8))
+                        pose_landmarks.append(
+                            pickle.dumps(results.pose_landmarks))
+                        pose_world_landmarks.append(
+                            pickle.dumps(results.pose_world_landmarks))
+                        segment_masks.append(
+                            np.zeros(frame.shape, dtype=np.uint8))
 
                     if count and (count % 3000) == 0:
                         frame_start_end = str(count-3000) + '-' + str(count)
 
-                        np.save(os.path.join(POSE_DATA_DIR, 'lm{}.npy'.format(frame_start_end)), pose_landmarks)
-                        np.save(os.path.join(POSE_DATA_DIR, 'wlm{}.npy'.format(frame_start_end)), pose_world_landmarks)
-                        np.save(os.path.join(POSE_DATA_DIR, 'sm{}.npy'.format(frame_start_end)), segment_masks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'lm{}.npy'.format(
+                            frame_start_end)), pose_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'wlm{}.npy'.format(
+                            frame_start_end)), pose_world_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'sm{}.npy'.format(
+                            frame_start_end)), segment_masks)
 
-                        logger.info("Save pose landmark and segmentation masks for {}".format(frame_start_end))
+                        logger.info(
+                            "Save pose landmark and segmentation masks for {}".format(frame_start_end))
 
                         pose_landmarks = []
                         pose_world_landmarks = []
                         segment_masks = []
 
                     count += 1
-                    
+
                 else:
                     # set to video start
                     self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                    
+
                     if len(pose_landmarks):
-                        frame_start_end = str(count - count % 3000) + '-' + str(count)
+                        frame_start_end = str(
+                            count - count % 3000) + '-' + str(count)
 
-                        np.save(os.path.join(POSE_DATA_DIR, 'lm{}.npy'.format(frame_start_end)), pose_landmarks)
-                        np.save(os.path.join(POSE_DATA_DIR, 'wlm{}.npy'.format(frame_start_end)), pose_world_landmarks)
-                        np.save(os.path.join(POSE_DATA_DIR, 'sm{}.npy'.format(frame_start_end)), segment_masks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'lm{}.npy'.format(
+                            frame_start_end)), pose_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'wlm{}.npy'.format(
+                            frame_start_end)), pose_world_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'sm{}.npy'.format(
+                            frame_start_end)), segment_masks)
 
-                        logger.info("Save pose landmark and segmentation masks for {}".format(frame_start_end))
+                        logger.info(
+                            "Save pose landmark and segmentation masks for {}".format(frame_start_end))
 
                     break
 
@@ -156,7 +169,8 @@ class PreprocessVideo():
             mp_pose.POSE_CONNECTIONS,
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
 
-        cv2.imwrite('./tmp/frame_pose{}.png'.format(int(time.time())), video_frame)
+        cv2.imwrite(
+            './tmp/frame_pose{}.png'.format(int(time.time())), video_frame)
 
     def show_pose_for_frame(self, pose_npy_path, frame_index):
 
@@ -210,6 +224,69 @@ class PreprocessVideo():
         PoseLandmark.LEFT_ANKLE
         PoseLandmark.RIGHT_ANKLE
 
+    def plot_pose_only(self):
+        pose_results_npy = os.path.join(POSE_DATA_DIR, 'wlm0-3000.npy')
+
+        pose_data = np.load(pose_results_npy)
+
+        for i in range(pose_data.shape[0]):
+
+            pose_lm = pickle.loads(pose_data[i])
+
+            # xdata = []
+            # ydata = []
+            # zdata = []
+
+            # for key in mp_pose.PoseLandmark:
+            #     xdata.append(pose_lm.landmark[key].x)
+            #     ydata.append(pose_lm.landmark[key].y)
+            #     zdata.append(pose_lm.landmark[key].z)
+
+            # ax = plt.axes(projection='3d')
+
+            # ax.scatter3D(xdata, ydata, zdata, c=zdata, cmap='Greens')
+
+            # plt.savefig('tmp.png')
+
+            left_wrist = pose_lm.landmark[mp_pose.PoseLandmark.LEFT_WRIST]
+            left_elbow = pose_lm.landmark[mp_pose.PoseLandmark.LEFT_ELBOW]
+            left_shoulder = pose_lm.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
+
+            right_wrist = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_WRIST]
+            right_elbow = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW]
+            right_shoulder = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
+
+            left_hip = pose_lm.landmark[mp_pose.PoseLandmark.LEFT_HIP]
+            left_knee = pose_lm.landmark[mp_pose.PoseLandmark.LEFT_KNEE]
+            left_ankle = pose_lm.landmark[mp_pose.PoseLandmark.LEFT_ANKLE]
+
+            right_hip = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_HIP]
+            right_knee = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_KNEE]
+            right_ankle = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE]
+
+            print(left_wrist)
+            print(left_elbow)
+            print(left_shoulder)
+
+            vectors = np.array([
+                [left_elbow.x, left_elbow.y, left_elbow.z,
+                    left_wrist.x, left_wrist.y, left_wrist.z],
+                [left_elbow.x, left_elbow.y, left_elbow.z,
+                 left_shoulder.x, left_shoulder.y, left_shoulder.z],
+            ])
+
+            X, Y, Z, U, V, W = zip(*vectors)
+
+            # logger.info((X, Y, Z, U, V, W))
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            ax.quiver(X, Y, Z, U, V, W)
+
+            plt.savefig('tmp.png')
+
+            break
+
 
 if __name__ == "__main__":
 
@@ -217,7 +294,9 @@ if __name__ == "__main__":
 
     processer = PreprocessVideo(video_file)
 
-    processer.save_video_poses()
+    # processer.save_video_poses()
+
+    processer.plot_pose_only()
 
     # for i in range(100, 131):
     #     processer.show_pose_for_frame(os.path.join(
