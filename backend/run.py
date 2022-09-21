@@ -75,7 +75,7 @@ class PreprocessVideo():
         fps = self.cap.get(cv2.CAP_PROP_FPS)
         print('video fps :', fps)
 
-        self.frames_steps = 5
+        self.frames_steps = 1
 
     def __del__(self):
         self.cap.release()
@@ -97,35 +97,55 @@ class PreprocessVideo():
             while self.cap.isOpened():
                 ret, frame = self.cap.read()
 
+                
+                # count += self.frames_steps  # i.e. at 30 fps, this advances one second
+                # self.cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+
                 if ret:
 
                     results = pose.process(
                         cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
                     if not results.pose_landmarks:
-                        frame_pose = None
-
+                        pose_landmarks.append(pickle.dumps(None))
+                        pose_world_landmarks.append(pickle.dumps(None))
+                        segment_masks.append(results.segmentation_mask)
                     else:
+                        pose_landmarks.append(pickle.dumps(results.pose_landmarks))
+                        pose_world_landmarks.append(pickle.dumps(results.pose_world_landmarks))
+                        segment_masks.append(np.zeros(frame.shape, dtype=np.uint8))
 
-                        frame_pose = pickle.dumps(results.pose_landmarks)
+                    if count and (count % 3000) == 0:
+                        frame_start_end = str(count-3000) + '-' + str(count)
 
-                    pose_data.append(frame_pose)
+                        np.save(os.path.join(POSE_DATA_DIR, 'lm{}.npy'.format(frame_start_end)), pose_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'wlm{}.npy'.format(frame_start_end)), pose_world_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'sm{}.npy'.format(frame_start_end)), segment_masks)
 
-                    # logger.info(ret)
-                    # logger.info(frame.shape)
-                    # cv2.imwrite('frame{:d}.jpg'.format(count), frame)
-                    count += self.frames_steps  # i.e. at 30 fps, this advances one second
-                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, count)
+                        logger.info("Save pose landmark and segmentation masks for {}".format(frame_start_end))
 
-                    logger.info(count)
+                        pose_landmarks = []
+                        pose_world_landmarks = []
+                        segment_masks = []
+
+                    count += 1
+                    
                 else:
                     # set to video start
                     self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    
+                    if len(pose_landmarks):
+                        frame_start_end = str(count - count % 3000) + '-' + str(count)
+
+                        np.save(os.path.join(POSE_DATA_DIR, 'lm{}.npy'.format(frame_start_end)), pose_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'wlm{}.npy'.format(frame_start_end)), pose_world_landmarks)
+                        np.save(os.path.join(POSE_DATA_DIR, 'sm{}.npy'.format(frame_start_end)), segment_masks)
+
+                        logger.info("Save pose landmark and segmentation masks for {}".format(frame_start_end))
+
                     break
 
-                break
-
-        np.save(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), pose_data)
+        # np.save(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), pose_data)
 
     def display_pose_for_frame(self, video_frame, pose_landmark, segmentation_mask=None):
 
