@@ -289,28 +289,6 @@ class PreprocessVideo():
 
         cv2.imwrite('./tmp/frame_pose{}.png'.format(frame_index), video_frame)
 
-    def plot_pose_for_frame(self, frame_index):
-
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index*self.frames_steps)
-
-        ret, video_frame = self.cap.read()
-
-        if not ret:
-            logger.info("Read video frame false frame{}".format(frame_index*self.frames_steps))
-            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            return
-
-        with mp_pose.Pose(static_image_mode=False,
-                          model_complexity=2,
-                          enable_segmentation=True,
-                          min_detection_confidence=0.5) as pose:
-
-            results = pose.process(cv2.cvtColor(video_frame, cv2.COLOR_BGR2RGB))
-
-            cv2.imwrite('./tmp/frame_{}.png'.format(frame_index), video_frame)
-
-            self.plot_world_pose(results.pose_world_landmarks.landmark)
-            self.plot_viewport_pose(results.pose_landmarks.landmark)
 
     def calculate_static_pose(self):
         pass
@@ -380,7 +358,30 @@ class PreprocessVideo():
 
             break
 
-    def plot_world_pose(self, pose_landmark):
+    def plot_pose_for_frame(self, frame_index):
+
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index*self.frames_steps)
+
+        ret, video_frame = self.cap.read()
+
+        if not ret:
+            logger.info("Read video frame false frame{}".format(frame_index*self.frames_steps))
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            return
+
+        with mp_pose.Pose(static_image_mode=False,
+                          model_complexity=2,
+                          enable_segmentation=True,
+                          min_detection_confidence=0.5) as pose:
+
+            results = pose.process(cv2.cvtColor(video_frame, cv2.COLOR_BGR2RGB))
+
+            cv2.imwrite('./tmp/frame_{}.png'.format(frame_index), video_frame)
+
+            self.plot_world_pose(results.pose_world_landmarks.landmark)
+            self.plot_viewport_pose(results.pose_landmarks.landmark)
+
+    def plot_world_pose(self, pose_landmark, filename=v):
 
         xdata, ydata, zdata = self.read_points_from_landmarks(pose_landmark)
         annotations = self.read_annotations_from_landmarks(pose_landmark)
@@ -404,10 +405,10 @@ class PreprocessVideo():
         ax.set_ylim(plotting_range)
         ax.set_zlim(plotting_range)
 
-        plt.savefig('tmp-world.png')
+        plt.savefig(filename)
 
     
-    def plot_viewport_pose(self, pose_world_landmark):
+    def plot_viewport_pose(self, pose_world_landmark, filename='tmp-viewport.png'):
 
         xdata, ydata, zdata = self.read_points_from_landmarks(pose_world_landmark)
         annotations = self.read_annotations_from_landmarks(pose_world_landmark)
@@ -425,7 +426,7 @@ class PreprocessVideo():
         for arro in arrows:
             ax.arrow3D(*arro)
 
-        plt.savefig('tmp-viewport.png')
+        plt.savefig(filename)
 
 
 if __name__ == "__main__":
