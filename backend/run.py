@@ -161,6 +161,7 @@ class PreprocessVideo():
                     'RIGHT_HIP': 'RIGHT_KNEE',
                     'RIGHT_KNEE': 'RIGHT_ANKLE'
                     }
+
     def __del__(self):
         self.cap.release()
         logger.info("Release video")
@@ -288,6 +289,29 @@ class PreprocessVideo():
 
         cv2.imwrite('./tmp/frame_pose{}.png'.format(frame_index), video_frame)
 
+    def plot_pose_for_frame(self, frame_index):
+
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index*self.frames_steps)
+
+        ret, video_frame = self.cap.read()
+
+        if not ret:
+            logger.info("Read video frame false frame{}".format(frame_index*self.frames_steps))
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            return
+
+        with mp_pose.Pose(static_image_mode=False,
+                          model_complexity=2,
+                          enable_segmentation=True,
+                          min_detection_confidence=0.5) as pose:
+
+            results = pose.process(cv2.cvtColor(video_frame, cv2.COLOR_BGR2RGB))
+
+            cv2.imwrite('./tmp/frame_{}.png'.format(frame_index), video_frame)
+
+            self.plot_world_pose(results.pose_world_landmarks.landmark)
+            self.plot_viewport_pose(results.pose_landmarks.landmark)
+
     def calculate_static_pose(self):
         pass
 
@@ -329,7 +353,7 @@ class PreprocessVideo():
 
         return arrows
 
-    def plot_wolrd_pose(self):
+    def plot_video_world_poses(self):
         pose_results_npy = os.path.join(POSE_DATA_DIR, 'wlm0-3000.npy')
 
         pose_data = np.load(pose_results_npy)
@@ -338,33 +362,12 @@ class PreprocessVideo():
 
             pose_lm = pickle.loads(pose_data[i])
 
-            xdata, ydata, zdata = self.read_points_from_landmarks(pose_lm.landmark)
-            annotations = self.read_annotations_from_landmarks(pose_lm.landmark)
-            arrows = self.read_arrows_from_landmarks(pose_lm.landmark)
-
-            fig = plt.figure(figsize=(10, 10))
-            fig.tight_layout()
-            ax = fig.add_subplot(111, projection='3d')
-
-            ax.scatter(xdata, ydata, zdata)
-
-            for anno in annotations:
-                ax.annotate3D(anno[0], tuple(*anno[1:]), xytext=(3, 3), textcoords='offset points')
-
-            for arro in arrows:
-                ax.arrow3D(*arro)
-
-            plotting_range = (-0.5, 0.5)
-
-            ax.set_xlim(plotting_range)
-            ax.set_ylim(plotting_range)
-            ax.set_zlim(plotting_range)
-
-            plt.savefig('tmp-world.png')
+            self.plot_world_pose(pose_lm.landmark)
 
             break
-    
-    def plot_viewport_pose(self):
+
+    def plot_video_viewport_poses(self):
+
         pose_results_npy = os.path.join(POSE_DATA_DIR, 'lm0-3000.npy')
 
         pose_data = np.load(pose_results_npy)
@@ -373,25 +376,57 @@ class PreprocessVideo():
 
             pose_lm = pickle.loads(pose_data[i])
 
-            xdata, ydata, zdata = self.read_points_from_landmarks(pose_lm.landmark)
-            annotations = self.read_annotations_from_landmarks(pose_lm.landmark)
-            arrows = self.read_arrows_from_landmarks(pose_lm.landmark)
-
-            fig = plt.figure(figsize=(10, 10))
-            fig.tight_layout()
-            ax = fig.add_subplot(111, projection='3d')
-
-            ax.scatter(xdata, ydata, zdata)
-
-            for anno in annotations:
-                ax.annotate3D(anno[0], tuple(*anno[1:]), xytext=(3, 3), textcoords='offset points')
-
-            for arro in arrows:
-                ax.arrow3D(*arro)
-
-            plt.savefig('tmp-viewport.png')
+            self.plot_viewport_pose(pose_lm.landmark)
 
             break
+
+    def plot_world_pose(self, pose_landmark):
+
+        xdata, ydata, zdata = self.read_points_from_landmarks(pose_landmark)
+        annotations = self.read_annotations_from_landmarks(pose_landmark)
+        arrows = self.read_arrows_from_landmarks(pose_landmark)
+
+        fig = plt.figure(figsize=(10, 10))
+        fig.tight_layout()
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.scatter(xdata, ydata, zdata)
+
+        for anno in annotations:
+            ax.annotate3D(anno[0], tuple(*anno[1:]), xytext=(3, 3), textcoords='offset points')
+
+        for arro in arrows:
+            ax.arrow3D(*arro)
+
+        plotting_range = (-0.5, 0.5)
+
+        ax.set_xlim(plotting_range)
+        ax.set_ylim(plotting_range)
+        ax.set_zlim(plotting_range)
+
+        plt.savefig('tmp-world.png')
+
+    
+    def plot_viewport_pose(self, pose_world_landmark):
+
+        xdata, ydata, zdata = self.read_points_from_landmarks(pose_world_landmark)
+        annotations = self.read_annotations_from_landmarks(pose_world_landmark)
+        arrows = self.read_arrows_from_landmarks(pose_world_landmark)
+
+        fig = plt.figure(figsize=(10, 10))
+        fig.tight_layout()
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.scatter(xdata, ydata, zdata)
+
+        for anno in annotations:
+            ax.annotate3D(anno[0], tuple(*anno[1:]), xytext=(3, 3), textcoords='offset points')
+
+        for arro in arrows:
+            ax.arrow3D(*arro)
+
+        plt.savefig('tmp-viewport.png')
+
 
 if __name__ == "__main__":
 
@@ -401,9 +436,9 @@ if __name__ == "__main__":
 
     # processer.save_video_poses()
 
-    processer.plot_wolrd_pose()
+    # processer.plot_video_world_poses()
 
-    processer.plot_viewport_pose()
+    processer.plot_pose_for_frame(frame_index=0)
 
     # for i in range(100, 131):
     #     processer.show_pose_for_frame(os.path.join(
