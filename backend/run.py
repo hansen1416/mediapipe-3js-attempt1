@@ -264,24 +264,40 @@ class PreprocessVideo():
             right_knee = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_KNEE]
             right_ankle = pose_lm.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE]
 
-            print(left_wrist)
-            print(left_elbow)
-            print(left_shoulder)
+            # print(left_wrist)
+            # print(left_elbow)
+            # print(left_shoulder)
 
-            vectors = np.array([
-                [left_elbow.x, left_elbow.y, left_elbow.z,
-                    left_wrist.x, left_wrist.y, left_wrist.z],
-                [left_elbow.x, left_elbow.y, left_elbow.z,
-                 left_shoulder.x, left_shoulder.y, left_shoulder.z],
-            ])
+            # vectors = np.array([
+            #     [left_elbow.x, left_elbow.y, left_elbow.z,
+            #         left_wrist.x, left_wrist.y, left_wrist.z],
+            #     [left_elbow.x, left_elbow.y, left_elbow.z,
+            #      left_shoulder.x, left_shoulder.y, left_shoulder.z],
+            # ])
 
-            X, Y, Z, U, V, W = zip(*vectors)
+            # X, Y, Z, U, V, W = zip(*vectors)
 
             # logger.info((X, Y, Z, U, V, W))
 
             fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            ax.quiver(X, Y, Z, U, V, W)
+            ax = plt.axes(projection = "3d")
+
+            # Coordinates (x,y,z)
+            x = np.array([[[0,0,0]], [[0,0,0]]])
+            y = np.array([[[0.5,0.5,0.5]],[[0.5,0.5,0.5]]])
+            z = np.array([[[-0.5,-0.5,-0.5]],[[-0.5,-0.5,-0.5]]])
+
+            logger.info(x.shape)
+
+            # Direction of the Arrows (vectors)
+            u = [[1,1,1], [1,1,1]]
+            v = [[2,2,2], [2,2,2]]
+            w = [[1,1,1], [1,1,1]]
+
+            ax.quiver(x,y,z,u,v,w)
+            ax.set_xlim(-2, 2)
+            ax.set_ylim(-2, 2)
+            ax.set_zlim(-2, 2)
 
             plt.savefig('tmp.png')
 
