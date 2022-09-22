@@ -379,7 +379,7 @@ class PreprocessVideo():
             cv2.imwrite('./tmp/frame_{}.png'.format(frame_index), video_frame)
 
             self.plot_world_pose(results.pose_world_landmarks.landmark, os.path.join('tmp', 'pose-world-{}.png'.format(frame_index)))
-            # self.plot_viewport_pose(results.pose_landmarks.landmark, os.path.join('tmp', 'pose-viewport-{}.png'.format(frame_index)))
+            self.plot_viewport_pose(results.pose_landmarks.landmark, os.path.join('tmp', 'pose-viewport-{}.png'.format(frame_index)))
 
     def plot_world_pose(self, pose_landmark, filename='tmp-world.png'):
 
@@ -436,7 +436,7 @@ class PreprocessVideo():
         ax.set_ylabel('y')
         ax.set_zlabel('z')
 
-        ax.view_init(elev=10., azim=90)
+        ax.view_init(elev=90, azim=90)
         
         plt.savefig(filename)
 
