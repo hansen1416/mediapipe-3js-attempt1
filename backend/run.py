@@ -1,8 +1,11 @@
+from genericpath import isfile
+import math
 import os
 import sys
 import tempfile
 import time
 
+from collections import namedtuple
 import cv2
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.proj3d import proj_transform
@@ -93,6 +96,10 @@ def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
 
 
 setattr(Axes3D, 'arrow3D', _arrow3D)
+
+
+Extremities = namedtuple('Extremities', ['LEFT_FOREARM', 'LEFT_UPPERARM', 'RIGHT_FOREARM', 'RIGHT_UPPERARM',
+                                         'LEFT_THIGH', 'LEFT_SHANK', 'RIGHT_THIGH', 'RIGHT_SHANK'])
 
 
 class PoseDetector:
@@ -396,6 +403,38 @@ class PreprocessVideo():
             self.plot_viewport_pose(results.pose_landmarks.landmark, os.path.join(
                 'tmp', 'pose-viewport-{}.png'.format(frame_index)))
 
+    def frame_find_result_file(self, frame_index):
+
+        frame_index = frame_index*self.frames_steps
+
+        residual = frame_index % 3000
+
+        suffix = str(frame_index - residual) + '-' + \
+            str(frame_index + (3000 - residual))
+
+        lmfile = os.path.join(POSE_DATA_DIR, 'lm' + suffix + '.npy')
+        wlmfile = os.path.join(POSE_DATA_DIR, 'wlm' + suffix + '.npy')
+
+        if not os.path.isfile(lmfile) or not os.path.isfile(wlmfile):
+            return None, None
+
+        lm_interval = np.load(lmfile, allow_pickle=True)
+        wlm_interval = np.load(wlmfile, allow_pickle=True)
+
+        pose_lm = pickle.loads(lm_interval[residual])
+        pose_wlm = pickle.loads(wlm_interval[residual])
+
+        return pose_wlm, pose_lm
+
+    def plot_pose_for_result(self, frame_index):
+
+        pose_wlm, pose_lm = self.frame_find_result_file(frame_index)
+
+        self.plot_world_pose(pose_lm.landmark, os.path.join(
+            'tmp', 'pose-res-world-{}.png'.format(frame_index)))
+        self.plot_viewport_pose(pose_wlm.landmark, os.path.join(
+            'tmp', 'pose-res-viewport-{}.png'.format(frame_index)))
+
     def plot_world_pose(self, pose_landmark, filename='tmp-world.png'):
 
         xdata, ydata, zdata = self.read_points_from_landmarks(pose_landmark)
@@ -415,7 +454,7 @@ class PreprocessVideo():
         for arro in arrows:
             ax.arrow3D(*arro)
 
-        plotting_range = (-0.5, 0.5)
+        plotting_range = (0, 1)
 
         ax.set_xlim(plotting_range)
         ax.set_ylim(plotting_range)
@@ -461,6 +500,46 @@ class PreprocessVideo():
 
         plt.savefig(filename)
 
+    def find_angle_between_vectors(self, vec1, vec2):
+
+        dot = vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2]
+        mag = ((vec1[0] ** 2 + vec1[1] ** 2 + vec1[2] ** 2) ** 0.5) * \
+            ((vec2[0] ** 2 + vec2[1] ** 2 + vec2[2] ** 2) ** 0.5)
+
+        return np.arccos(dot/mag)
+
+    def compare_poses(self, frame1, frame2):
+
+        wlm1, lm1 = self.frame_find_result_file(frame1)
+        wlm2, lm2 = self.frame_find_result_file(frame2)
+
+        logger.info(
+            "============== Viewport landmark, frame {} vs {}".format(frame1, frame2))
+        self.plot_degrees(lm1.landmark, lm2.landmark)
+        logger.info(
+            "============== World landmark, frame {} vs {}".format(frame1, frame2))
+        self.plot_degrees(wlm1.landmark, wlm2.landmark)
+
+    def plot_degrees(self, landmark1, landmark2):
+
+        arrows1 = self.read_arrows_from_landmarks(landmark1)
+        arrows2 = self.read_arrows_from_landmarks(landmark2)
+
+        extr1 = Extremities(*arrows1)
+        extr2 = Extremities(*arrows2)
+
+        # logger.info(extr1)
+        # logger.info(extr2)
+
+        for f in Extremities._fields:
+            l1 = list(getattr(extr1, f))[3:]
+            l2 = list(getattr(extr2, f))[3:]
+
+            radius = self.find_angle_between_vectors(l1, l2)
+
+            logger.info("{} shifted degrees {}, radius {}".format(
+                f, math.degrees(radius), radius))
+
 
 if __name__ == "__main__":
 
@@ -472,7 +551,11 @@ if __name__ == "__main__":
 
     # processer.plot_video_world_poses()
 
-    processer.plot_pose_for_frame(frame_index=0)
+    # processer.plot_pose_for_frame(frame_index=10020)
+
+    processer.plot_pose_for_result(frame_index=10000)
+
+    processer.compare_poses(frame1=10000, frame2=10020)
 
     # for i in range(100, 131):
     #     processer.show_pose_for_frame(os.path.join(
