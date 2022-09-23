@@ -30,6 +30,8 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose: pose = mp.solutions.pose
 
 # from gist https://gist.github.com/WetHat/1d6cd0f7309535311a539b42cccca89c
+
+
 class Annotation3D(Annotation):
 
     def __init__(self, text, xyz, *args, **kwargs):
@@ -42,13 +44,17 @@ class Annotation3D(Annotation):
         super().draw(renderer)
 
 # For seamless integration we add the annotate3D method to the Axes3D class.
+
+
 def _annotate3D(ax, text, xyz, *args, **kwargs):
     '''Add anotation `text` to an `Axes3d` instance.'''
 
     annotation = Annotation3D(text, xyz, *args, **kwargs)
     ax.add_artist(annotation)
 
+
 setattr(Axes3D, 'annotate3D', _annotate3D)
+
 
 class Arrow3D(FancyArrowPatch):
 
@@ -65,7 +71,7 @@ class Arrow3D(FancyArrowPatch):
         xs, ys, zs = proj_transform((x1, x2), (y1, y2), (z1, z2), self.axes.M)
         self.set_positions((xs[0], ys[0]), (xs[1], ys[1]))
         super().draw(renderer)
-        
+
     def do_3d_projection(self, renderer=None):
         x1, y1, z1 = self._xyz
         dx, dy, dz = self._dxdydz
@@ -77,6 +83,8 @@ class Arrow3D(FancyArrowPatch):
         return np.min(zs)
 
 # For seamless integration we add the arrow3D method to the Axes3D class.
+
+
 def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
     '''Add an 3d arrow to an `Axes3D` instance.'''
 
@@ -85,6 +93,7 @@ def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
 
 
 setattr(Axes3D, 'arrow3D', _arrow3D)
+
 
 class PoseDetector:
 
@@ -139,28 +148,28 @@ class PreprocessVideo():
         self.frames_steps = 1
 
         self.joints = ['LEFT_WRIST',
-                    'LEFT_ELBOW',
-                    'LEFT_SHOULDER',
-                    'RIGHT_WRIST',
-                    'RIGHT_ELBOW',
-                    'RIGHT_SHOULDER',
-                    'LEFT_HIP',
-                    'LEFT_KNEE',
-                    'LEFT_ANKLE',
-                    'RIGHT_HIP',
-                    'RIGHT_KNEE',
-                    'RIGHT_ANKLE']
+                       'LEFT_ELBOW',
+                       'LEFT_SHOULDER',
+                       'RIGHT_WRIST',
+                       'RIGHT_ELBOW',
+                       'RIGHT_SHOULDER',
+                       'LEFT_HIP',
+                       'LEFT_KNEE',
+                       'LEFT_ANKLE',
+                       'RIGHT_HIP',
+                       'RIGHT_KNEE',
+                       'RIGHT_ANKLE']
 
         self.limbs = {
-                    'LEFT_SHOULDER': 'LEFT_ELBOW', 
-                    'LEFT_ELBOW': 'LEFT_WRIST',
-                    'RIGHT_ELBOW': 'RIGHT_WRIST',
-                    'RIGHT_SHOULDER': 'RIGHT_ELBOW',
-                    'LEFT_HIP': 'LEFT_KNEE',
-                    'LEFT_KNEE': 'LEFT_ANKLE',
-                    'RIGHT_HIP': 'RIGHT_KNEE',
-                    'RIGHT_KNEE': 'RIGHT_ANKLE'
-                    }
+            'LEFT_SHOULDER': 'LEFT_ELBOW',
+            'LEFT_ELBOW': 'LEFT_WRIST',
+            'RIGHT_ELBOW': 'RIGHT_WRIST',
+            'RIGHT_SHOULDER': 'RIGHT_ELBOW',
+            'LEFT_HIP': 'LEFT_KNEE',
+            'LEFT_KNEE': 'LEFT_ANKLE',
+            'RIGHT_HIP': 'RIGHT_KNEE',
+            'RIGHT_KNEE': 'RIGHT_ANKLE'
+        }
 
     def __del__(self):
         self.cap.release()
@@ -289,7 +298,6 @@ class PreprocessVideo():
 
         cv2.imwrite('./tmp/frame_pose{}.png'.format(frame_index), video_frame)
 
-
     def calculate_static_pose(self):
         pass
 
@@ -315,17 +323,20 @@ class PreprocessVideo():
         annotations = []
 
         for j in self.joints:
-            annotations.append([j, self.landmark_to_point(landmarks[PoseLandmark[j]])])
+            annotations.append(
+                [j, self.landmark_to_point(landmarks[PoseLandmark[j]])])
 
         return annotations
 
     def read_arrows_from_landmarks(self, landmarks):
-        
+
         arrows = []
-        
+
         for k, v in self.limbs.items():
-            x, y, z = self.landmark_to_point(landmarks[mp_pose.PoseLandmark[k]])
-            u, v, w = self.landmark_to_point(landmarks[mp_pose.PoseLandmark[v]])
+            x, y, z = self.landmark_to_point(
+                landmarks[mp_pose.PoseLandmark[k]])
+            u, v, w = self.landmark_to_point(
+                landmarks[mp_pose.PoseLandmark[v]])
 
             arrows.append((x, y, z, u-x, v-y, w-z))
 
@@ -365,7 +376,8 @@ class PreprocessVideo():
         ret, video_frame = self.cap.read()
 
         if not ret:
-            logger.info("Read video frame false frame{}".format(frame_index*self.frames_steps))
+            logger.info("Read video frame false frame{}".format(
+                frame_index*self.frames_steps))
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             return
 
@@ -374,12 +386,15 @@ class PreprocessVideo():
                           enable_segmentation=True,
                           min_detection_confidence=0.5) as pose:
 
-            results = pose.process(cv2.cvtColor(video_frame, cv2.COLOR_BGR2RGB))
+            results = pose.process(cv2.cvtColor(
+                video_frame, cv2.COLOR_BGR2RGB))
 
             cv2.imwrite('./tmp/frame_{}.png'.format(frame_index), video_frame)
 
-            self.plot_world_pose(results.pose_world_landmarks.landmark, os.path.join('tmp', 'pose-world-{}.png'.format(frame_index)))
-            self.plot_viewport_pose(results.pose_landmarks.landmark, os.path.join('tmp', 'pose-viewport-{}.png'.format(frame_index)))
+            self.plot_world_pose(results.pose_world_landmarks.landmark, os.path.join(
+                'tmp', 'pose-world-{}.png'.format(frame_index)))
+            self.plot_viewport_pose(results.pose_landmarks.landmark, os.path.join(
+                'tmp', 'pose-viewport-{}.png'.format(frame_index)))
 
     def plot_world_pose(self, pose_landmark, filename='tmp-world.png'):
 
@@ -394,7 +409,8 @@ class PreprocessVideo():
         ax.scatter(xdata, ydata, zdata)
 
         for anno in annotations:
-            ax.annotate3D(anno[0], tuple(*anno[1:]), xytext=(3, 3), textcoords='offset points')
+            ax.annotate3D(anno[0], tuple(*anno[1:]),
+                          xytext=(3, 3), textcoords='offset points')
 
         for arro in arrows:
             ax.arrow3D(*arro)
@@ -405,6 +421,8 @@ class PreprocessVideo():
         ax.set_ylim(plotting_range)
         ax.set_zlim(plotting_range)
 
+        ax.invert_xaxis()
+
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
@@ -413,10 +431,10 @@ class PreprocessVideo():
 
         plt.savefig(filename)
 
-    
     def plot_viewport_pose(self, pose_world_landmark, filename='tmp-viewport.png'):
 
-        xdata, ydata, zdata = self.read_points_from_landmarks(pose_world_landmark)
+        xdata, ydata, zdata = self.read_points_from_landmarks(
+            pose_world_landmark)
         annotations = self.read_annotations_from_landmarks(pose_world_landmark)
         arrows = self.read_arrows_from_landmarks(pose_world_landmark)
 
@@ -427,23 +445,26 @@ class PreprocessVideo():
         ax.scatter(xdata, ydata, zdata)
 
         for anno in annotations:
-            ax.annotate3D(anno[0], tuple(*anno[1:]), xytext=(3, 3), textcoords='offset points')
+            ax.annotate3D(anno[0], tuple(*anno[1:]),
+                          xytext=(3, 3), textcoords='offset points')
 
         for arro in arrows:
             ax.arrow3D(*arro)
+
+        ax.invert_xaxis()
 
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
 
         ax.view_init(elev=90, azim=90)
-        
+
         plt.savefig(filename)
 
 
 if __name__ == "__main__":
 
-    video_file = os.path.join(MEDIA_DIR, 'yoga.mp4')
+    video_file = os.path.join(MEDIA_DIR, '6packs.mp4')
 
     processer = PreprocessVideo(video_file)
 
