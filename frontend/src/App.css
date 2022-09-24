@@ -6,8 +6,12 @@
   height: 813px;
 } */
 
-.homeMap {
-  position: relative;
-  width: 100%;
-  height: 100vh;
+canvas {
+  transform: scaleX(-1);
+}
+
+video {
+  /* -webkit-transform: scaleX(-1); */
+  /* transform: scaleX(-1); */
+  display: none
 }
