@@ -1,3 +1,17 @@
+> To collect data from multiple children, or to have two child components communicate with each other, you need to declare the shared state in their parent component instead. The parent component can pass the state back down to the children by using props; this keeps the child components in sync with each other and with the parent component.
+
+---
+
+Strict mode can’t automatically detect side effects for you, but it can help you spot them by making them a little more deterministic. This is done by intentionally double-invoking the following functions:
+
+- Class component `constructor`, `render`, and `shouldComponentUpdate` methods
+- Class component static `getDerivedStateFromProps` method
+- Function component bodies
+- State updater functions (the first argument to setState)
+- Functions passed to `useState`, `useMemo`, or `useReducer`
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
