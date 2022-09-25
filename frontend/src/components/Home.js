@@ -30,6 +30,17 @@ export default class Home extends React.Component {
 
 		this.startCamera = this.startCamera.bind(this);
 		this.stopCamera = this.stopCamera.bind(this);
+
+		const ws = new WebSocket("ws://localhost:8080");
+
+		ws.addEventListener("open", () => {
+			console.log("We are connected");
+			ws.send("How are you?");
+		});
+
+		ws.addEventListener("message", (event) => {
+			console.log(event.data);
+		});
 	}
 
 	componentDidMount() {
