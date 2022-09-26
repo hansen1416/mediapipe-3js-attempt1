@@ -28,21 +28,21 @@ export default class Home extends React.Component {
 		this.videoRef = React.createRef();
 		this.canvasRef = React.createRef();
 
-		this.animation_counter = 1
+		this.animation_counter = 1;
 
 		this.startCamera = this.startCamera.bind(this);
 		this.stopCamera = this.stopCamera.bind(this);
 		this.onPoseResults = this.onPoseResults.bind(this);
+	}
 
+	componentDidMount() {
 		if (this.ws === undefined) {
-
 			this.ws = new WebSocket(process.env.REACT_APP_WS_ENDPOINT);
 
 			// Change binary type from "blob" to "arraybuffer"
-			this.ws.binaryType = "arraybuffer";
+			// this.ws.binaryType = "arraybuffer";
 
 			this.ws.addEventListener("open", () => {
-				console.log("We are connected");
 				this.ws.send("How are you?");
 			});
 
@@ -50,10 +50,6 @@ export default class Home extends React.Component {
 				console.log(event.data);
 			});
 		}
-	}
-
-	componentDidMount() {
-		// console.log(this);
 	}
 
 	startCamera() {
@@ -83,8 +79,8 @@ export default class Home extends React.Component {
 			pose.setOptions({
 				modelComplexity: 1,
 				smoothLandmarks: true,
-				enableSegmentation: true,
-				smoothSegmentation: true,
+				enableSegmentation: false,
+				smoothSegmentation: false,
 				minDetectionConfidence: 0.5,
 				minTrackingConfidence: 0.5,
 			});
@@ -103,10 +99,10 @@ export default class Home extends React.Component {
 					if (this.animation_counter % 100 == 0) {
 						await pose.send({ image: this.videoRef.current });
 
-						this.animation_counter = 0
+						this.animation_counter = 0;
 					}
 
-					this.animation_counter += 1
+					this.animation_counter += 1;
 				},
 				width: 640,
 				height: 360,
@@ -123,15 +119,17 @@ export default class Home extends React.Component {
 	onPoseResults(results) {
 		const wlm = results.poseWorldLandmarks;
 
-		console.log(wlm)
+		console.log(wlm);
 
-		let data = wlm.map(x => Object.values(x))
+		let data = wlm.map((x) => Object.values(x));
 
-		data = data.reduce((prev, next) => {return prev.concat(next)})
+		data = data.reduce((prev, next) => {
+			return prev.concat(next);
+		});
 
 		data = new Float32Array(data);
 
-		console.log(data)
+		console.log(data);
 
 		this.ws.send(data);
 	}
