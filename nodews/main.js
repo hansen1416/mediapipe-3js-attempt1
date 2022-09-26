@@ -4,12 +4,20 @@ const WebSocketServer = require("ws");
 // Creating a new websocket server
 const wss = new WebSocketServer.Server({ port: 8080 });
 
+
 // Creating connection using websocket
 wss.on("connection", (ws) => {
 	console.log("new client connected");
 	// sending message
 	ws.on("message", (data) => {
-		console.log(`Client has sent us: ${data}`);
+		console.log("got message");
+
+		let d = new Float32Array(data)
+
+		// console.log(Object.keys(data), Object.values(data));
+		// console.log(Object.getOwnPropertyNames(data));
+		console.log(data);
+		console.log(d);
 	});
 	// handling what to do when clients disconnects from server
 	ws.on("close", () => {

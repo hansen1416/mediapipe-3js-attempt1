@@ -28,19 +28,28 @@ export default class Home extends React.Component {
 		this.videoRef = React.createRef();
 		this.canvasRef = React.createRef();
 
+		this.animation_counter = 1
+
 		this.startCamera = this.startCamera.bind(this);
 		this.stopCamera = this.stopCamera.bind(this);
+		this.onPoseResults = this.onPoseResults.bind(this);
 
-		const ws = new WebSocket("ws://localhost:8080");
+		if (this.ws === undefined) {
 
-		ws.addEventListener("open", () => {
-			console.log("We are connected");
-			ws.send("How are you?");
-		});
+			this.ws = new WebSocket(process.env.REACT_APP_WS_ENDPOINT);
 
-		ws.addEventListener("message", (event) => {
-			console.log(event.data);
-		});
+			// Change binary type from "blob" to "arraybuffer"
+			this.ws.binaryType = "arraybuffer";
+
+			this.ws.addEventListener("open", () => {
+				console.log("We are connected");
+				this.ws.send("How are you?");
+			});
+
+			this.ws.addEventListener("message", (event) => {
+				console.log(event.data);
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -82,7 +91,7 @@ export default class Home extends React.Component {
 			pose.onResults(this.onPoseResults);
 
 			pose.initialize().then(() => {
-				console.log("loaded pose model");
+				console.info("Loaded pose model");
 			});
 
 			const ctx = this.canvasRef.current.getContext("2d");
@@ -91,9 +100,13 @@ export default class Home extends React.Component {
 				onFrame: async () => {
 					this.onFrame(this.videoRef.current, ctx);
 
-					await pose.send({ image: this.videoRef.current });
+					if (this.animation_counter % 100 == 0) {
+						await pose.send({ image: this.videoRef.current });
 
-					// console.log(pose);
+						this.animation_counter = 0
+					}
+
+					this.animation_counter += 1
 				},
 				width: 640,
 				height: 360,
@@ -110,12 +123,24 @@ export default class Home extends React.Component {
 	onPoseResults(results) {
 		const wlm = results.poseWorldLandmarks;
 
-		// console.log("result is", wlm);
+		console.log(wlm)
+
+		let data = wlm.map(x => Object.values(x))
+
+		data = data.reduce((prev, next) => {return prev.concat(next)})
+
+		data = new Float32Array(data);
+
+		console.log(data)
+
+		this.ws.send(data);
 	}
 
 	stopCamera() {
 		if (this.camera) {
 			this.camera.stop();
+
+			console.info("Camera stopped");
 		}
 	}
 
