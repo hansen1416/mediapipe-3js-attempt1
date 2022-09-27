@@ -7,46 +7,44 @@
 
 class Queue {
 	constructor() {
-		this.stack1 = []
-		this.stack2 = []
+		this.stack1 = [];
+		this.stack2 = [];
 	}
 
 	add(item) {
-		this.stack1.push(item)
+		this.stack1.push(item);
 	}
 
 	pop() {
-		
 		if (!this.stack1.length && !this.stack2.length) {
-			return
+			return;
 		}
-		// check stack2 first 
+		// check stack2 first
 		if (this.stack2.length) {
-			return this.stack2.pop()
+			return this.stack2.pop();
 		}
 
 		while (this.stack1.length) {
-			this.stack2.push(this.stack1.pop())
+			this.stack2.push(this.stack1.pop());
 		}
 
-		return this.stack2.pop()
+		return this.stack2.pop();
 	}
 
 	peek() {
-
 		if (!this.stack1.length && !this.stack2.length) {
-			return
+			return;
 		}
 
 		if (this.stack2.length) {
-			return this.stack2[this.stack2.length-1]
+			return this.stack2[this.stack2.length - 1];
 		}
 
-		return this.stack1[0]
+		return this.stack1[0];
 	}
 
 	get length() {
-		return this.stack1.length + this.stack2.length
+		return this.stack1.length + this.stack2.length;
 	}
 }
 
@@ -63,11 +61,10 @@ const task_expire = 5;
 
 async function process_msg(tasks, processed_ts) {
 	return await new Promise((resolve, reject) => {
+		const task = tasks.pop();
 
-		const task = tasks.pop()
-
-		const task_time = task[0] 
-		let binary_arr = task[1] 
+		const task_time = task[0];
+		let binary_arr = task[1];
 
 		for (let i = 0; i < 3000000000; i++) {
 			let a = 0;
@@ -84,14 +81,12 @@ async function process_msg(tasks, processed_ts) {
 
 		// todo, check a task queue. find the latest job, abondon previous jobs
 
-
 		if (processed_ts.ts - task_time > task_expire) {
-			
-			console.log('rejected')
+			console.log("rejected");
 
-			reject(task_time)
+			reject(task_time);
 
-			console.log('after reject?')
+			console.log("after reject?");
 		}
 
 		const arr = [];
@@ -100,24 +95,20 @@ async function process_msg(tasks, processed_ts) {
 			arr.push(binary_arr.readFloatLE(i));
 		}
 
-		
 		if (processed_ts.ts - task_time > task_expire) {
+			console.log("rejected");
 
-			console.log('rejected')
+			reject(task_time);
 
-			reject(task_time)
-
-			console.log('after reject?')
+			console.log("after reject?");
 		}
 
 		const arrnj = nj.array(arr, (dtype = nj.float32));
 
-
-
-console.log(processed_ts.ts, task_time, task_expire)
+		console.log(processed_ts.ts, task_time, task_expire);
 		// todo, compare different poses
 
-		console.log('process finished at: ' + task_time);
+		console.log("process finished at: " + task_time);
 		resolve("message processed at " + task_time);
 	});
 }
@@ -134,29 +125,28 @@ function start_wss() {
 
 		// connections[random_hash] = ws;
 
-		const task_queue = new Queue()
-		const current_task_timestamp = {}
+		const task_queue = new Queue();
+		const current_task_timestamp = {};
 
 		// sending message
 		ws.on("message", (data, isBinary) => {
 			// console.log("got message");
 
 			if (isBinary) {
+				const ts = Date.now();
 
-				const ts = Date.now()
-
-				task_queue.add([ts, data])
-				current_task_timestamp.ts = ts
+				task_queue.add([ts, data]);
+				current_task_timestamp.ts = ts;
 
 				process_msg(task_queue, current_task_timestamp);
-					// .then((res) => {
-					// 	ws.send("message from server: " + res);
-					// })
-					// .catch((err) => {
-					// 	console.error("task abondoned at: " + err);
-					// });
+				// .then((res) => {
+				// 	ws.send("message from server: " + res);
+				// })
+				// .catch((err) => {
+				// 	console.error("task abondoned at: " + err);
+				// });
 
-				console.log('after process_msg')
+				console.log("after process_msg");
 			} else {
 				console.log("None binary message:", data.toString(encoding));
 			}
@@ -186,17 +176,83 @@ function start_wss() {
 	return wss;
 }
 
-start_wss();
+// start_wss();
 
-// // use fs.watch() method to look for changes
-// fs.watchFile("./main.js", () => {
-// 	// some good stuff here! 😃
-// 	try {
-// 		wss.close()
+// async function sososo() {
+// 	return new Promise((resolve, reject) => {
+// 		console.log("before loop");
 
-// 	} catch (e) {
-// 		console.log("File watcher, wss not started")
-// 	}
+// 		for (let i = 0; i < 3000000000; i += 4) {}
 
-// 	wss = start_wss();
-// });
+// 		setTimeout(() => {}, 2000);
+
+// 		console.log("after loop");
+
+// 		resolve(true);
+// 	});
+// }
+
+// console.log("before promise");
+
+// sososo()
+// 	.then((res) => {
+// 		console.log("then", res);
+// 	})
+// 	.catch((err) => {
+// 		console.log("error", err);
+// 	});
+
+// console.log("after promise");
+
+// const workerpool = require("workerpool");
+
+// // create a worker pool using an external worker script
+// const pool = workerpool.pool(__dirname + "/worker.js");
+
+// for (let i = 0; i < 30; i++) {
+// 	// offload execution of a function to the worker pool
+// 	pool.exec("process_msg", [3, 4])
+// 		.then(function (result) {
+// 			console.log("result", result); // outputs 7
+// 		})
+// 		.catch(function (err) {
+// 			console.error(err);
+// 		})
+// 		.then(function () {
+// 			pool.terminate(); // terminate all workers when done
+// 		});
+// }
+// // console.log(pool);
+
+const { StaticPool } = require("node-worker-threads-pool");
+
+const pool = new StaticPool({
+	size: 4,
+	task: __dirname + "/worker.js",
+	workerData: "workerData!",
+});
+
+let counter = 0;
+
+for (let i = 0; i < 20; i++) {
+	const num = [123123123];
+
+	// This will choose one idle worker in the pool
+	// to execute your heavy task without blocking
+	// the main thread!
+	pool.exec(num).then((res) => {
+		console.log("worker done", res);
+
+		counter += 1;
+
+		console.log(counter);
+
+		if (counter == 20) {
+			pool.destroy();
+		}
+	});
+}
+
+//
+
+console.log("loop done");
