@@ -96,7 +96,7 @@ export default class Home extends React.Component {
 				onFrame: async () => {
 					this.onFrame(this.videoRef.current, ctx);
 
-					if (this.animation_counter % 100 == 0) {
+					if (this.animation_counter % 1 == 0) {
 						await pose.send({ image: this.videoRef.current });
 
 						this.animation_counter = 0;
@@ -129,7 +129,7 @@ export default class Home extends React.Component {
 
 		data = new Float32Array(data);
 
-		console.log(data);
+		// console.log(data);
 
 		this.ws.send(data);
 	}

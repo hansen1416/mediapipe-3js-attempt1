@@ -1,8 +1,53 @@
-function random_str() {
-	return (
-		Math.random().toString(36).slice(2) +
-		Math.random().toString(36).slice(2)
-	);
+// function random_str() {
+// 	return (
+// 		Math.random().toString(36).slice(2) +
+// 		Math.random().toString(36).slice(2)
+// 	);
+// }
+
+class Queue {
+	constructor() {
+		this.stack1 = []
+		this.stack2 = []
+	}
+
+	add(item) {
+		this.stack1.push(item)
+	}
+
+	pop() {
+		
+		if (!this.stack1.length && !this.stack2.length) {
+			return
+		}
+		// check stack2 first 
+		if (this.stack2.length) {
+			return this.stack2.pop()
+		}
+
+		while (this.stack1.length) {
+			this.stack2.push(this.stack1.pop())
+		}
+
+		return this.stack2.pop()
+	}
+
+	peek() {
+
+		if (!this.stack1.length && !this.stack2.length) {
+			return
+		}
+
+		if (this.stack2.length) {
+			return this.stack2[this.stack2.length-1]
+		}
+
+		return this.stack1[0]
+	}
+
+	get length() {
+		return this.stack1.length + this.stack2.length
+	}
 }
 
 // Importing the required modules
@@ -14,8 +59,20 @@ const nj = require("numjs");
 // const connections = {};
 const encoding = "utf8";
 
-function process_msg(binary_arr) {
-	return new Promise((resolve, reject) => {
+const task_expire = 5;
+
+async function process_msg(tasks, processed_ts) {
+	return await new Promise((resolve, reject) => {
+
+		const task = tasks.pop()
+
+		const task_time = task[0] 
+		let binary_arr = task[1] 
+
+		for (let i = 0; i < 3000000000; i++) {
+			let a = 0;
+		}
+
 		// this line might be unneccessary
 		binary_arr = Buffer.from(binary_arr, "utf8");
 
@@ -27,18 +84,41 @@ function process_msg(binary_arr) {
 
 		// todo, check a task queue. find the latest job, abondon previous jobs
 
+
+		if (processed_ts.ts - task_time > task_expire) {
+			
+			console.log('rejected')
+
+			reject(task_time)
+
+			console.log('after reject?')
+		}
+
 		const arr = [];
 
 		for (let i = 0; i < binary_arr.length; i += 4) {
 			arr.push(binary_arr.readFloatLE(i));
 		}
 
+		
+		if (processed_ts.ts - task_time > task_expire) {
+
+			console.log('rejected')
+
+			reject(task_time)
+
+			console.log('after reject?')
+		}
+
 		const arrnj = nj.array(arr, (dtype = nj.float32));
 
+
+
+console.log(processed_ts.ts, task_time, task_expire)
 		// todo, compare different poses
 
-		console.log(arrnj.get(1));
-		resolve("message processed");
+		console.log('process finished at: ' + task_time);
+		resolve("message processed at " + task_time);
 	});
 }
 
@@ -54,18 +134,29 @@ function start_wss() {
 
 		// connections[random_hash] = ws;
 
+		const task_queue = new Queue()
+		const current_task_timestamp = {}
+
 		// sending message
 		ws.on("message", (data, isBinary) => {
 			// console.log("got message");
 
 			if (isBinary) {
-				process_msg(data)
-					.then((res) => {
-						ws.send("message from server: " + res);
-					})
-					.catch((err) => {
-						console.error(err);
-					});
+
+				const ts = Date.now()
+
+				task_queue.add([ts, data])
+				current_task_timestamp.ts = ts
+
+				process_msg(task_queue, current_task_timestamp);
+					// .then((res) => {
+					// 	ws.send("message from server: " + res);
+					// })
+					// .catch((err) => {
+					// 	console.error("task abondoned at: " + err);
+					// });
+
+				console.log('after process_msg')
 			} else {
 				console.log("None binary message:", data.toString(encoding));
 			}
