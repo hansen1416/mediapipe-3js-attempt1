@@ -4,18 +4,19 @@ const nj = require("numjs");
 
 const toss_task = 5;
 
-function process_msg(tasks, processed_ts) {
+function process_msg(binary_arr) {
+	// console.log(tasks);
 
-	console.log(tasks)
+	// const task = tasks.pop();
 
-	const task = tasks.pop();
+	// const task_time = task[0];
+	// let binary_arr = task[1];
 
-	const task_time = task[0];
-	let binary_arr = task[1];
+	console.log(binary_arr);
 
-	console.log(binary_arr)
+	for (let i = 0; i < 10000000; i++) {}
 
-	return true
+	return true;
 
 	// this line might be unneccessary
 	// binary_arr = Buffer.from(binary_arr, "utf8");
@@ -51,8 +52,7 @@ function process_msg(tasks, processed_ts) {
 
 	console.log("process finished at: " + task_time);
 
-	return true
-
+	return true;
 }
 
 // Main thread will pass the data you need
@@ -61,5 +61,5 @@ parentPort.on("message", (msg) => {
 	const result = process_msg(msg);
 
 	// return the result to main thread.
-	parentPort.postMessage(result);
+	parentPort.postMessage("result message" + result);
 });

@@ -1,4 +1,4 @@
-const { StaticPool } = require("node-worker-threads-pool");
+const { Worker } = require("worker_threads");
 
 class Queue {
 	constructor() {
@@ -46,7 +46,6 @@ class Queue {
 // Importing the required modules
 const WebSocketServer = require("ws");
 
-
 // Creating a new websocket server
 const wss = new WebSocketServer.Server({ port: 8080 });
 
@@ -61,18 +60,24 @@ wss.on("connection", (ws) => {
 	const task_queue = new Queue();
 	const current_task_timestamp = {};
 
-	
-	const pool = new StaticPool({
-		size: 100,
-		task: __dirname + "/worker.js",
+	const workers = [
+		new Worker(__dirname + "/worker.js"),
+		new Worker(__dirname + "/worker.js"),
+	];
+
+	workers[1].on("message", (res) => {
+		console.log("onmsg", res);
 	});
+
+	console.log(workers[1].threadId);
+
+	workers[1].postMessage(["dasdasd"]);
 
 	// sending message
 	ws.on("message", (data, isBinary) => {
 		// console.log("got message");
 
 		if (isBinary) {
-
 			const ts = Date.now();
 
 			task_queue.add([ts, data]);
@@ -81,17 +86,24 @@ wss.on("connection", (ws) => {
 			// This will choose one idle worker in the pool
 			// to execute your heavy task without blocking
 			// the main thread!
-			pool.createExecutor().setTimeout(1000).exec(task_queue, current_task_timestamp).then((res) => {
-				console.log("worker done: ", res, Date.now());
-			}).catch((err) => {
-				console.log("worker error: ", err)
-			});
+			// pool.createExecutor()
+			// 	.setTimeout(1000)
+			// 	.exec(data)
+			// 	.then((res) => {
+			// 		console.log("worker done: ", res, Date.now());
+			// 	})
+			// 	.catch((err) => {
+			// 		console.log("worker error: ", err);
+			// 	});
 
-			console.log("after process_msg");
+			// console.log("after process_msg");
 		} else {
 			console.log("None binary message:", data.toString("utf8"));
 		}
 
+		// workers[0].getHeapSnapshot().then((ss) => {
+		// 	console.log("sss", ss);
+		// });
 	});
 	// handling what to do when clients disconnects from server
 	ws.on("close", () => {
@@ -101,12 +113,31 @@ wss.on("connection", (ws) => {
 
 		// console.log(connections);
 
-		pool.destroy()
+		// pool.destroy();
 	});
 	// handling client connection error
 	ws.onerror = function () {
 		console.log("Some Error occurred");
-
-		pool.destroy()
 	};
 });
+
+// const { StaticPool } = require("node-worker-threads-pool");
+
+// let pool = new StaticPool({
+// 	size: 4,
+// 	task: __dirname + "/worker.js",
+// });
+
+// for (let i = 0; i < 30; i++) {
+// 	let tot = i % 5 ? 1000 : 1;
+
+// 	pool.createExecutor()
+// 		.setTimeout(tot)
+// 		.exec([])
+// 		.then((res) => {
+// 			console.log("worker message: ", res, Date.now());
+// 		})
+// 		.catch((err) => {
+// 			console.log("worker error: ", err);
+// 		});
+// }
