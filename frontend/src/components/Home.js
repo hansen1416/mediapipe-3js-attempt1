@@ -96,7 +96,7 @@ export default class Home extends React.Component {
 				onFrame: async () => {
 					this.onFrame(this.videoRef.current, ctx);
 
-					if (this.animation_counter % 1 == 0) {
+					if (this.animation_counter % 100 == 0) {
 						await pose.send({ image: this.videoRef.current });
 
 						this.animation_counter = 0;
@@ -119,7 +119,9 @@ export default class Home extends React.Component {
 	onPoseResults(results) {
 		const wlm = results.poseWorldLandmarks;
 
-		console.log(wlm);
+		if (!wlm) {
+			return
+		}
 
 		let data = wlm.map((x) => Object.values(x));
 
