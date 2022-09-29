@@ -6,7 +6,6 @@ const wss = new WebSocketServer.Server({ port: 8080 });
 
 // Creating connection using websocket
 wss.on("connection", (ws) => {
-
 	console.log("new client connected");
 
 	const workers_timestamp = {};
@@ -18,61 +17,72 @@ wss.on("connection", (ws) => {
 		const w = new Worker(__dirname + "/worker.js");
 
 		w.on("message", (msg) => {
-			console.log("message from worker, free worker. ", w.threadId, Date.now());
-			delete workers_timestamp[w.threadId]
-	
+			console.log(
+				"message from worker, free worker. ",
+				w.threadId,
+				Date.now()
+			);
+			delete workers_timestamp[w.threadId];
+
 			// todo, send message back to frontend
 		});
 
-		workers[w.threadId] = w
+		workers[w.threadId] = w;
 
-		num_wokers += 1
+		num_wokers += 1;
 
-		return w.threadId
+		return w.threadId;
 	}
 
 	// create one worker at the beginning
-	create_worker()
+	create_worker();
 
 	// sending message
 	ws.on("message", (data, isBinary) => {
-
 		if (isBinary) {
 			// const ts = Date.now();
 
-			let need_more_worker = true
+			let need_more_worker = true;
 
 			for (let worker_tid in workers) {
 				if (!(worker_tid in workers_timestamp)) {
 					// worker of thread id is free
-					
-					workers_timestamp[worker_tid] = Date.now()
 
-					console.log("send message to worker ", worker_tid, Date.now())
-					
-					workers[worker_tid].postMessage(data)
+					workers_timestamp[worker_tid] = Date.now();
 
-					need_more_worker = false
+					console.log(
+						"send message to worker ",
+						worker_tid,
+						Date.now()
+					);
 
-					break
+					workers[worker_tid].postMessage(data);
+
+					need_more_worker = false;
+
+					break;
 				}
 			}
 
 			if (need_more_worker) {
 				// maximum 4 workers
 				if (num_wokers < 4) {
-					const new_worker_tid = create_worker()
+					const new_worker_tid = create_worker();
 
-					workers_timestamp[new_worker_tid] = Date.now()
+					workers_timestamp[new_worker_tid] = Date.now();
 
-					console.log("add new worker: ", new_worker_tid, 'total: ', Object.keys(workers).length)
+					console.log(
+						"add new worker: ",
+						new_worker_tid,
+						"total: ",
+						Object.keys(workers).length
+					);
 
-					workers[new_worker_tid].postMessage(data)
+					workers[new_worker_tid].postMessage(data);
 				} else {
 					console.log("lost message due to no worker", data);
 				}
 			}
-
 		} else {
 			console.log("None binary message:", data.toString("utf8"));
 		}
@@ -80,9 +90,8 @@ wss.on("connection", (ws) => {
 
 	// handling what to do when clients disconnects from server
 	ws.on("close", () => {
-
 		for (let tid in workers) {
-			workers[tid].terminate()
+			workers[tid].terminate();
 		}
 
 		console.log("the client has closed, lost # data");
