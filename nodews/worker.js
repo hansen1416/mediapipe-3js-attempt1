@@ -13,16 +13,15 @@ function process_msg(binary_arr) {
 
 	binary_arr = Buffer.from(binary_arr, 'utf8')
 
-	console.log(binary_arr)
 	const arr = [];
 
 	for (let i = 0; i < binary_arr.length; i += 4) {
 		arr.push(binary_arr.readFloatLE(i));
 	}
 
-	const arrnj = nj.array(arr, (dtype = nj.float32));
+	const arrnj = nj.array(arr, dtype = nj.float32).reshape(-1, 4);
 
-	console.log(arrnj);
+	console.log(arrnj.get(0, 0));
 
 	// todo, compare different poses
 

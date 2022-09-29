@@ -103,7 +103,7 @@ export default class Home extends React.Component {
 				onFrame: async () => {
 					this.onFrame(this.videoRef.current, ctx);
 
-					if (this.animation_counter % 100 == 0) {
+					if (this.animation_counter % 10 == 0) {
 						await pose.send({ image: this.videoRef.current });
 
 						this.animation_counter = 0;
@@ -130,8 +130,11 @@ export default class Home extends React.Component {
 			return
 		}
 
+		console.log(wlm)
+
 		let data = wlm.map((x) => Object.values(x));
 
+		// flatten the array
 		data = data.reduce((prev, next) => {
 			return prev.concat(next);
 		});
