@@ -4,53 +4,29 @@ const nj = require("numjs");
 
 const toss_task = 5;
 
+/**
+ * 
+ * @param {Float32Array} binary_arr 
+ * @returns 
+ */
 function process_msg(binary_arr) {
-	// console.log(tasks);
 
-	// const task = tasks.pop();
+	binary_arr = Buffer.from(binary_arr, 'utf8')
 
-	// const task_time = task[0];
-	// let binary_arr = task[1];
-
-	console.log('worker received data:', binary_arr);
-
-	for (let i = 0; i < 30000000; i++) {}
-
-	return true;
-
-	// this line might be unneccessary
-	// binary_arr = Buffer.from(binary_arr, "utf8");
-
-	// console.log(
-	// 	Buffer.byteLength(binary_arr, encoding),
-	// 	Buffer.isEncoding(encoding),
-	// 	binary_arr.length
-	// );
-
-	// todo, check a task queue. find the latest job, abondon previous jobs
-
-	if (processed_ts.ts - task_time > toss_task) {
-		console.log("rejected");
-	}
-
+	console.log(binary_arr)
 	const arr = [];
 
 	for (let i = 0; i < binary_arr.length; i += 4) {
 		arr.push(binary_arr.readFloatLE(i));
 	}
 
-	if (processed_ts.ts - task_time > toss_task) {
-		console.log("rejected");
-
-		console.log("after reject?");
-	}
-
 	const arrnj = nj.array(arr, (dtype = nj.float32));
 
-	console.log(processed_ts.ts, task_time, toss_task);
+	console.log(arrnj);
+
 	// todo, compare different poses
 
-	console.log("process finished at: " + task_time);
+	console.log("process finished at: ", Date.now());
 
 	return true;
 }
@@ -58,8 +34,16 @@ function process_msg(binary_arr) {
 // Main thread will pass the data you need
 // through this event listener.
 parentPort.on("message", (msg) => {
-	const result = process_msg(msg);
+	try {
+		const result = process_msg(msg);
 
-	// return the result to main thread.
-	parentPort.postMessage("result message:" + result);
+		// return the result to main thread.
+		parentPort.postMessage("result message:" + result);
+	} catch (e) {
+		console.log("worker error", e);
+
+		parentPort.postMessage("still inform main thread to free the worker");
+	}
+
+
 });

@@ -42,20 +42,22 @@ wss.on("connection", (ws) => {
 
 			let need_more_worker = true
 
-			for (let tid in workers) {
-				if (!(tid in workers_timestamp)) {
+			for (let worker_tid in workers) {
+				if (!(worker_tid in workers_timestamp)) {
 					// worker of thread id is free
 					
-					workers_timestamp[tid] = Date.now()
+					workers_timestamp[worker_tid] = Date.now()
+
+					console.log("send message to worker at:", Date.now())
 					
-					workers[tid].postMessage(data)
+					workers[worker_tid].postMessage(data)
 
 					need_more_worker = false
 				}
 			}
 
 			if (need_more_worker) {
-
+				// maximum 4 workers
 				if (num_wokers < 4) {
 					const new_worker_tid = create_worker()
 
