@@ -167,7 +167,7 @@ export default class Home extends React.Component {
 		this.animationcounter = 0
 		this.ws.send('stopped pesudo data');
 
-		this.ws.close()
+		// this.ws.close()
 	}
 
 	render() {

@@ -18,7 +18,7 @@ wss.on("connection", (ws) => {
 		const w = new Worker(__dirname + "/worker.js");
 
 		w.on("message", (msg) => {
-			// console.log("message from worker, free worker. ", w.threadId);
+			console.log("message from worker, free worker. ", w.threadId, Date.now());
 			delete workers_timestamp[w.threadId]
 	
 			// todo, send message back to frontend
@@ -48,11 +48,13 @@ wss.on("connection", (ws) => {
 					
 					workers_timestamp[worker_tid] = Date.now()
 
-					console.log("send message to worker at:", Date.now())
+					console.log("send message to worker ", worker_tid, Date.now())
 					
 					workers[worker_tid].postMessage(data)
 
 					need_more_worker = false
+
+					break
 				}
 			}
 
@@ -83,7 +85,7 @@ wss.on("connection", (ws) => {
 			workers[tid].terminate()
 		}
 
-		console.log("the client has closed, lost # data", losted_data);
+		console.log("the client has closed, lost # data");
 	});
 
 	// handling client connection error
