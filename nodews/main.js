@@ -1,49 +1,4 @@
 const { Worker } = require("worker_threads");
-
-class Queue {
-	constructor() {
-		this.stack1 = [];
-		this.stack2 = [];
-	}
-
-	add(item) {
-		this.stack1.push(item);
-	}
-
-	pop() {
-		if (!this.stack1.length && !this.stack2.length) {
-			return;
-		}
-		// check stack2 first
-		if (this.stack2.length) {
-			return this.stack2.pop();
-		}
-
-		while (this.stack1.length) {
-			this.stack2.push(this.stack1.pop());
-		}
-
-		return this.stack2.pop();
-	}
-
-	peek() {
-		if (!this.stack1.length && !this.stack2.length) {
-			return;
-		}
-
-		if (this.stack2.length) {
-			return this.stack2[this.stack2.length - 1];
-		}
-
-		return this.stack1[0];
-	}
-
-	get length() {
-		return this.stack1.length + this.stack2.length;
-	}
-}
-
-// Importing the required modules
 const WebSocketServer = require("ws");
 
 // Creating a new websocket server
@@ -51,93 +6,86 @@ const wss = new WebSocketServer.Server({ port: 8080 });
 
 // Creating connection using websocket
 wss.on("connection", (ws) => {
+
 	console.log("new client connected");
 
-	// const random_hash = random_str();
+	const workers_timestamp = {};
+	const workers = {};
 
-	// connections[random_hash] = ws;
+	let num_wokers = 0;
 
-	const task_queue = new Queue();
-	const current_task_timestamp = {};
+	function create_worker() {
+		const w = new Worker(__dirname + "/worker.js");
 
-	const workers = [
-		new Worker(__dirname + "/worker.js"),
-		new Worker(__dirname + "/worker.js"),
-	];
+		w.on("message", (msg) => {
+			// console.log("message from worker, free worker. ", w.threadId);
+			delete workers_timestamp[w.threadId]
+	
+			// todo, send message back to frontend
+		});
 
-	workers[1].on("message", (res) => {
-		console.log("onmsg", res);
-	});
+		workers[w.threadId] = w
 
-	console.log(workers[1].threadId);
+		num_wokers += 1
 
-	workers[1].postMessage(["dasdasd"]);
+		return w.threadId
+	}
+
+	// create one worker at the beginning
+	create_worker()
 
 	// sending message
 	ws.on("message", (data, isBinary) => {
-		// console.log("got message");
 
 		if (isBinary) {
-			const ts = Date.now();
+			// const ts = Date.now();
 
-			task_queue.add([ts, data]);
-			current_task_timestamp.ts = ts;
+			let need_more_worker = true
 
-			// This will choose one idle worker in the pool
-			// to execute your heavy task without blocking
-			// the main thread!
-			// pool.createExecutor()
-			// 	.setTimeout(1000)
-			// 	.exec(data)
-			// 	.then((res) => {
-			// 		console.log("worker done: ", res, Date.now());
-			// 	})
-			// 	.catch((err) => {
-			// 		console.log("worker error: ", err);
-			// 	});
+			for (let tid in workers) {
+				if (!(tid in workers_timestamp)) {
+					// worker of thread id is free
+					
+					workers_timestamp[tid] = Date.now()
+					
+					workers[tid].postMessage(data)
 
-			// console.log("after process_msg");
+					need_more_worker = false
+				}
+			}
+
+			if (need_more_worker) {
+
+				if (num_wokers < 4) {
+					const new_worker_tid = create_worker()
+
+					workers_timestamp[new_worker_tid] = Date.now()
+
+					console.log("add new worker: ", new_worker_tid, 'total: ', Object.keys(workers).length)
+
+					workers[new_worker_tid].postMessage(data)
+				} else {
+					console.log("lost message due to no worker", data);
+				}
+			}
+
 		} else {
 			console.log("None binary message:", data.toString("utf8"));
 		}
-
-		// workers[0].getHeapSnapshot().then((ss) => {
-		// 	console.log("sss", ss);
-		// });
 	});
+
 	// handling what to do when clients disconnects from server
 	ws.on("close", () => {
-		console.log("the client has closed");
 
-		// delete connections[random_hash];
+		for (let tid in workers) {
+			workers[tid].terminate()
+		}
 
-		// console.log(connections);
-
-		// pool.destroy();
+		console.log("the client has closed, lost # data", losted_data);
 	});
+
 	// handling client connection error
 	ws.onerror = function () {
-		console.log("Some Error occurred");
+		console.log("Websocket Error occurred");
 	};
 });
-
-// const { StaticPool } = require("node-worker-threads-pool");
-
-// let pool = new StaticPool({
-// 	size: 4,
-// 	task: __dirname + "/worker.js",
-// });
-
-// for (let i = 0; i < 30; i++) {
-// 	let tot = i % 5 ? 1000 : 1;
-
-// 	pool.createExecutor()
-// 		.setTimeout(tot)
-// 		.exec([])
-// 		.then((res) => {
-// 			console.log("worker message: ", res, Date.now());
-// 		})
-// 		.catch((err) => {
-// 			console.log("worker error: ", err);
-// 		});
-// }

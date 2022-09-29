@@ -33,6 +33,13 @@ export default class Home extends React.Component {
 		this.startCamera = this.startCamera.bind(this);
 		this.stopCamera = this.stopCamera.bind(this);
 		this.onPoseResults = this.onPoseResults.bind(this);
+
+		this.sendPesudoMsg = this.sendPesudoMsg.bind(this);
+		this.stopPesudoMsg = this.stopPesudoMsg.bind(this);
+
+		this.animationframe = 0
+		this.animationcounter = 0
+
 	}
 
 	componentDidMount() {
@@ -144,6 +151,25 @@ export default class Home extends React.Component {
 		}
 	}
 
+	sendPesudoMsg() {
+
+		if (this.animationcounter % 1 == 0) {
+			this.ws.send(Date.now());
+		}
+
+		this.animationcounter += 1
+
+		this.animationframe = requestAnimationFrame(this.sendPesudoMsg)
+	}
+
+	stopPesudoMsg() {
+		cancelAnimationFrame(this.animationframe)
+		this.animationcounter = 0
+		this.ws.send('stopped pesudo data');
+
+		this.ws.close()
+	}
+
 	render() {
 		return (
 			<div>
@@ -156,6 +182,10 @@ export default class Home extends React.Component {
 				<div>
 					<button onClick={this.startCamera}>Start camera</button>
 					<button onClick={this.stopCamera}>Stop camera</button>
+				</div>
+				<div>
+					<button onClick={this.sendPesudoMsg}>Start mass messages</button>
+					<button onClick={this.stopPesudoMsg}>Stop mass messages</button>
 				</div>
 			</div>
 		);

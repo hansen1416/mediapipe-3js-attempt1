@@ -12,9 +12,9 @@ function process_msg(binary_arr) {
 	// const task_time = task[0];
 	// let binary_arr = task[1];
 
-	console.log(binary_arr);
+	console.log('worker received data:', binary_arr);
 
-	for (let i = 0; i < 10000000; i++) {}
+	for (let i = 0; i < 30000000; i++) {}
 
 	return true;
 
@@ -61,5 +61,5 @@ parentPort.on("message", (msg) => {
 	const result = process_msg(msg);
 
 	// return the result to main thread.
-	parentPort.postMessage("result message" + result);
+	parentPort.postMessage("result message:" + result);
 });
