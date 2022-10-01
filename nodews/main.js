@@ -103,6 +103,8 @@ const WebSocketServer = require("ws");
 // 	};
 // });
 
+const nj = require("numjs")
+
 const net = require("node:net");
 const client = net.createConnection(
 	{ port: 6379, host: "localhost", keepAlive: true },
@@ -111,14 +113,91 @@ const client = net.createConnection(
 		console.log("connected to server!");
 	}
 );
+
+
+function python_struct_bytes_to_arr(data_buffer) {
+	const arr = Array((data_buffer.length-8) / 4 / 4);
+
+	let row = -1;
+	let col = 0;
+
+	// python struct are padding at the beginnning 4 bytes and endding 2 bytes
+	for (let i = 6; i < data_buffer.length-2; i += 4) {
+		if (col % 4 == 0) {
+			row += 1;
+			col = 0;
+
+			arr[row] = [];
+		}
+
+		arr[row][col] = data_buffer.readFloatLE(i);
+
+		col += 1;
+	}
+
+	return arr
+}
+
+
 client.on("data", (data) => {
-	console.log(data.toString());
-	client.end();
+
+	// for (let j = 0; j < 10; j++) {
+
+	// 	start_time = Date.now()
+
+	// 	for (let i = 0; i < 10000; i++) {
+	// 		// let arr = data.toString().split(',')
+
+	// 		let arr = python_struct_bytes_to_arr(data)
+
+	// 	}
+
+	// 	console.log("time cost", Date.now() - start_time)
+
+	// }
+	
+	console.log(data)
+	// let arr = python_struct_bytes_to_arr(data)
+
+	// console.log(arr.length)
+	
+	// client.end();
 });
+
+client.on("drain", () => {
+	console.log("on drain");
+});
+
+client.on("error", () => {
+	console.log("error from server");
+});
+
 client.on("end", () => {
 	console.log("disconnected from server");
 });
 
-client.write("setex mykey 10 somevalue\r\n");
+// client.write("setex mykey 10 somevalue\r\n");
 
-client.write("get mykey\r\n");
+let r1= client.write("get yoga123456:0\r\n", encoding='utf-8');
+
+console.log(r1)
+
+r1 = client.write("get yoga123456:0\r\n", encoding='utf-8');
+console.log(r1)
+
+r1 = client.write("get yoga123456:0\r\n", encoding='utf-8');
+console.log(r1)
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8');
+
+r1 = client.write("get yoga1234567:0\r\n");
+
+console.log(r1)
+
+client.end()
