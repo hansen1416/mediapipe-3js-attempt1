@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     pcache.save_pose_to_cache()
 
-    # exit()
+    exit()
 
     pose_data = pcache.read_pose_from_cache('yoga123456', 0)
 

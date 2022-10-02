@@ -103,17 +103,7 @@ const WebSocketServer = require("ws");
 // 	};
 // });
 
-const nj = require("numjs")
-
-const net = require("node:net");
-const client = net.createConnection(
-	{ port: 6379, host: "localhost", keepAlive: true },
-	() => {
-		// 'connect' listener.
-		console.log("connected to server!");
-	}
-);
-
+// const nj = require("numjs")
 
 function python_struct_bytes_to_arr(data_buffer) {
 	const arr = Array((data_buffer.length-8) / 4 / 4);
@@ -138,6 +128,19 @@ function python_struct_bytes_to_arr(data_buffer) {
 	return arr
 }
 
+const net = require("node:net");
+const client = net.createConnection(
+	{ port: 6379, host: "localhost" },
+	() => {
+		// 'connect' listener.
+		console.log("connected to server!");
+	}
+);
+
+let canstop = false
+let cansend = true
+
+// client.setNoDelay(true)
 
 client.on("data", (data) => {
 
@@ -155,49 +158,90 @@ client.on("data", (data) => {
 	// 	console.log("time cost", Date.now() - start_time)
 
 	// }
-	
-	console.log(data)
-	// let arr = python_struct_bytes_to_arr(data)
 
-	// console.log(arr.length)
+	console.log(data.length)
 	
-	// client.end();
+	let arr = python_struct_bytes_to_arr(data)
+	console.log(arr[0][0])
+
+	cansend = true
+
 });
 
 client.on("drain", () => {
 	console.log("on drain");
 });
 
-client.on("error", () => {
-	console.log("error from server");
+client.on("error", (e) => {
+	console.log("error from server", e);
 });
 
 client.on("end", () => {
 	console.log("disconnected from server");
 });
 
-// client.write("setex mykey 10 somevalue\r\n");
+// client.end()
 
-let r1= client.write("get yoga123456:0\r\n", encoding='utf-8');
+// client.write("get yoga123456:0\r\n", encoding='utf-8', () => {
+// 	console.log(1)
+// });
 
-console.log(r1)
+// client.end()
 
-r1 = client.write("get yoga123456:0\r\n", encoding='utf-8');
-console.log(r1)
+// setTimeout(() => {
+// 	client.write("get yoga123456:0\r\n", encoding='utf-8', () => {
+// 		console.log(2)
+// 	});
+// }, 10)
 
-r1 = client.write("get yoga123456:0\r\n", encoding='utf-8');
-console.log(r1)
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
-// client.write("get yoga123456:0\r\n", encoding='utf-8');
+// const wobj = {
+// 	receivedval: false,
+// 	// get received() {
+// 	// 	return this.receivedval
+// 	// },
+// 	set received(value) {
+// 		this.receivedval = value
 
-r1 = client.write("get yoga1234567:0\r\n");
+// 		if (value) {
+// 			client.write("get yoga123456:0\r\n", encoding='utf-8', () => {
+// 				console.log('callback on write')
+// 			});
 
-console.log(r1)
+// 			this.received = false
+// 		}
 
-client.end()
+// 		// console.log("setting received", value)
+// 	}
+// }
+
+// wobj.received = true
+
+
+
+const intid = setInterval(() => {
+	console.log('do something')
+
+	if (cansend) {
+		client.write("get yoga123456:0\r\n", encoding='utf-8')
+
+		cansend = false
+	}
+
+	if (canstop) {
+		
+		clearInterval(intid)
+		client.end()
+	}
+}, 1)
+
+setTimeout(() => {
+	canstop = true;
+}, 30)
+
+
+
+
+
+
+
+
