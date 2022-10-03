@@ -1,10 +1,13 @@
 from genericpath import isfile
 import math
 import os
+import re
 import sys
 import tempfile
 import time
+import struct
 
+import redis
 from collections import namedtuple
 import cv2
 import matplotlib.pyplot as plt
@@ -144,13 +147,13 @@ class PreprocessVideo():
     def __init__(self, video_path) -> None:
         self.cap = cv2.VideoCapture(video_path)
 
-        # logger.info(sys.getsizeof(cap))
-
+        self.filename = os.path.split(video_path)[-1]
+        
         total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        print('video frames :', total_frames)
-
+        
         fps = self.cap.get(cv2.CAP_PROP_FPS)
-        print('video fps :', fps)
+        
+        logger.info('video filename {}, frames {}, fps {}'.format(self.filename, total_frames, fps))
 
         self.frames_steps = 1
 
@@ -177,6 +180,8 @@ class PreprocessVideo():
             'RIGHT_HIP': 'RIGHT_KNEE',
             'RIGHT_KNEE': 'RIGHT_ANKLE'
         }
+
+        self.redis_db = redis.Redis(host="localhost", port="6379")
 
     def __del__(self):
         self.cap.release()
@@ -257,7 +262,6 @@ class PreprocessVideo():
 
                     break
 
-        # np.save(os.path.join(POSE_DATA_DIR, 'pose_data_bytes.npy'), pose_data)
 
     def display_pose_for_frame(self, video_frame, pose_landmark, segmentation_mask=None):
 
@@ -541,6 +545,49 @@ class PreprocessVideo():
                 f, math.degrees(radius), radius))
 
 
+    def video_pose_to_redis(self, world_landmark=True):
+
+        pose_type = 'wlm' if world_landmark else 'lm'
+        
+        for p in os.listdir(POSE_DATA_DIR):
+
+            if p.startswith(self.filename + '_' + pose_type):
+
+                start_frame = int(re.search(re.compile("(\d+)\-\d+\.npy$"), p).group(1))
+                
+                pipes = self.redis_db.pipeline()
+
+                data = np.load(os.path.join(POSE_DATA_DIR, p), allow_pickle=True)
+
+                for i in range(data.shape[0]):
+
+                    lm = pickle.loads(data[i])
+
+                    if not lm:
+                        continue
+
+                    frame_index = start_frame + i
+
+                    poselm = np.array([[wlm.x, wlm.y, wlm.z, wlm.visibility] \
+                        for wlm in lm.landmark])
+
+                    pose1d = poselm.reshape(-1).tolist()
+
+                    bstr = None
+
+                    for pf in pose1d:
+
+                        if bstr is None:
+                            bstr = struct.pack('<f', pf)
+                        else:
+                            bstr += struct.pack('<f', pf) #+ struct.pack('f', pose1d[1])
+
+                    # logger.info(frame_index)
+                    pipes.setex(self.filename + ':' + str(frame_index), 3600, bstr)
+
+                pipes.execute()
+
+
 if __name__ == "__main__":
 
     video_file = os.path.join(MEDIA_DIR, '6packs.mp4')
@@ -553,9 +600,14 @@ if __name__ == "__main__":
 
     # processer.plot_pose_for_frame(frame_index=10020)
 
-    processer.plot_pose_for_result(frame_index=10000)
+    # processer.plot_pose_for_result(frame_index=10000)
 
-    processer.compare_poses(frame1=10000, frame2=10020)
+    # processer.compare_poses(frame1=10000, frame2=10020)
+
+    # processer.video_pose_to_redis()
+
+
+
 
     # for i in range(100, 131):
     #     processer.show_pose_for_frame(os.path.join(
