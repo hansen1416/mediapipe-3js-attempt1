@@ -2,6 +2,7 @@ import React from "react";
 import "./Home.css";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
+import  axios  from "axios"
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 function getUserMedia(constraints, successCallback, errorCallback) {
@@ -173,6 +174,19 @@ export default class Home extends React.Component {
 		// this.ws.close()
 	}
 
+	uploadVideo() {
+		let formData = new FormData();
+		formData.append("file", selectedFile);
+
+		axios.post(process.env.API_URL + '/upload', formData, {
+			headers: {
+			  "Content-Type": "multipart/form-data",
+			}
+		}).then(function (response) {
+			console.log(response.data);
+		});
+	}
+
 	render() {
 		return (
 			<div>
@@ -189,6 +203,9 @@ export default class Home extends React.Component {
 				<div>
 					<button onClick={this.sendPesudoMsg}>Start mass messages</button>
 					<button onClick={this.stopPesudoMsg}>Stop mass messages</button>
+				</div>
+				<div>
+					<button onClick={this.uploadVideo}>Upload video</button>
 				</div>
 			</div>
 		);
