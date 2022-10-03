@@ -3,6 +3,7 @@ const { parentPort } = require("worker_threads");
 // const nj = require("numjs");
 
 const net = require("node:net");
+
 const client = net.createConnection(
 	{ port: 6379, host: "localhost" },
 	() => {
@@ -36,23 +37,6 @@ function python_struct_bytes_to_arr(data_buffer) {
 
 client.on("data", (data) => {
 
-	// for (let j = 0; j < 10; j++) {
-
-	// 	start_time = Date.now()
-
-	// 	for (let i = 0; i < 10000; i++) {
-	// 		// let arr = data.toString().split(',')
-
-	// 		let arr = python_struct_bytes_to_arr(data)
-
-	// 	}
-
-	// 	console.log("time cost", Date.now() - start_time)
-
-	// }
-
-	// console.log(data.length)
-	
 	let arr = python_struct_bytes_to_arr(data)
 	console.log(arr[0][0])
 
