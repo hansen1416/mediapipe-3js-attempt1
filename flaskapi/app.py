@@ -18,10 +18,10 @@ def upload_video():
 
     f = request.files['file']
 
-    logger.info(f.name)
+    with tempfile.NamedTemporaryFile(delete=True) as file:
+        f.save(file)
 
-    # with tempfile.NamedTemporaryFile() as file:
-    #     f.save('/var/www/uploads/uploaded_file.txt')
+        logger.info(os.path.getsize(file.name))
 
     # If you return a dict or list from a view, it will be converted to a JSON response.
     return {}
