@@ -1,8 +1,6 @@
-from genericpath import getsize
 import os
 import sys
 import struct
-import ctypes
 
 import numpy as np
 import pickle
