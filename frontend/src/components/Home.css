@@ -8,3 +8,6 @@ canvas {
   right: 0;
   transform: scaleX(-1);
 }
+input[type=file] {
+  display: none;
+}

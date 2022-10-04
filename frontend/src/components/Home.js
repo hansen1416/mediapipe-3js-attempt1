@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import "./Home.css";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
@@ -28,6 +28,7 @@ export default class Home extends React.Component {
 
 		this.videoRef = React.createRef();
 		this.canvasRef = React.createRef();
+		this.fileRef = React.createRef();
 
 		this.animation_counter = 1;
 
@@ -38,13 +39,20 @@ export default class Home extends React.Component {
 		this.sendPesudoMsg = this.sendPesudoMsg.bind(this);
 		this.stopPesudoMsg = this.stopPesudoMsg.bind(this);
 
+		this.selectVideo = this.selectVideo.bind(this);
+		this.preprocessVideo = this.preprocessVideo.bind(this);
+		this.uploadVideo = this.uploadVideo.bind(this);
+
 		this.animationframe = 0
 		this.animationcounter = 0
+
+		this.state = {videoFileObj: null};
 
 	}
 
 	componentDidMount() {
 		if (this.ws === undefined) {
+			// todo, retry stratergy
 			this.ws = new WebSocket(process.env.REACT_APP_WS_ENDPOINT);
 
 			// Change binary type from "blob" to "arraybuffer"
@@ -104,7 +112,7 @@ export default class Home extends React.Component {
 				onFrame: async () => {
 					this.onFrame(this.videoRef.current, ctx);
 
-					if (this.animation_counter % 10 == 0) {
+					if (this.animation_counter % 10 === 0) {
 						await pose.send({ image: this.videoRef.current });
 
 						this.animation_counter = 0;
@@ -157,7 +165,7 @@ export default class Home extends React.Component {
 
 	sendPesudoMsg() {
 
-		if (this.animationcounter % 1 == 0) {
+		if (this.animationcounter % 1 === 0) {
 			this.ws.send(Date.now());
 		}
 
@@ -174,17 +182,43 @@ export default class Home extends React.Component {
 		// this.ws.close()
 	}
 
-	uploadVideo() {
-		let formData = new FormData();
-		formData.append("file", selectedFile);
+	selectVideo() {
+		this.fileRef.current.click()
+	}
 
-		axios.post(process.env.API_URL + '/upload', formData, {
+	preprocessVideo(event) {
+		this.setState({
+			videoFileObj: event.target.files[0]
+		});
+	}
+
+	uploadVideo() {
+
+		let formData = new FormData();
+		formData.append("file", this.state.videoFileObj);
+		formData.append('fileName', this.state.videoFileObj.name);
+
+		axios.post(process.env.REACT_APP_API_URL + '/upload/video', formData, {
 			headers: {
-			  "Content-Type": "multipart/form-data",
+				'Content-Type': 'multipart/form-data',
+				// 'Expect': '100-continue'
 			}
 		}).then(function (response) {
 			console.log(response.data);
-		});
+		}).catch(function (error) {
+			if (error.response) { // get response with a status code not in range 2xx
+			  console.log(error.response.data);
+			  console.log(error.response.status);
+			  console.log(error.response.headers);
+			} else if (error.request) { // no response
+			  console.log(error.request);
+			  // instance of XMLHttpRequest in the browser
+			  // instance ofhttp.ClientRequest in node.js
+			} else { // Something wrong in setting up the request
+			  console.log('Error', error.message);
+			}
+			console.log(error.config);
+		  });
 	}
 
 	render() {
@@ -205,6 +239,18 @@ export default class Home extends React.Component {
 					<button onClick={this.stopPesudoMsg}>Stop mass messages</button>
 				</div>
 				<div>
+					<input
+						ref={this.fileRef} 
+						type="file"
+						accept=".mp4, wmv"
+						onChange={this.preprocessVideo}
+					/>
+					<button onClick={this.selectVideo}>Select video</button>
+					{this.state.videoFileObj && <div>
+						<span>{this.state.videoFileObj.name}</span>
+						<span>{this.state.videoFileObj.type}</span>
+						<span>{(this.state.videoFileObj.size / 1024 / 1024).toFixed(2)}MB</span>
+					</div>}
 					<button onClick={this.uploadVideo}>Upload video</button>
 				</div>
 			</div>
