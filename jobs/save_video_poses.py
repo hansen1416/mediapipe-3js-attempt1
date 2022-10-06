@@ -4,6 +4,8 @@ import struct
 import time
 import redis
 
+from logger import logger
+
 class VideoProcessor:
 
     def __init__(self) -> None:
@@ -16,7 +18,7 @@ class VideoProcessor:
         if video_file:
             pass
         else:
-            print("nothing to process")
+            logger.info(__file__ + " nothing to process")
 
 
 

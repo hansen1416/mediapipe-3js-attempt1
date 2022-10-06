@@ -7,6 +7,7 @@ from flask import request
 from flask_cors import CORS
 
 from logger import logger
+from oss_service import OSSService
 
 app = Flask(__name__)
 CORS(app, resources=r"/*", supports_credentials=True)
@@ -22,6 +23,10 @@ def upload_video():
         f.save(file)
 
         logger.info(os.path.getsize(file.name))
+
+        osssvc = OSSService()
+
+        osssvc.simple_upload(file)
 
     # If you return a dict or list from a view, it will be converted to a JSON response.
     return {}
