@@ -585,11 +585,33 @@ class PreprocessVideo():
                             bstr += struct.pack('<f', pf) #+ struct.pack('f', pose1d[1])
 
                     # logger.info(frame_index)
-                    pipes.setex(self.filename + ':' + str(frame_index), self.cache_expire_at, bstr)
+                    pipes.setex(video_filename + ':' + str(frame_index), self.cache_expire_at, bstr)
 
                 pipes.execute()
 
                 logger.info("pose data saved to redis {}".format(p))
+
+
+    @staticmethod
+    def read_pose_from_cache(redis_db, video_key):
+
+        for frame_index in range(0, 32000, 1000):
+            
+            data_bytes = redis_db.get(video_key + ':' + str(frame_index))
+
+            if not data_bytes:
+                continue
+
+            logger.info(sys.getsizeof(data_bytes))
+
+            data_bytes = struct.unpack("<" + str(33*4) + 'f', data_bytes)
+
+            # logger.info(data_bytes)
+
+            data_bytes = np.array(list(data_bytes)).reshape(-1, 4)
+
+            logger.info("frame index {}, data shape {}".format(frame_index, data_bytes.shape))
+
 
     def subscriber(self):
 
@@ -606,9 +628,10 @@ if __name__ == "__main__":
 
     processer = PreprocessVideo(video_file)
 
-    processer.redis_db.setex('video_to_process', 100, '6packs.mp4')
+    # processer.redis_db.setex('video_to_process', 100, '6packs.mp4')
+    # processer.subscriber()
 
-    processer.subscriber()
+    processer.read_pose_from_cache(processer.redis_db, '6packs.mp4')
 
     # processer.save_video_poses()
 
