@@ -4,7 +4,7 @@ const { parentPort } = require("worker_threads");
 
 const net = require("node:net");
 
-const client = net.createConnection(
+const redis_client = net.createConnection(
 	{ port: 6379, host: "localhost" },
 	() => {
 		// 'connect' listener.
@@ -12,7 +12,43 @@ const client = net.createConnection(
 	}
 );
 
+/**
+ * process message received from websocket
+ * @param {Float32Array} binary_arr
+ * @returns
+ */
+function browser_buffer_to_arr(binary_arr) {
+
+	binary_arr = Buffer.from(binary_arr, "utf8");
+	// float takes 4 bytes, and each row has 4 items (x,y,z,visibility)
+	const arr = Array(binary_arr.length / 4 / 4);
+
+	let row = -1;
+	let col = 0;
+
+	for (let i = 0; i < binary_arr.length; i += 4) {
+		if (col % 4 == 0) {
+			row += 1;
+			col = 0;
+
+			arr[row] = [];
+		}
+
+		arr[row][col] = binary_arr.readFloatLE(i);
+
+		col += 1;
+	}
+
+	return arr
+}
+
+/**
+ * read bytes from redis, and transfer it to array
+ * @param {Buffer} data_buffer 
+ * @returns 
+ */
 function python_struct_bytes_to_arr(data_buffer) {
+
 	const arr = Array((data_buffer.length-8) / 4 / 4);
 
 	let row = -1;
@@ -35,65 +71,47 @@ function python_struct_bytes_to_arr(data_buffer) {
 	return arr
 }
 
-client.on("data", (data) => {
+const arrHolder = {
 
-	let arr = python_struct_bytes_to_arr(data)
-	console.log(arr[0][0])
+	camera_arr: [],
+	// video_arr: [],
 
-	cansend = true
+	set video_arr(value) {
+		// todo compare camera pose and video pose
 
-});
+		console.log(this.camera_arr, value)
 
-// const toss_task = 5;
-
-/**
- *
- * @param {Float32Array} binary_arr
- * @returns
- */
-function process_msg(binary_arr) {
-	binary_arr = Buffer.from(binary_arr, "utf8");
-
-	const arr = Array(binary_arr.length / 4 / 4);
-
-	let row = -1;
-	let col = 0;
-
-	for (let i = 0; i < binary_arr.length; i += 4) {
-		if (col % 4 == 0) {
-			row += 1;
-			col = 0;
-
-			arr[row] = [];
-		}
-
-		arr[row][col] = binary_arr.readFloatLE(i);
-
-		col += 1;
+		// return the result to main thread.
+		// main thread will mark this worker as available
+		parentPort.postMessage("result message:" + result);
 	}
-
-	console.log(arr[0]);
-
-	client.write("get yoga123456:0\r\n", encoding='utf-8')
-
-	// todo, compare different poses
-
-	console.log("process finished at: ", Date.now());
-
-	return true;
 }
 
 // Main thread will pass the data you need
 // through this event listener.
 parentPort.on("message", (msg) => {
 	try {
-		const result = process_msg(msg);
+		// browser buffer to array
+		arrHolder.camera_arr = browser_buffer_to_arr(msg);
+		// read bytes from redis
+		redis_client.write("get yoga123456:0\r\n", encoding='utf-8')
 
-		// return the result to main thread.
-		parentPort.postMessage("result message:" + result);
 	} catch (e) {
 		console.log("worker error", e);
 
-		parentPort.postMessage("still inform main thread to free the worker");
+		parentPort.postMessage("still inform main thread to free the worker1");
+	}
+});
+
+// read output data from redis redis_client socket
+redis_client.on("data", (data) => {
+	try {
+
+		arrHolder.video_arr = python_struct_bytes_to_arr(data);
+		
+	} catch (e) {
+		console.log("worker error", e);
+
+		parentPort.postMessage("still inform main thread to free the worker2");
 	}
 });
