@@ -181,7 +181,9 @@ class PreprocessVideo():
             'RIGHT_KNEE': 'RIGHT_ANKLE'
         }
 
-        self.redis_db = redis.Redis(host="localhost", port="6379")
+        self.cache_expire_at = 3600 * 6
+
+        self.redis_db = redis.Redis(host="localhost", port="6379", charset="utf-8")
 
     def __del__(self):
         self.cap.release()
@@ -545,13 +547,13 @@ class PreprocessVideo():
                 f, math.degrees(radius), radius))
 
 
-    def video_pose_to_redis(self, world_landmark=True):
+    def pose_npy_to_redis(self, video_filename, world_landmark=True):
 
         pose_type = 'wlm' if world_landmark else 'lm'
         
         for p in os.listdir(POSE_DATA_DIR):
 
-            if p.startswith(self.filename + '_' + pose_type):
+            if p.startswith(video_filename + '_' + pose_type):
 
                 start_frame = int(re.search(re.compile("(\d+)\-\d+\.npy$"), p).group(1))
                 
@@ -583,16 +585,30 @@ class PreprocessVideo():
                             bstr += struct.pack('<f', pf) #+ struct.pack('f', pose1d[1])
 
                     # logger.info(frame_index)
-                    pipes.setex(self.filename + ':' + str(frame_index), 3600, bstr)
+                    pipes.setex(self.filename + ':' + str(frame_index), self.cache_expire_at, bstr)
 
                 pipes.execute()
 
+                logger.info("pose data saved to redis {}".format(p))
+
+    def subscriber(self):
+
+        video_file = self.redis_db.get('video_to_process').decode('utf-8')
+
+        if video_file:
+            self.pose_npy_to_redis(video_filename=video_file)
+        else:
+            logger.info(__file__ + " nothing to process")
 
 if __name__ == "__main__":
 
     video_file = os.path.join(MEDIA_DIR, '6packs.mp4')
 
     processer = PreprocessVideo(video_file)
+
+    processer.redis_db.setex('video_to_process', 100, '6packs.mp4')
+
+    processer.subscriber()
 
     # processer.save_video_poses()
 
@@ -604,7 +620,7 @@ if __name__ == "__main__":
 
     # processer.compare_poses(frame1=10000, frame2=10020)
 
-    # processer.video_pose_to_redis()
+    
 
 
 
