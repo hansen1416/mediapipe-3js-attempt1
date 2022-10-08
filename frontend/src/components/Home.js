@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React from "react";
 import "./Home.css";
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
-import  axios  from "axios"
+import VideoPlayer from "./VideoPlayer";
+// import axios from "axios";
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 function getUserMedia(constraints, successCallback, errorCallback) {
@@ -29,6 +30,9 @@ export default class Home extends React.Component {
 		this.videoRef = React.createRef();
 		this.canvasRef = React.createRef();
 		this.fileRef = React.createRef();
+		// this.videoPlayerRef = React.createRef();
+
+		// this.handlePlayerReady = this.handlePlayerReady.bind(this);
 
 		this.animation_counter = 1;
 
@@ -43,15 +47,30 @@ export default class Home extends React.Component {
 		this.preprocessVideo = this.preprocessVideo.bind(this);
 		this.uploadVideo = this.uploadVideo.bind(this);
 
-		this.animationframe = 0
-		this.animationcounter = 0
+		this.animationframe = 0;
+		this.animationcounter = 0;
 
-		this.state = {videoFileObj: null};
-
+		this.state = {
+			videoFileObj: null,
+			videoJsOptions: {
+				autoplay: true,
+				controls: true,
+				// responsive: true,
+				// fluid: true,
+				sources: [
+					{
+						// src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/yoga.mp4",
+						src: "http://192.168.0.105:3000/6packs.mp4",
+						type: "video/mp4",
+					},
+				],
+			},
+		};
 	}
 
 	componentDidMount() {
 		if (this.ws === undefined) {
+			return;
 			// todo, retry stratergy
 			this.ws = new WebSocket(process.env.REACT_APP_WS_ENDPOINT);
 
@@ -67,6 +86,19 @@ export default class Home extends React.Component {
 			});
 		}
 	}
+
+	// handlePlayerReady(player) {
+	// 	this.playerRef.current = player;
+
+	// 	// You can handle player events here, for example:
+	// 	player.on("waiting", () => {
+	// 		console.log("player is waiting");
+	// 	});
+
+	// 	player.on("dispose", () => {
+	// 		console.log("player will dispose");
+	// 	});
+	// }
 
 	startCamera() {
 		if (this.videoRef && this.videoRef.current) {
@@ -89,7 +121,8 @@ export default class Home extends React.Component {
 
 			const pose = new Pose({
 				locateFile: (file) => {
-					return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+					return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+					// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
 				},
 			});
 			pose.setOptions({
@@ -136,10 +169,10 @@ export default class Home extends React.Component {
 		const wlm = results.poseWorldLandmarks;
 
 		if (!wlm) {
-			return
+			return;
 		}
 
-		console.log(wlm)
+		// console.log(wlm);
 
 		let data = wlm.map((x) => Object.values(x));
 
@@ -164,61 +197,59 @@ export default class Home extends React.Component {
 	}
 
 	sendPesudoMsg() {
-
 		if (this.animationcounter % 1 === 0) {
 			this.ws.send(Date.now());
 		}
 
-		this.animationcounter += 1
+		this.animationcounter += 1;
 
-		this.animationframe = requestAnimationFrame(this.sendPesudoMsg)
+		this.animationframe = requestAnimationFrame(this.sendPesudoMsg);
 	}
 
 	stopPesudoMsg() {
-		cancelAnimationFrame(this.animationframe)
-		this.animationcounter = 0
-		this.ws.send('stopped pesudo data');
+		cancelAnimationFrame(this.animationframe);
+		this.animationcounter = 0;
+		this.ws.send("stopped pesudo data");
 
 		// this.ws.close()
 	}
 
 	selectVideo() {
-		this.fileRef.current.click()
+		this.fileRef.current.click();
 	}
 
 	preprocessVideo(event) {
 		this.setState({
-			videoFileObj: event.target.files[0]
+			videoFileObj: event.target.files[0],
 		});
 	}
 
 	uploadVideo() {
-
 		let formData = new FormData();
 		formData.append("file", this.state.videoFileObj);
-		formData.append('fileName', this.state.videoFileObj.name);
+		formData.append("fileName", this.state.videoFileObj.name);
 
-		axios.post(process.env.REACT_APP_API_URL + '/upload/video', formData, {
-			headers: {
-				'Content-Type': 'multipart/form-data',
-				// 'Expect': '100-continue'
-			}
-		}).then(function (response) {
-			console.log(response.data);
-		}).catch(function (error) {
-			if (error.response) { // get response with a status code not in range 2xx
-			  console.log(error.response.data);
-			  console.log(error.response.status);
-			  console.log(error.response.headers);
-			} else if (error.request) { // no response
-			  console.log(error.request);
-			  // instance of XMLHttpRequest in the browser
-			  // instance ofhttp.ClientRequest in node.js
-			} else { // Something wrong in setting up the request
-			  console.log('Error', error.message);
-			}
-			console.log(error.config);
-		  });
+		// axios.post(process.env.REACT_APP_API_URL + '/upload/video', formData, {
+		// 	headers: {
+		// 		'Content-Type': 'multipart/form-data',
+		// 		// 'Expect': '100-continue'
+		// 	}
+		// }).then(function (response) {
+		// 	console.log(response.data);
+		// }).catch(function (error) {
+		// 	if (error.response) { // get response with a status code not in range 2xx
+		// 	  console.log(error.response.data);
+		// 	  console.log(error.response.status);
+		// 	  console.log(error.response.headers);
+		// 	} else if (error.request) { // no response
+		// 	  console.log(error.request);
+		// 	  // instance of XMLHttpRequest in the browser
+		// 	  // instance ofhttp.ClientRequest in node.js
+		// 	} else { // Something wrong in setting up the request
+		// 	  console.log('Error', error.message);
+		// 	}
+		// 	console.log(error.config);
+		//   });
 	}
 
 	render() {
@@ -235,23 +266,39 @@ export default class Home extends React.Component {
 					<button onClick={this.stopCamera}>Stop camera</button>
 				</div>
 				<div>
-					<button onClick={this.sendPesudoMsg}>Start mass messages</button>
-					<button onClick={this.stopPesudoMsg}>Stop mass messages</button>
+					<button onClick={this.sendPesudoMsg}>
+						Start mass messages
+					</button>
+					<button onClick={this.stopPesudoMsg}>
+						Stop mass messages
+					</button>
 				</div>
 				<div>
 					<input
-						ref={this.fileRef} 
+						ref={this.fileRef}
 						type="file"
 						accept=".mp4, wmv"
 						onChange={this.preprocessVideo}
 					/>
 					<button onClick={this.selectVideo}>Select video</button>
-					{this.state.videoFileObj && <div>
-						<span>{this.state.videoFileObj.name}</span>
-						<span>{this.state.videoFileObj.type}</span>
-						<span>{(this.state.videoFileObj.size / 1024 / 1024).toFixed(2)}MB</span>
-					</div>}
+					{this.state.videoFileObj && (
+						<div>
+							<span>{this.state.videoFileObj.name}</span>
+							<span>{this.state.videoFileObj.type}</span>
+							<span>
+								{(
+									this.state.videoFileObj.size /
+									1024 /
+									1024
+								).toFixed(2)}
+								MB
+							</span>
+						</div>
+					)}
 					<button onClick={this.uploadVideo}>Upload video</button>
+				</div>
+				<div>
+					<VideoPlayer {...this.state.videoJsOptions} />
 				</div>
 			</div>
 		);
