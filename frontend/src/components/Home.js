@@ -53,10 +53,13 @@ export default class Home extends React.Component {
 		this.state = {
 			videoFileObj: null,
 			videoJsOptions: {
-				autoplay: true,
+				autoplay: false,
 				controls: true,
 				// responsive: true,
 				// fluid: true,
+				playbackRates: [0.5, 1, 1.25, 1.5, 2],
+				width: 720,
+				height: 300,
 				sources: [
 					{
 						// src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/yoga.mp4",

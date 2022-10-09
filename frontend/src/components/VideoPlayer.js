@@ -5,13 +5,27 @@ import "video.js/dist/video-js.css";
 export default class VideoPlayer extends React.Component {
 	// Instantiate a Video.js player when the component mounts
 	componentDidMount() {
-		this.player = videojs(this.videoNode, this.props, () => {
-			videojs.log("onPlayerReady", this);
-		});
+		// instantiate video.js
+		this.player = videojs(
+			this.videoNode,
+			this.props,
+			function onPlayerReady() {
+				// console.log("onPlayerReady", this);
+				this.on("timeupdate", function () {
+					console.log(this.currentTime());
+				});
+			}
+		);
+
+		if (this.videoNode) {
+			this.videoNode.setAttribute("webkit-playsinline", true);
+			this.videoNode.setAttribute("playsinline", true);
+		}
 	}
 
 	// Dispose the player when the component will unmount
 	componentWillUnmount() {
+		// this will cause videojs be cleared in strict mode
 		if (this.player) {
 			this.player.dispose();
 		}
