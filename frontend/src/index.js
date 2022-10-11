@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import Home from "./components/Home";
+import Upload from "./components/Upload";
 
 const router = createBrowserRouter([
 	{
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				element: <Home />,
+			},
+			{
+				path: "/upload",
+				element: <Upload />,
 			},
 		],
 	},

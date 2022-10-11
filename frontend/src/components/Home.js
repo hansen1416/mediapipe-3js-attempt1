@@ -24,15 +24,10 @@ export default class Home extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// console.log(Camera);
-		// console.log(Pose);
 
 		this.videoRef = React.createRef();
 		this.canvasRef = React.createRef();
-		this.fileRef = React.createRef();
-		// this.videoPlayerRef = React.createRef();
 
-		// this.handlePlayerReady = this.handlePlayerReady.bind(this);
 
 		this.animation_counter = 1;
 
@@ -43,9 +38,6 @@ export default class Home extends React.Component {
 		this.sendPesudoMsg = this.sendPesudoMsg.bind(this);
 		this.stopPesudoMsg = this.stopPesudoMsg.bind(this);
 
-		this.selectVideo = this.selectVideo.bind(this);
-		this.preprocessVideo = this.preprocessVideo.bind(this);
-		this.uploadVideo = this.uploadVideo.bind(this);
 
 		this.animationframe = 0;
 		this.animationcounter = 0;
@@ -217,44 +209,6 @@ export default class Home extends React.Component {
 		// this.ws.close()
 	}
 
-	selectVideo() {
-		this.fileRef.current.click();
-	}
-
-	preprocessVideo(event) {
-		this.setState({
-			videoFileObj: event.target.files[0],
-		});
-	}
-
-	uploadVideo() {
-		let formData = new FormData();
-		formData.append("file", this.state.videoFileObj);
-		formData.append("fileName", this.state.videoFileObj.name);
-
-		// axios.post(process.env.REACT_APP_API_URL + '/upload/video', formData, {
-		// 	headers: {
-		// 		'Content-Type': 'multipart/form-data',
-		// 		// 'Expect': '100-continue'
-		// 	}
-		// }).then(function (response) {
-		// 	console.log(response.data);
-		// }).catch(function (error) {
-		// 	if (error.response) { // get response with a status code not in range 2xx
-		// 	  console.log(error.response.data);
-		// 	  console.log(error.response.status);
-		// 	  console.log(error.response.headers);
-		// 	} else if (error.request) { // no response
-		// 	  console.log(error.request);
-		// 	  // instance of XMLHttpRequest in the browser
-		// 	  // instance ofhttp.ClientRequest in node.js
-		// 	} else { // Something wrong in setting up the request
-		// 	  console.log('Error', error.message);
-		// 	}
-		// 	console.log(error.config);
-		//   });
-	}
-
 	render() {
 		return (
 			<div>
@@ -275,30 +229,6 @@ export default class Home extends React.Component {
 					<button onClick={this.stopPesudoMsg}>
 						Stop mass messages
 					</button>
-				</div>
-				<div>
-					<input
-						ref={this.fileRef}
-						type="file"
-						accept=".mp4, wmv"
-						onChange={this.preprocessVideo}
-					/>
-					<button onClick={this.selectVideo}>Select video</button>
-					{this.state.videoFileObj && (
-						<div>
-							<span>{this.state.videoFileObj.name}</span>
-							<span>{this.state.videoFileObj.type}</span>
-							<span>
-								{(
-									this.state.videoFileObj.size /
-									1024 /
-									1024
-								).toFixed(2)}
-								MB
-							</span>
-						</div>
-					)}
-					<button onClick={this.uploadVideo}>Upload video</button>
 				</div>
 				<div>
 					<VideoPlayer {...this.state.videoJsOptions} />
