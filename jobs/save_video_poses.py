@@ -25,7 +25,7 @@ from mediapipe.python.solutions.pose import PoseLandmark
 # from mediapipe.framework.formats.landmark_pb2 import LandmarkList
 # from google.protobuf.pyext._message import RepeatedCompositeContainer
 
-from logger import logger
+from ropes import logger
 
 MEDIA_DIR = os.path.join('.', 'media')
 POSE_DATA_DIR = os.path.join('.', 'pose_data')

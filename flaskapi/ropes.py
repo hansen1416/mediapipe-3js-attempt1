@@ -1,5 +1,6 @@
 import logging
 import sys
+import redis
 
 from dotenv import load_dotenv
 
@@ -18,3 +19,6 @@ logger = logging.getLogger()
 
 logger.setLevel(logging.DEBUG)
 logger.addHandler(screen_handler)
+
+
+redis_client = redis.Redis(host="localhost", port="6379", charset="utf-8")
