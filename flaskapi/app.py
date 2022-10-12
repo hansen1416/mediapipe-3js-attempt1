@@ -7,7 +7,7 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 
-from flaskapi.ropes import logger, redis_client
+from ropes import logger, redis_client
 # from oss_service import OSSService
 
 app = Flask(__name__)
