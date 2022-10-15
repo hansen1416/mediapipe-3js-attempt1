@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import redis
 import struct
@@ -18,7 +19,11 @@ screen_handler.setFormatter(formatter)
 
 logger = logging.getLogger()
 
-logger.setLevel(logging.DEBUG)
+if os.getenv('FLASK_DEBUG'):
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
+
 logger.addHandler(screen_handler)
 
 

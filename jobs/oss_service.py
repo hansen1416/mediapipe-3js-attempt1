@@ -48,7 +48,7 @@ class OSSService:
         preferred_size = 10 * 1024 * 1024 if os.getenv('FLASK_DEBUG') else 40 * 1024 * 1024
 
         # determine_part_size方法用于确定分片大小。
-        part_size = determine_part_size(total_size, preferred_size=40 * 1024 * 1024)
+        part_size = determine_part_size(total_size, preferred_size=preferred_size)
 
         # 初始化分片。
         # 如需在初始化分片时设置文件存储类型，请在init_multipart_upload中设置相关Headers，参考如下。
