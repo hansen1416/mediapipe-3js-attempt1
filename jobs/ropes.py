@@ -42,7 +42,7 @@ def pack_file_key(user_id, filename, timestamp, mimetype):
         timestamp: current time in milliseconds
         mimetype: video mimetype, random length string
     """
-    
+
     return bytes.fromhex(user_id) + bytes(filename, 'utf-8') \
         + struct.pack('<d', timestamp) + bytes(mimetype, 'utf-8')
 

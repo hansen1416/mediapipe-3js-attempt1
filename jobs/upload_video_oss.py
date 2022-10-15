@@ -5,7 +5,9 @@ from ropes import logger, redis_client, unpack_file_key, VIDEO_MIME_EXT
 from oss_service import OSSService 
 
 
-def upload_video(user_id, filename, timestamp, mimetype):
+def upload_video(bytes_info):
+
+    user_id, filename, timestamp, mimetype = unpack_file_key(bytes_info)
     
     oss_key = user_id + '/' + str(timestamp)
     # in linux system, tempfile name is like /tmp/tmp(random_string)
@@ -26,11 +28,15 @@ if __name__ == "__main__":
 
         if redis_client.llen(redis_key):
 
-            user_id, filename, timestamp, mimetype = unpack_file_key(redis_client.lpop(redis_key))
+            try:
 
-            upload_video(user_id, filename, timestamp, mimetype)
+                upload_video(redis_client.lpop(redis_key))
+            
+            except Exception as e:
+
+                logger.error("Upload file error, {}".format(str(e)))
 
         else:
-            logger.info("no file to upload")
+            pass
 
         time.sleep(1)

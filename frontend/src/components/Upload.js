@@ -1,8 +1,7 @@
-import React from "react";
+// import React from "react";
+import { useState, useRef } from "react";
 import "./Home.css";
-import { Pose } from "@mediapipe/pose";
-import { Camera } from "@mediapipe/camera_utils";
-import VideoPlayer from "./VideoPlayer";
+
 // import axios from "axios";
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
@@ -20,92 +19,134 @@ function getUserMedia(constraints, successCallback, errorCallback) {
 	}
 }
 
-export default class Upload extends React.Component {
-	constructor(props) {
-		super(props);
+export default function Upload() {
+	// constructor(props) {
+	// 	super(props);
 
-		this.fileRef = React.createRef();
+	// 	fileRef = React.createRef();
 
-		this.selectVideo = this.selectVideo.bind(this);
-		this.preprocessVideo = this.preprocessVideo.bind(this);
-		this.uploadVideo = this.uploadVideo.bind(this);
+	// 	selectVideo = selectVideo.bind(this);
+	// 	preprocessVideo = preprocessVideo.bind(this);
+	// 	uploadVideo = uploadVideo.bind(this);
 
-		this.state = {
+	// 	state = {};
+	// }
 
-		};
+	const [videoFileObj, setvideoFileObj] = useState(null);
+	const [uploadProgress, setuploadProgress] = useState(null);
+
+	const fileRef = useRef(null);
+	const intervalRef = useRef(null);
+
+	function selectVideo() {
+		fileRef.current.click();
 	}
 
-	componentDidMount() {
-
+	function preprocessVideo(event) {
+		setvideoFileObj(event.target.files[0]);
 	}
 
-	selectVideo() {
-		this.fileRef.current.click();
-	}
-
-	preprocessVideo(event) {
-		this.setState({
-			videoFileObj: event.target.files[0],
-		});
-	}
-
-	uploadVideo() {
+	function uploadVideo() {
 		let formData = new FormData();
-		formData.append("file", this.state.videoFileObj);
-		formData.append("fileName", this.state.videoFileObj.name);
 
-		fetch(process.env.REACT_APP_API_URL + '/upload/video', 
-		{
-			method: 'POST', // *GET, POST, PUT, DELETE, etc.
+		formData.append("file", videoFileObj);
+		formData.append("fileName", videoFileObj.name);
+
+		fetch(process.env.REACT_APP_API_URL + "/upload/video", {
+			method: "POST", // *GET, POST, PUT, DELETE, etc.
 			// mode: 'cors', // no-cors, *cors, same-origin
 			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
 			// credentials: 'same-origin', // include, *same-origin, omit
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
+			// headers: {
+			// 	"Content-Type": "multipart/form-data",
+			// },
 			// redirect: 'follow', // manual, *follow, error
 			// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-			body: formData // body data type must match "Content-Type" header
+			body: formData, // body data type must match "Content-Type" header
 		})
-		.then((response) => response.json())
-		.then((data) => {
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.oss_key) {
+					alert(data.oss_key + " is enqueued for upload");
 
-			console.log(data)
+					clearInterval(intervalRef.current);
 
-		})
-		.catch(function (error) {
-			console.log(error.message, error.response, error.request, error.config);
-		});
+					intervalRef.current = setInterval(
+						checkUploadProgress,
+						2000,
+						data.oss_key
+					);
+				} else {
+					alert("upload file failed");
+				}
+			})
+			.catch(function (error) {
+				console.log(
+					error.message,
+					error.response,
+					error.request,
+					error.config
+				);
+			});
 	}
 
-	render() {
-		return (
+	function checkUploadProgress(oss_key) {
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/upload/progress?" +
+				new URLSearchParams({
+					oss_key: oss_key,
+				})
+		)
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.progress) {
+					setuploadProgress(data.progress);
+
+					if (data.progress === "100") {
+						clearInterval(intervalRef.current);
+
+						setuploadProgress(null);
+					}
+				} else {
+					alert("Reading file upload status failed");
+				}
+			})
+			.catch(function (error) {
+				console.log(
+					error.message,
+					error.response,
+					error.request,
+					error.config
+				);
+			});
+	}
+
+	return (
+		<div>
 			<div>
-				<div>
-					<input
-						ref={this.fileRef}
-						type="file"
-						accept=".mp4, wmv"
-						onChange={this.preprocessVideo}
-					/>
-					<button onClick={this.selectVideo}>Select video</button>
-					{this.state.videoFileObj && (
-						<div>
-							<span>{this.state.videoFileObj.name}</span>
-							<span>{this.state.videoFileObj.type}</span>
-							<span>
-								{(
-									this.state.videoFileObj.size /
-									1024 /
-									1024
-								).toFixed(2)}
-								MB
-							</span>
-						</div>
-					)}
-					<button onClick={this.uploadVideo}>Upload video</button>
-				</div>
+				<input
+					ref={fileRef}
+					type="file"
+					accept=".mp4, wmv"
+					onChange={preprocessVideo}
+				/>
+				<button onClick={selectVideo}>Select video</button>
+				{videoFileObj && (
+					<div>
+						<span>{videoFileObj.name}</span>
+						<span>{videoFileObj.type}</span>
+						<span>
+							{(videoFileObj.size / 1024 / 1024).toFixed(2)}
+							MB
+						</span>
+					</div>
+				)}
+				<button onClick={uploadVideo}>Upload video</button>
 			</div>
-		);
-	}
+			{uploadProgress !== null && (
+				<div>Upload progress: {uploadProgress}</div>
+			)}
+		</div>
+	);
 }

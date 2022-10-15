@@ -41,13 +41,17 @@ class OSSService:
 
         key = key + '.' + VIDEO_MIME_EXT[mimetype]
 
+        logger.info("start multi_part_upload file {} from {}".format(key, tmp_filename))
+
         total_size = os.path.getsize(tmp_filename)
         # determine_part_size方法用于确定分片大小。
-        part_size = determine_part_size(total_size, preferred_size=10 * 1024 * 1024)
+        part_size = determine_part_size(total_size, preferred_size=40 * 1024 * 1024)
 
         # 初始化分片。
         # 如需在初始化分片时设置文件存储类型，请在init_multipart_upload中设置相关Headers，参考如下。
-        # headers = dict()
+        headers = dict()
+        headers['Content-Type'] = mimetype + '; charset=UTF-8'
+
         # 指定该Object的网页缓存行为。
         # headers['Cache-Control'] = 'no-cache'
         # 指定该Object被下载时的名称。
@@ -70,8 +74,6 @@ class OSSService:
         # headers[OSS_OBJECT_TAGGING] = 'k1=v1&k2=v2&k3=v3'
         # upload_id = bucket.init_multipart_upload(key, headers=headers).upload_id
 
-        headers['Content-Type'] = mimetype + '; charset=UTF-8'
-
         upload_id = self.bucket.init_multipart_upload(key).upload_id
         parts = []
 
@@ -89,9 +91,7 @@ class OSSService:
                 offset += num_to_upload
                 part_number += 1
 
-                time.sleep(3)
-
-                redis_client.set(key + ':progress', round((offset / total_size) * 100, 2))
+                redis_client.setex(key + ':progress', 30, round((offset / total_size) * 100, 2))
 
                 logger.info("{} upload in progress {}".format(key, offset))
 
@@ -107,7 +107,7 @@ class OSSService:
         # this was a temp file
         os.unlink(tmp_filename)
         
-        redis_client.set(key + ':progress', 100)
+        redis_client.setex(key + ':progress', 30, 100)
 
         redis_client.rpush('video_to_process', 100)
 
