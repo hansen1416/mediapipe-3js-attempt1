@@ -44,6 +44,9 @@ class OSSService:
         logger.info("start multi_part_upload file {} from {}".format(key, tmp_filename))
 
         total_size = os.path.getsize(tmp_filename)
+
+        preferred_size = 10 * 1024 * 1024 if os.getenv('FLASK_DEBUG') else 40 * 1024 * 1024
+
         # determine_part_size方法用于确定分片大小。
         part_size = determine_part_size(total_size, preferred_size=40 * 1024 * 1024)
 
@@ -91,7 +94,7 @@ class OSSService:
                 offset += num_to_upload
                 part_number += 1
 
-                redis_client.setex(key + ':progress', 30, round((offset / total_size) * 100, 2))
+                redis_client.setex(key + ':progress', 180, round((offset / total_size) * 100, 2))
 
                 logger.info("{} upload in progress {}".format(key, offset))
 
@@ -107,7 +110,7 @@ class OSSService:
         # this was a temp file
         os.unlink(tmp_filename)
         
-        redis_client.setex(key + ':progress', 30, 100)
+        redis_client.setex(key + ':progress', 180, 100)
 
         redis_client.rpush('video_to_process', 100)
 
