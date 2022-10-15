@@ -63,9 +63,12 @@ export default class Home extends React.Component {
 
 	componentDidMount() {
 		if (this.ws === undefined) {
-			return;
 			// todo, retry stratergy
 			this.ws = new WebSocket(process.env.REACT_APP_WS_ENDPOINT);
+
+			this.ws.addEventListener("error", (e) => {
+				console.info("websocket server not available", e);
+			});
 
 			// Change binary type from "blob" to "arraybuffer"
 			// this.ws.binaryType = "arraybuffer";
@@ -176,7 +179,7 @@ export default class Home extends React.Component {
 
 		data = new Float32Array(data);
 
-		// console.log(data);
+		console.log(data);
 
 		// this.ws.send(data);
 

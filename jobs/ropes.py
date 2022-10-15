@@ -24,23 +24,34 @@ logger.addHandler(screen_handler)
 
 redis_client = redis.Redis(host="localhost", port="6379", charset="utf-8")
 
+VIDEO_MIME_EXT = {
+    'video/x-msvideo': 'avi',
+    'video/mp4': 'mp4',
+    'video/mpeg': 'mpeg',
+    'video/ogg': 'ogv',
+    'video/mp2t': 'ts',
+    'video/webm': 'webm',
+}
 
-def pack_file_key(user_id, filename, timestamp):
+
+def pack_file_key(user_id, filename, timestamp, mimetype):
     """
     Args:
         user_id: uuid;
         filename: NamedTemporaryFile.name
         timestamp: current time in milliseconds
+        mimetype: video mimetype, random length string
     """
     
-    return bytes.fromhex(user_id) + struct.pack('8s', filename) + struct.pack('<d', timestamp)
+    return bytes.fromhex(user_id) + bytes(filename, 'utf-8') \
+        + struct.pack('<d', timestamp) + bytes(mimetype, 'utf-8')
 
 
 def unpack_file_key(bytes_str):
     """
     Return:
-        uuid, NamedTemporaryFile.name, current time in milliseconds
+        uuid, NamedTemporaryFile.name, current time in milliseconds, video mimetype
     """
 
-    return bytes_str[:16].hex(), struct.unpack('8s', bytes_str[16:24])[0].decode('utf-8')\
-        , struct.unpack('<d', bytes_str[24:])[0]
+    return bytes_str[:16].hex(), bytes_str[16:24].decode('utf-8')\
+        , struct.unpack('<d', bytes_str[24:32])[0], bytes_str[32:].decode('utf-8')

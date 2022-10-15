@@ -7,7 +7,7 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 
-from ropes import logger, redis_client, pack_file_key
+from ropes import logger, redis_client, pack_file_key, VIDEO_MIME_EXT
 # from oss_service import OSSService
 
 app = Flask(__name__)
@@ -20,18 +20,25 @@ user_id = '8860f21aee324f9babf5bb1c771486c8'
 @app.route("/upload/video", methods=['POST'])
 def upload_video():
     
-    f = request.files['file']
+    file = request.files['file']
 
-    with tempfile.NamedTemporaryFile(delete=False) as file:
-        f.save(file)
+    if file.content_type not in VIDEO_MIME_EXT:
+        return {'error': "unknown video mimetype {}".format(file.content_type)}
 
-        redis_client.rpush("file_to_upload", pack_file_key(user_id, file.name, time.time()))
+    timestamp = time.time()
+
+    with tempfile.NamedTemporaryFile(delete=False) as tf:
+
+        file.save(tf)
+
+        redis_client.rpush(os.getenv('FILE_TO_UPLOAD_REDIS_KEY', \
+            default='file_to_upload'), pack_file_key(user_id, file.name, timestamp, file.content_type))
 
     # If you return a dict or list from a view, it will be converted to a JSON response.
-    return {}
+    return {'oss_key' : user_id + '/' + str(timestamp) + '.' + VIDEO_MIME_EXT[file.content_type]}
 
 @app.route("/upload/progress", methods=['GET'])
 def upload_video():
 
     # If you return a dict or list from a view, it will be converted to a JSON response.
-    return {'progress': redis_client.get(request.get('oss_key', type=str, default='') + ':progress')}
+    return {'progress': redis_client.get(request.args.get('oss_key', type=str, default='') + ':progress')}

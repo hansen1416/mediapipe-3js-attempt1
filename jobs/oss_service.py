@@ -5,7 +5,7 @@ import oss2
 from oss2 import SizedFileAdapter, determine_part_size
 from oss2.models import PartInfo
 
-from ropes import redis_client
+from ropes import logger, redis_client, VIDEO_MIME_EXT
 
 class OSSService:
 
@@ -32,14 +32,16 @@ class OSSService:
         # HTTP响应头部。
         print('date: {0}'.format(result.headers['date']))
 
-    def multi_part_upload(self, key, filename):
+    def multi_part_upload(self, key, tmp_filename, mimetype):
 
         # # 填写不能包含Bucket名称在内的Object完整路径，例如exampledir/exampleobject.txt。
         # key = 'exampledir/exampleobject.txt'
-        # # 填写本地文件的完整路径，例如D:\\localpath\\examplefile.txt。
-        # filename = 'D:\\localpath\\examplefile.txt'
 
-        total_size = os.path.getsize(filename)
+        assert mimetype in VIDEO_MIME_EXT, "unknown video mimetype {}".format(mimetype)
+
+        key = key + '.' + VIDEO_MIME_EXT[mimetype]
+
+        total_size = os.path.getsize(tmp_filename)
         # determine_part_size方法用于确定分片大小。
         part_size = determine_part_size(total_size, preferred_size=10 * 1024 * 1024)
 
@@ -67,11 +69,14 @@ class OSSService:
         # 指定Object的对象标签，可同时设置多个标签。
         # headers[OSS_OBJECT_TAGGING] = 'k1=v1&k2=v2&k3=v3'
         # upload_id = bucket.init_multipart_upload(key, headers=headers).upload_id
+
+        headers['Content-Type'] = mimetype + '; charset=UTF-8'
+
         upload_id = self.bucket.init_multipart_upload(key).upload_id
         parts = []
 
         # 逐个上传分片。
-        with open(filename, 'rb') as fileobj:
+        with open(tmp_filename, 'rb') as fileobj:
             part_number = 1
             offset = 0
             while offset < total_size:
@@ -88,6 +93,8 @@ class OSSService:
 
                 redis_client.set(key + ':progress', round((offset / total_size) * 100, 2))
 
+                logger.info("{} upload in progress {}".format(key, offset))
+
 
         # 完成分片上传。
         # 如需在完成分片上传时设置相关Headers，请参考如下示例代码。
@@ -98,7 +105,7 @@ class OSSService:
         # bucket.complete_multipart_upload(key, upload_id, parts)
 
         # this was a temp file
-        os.unlink(filename)
+        os.unlink(tmp_filename)
         
         redis_client.set(key + ':progress', 100)
 
