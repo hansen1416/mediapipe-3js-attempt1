@@ -1,5 +1,6 @@
 import os
-import time
+import shutil
+from tempfile import NamedTemporaryFile
 
 import oss2
 from oss2 import SizedFileAdapter, determine_part_size
@@ -7,48 +8,57 @@ from oss2.models import PartInfo
 
 from ropes import logger, redis_client, VIDEO_MIME_EXT
 
+
 class OSSService:
 
     def __init__(self) -> None:
         # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-        auth = oss2.Auth(os.getenv('ALIYUN_ACCESS_ID'), os.getenv('ALIYUN_ACCESS_SECRET'))
+        auth = oss2.Auth(os.getenv('ALIYUN_ACCESS_ID'),
+                         os.getenv('ALIYUN_ACCESS_SECRET'))
         # yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
         # 填写Bucket名称。
-        self.bucket = oss2.Bucket(auth, os.getenv('OSS_ENDPOINT'), os.getenv('OSS_BUCKET'))
+        self.bucket = oss2.Bucket(auth, os.getenv(
+            'OSS_ENDPOINT'), os.getenv('OSS_BUCKET'))
 
-    def simple_upload(self, fileobj):
+    def simple_upload(self, fileobj, oss_key):
 
         fileobj.seek(0, os.SEEK_SET)
 
         # 填写Object完整路径。Object完整路径中不能包含Bucket名称。
-        result = self.bucket.put_object('exampleobject.txt', fileobj)
+        result = self.bucket.put_object(oss_key, fileobj)
 
-        # HTTP返回码。
-        print('http status: {0}'.format(result.status))
-        # 请求ID。请求ID是本次请求的唯一标识，强烈建议在程序日志中添加此参数。
-        print('request_id: {0}'.format(result.request_id))
-        # ETag是put_object方法返回值特有的属性，用于标识一个Object的内容。
-        print('ETag: {0}'.format(result.etag))
-        # HTTP响应头部。
-        print('date: {0}'.format(result.headers['date']))
+        return True if result.status == 200 else False
+
+        # # HTTP返回码。
+        # print('http status: {0}'.format(result.status))
+        # # 请求ID。请求ID是本次请求的唯一标识，强烈建议在程序日志中添加此参数。
+        # print('request_id: {0}'.format(result.request_id))
+        # # ETag是put_object方法返回值特有的属性，用于标识一个Object的内容。
+        # print('ETag: {0}'.format(result.etag))
+        # # HTTP响应头部。
+        # print('date: {0}'.format(result.headers['date']))
 
     def multi_part_upload(self, key, tmp_filename, mimetype):
 
         # # 填写不能包含Bucket名称在内的Object完整路径，例如exampledir/exampleobject.txt。
         # key = 'exampledir/exampleobject.txt'
 
-        assert mimetype in VIDEO_MIME_EXT, "unknown video mimetype {}".format(mimetype)
+        assert mimetype in VIDEO_MIME_EXT, "unknown video mimetype {}".format(
+            mimetype)
 
         key = key + '.' + VIDEO_MIME_EXT[mimetype]
 
-        logger.info("start multi_part_upload file {} from {}".format(key, tmp_filename))
+        logger.info("start multi_part_upload file {} from {}".format(
+            key, tmp_filename))
 
         total_size = os.path.getsize(tmp_filename)
 
-        preferred_size = 10 * 1024 * 1024 if os.getenv('FLASK_DEBUG') else 40 * 1024 * 1024
+        preferred_size = 10 * 1024 * \
+            1024 if os.getenv('FLASK_DEBUG') else 40 * 1024 * 1024
 
         # determine_part_size方法用于确定分片大小。
-        part_size = determine_part_size(total_size, preferred_size=preferred_size)
+        part_size = determine_part_size(
+            total_size, preferred_size=preferred_size)
 
         # 初始化分片。
         # 如需在初始化分片时设置文件存储类型，请在init_multipart_upload中设置相关Headers，参考如下。
@@ -88,33 +98,47 @@ class OSSService:
                 num_to_upload = min(part_size, total_size - offset)
                 # 调用SizedFileAdapter(fileobj, size)方法会生成一个新的文件对象，重新计算起始追加位置。
                 result = self.bucket.upload_part(key, upload_id, part_number,
-                                            SizedFileAdapter(fileobj, num_to_upload))
+                                                 SizedFileAdapter(fileobj, num_to_upload))
                 parts.append(PartInfo(part_number, result.etag))
 
                 offset += num_to_upload
                 part_number += 1
 
-                redis_client.setex(key + ':progress', 180, round((offset / total_size) * 100, 2))
+                redis_client.setex(key + ':progress', 180,
+                                   round((offset / total_size) * 100, 2))
 
                 logger.info("{} upload in progress {}".format(key, offset))
-
 
         # 完成分片上传。
         # 如需在完成分片上传时设置相关Headers，请参考如下示例代码。
         headers = dict()
         # 设置文件访问权限ACL。此处设置为OBJECT_ACL_PRIVATE，表示私有权限。
         # headers["x-oss-object-acl"] = oss2.OBJECT_ACL_PRIVATE
-        self.bucket.complete_multipart_upload(key, upload_id, parts, headers=headers)
+        self.bucket.complete_multipart_upload(
+            key, upload_id, parts, headers=headers)
         # bucket.complete_multipart_upload(key, upload_id, parts)
 
         # this was a temp file
         os.unlink(tmp_filename)
-        
+
         redis_client.setex(key + ':progress', 180, 100)
 
-        redis_client.rpush('video_to_process', 100)
+        redis_client.rpush(
+            os.getenv('VIDEO_TO_PROCESS_REDIS_KEY', default='video_to_process'), key)
 
         # 验证分片上传。
         # with open(filename, 'rb') as fileobj:
         #     assert self.bucket.get_object(key).read() == fileobj.read()
 
+    def remote_to_stream(self, oss_key):
+        # object_stream是类文件对象，您可以使用shutil.copyfileobj方法，将流式数据下载到本地文件中。
+        # 填写Object的完整路径。Object完整路径中不能包含Bucket名称。
+        object_stream = self.bucket.get_object(oss_key)
+
+        # 下载Object到本地文件，并保存到指定的本地路径中。如果指定的本地文件存在会覆盖，不存在则新建。
+        # 如果未指定本地路径，则下载后的文件默认保存到示例程序所属项目对应本地路径中。
+        with NamedTemporaryFile(delete=False) as tf:
+
+            shutil.copyfileobj(object_stream, tf)
+
+            return tf.name
