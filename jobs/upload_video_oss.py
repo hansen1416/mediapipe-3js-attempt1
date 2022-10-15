@@ -4,32 +4,34 @@ import sys
 import tempfile
 import time
 
-from ropes import logger, redis_client
+from ropes import logger, redis_client, unpack_file_key
+from oss_service import OSSService 
 
-def pack_file_key(user_id, filename, timestamp):
+
+def upload_video(user_id, filename, timestamp):
     
-    return bytes.fromhex(user_id) + struct.pack('8s', filename) + struct.pack('<d', timestamp)
+    oss_key = user_id + '/' + str(timestamp)
+    # in linux system, tempfile name is like /tmp/tmp(random_string)
+    filename = '/tmp/tmp' + filename
 
-def unpack_file_key(bytes_str):
+    oss_svc = OSSService()
 
-    return bytes_str[:16].hex(), struct.unpack('8s', bytes_str[16:24])[0].decode('utf-8')\
-        , struct.unpack('<d', bytes_str[24:])[0] 
+    oss_svc.multi_part_upload(oss_key, filename)
+
 
 if __name__ == "__main__":
 
-    user_id = '8860f21aee324f9babf5bb1c771486c8'
+    oss_svc = OSSService()
 
-    with tempfile.NamedTemporaryFile(delete=True) as file:
+    while True:
 
-        p = os.path.split(file.name)
+        if redis_client.llen('file_to_upload'):
 
-        t = time.time()
+            user_id, filename, timestamp = unpack_file_key(redis_client.lpop('file_to_upload'))
 
-        logger.info((user_id, p[-1][3:], t))
+            upload_video(user_id, filename, timestamp)
 
-        r1= pack_file_key(user_id=user_id, \
-            filename=p[-1][3:].encode('UTF-8'), timestamp=t)
+        else:
+            logger.info("no file to upload")
 
-        logger.info(sys.getsizeof(r1))
-
-        logger.info(unpack_file_key(r1))
+        time.sleep(1)
