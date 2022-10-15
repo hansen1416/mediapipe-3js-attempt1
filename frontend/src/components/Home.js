@@ -24,10 +24,8 @@ export default class Home extends React.Component {
 	constructor(props) {
 		super(props);
 
-
 		this.videoRef = React.createRef();
 		this.canvasRef = React.createRef();
-
 
 		this.animation_counter = 1;
 
@@ -37,7 +35,6 @@ export default class Home extends React.Component {
 
 		this.sendPesudoMsg = this.sendPesudoMsg.bind(this);
 		this.stopPesudoMsg = this.stopPesudoMsg.bind(this);
-
 
 		this.animationframe = 0;
 		this.animationcounter = 0;
@@ -54,12 +51,13 @@ export default class Home extends React.Component {
 				height: 300,
 				sources: [
 					{
-						// src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/yoga.mp4",
-						src: "http://192.168.0.105:3000/6packs.mp4",
+						src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/yoga.mp4",
+						// src: "http://192.168.0.105:3000/6packs.mp4",
 						type: "video/mp4",
 					},
 				],
 			},
+			videoCurrentTime: 0,
 		};
 	}
 
@@ -180,7 +178,9 @@ export default class Home extends React.Component {
 
 		// console.log(data);
 
-		this.ws.send(data);
+		// this.ws.send(data);
+
+		console.log(this.state.videoCurrentTime);
 	}
 
 	stopCamera() {
@@ -231,7 +231,14 @@ export default class Home extends React.Component {
 					</button>
 				</div>
 				<div>
-					<VideoPlayer {...this.state.videoJsOptions} />
+					<VideoPlayer
+						{...this.state.videoJsOptions}
+						onTimeUpdate={(playedTime) => {
+							this.setState({
+								videoCurrentTime: playedTime,
+							});
+						}}
+					/>
 				</div>
 			</div>
 		);

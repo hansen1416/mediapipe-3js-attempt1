@@ -5,6 +5,8 @@ import "video.js/dist/video-js.css";
 export default class VideoPlayer extends React.Component {
 	// Instantiate a Video.js player when the component mounts
 	componentDidMount() {
+		const timeupdatecallback = this.props.onTimeUpdate;
+
 		// instantiate video.js
 		this.player = videojs(
 			this.videoNode,
@@ -12,7 +14,8 @@ export default class VideoPlayer extends React.Component {
 			function onPlayerReady() {
 				// console.log("onPlayerReady", this);
 				this.on("timeupdate", function () {
-					console.log(this.currentTime());
+					timeupdatecallback(this.currentTime());
+					// console.log(this.currentTime());
 				});
 			}
 		);
