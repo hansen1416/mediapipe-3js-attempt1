@@ -18,7 +18,6 @@ const redis_client = net.createConnection(
  * @returns
  */
 function browser_buffer_to_arr(binary_arr) {
-
 	binary_arr = Buffer.from(binary_arr, "utf8");
 	// float takes 4 bytes, and each row has 4 items (x,y,z,visibility)
 	const arr = Array(binary_arr.length / 4 / 4);
@@ -39,23 +38,22 @@ function browser_buffer_to_arr(binary_arr) {
 		col += 1;
 	}
 
-	return arr
+	return arr;
 }
 
 /**
  * read bytes from redis, and transfer it to array
- * @param {Buffer} data_buffer 
- * @returns 
+ * @param {Buffer} data_buffer
+ * @returns
  */
 function python_struct_bytes_to_arr(data_buffer) {
-
-	const arr = Array((data_buffer.length-8) / 4 / 4);
+	const arr = Array((data_buffer.length - 8) / 4 / 4);
 
 	let row = -1;
 	let col = 0;
 
 	// python struct are padding at the beginnning 4 bytes and endding 2 bytes
-	for (let i = 6; i < data_buffer.length-2; i += 4) {
+	for (let i = 6; i < data_buffer.length - 2; i += 4) {
 		if (col % 4 == 0) {
 			row += 1;
 			col = 0;
@@ -68,24 +66,23 @@ function python_struct_bytes_to_arr(data_buffer) {
 		col += 1;
 	}
 
-	return arr
+	return arr;
 }
 
 const arrHolder = {
-
 	camera_arr: [],
 	// video_arr: [],
 
 	set video_arr(value) {
 		// todo compare camera pose and video pose
 
-		console.log(this.camera_arr, value)
+		console.log(this.camera_arr, value);
 
 		// return the result to main thread.
 		// main thread will mark this worker as available
 		parentPort.postMessage("result message:" + result);
-	}
-}
+	},
+};
 
 // Main thread will pass the data you need
 // through this event listener.
@@ -94,8 +91,7 @@ parentPort.on("message", (msg) => {
 		// browser buffer to array
 		arrHolder.camera_arr = browser_buffer_to_arr(msg);
 		// read bytes from redis
-		redis_client.write("get yoga123456:0\r\n", encoding='utf-8')
-
+		redis_client.write("get yoga123456:0\r\n", (encoding = "utf-8"));
 	} catch (e) {
 		console.log("worker error", e);
 
@@ -106,9 +102,7 @@ parentPort.on("message", (msg) => {
 // read output data from redis redis_client socket
 redis_client.on("data", (data) => {
 	try {
-
 		arrHolder.video_arr = python_struct_bytes_to_arr(data);
-		
 	} catch (e) {
 		console.log("worker error", e);
 

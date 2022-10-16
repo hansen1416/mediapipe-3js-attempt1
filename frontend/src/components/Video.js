@@ -12,8 +12,8 @@ export default function Video() {
 		height: 300,
 		sources: [
 			{
-				src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/8860f21aee324f9babf5bb1c771486c8/1665831900.1388848.mp4",
-				// src: "http://192.168.0.105:3000/6packs.mp4",
+				src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/8860f21aee324f9babf5bb1c771486c8/1665829847.0999663.mp4",
+				// src: "https://ifittest.oss-cn-shanghai.aliyuncs.com/8860f21aee324f9babf5bb1c771486c8/1665831900.1388848.mp4",
 				type: "video/mp4",
 			},
 		],
