@@ -1,23 +1,5 @@
 // import React from "react";
 import { useState, useRef } from "react";
-import "./Home.css";
-
-// import axios from "axios";
-
-// Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
-function getUserMedia(constraints, successCallback, errorCallback) {
-	if (!constraints || !successCallback || !errorCallback) {
-		return;
-	}
-
-	if (navigator.mediaDevices) {
-		navigator.mediaDevices
-			.getUserMedia(constraints)
-			.then(successCallback, errorCallback);
-	} else {
-		navigator.getUserMedia(constraints, successCallback, errorCallback);
-	}
-}
 
 export default function Upload() {
 	// constructor(props) {

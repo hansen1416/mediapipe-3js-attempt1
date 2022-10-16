@@ -6,12 +6,13 @@ import reportWebVitals from "./reportWebVitals";
 import {
 	createBrowserRouter,
 	RouterProvider,
-	Route,
-	Link,
+	// Route,
+	// Link,
 } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import Home from "./components/Home";
 import Upload from "./components/Upload";
+import Video from "./components/Video";
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
 			{
 				path: "/upload",
 				element: <Upload />,
+			},
+			{
+				path: "/video",
+				element: <Video />,
 			},
 		],
 	},

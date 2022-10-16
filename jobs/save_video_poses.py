@@ -249,6 +249,7 @@ class VideoProcesser():
 
                         logger.info(
                             "Save pose world landmark masks for {}".format(frame_start_end))
+                    break
 
 
 if __name__ == "__main__":
@@ -257,7 +258,7 @@ if __name__ == "__main__":
                           default='video_to_process')
 
     redis_client.rpush(
-        redis_key, '8860f21aee324f9babf5bb1c771486c8/1665829847.0999663.mp4')
+        redis_key, '8860f21aee324f9babf5bb1c771486c8/1665831900.1388848.mp4')
 
     while True:
 
