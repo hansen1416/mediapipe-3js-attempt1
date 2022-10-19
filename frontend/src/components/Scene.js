@@ -202,7 +202,12 @@ export default function Scene() {
 			function init() {
 				const MODEL_PATH =
 					process.env.PUBLIC_URL + "/models/stacy_lightweight.glb";
-				// const canvas = document.querySelector('#c');
+				// const MODEL_PATH =
+				// 	process.env.PUBLIC_URL +
+				// 	"/models/proportional_low_poly_man__free_download.glb";
+				// const MODEL_PATH =
+				// 	process.env.PUBLIC_URL + "/models/body_male.glb";
+
 				const canvas = canvasRef.current;
 				const backgroundColor = 0x363795;
 
@@ -260,9 +265,29 @@ export default function Scene() {
 							if (o.isBone && o.name === "mixamorigSpine") {
 								waist = o;
 							}
+
+							if (o.isBone && o.name === "mixamorigLeftArm") {
+								// o.position.y = 0;
+								// o.position.x = 3;
+								// o.position.z = 0;
+
+								o.rotation.z = 0;
+
+								console.log(o);
+							}
+
+							if (o.isBone && o.name === "mixamorigRightArm") {
+								// o.position.y = 0;
+								// o.position.x = 3;
+								// o.position.z = 0;
+
+								console.log(o);
+							}
 						});
 
-						model.scale.set(7, 7, 7);
+						const scaled = 9;
+
+						model.scale.set(scaled, scaled, scaled);
 						model.position.y = -11; // the foot was at 0
 						model.position.x = 0;
 						model.position.z = 0;
