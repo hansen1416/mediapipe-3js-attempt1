@@ -5,7 +5,6 @@ import * as THREE from "three";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 
-
 const degreesToRadians = (degrees) => {
 	return degrees * (Math.PI / 180);
 };
@@ -23,11 +22,11 @@ class Figure {
 		this.headHue = 279;
 		this.bodyHue = 132;
 
-		this.headMaterial = new THREE.MeshLambertMaterial({
-			color: `hsl(${this.headHue}, 30%, 50%`,
+		this.headMaterial = new THREE.MeshBasicMaterial({
+			color: 0x44aa88,
 		});
-		this.bodyMaterial = new THREE.MeshLambertMaterial({
-			color: `hsl(${this.bodyHue}, 85%, 50%)`,
+		this.bodyMaterial = new THREE.MeshBasicMaterial({
+			color: 0x44aa88,
 		});
 
 		// this.headMaterial = this.bodyMaterial;
@@ -39,11 +38,14 @@ class Figure {
 		this.group.position.z = this.params.z;
 		this.group.position.ry = this.params.ry;
 
+		this.group.rotation.x = 0;
+		this.group.rotation.y = 0.3;
+
 		scene.add(this.group);
 	}
 
 	createBody() {
-		const geometry = new THREE.BoxGeometry(1, 1.5, 1);
+		const geometry = new THREE.BoxGeometry(1, 1, 1);
 		this.body = new THREE.Mesh(geometry, this.bodyMaterial);
 		this.group.add(this.body);
 	}
@@ -53,7 +55,7 @@ class Figure {
 		this.head = new THREE.Group();
 
 		// Create the main cube of the head and add to the group
-		const geometry = new THREE.BoxGeometry(1.4, 1.4, 1.4);
+		const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
 		const headMain = new THREE.Mesh(geometry, this.headMaterial);
 		this.head.add(headMain);
 
@@ -88,6 +90,33 @@ class Figure {
 			armGroup.position.y = 0.6;
 
 			armGroup.rotation.z = degreesToRadians(40 * m);
+
+			// Helper
+			const box = new THREE.BoxHelper(armGroup, 0xffff00);
+			this.group.add(box);
+		}
+
+		const height2 = 0.6;
+		const geometry2 = new THREE.BoxGeometry(0.25, height2, 0.25);
+
+		for (let i = 0; i < 2; i++) {
+			const armGroup = new THREE.Group();
+			const arm = new THREE.Mesh(geometry2, this.headMaterial);
+
+			const m = i % 2 === 0 ? 1 : -1;
+
+			armGroup.add(arm);
+			this.group.add(armGroup);
+
+			// Translate the arm (not the group) downwards by half the height
+			arm.position.y = height2 * -0.5;
+
+			armGroup.position.x = m * 1.5;
+			armGroup.position.y = -0.2;
+
+			armGroup.rotation.z = degreesToRadians(40 * m);
+
+			armGroup.rotation.y = degreesToRadians(40 * m);
 
 			// Helper
 			const box = new THREE.BoxHelper(armGroup, 0xffff00);
@@ -143,6 +172,8 @@ class Figure {
 		this.createHead();
 		this.createArms();
 		this.createLegs();
+
+		// console.log("draw");
 	}
 }
 
@@ -153,7 +184,10 @@ export default function Scene() {
 	const renderer = useRef(null);
 
 	useEffect(() => {
-		const backgroundColor = 0xf1f1f1;
+		const backgroundColor = 0x363795;
+
+		const viewWidth = document.documentElement.clientWidth;
+		const viewHeight = document.documentElement.clientHeight;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
@@ -177,17 +211,33 @@ export default function Scene() {
 		 */
 		camera.current = new THREE.PerspectiveCamera(
 			75,
-			window.innerWidth / window.innerHeight,
+			viewWidth / viewHeight,
 			0.1,
 			1000
 		);
 
-		const figure = new Figure(scene.current)
+		const axesHelper = new THREE.AxesHelper(5);
+		scene.current.add(axesHelper);
 
-		figure.init()
+		const figure = new Figure(scene.current);
 
+		figure.init();
 
-		// renderer.current.render(scene.current, camera.current);
+		camera.current.position.z = 5;
+		camera.current.position.y = 0.5;
+
+		// const canvas = ;
+
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+		});
+
+		// console.log(canvasRef.current);
+
+		renderer.current.setSize(viewWidth, viewHeight);
+		// document.body.appendChild(renderer.current.domElement);
+
+		renderer.current.render(scene.current, camera.current);
 
 		return () => {
 			// cancelAnimationFrame(animationframe.current);

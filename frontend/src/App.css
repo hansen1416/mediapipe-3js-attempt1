@@ -1,4 +1,11 @@
 body {
   background-color: #363795;
   color: #fff;
+  overflow: hidden;
+}
+
+nav {
+  position: absolute;
+  top: 0;
+  right: 10px;
 }
