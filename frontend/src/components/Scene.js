@@ -5,7 +5,6 @@ import * as THREE from "three";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 import { Figure } from "./figure";
-import { bindEvent } from "./ropes";
 
 export default function Scene() {
 	const canvasRef = useRef(null);
@@ -14,10 +13,11 @@ export default function Scene() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const figure = useRef(null);
+
 	// the radius of the sphere
 	// used to calculate the angle
 	// the smaller, the faster the angle changes
-	const radius = 50;
+	const radius = 100;
 
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
@@ -63,29 +63,46 @@ export default function Scene() {
 		figure.current.init();
 
 		camera.current.position.z = 5;
-		camera.current.position.y = 0;
-
-		// const canvas = ;
+		camera.current.position.y = 0.1;
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
 		});
 
-		// console.log(canvasRef.current);
-
 		renderer.current.setSize(viewWidth, viewHeight);
-		// document.body.appendChild(renderer.current.domElement);
 
 		renderer.current.render(scene.current, camera.current);
 
-		bindEvent(containerRef.current, "mousedown", rotateStart);
+		containerRef.current.addEventListener("mousedown", rotateStart);
+
+		containerRef.current.addEventListener("click", get3dpos);
 
 		return () => {
-			// cancelAnimationFrame(animationframe.current);
-			// renderer.current.dispose();
-			// document.body.removeChild(renderer.current.domElement);
+			renderer.current.dispose();
 		};
+		// eslint-disable-next-line
 	}, []);
+
+	function get3dpos(event) {
+		var vec = new THREE.Vector3(); // create once and reuse
+		var pos = new THREE.Vector3(); // create once and reuse
+
+		vec.set(
+			(event.clientX / window.innerWidth) * 2 - 1,
+			-(event.clientY / window.innerHeight) * 2 + 1,
+			0.5
+		);
+
+		vec.unproject(camera.current);
+
+		vec.sub(camera.current.position).normalize();
+
+		var distance = -camera.current.position.z / vec.z;
+
+		pos.copy(camera.current.position).add(vec.multiplyScalar(distance));
+
+		// console.info(pos);
+	}
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();
@@ -95,7 +112,7 @@ export default function Scene() {
 
 		return [
 			Math.atan(x / radius) - startAngle.current[0],
-			Math.atan(y / radius) - startAngle.current[0],
+			Math.atan(y / radius) - startAngle.current[1],
 		];
 	}
 
@@ -110,9 +127,9 @@ export default function Scene() {
 
 		// oldTime = new Date().getTime();
 		// // 绑定三个事件
-		bindEvent(containerRef.current, "mousedown", rotateStart, "remove");
-		bindEvent(containerRef.current, "mousemove", rotate);
-		bindEvent(containerRef.current, "mouseup", rotateFinish);
+		containerRef.current.removeEventListener("mousedown", rotateStart);
+		containerRef.current.addEventListener("mousemove", rotate);
+		containerRef.current.addEventListener("mouseup", rotateFinish);
 	}
 
 	// 旋转函数，计算鼠标经过位置的向量，计算旋转轴，旋转的角度，请求动画，更新每一帧的时间
@@ -122,7 +139,7 @@ export default function Scene() {
 		// 计算鼠标经过轨迹的空间坐标
 		moveAngle.current = relativePos(e);
 
-		// figure.current.group.rotation.x = ;
+		// figure.current.group.rotation.x = moveAngle.current[1];
 		figure.current.group.rotation.y = moveAngle.current[0];
 
 		renderer.current.render(scene.current, camera.current);
@@ -130,17 +147,14 @@ export default function Scene() {
 
 	/**
 	 * [rotateFinish 旋转结束，移除document上的两个绑定事件mousemove & mouseup，重新给目标元素绑定事件mousedown，计算初始矩阵，取消动画]
-	 * @param  {[type]} e [event]
 	 * @return {[type]}   [description]
 	 */
-	function rotateFinish(e) {
-		// 当第一下为点击时，axis还是空数组，会出现计算出的startMatrix包含NaN的情况，所以在这里解除绑定的事件并且结束流程。其实可以不需要判断里面的数字是否为NaN，在前面rotate哪里已经把这种情况预防了，在这里只是以防万一
-
+	function rotateFinish() {
 		startAngle.current = moveAngle.current;
 
-		bindEvent(containerRef.current, "mousemove", rotate, "remove");
-		bindEvent(containerRef.current, "mouseup", rotateFinish, "remove");
-		bindEvent(containerRef.current, "mousedown", rotateStart);
+		containerRef.current.removeEventListener("mousemove", rotate);
+		containerRef.current.removeEventListener("mouseup", rotateFinish);
+		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
 
 	return (
