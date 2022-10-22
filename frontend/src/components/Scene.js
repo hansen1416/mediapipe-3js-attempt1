@@ -101,7 +101,7 @@ export default function Scene() {
 
 		pos.copy(camera.current.position).add(vec.multiplyScalar(distance));
 
-		// console.info(pos);
+		console.info(pos);
 	}
 
 	function relativePos(eventObj) {

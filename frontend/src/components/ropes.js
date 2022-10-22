@@ -13,6 +13,22 @@ export function getUserMedia(constraints, successCallback, errorCallback) {
 	}
 }
 
+export function degreesToRadians(degrees) {
+	return degrees * (Math.PI / 180);
+}
+
+export function radiansToDegrees(radian) {
+	return (radian / Math.PI) * 180;
+}
+
+export function originToEnd(originPosition, length, rotations) {
+	return [
+		originPosition.x + Math.sin(rotations.z) * length,
+		originPosition.y + Math.cos(rotations.y) * length,
+		originPosition.z + Math.sin(rotations.z) * length,
+	];
+}
+
 // export function worldPointFromScreenPoint(screenPoint, camera) {
 // 	let worldPoint = new THREE.Vector3();
 // 	worldPoint.x = screenPoint.x;

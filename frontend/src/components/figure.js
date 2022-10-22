@@ -1,8 +1,5 @@
 import * as THREE from "three";
-
-export const degreesToRadians = (degrees) => {
-	return degrees * (Math.PI / 180);
-};
+import { degreesToRadians, originToEnd } from "./ropes";
 
 export class Figure {
 	constructor(scene, params) {
@@ -20,8 +17,8 @@ export class Figure {
 		this.headMaterial = new THREE.MeshBasicMaterial({
 			color: 0x44aa88,
 		});
-		this.bodyMaterial = new THREE.MeshBasicMaterial({
-			color: 0x44aa88,
+		this.purpleMaterial = new THREE.MeshBasicMaterial({
+			color: 0xff21b0,
 		});
 
 		this.unit = 0.1;
@@ -46,10 +43,10 @@ export class Figure {
 		this.spine_size = 12 * this.unit;
 		this.waist_size = 5 * this.unit;
 
-		this.deltoid_size = 2 * this.unit;
+		this.deltoid_radius = 1.8 * this.unit;
 		this.bigarm_size = 10 * this.unit;
-		this.elbow_size = 1.6 * this.unit;
-		this.smallarm_size = 1 * this.unit;
+		this.elbow_radius = 1.6 * this.unit;
+		this.smallarm_size = 8 * this.unit;
 		this.wrist_size = 0.8 * this.unit;
 	}
 
@@ -67,7 +64,7 @@ export class Figure {
 			radialSegments
 		);
 
-		this.body = new THREE.Mesh(geometry, this.bodyMaterial);
+		this.body = new THREE.Mesh(geometry, this.headMaterial);
 
 		this.body.position.x = 0;
 		this.body.position.y = 0;
@@ -90,14 +87,7 @@ export class Figure {
 
 		this.group.add(neck_mesh);
 
-		const radius = this.head_radius; // ui: radius
-		const widthSegments = 12; // ui: widthSegments
-		const heightSegments = 8; // ui: heightSegments
-		const geometry = new THREE.SphereGeometry(
-			radius,
-			widthSegments,
-			heightSegments
-		);
+		const geometry = new THREE.SphereGeometry(this.head_radius);
 
 		// Create the main cube of the head and add to the group
 		// const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
@@ -141,62 +131,104 @@ export class Figure {
 
 	createArms() {
 		// Set the variable
-		const radialSegments = 8;
 
-		const bigarm_geometry = new THREE.CylinderGeometry(
-			this.deltoid_size,
-			this.elbow_size,
-			this.bigarm_size,
-			radialSegments
+		const bigarm_geo = new THREE.CylinderGeometry(
+			this.deltoid_radius,
+			this.elbow_radius,
+			this.bigarm_size
+		);
+
+		// const left_bigarm_group = new THREE.Group();
+		// const right_bigarm_group = new THREE.Group();
+
+		const elbow_geo = new THREE.SphereGeometry(this.elbow_radius);
+
+		const left_elbow_pos = new THREE.Vector3();
+		const right_elbow_pos = new THREE.Vector3();
+
+		for (let i = 0; i < 2; i++) {
+			const sign = i % 2 === 0 ? -1 : 1;
+
+			const bigarm_group = new THREE.Group();
+			const arm = new THREE.Mesh(bigarm_geo, this.headMaterial);
+			const elbow = new THREE.Mesh(elbow_geo, this.purpleMaterial);
+
+			// Translate the arm (not the group) downwards by half the height
+			// so the group rotates at the shoulder
+			arm.position.y = this.bigarm_size * -0.5;
+
+			elbow.position.y = this.bigarm_size * -1;
+
+			bigarm_group.add(arm);
+
+			bigarm_group.add(elbow);
+
+			this.group.add(bigarm_group);
+
+			bigarm_group.position.x =
+				sign * (this.shoulder_size / 2 + this.deltoid_radius * 2);
+
+			bigarm_group.position.y = this.spine_size / 2;
+
+			if (i % 2 === 0) {
+				bigarm_group.rotation.z = degreesToRadians(-40);
+
+				// bigarm_group.updateMatrixWorld(true);
+
+				elbow.getWorldPosition(left_elbow_pos);
+			} else {
+				bigarm_group.rotation.z = degreesToRadians(30);
+
+				// bigarm_group.updateMatrixWorld(true);
+
+				elbow.getWorldPosition(right_elbow_pos);
+			}
+
+			// // Helper
+			// const box = new THREE.BoxHelper(bigarm_group, 0xffff00);
+			// this.group.add(box);
+		}
+
+		const smallarm_geo = new THREE.CylinderGeometry(
+			this.deltoid_radius,
+			this.elbow_radius,
+			this.smallarm_size
 		);
 
 		for (let i = 0; i < 2; i++) {
-			const armGroup = new THREE.Group();
-			const arm = new THREE.Mesh(bigarm_geometry, this.headMaterial);
+			const smallarm_group = new THREE.Group();
+			const arm = new THREE.Mesh(smallarm_geo, this.headMaterial);
 
 			const sign = i % 2 === 0 ? 1 : -1;
 
-			armGroup.add(arm);
-			this.group.add(armGroup);
+			smallarm_group.add(arm);
 
-			// Translate the arm (not the group) downwards by half the height
-			arm.position.y = this.bigarm_size * -0.5;
-
-			armGroup.position.x =
-				sign * (this.shoulder_size / 2 + this.deltoid_size * 2);
-			armGroup.position.y = 0.6;
-
-			// armGroup.rotation.z = degreesToRadians(40 * m);
-
-			// Helper
-			const box = new THREE.BoxHelper(armGroup, 0xffff00);
-			this.group.add(box);
-		}
-
-		const geometry2 = new THREE.BoxGeometry(0.25, this.smallarm_size, 0.25);
-
-		for (let i = 0; i < 2; i++) {
-			const armGroup = new THREE.Group();
-			const arm = new THREE.Mesh(geometry2, this.headMaterial);
-
-			const m = i % 2 === 0 ? 1 : -1;
-
-			armGroup.add(arm);
-			this.group.add(armGroup);
+			this.group.add(smallarm_group);
 
 			// Translate the arm (not the group) downwards by half the height
 			arm.position.y = this.smallarm_size * -0.5;
 
-			armGroup.position.x = m * 1.5;
-			armGroup.position.y = -0.2;
+			if (i % 2 === 0) {
+				smallarm_group.position.x = left_elbow_pos.x;
+				smallarm_group.position.y = left_elbow_pos.y;
+				smallarm_group.position.z = left_elbow_pos.z;
 
-			armGroup.rotation.z = degreesToRadians(40 * m);
+				smallarm_group.rotation.z = degreesToRadians(10);
+			} else {
+				smallarm_group.position.x = right_elbow_pos.x;
+				smallarm_group.position.y = right_elbow_pos.y;
+				smallarm_group.position.z = right_elbow_pos.z;
 
-			armGroup.rotation.y = degreesToRadians(40 * m);
+				smallarm_group.rotation.z = degreesToRadians(-10);
+			}
 
-			// Helper
-			const box = new THREE.BoxHelper(armGroup, 0xffff00);
-			this.group.add(box);
+			// armGroup.rotation.z = degreesToRadians(40 * sign);
+
+			// armGroup.rotation.y = degreesToRadians(40 * sign);
+
+			// // Helper
+			// const box = new THREE.BoxHelper(smallarm_group, 0xffff00);
+			// this.group.add(box);
 		}
 	}
 
