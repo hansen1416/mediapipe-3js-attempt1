@@ -12,3 +12,10 @@ export function getUserMedia(constraints, successCallback, errorCallback) {
 		navigator.getUserMedia(constraints, successCallback, errorCallback);
 	}
 }
+
+// 绑定事件
+export function bindEvent(target, type, callback, remove, propa) {
+	var remove = arguments[3] || "add",
+		propagation = arguments[4] || false;
+	target[remove + "EventListener"](type, callback, propagation);
+}
