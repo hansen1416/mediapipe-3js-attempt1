@@ -11,3 +11,9 @@ canvas {
 input[type=file] {
   display: none;
 }
+
+.btn-box {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}

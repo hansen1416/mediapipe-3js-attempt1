@@ -55,24 +55,12 @@ export default function Scene() {
 			1000
 		);
 
-		const axesHelper = new THREE.AxesHelper(5);
-		scene.current.add(axesHelper);
+		// const axesHelper = new THREE.AxesHelper(5);
+		// scene.current.add(axesHelper);
 
-		figure.current = new Figure(scene.current, [0, -0.5, -0.2]);
+		figure.current = new Figure(scene.current, [0, 0, 0]);
 
 		figure.current.init();
-
-		figure.current.bigArmRotate([-0.5, 0, 0], -1);
-		figure.current.bigArmRotate([0.5, 0, 0], 1);
-
-		figure.current.smallArmRotate([-0.3, 0, 0], -1);
-		figure.current.smallArmRotate([-0.3, 0, 0], 1);
-
-		figure.current.thighRotate([0.5, 0, 0], -1);
-		figure.current.thighRotate([-0.5, 0, 0], 1);
-
-		figure.current.crusRotate([0.3, 0, 0], -1);
-		figure.current.crusRotate([0.3, 0, 0], 1);
 
 		camera.current.position.z = 5;
 		camera.current.position.y = 0.4;
@@ -87,7 +75,7 @@ export default function Scene() {
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
-		containerRef.current.addEventListener("click", get3dpos);
+		// containerRef.current.addEventListener("click", get3dpos);
 
 		return () => {
 			renderer.current.dispose();
@@ -169,9 +157,46 @@ export default function Scene() {
 		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
 
+	function idle() {
+		figure.current.bigArmRotate([0, 0, 0], -1);
+		figure.current.bigArmRotate([0, 0, 0], 1);
+
+		figure.current.smallArmRotate([0, 0, 0], -1);
+		figure.current.smallArmRotate([0, 0, 0], 1);
+
+		figure.current.thighRotate([0, 0, 0], -1);
+		figure.current.thighRotate([0, 0, 0], 1);
+
+		figure.current.crusRotate([0, 0, 0], -1);
+		figure.current.crusRotate([0, 0, 0], 1);
+
+		renderer.current.render(scene.current, camera.current);
+	}
+
+	function walk() {
+		figure.current.bigArmRotate([-0.5, 0, 0], -1);
+		figure.current.bigArmRotate([0.5, 0, 0], 1);
+
+		figure.current.smallArmRotate([-0.3, 0, 0], -1);
+		figure.current.smallArmRotate([-0.3, 0, 0], 1);
+
+		figure.current.thighRotate([0.5, 0, 0], -1);
+		figure.current.thighRotate([-0.5, 0, 0], 1);
+
+		figure.current.crusRotate([0.3, 0, 0], -1);
+		figure.current.crusRotate([0.3, 0, 0], 1);
+
+		renderer.current.render(scene.current, camera.current);
+	}
+
 	return (
 		<div ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
+
+			<div className="btn-box">
+				<button onClick={idle}>idle</button>
+				<button onClick={walk}>walk</button>
+			</div>
 		</div>
 	);
 }
