@@ -43,11 +43,15 @@ export class Figure {
 		this.spine_size = 12 * this.unit;
 		this.waist_size = 5 * this.unit;
 
+		this.shoulder_radius = 1.8 * this.unit;
 		this.deltoid_radius = 1.8 * this.unit;
 		this.bigarm_size = 10 * this.unit;
 		this.elbow_radius = 1.6 * this.unit;
 		this.smallarm_size = 8 * this.unit;
 		this.wrist_size = 0.8 * this.unit;
+
+		this.left_shoulder_pos = new THREE.Vector3();
+		this.right_shoulder_pos = new THREE.Vector3();
 	}
 
 	createBody() {
@@ -132,14 +136,13 @@ export class Figure {
 	createArms() {
 		// Set the variable
 
+		const should_geo = new THREE.SphereGeometry(this.shoulder_radius);
+
 		const bigarm_geo = new THREE.CylinderGeometry(
 			this.deltoid_radius,
 			this.elbow_radius,
 			this.bigarm_size
 		);
-
-		// const left_bigarm_group = new THREE.Group();
-		// const right_bigarm_group = new THREE.Group();
 
 		const elbow_geo = new THREE.SphereGeometry(this.elbow_radius);
 
@@ -150,14 +153,20 @@ export class Figure {
 			const sign = i % 2 === 0 ? -1 : 1;
 
 			const bigarm_group = new THREE.Group();
+
+			const shoulder = new THREE.Mesh(should_geo, this.purpleMaterial);
 			const arm = new THREE.Mesh(bigarm_geo, this.headMaterial);
 			const elbow = new THREE.Mesh(elbow_geo, this.purpleMaterial);
+
+			shoulder.position.y = 0;
 
 			// Translate the arm (not the group) downwards by half the height
 			// so the group rotates at the shoulder
 			arm.position.y = this.bigarm_size * -0.5;
 
 			elbow.position.y = this.bigarm_size * -1;
+
+			bigarm_group.add(shoulder);
 
 			bigarm_group.add(arm);
 
@@ -168,7 +177,8 @@ export class Figure {
 			bigarm_group.position.x =
 				sign * (this.shoulder_size / 2 + this.deltoid_radius * 2);
 
-			bigarm_group.position.y = this.spine_size / 2;
+			bigarm_group.position.y =
+				this.spine_size / 2 - this.shoulder_radius;
 
 			if (i % 2 === 0) {
 				bigarm_group.rotation.z = degreesToRadians(-40);
@@ -213,13 +223,17 @@ export class Figure {
 				smallarm_group.position.y = left_elbow_pos.y;
 				smallarm_group.position.z = left_elbow_pos.z;
 
+				smallarm_group.rotation.x = degreesToRadians(-20);
+				smallarm_group.rotation.y = degreesToRadians(20);
 				smallarm_group.rotation.z = degreesToRadians(10);
 			} else {
 				smallarm_group.position.x = right_elbow_pos.x;
 				smallarm_group.position.y = right_elbow_pos.y;
 				smallarm_group.position.z = right_elbow_pos.z;
 
-				smallarm_group.rotation.z = degreesToRadians(-10);
+				smallarm_group.rotation.x = degreesToRadians(-30);
+				smallarm_group.rotation.y = degreesToRadians(-30);
+				smallarm_group.rotation.z = degreesToRadians(-30);
 			}
 
 			// armGroup.rotation.z = degreesToRadians(40 * sign);
