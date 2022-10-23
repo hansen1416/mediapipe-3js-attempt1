@@ -21,8 +21,6 @@ export class Figure {
 			color: 0xff21b0,
 		});
 
-		this.unit = 0.1;
-
 		this.group = new THREE.Group();
 
 		this.group.position.x = this.params.x;
@@ -35,7 +33,10 @@ export class Figure {
 
 		scene.add(this.group);
 
+		this.unit = 0.1;
+
 		this.head_radius = 4 * this.unit;
+		this.eye_radius = 1 * this.unit;
 		this.neck_radius = 1.6 * this.unit;
 		this.neck_size = 2 * this.unit;
 
@@ -70,8 +71,7 @@ export class Figure {
 
 		this.body = new THREE.Mesh(geometry, this.headMaterial);
 
-		this.body.position.x = 0;
-		this.body.position.y = 0;
+		this.body.position.y = this.spine_size / 2;
 
 		this.group.add(this.body);
 	}
@@ -85,36 +85,35 @@ export class Figure {
 			this.neck_radius,
 			this.neck_size
 		);
-		const neck_mesh = new THREE.Mesh(neck_geo, this.headMaterial);
+		const neck_mesh = new THREE.Mesh(neck_geo, this.purpleMaterial);
 
-		neck_mesh.position.y = this.spine_size / 2 + this.neck_size / 2;
+		neck_mesh.position.y = this.spine_size + this.neck_size / 2;
 
 		this.group.add(neck_mesh);
 
-		const geometry = new THREE.SphereGeometry(this.head_radius);
+		const head_geo = new THREE.SphereGeometry(this.head_radius);
 
 		// Create the main cube of the head and add to the group
 		// const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-		const headMesh = new THREE.Mesh(geometry, this.headMaterial);
+		const headMesh = new THREE.Mesh(head_geo, this.headMaterial);
 		this.head.add(headMesh);
+
+		// Position the head group
+		this.head.position.y =
+			this.spine_size + this.head_radius + this.neck_size;
 
 		// Add the head group to the figure
 		this.group.add(this.head);
 
-		// Position the head group
-		this.head.position.y =
-			this.spine_size / 2 + this.head_radius + this.neck_size;
-
 		// Add the eyes by calling the function we already made
 		const eyes = new THREE.Group();
-		const eyeRadius = 0.1;
-		const eyeGeometry = new THREE.CircleGeometry(eyeRadius, 8);
+		const eye_geo = new THREE.CircleGeometry(this.eye_radius, 8);
 
 		// Define the eye material
 		const material = new THREE.MeshLambertMaterial({ color: 0x44445c });
 
 		for (let i = 0; i < 2; i++) {
-			const eye = new THREE.Mesh(eyeGeometry, material);
+			const eye = new THREE.Mesh(eye_geo, material);
 			const sign = i % 2 === 0 ? -1 : 1;
 
 			// Add the eye to the group
@@ -177,8 +176,7 @@ export class Figure {
 			bigarm_group.position.x =
 				sign * (this.shoulder_size / 2 + this.deltoid_radius * 2);
 
-			bigarm_group.position.y =
-				this.spine_size / 2 - this.shoulder_radius;
+			bigarm_group.position.y = this.spine_size - this.shoulder_radius;
 
 			if (i % 2 === 0) {
 				bigarm_group.rotation.z = degreesToRadians(-40);
