@@ -11,6 +11,7 @@ import {
 	pointsToVector,
 	distanceBetweenPoints,
 	magnitude,
+	crossProduct,
 } from "./ropes";
 
 export default function Scene() {
@@ -221,6 +222,8 @@ export default function Scene() {
 
 		console.log(left_bigarm);
 		console.log(left_bigarm_idle);
+
+		console.log(crossProduct(left_bigarm_idle, left_bigarm));
 
 		console.log(right_bigarm);
 		console.log(right_bigarm_idle);

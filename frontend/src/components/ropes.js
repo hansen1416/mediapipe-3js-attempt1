@@ -41,6 +41,14 @@ export function magnitude(a) {
 	return Math.sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2);
 }
 
+export function crossProduct(a, b) {
+	return [
+		a[1] * b[2] - a[2] * b[1],
+		a[2] * b[0] - a[0] * b[2],
+		a[0] * b[1] - a[1] * b[0],
+	];
+}
+
 export const joints = [
 	"NOSE",
 	"LEFT_EYE_INNER",
