@@ -63,7 +63,7 @@ export default function Scene() {
 		figure.current.init();
 
 		camera.current.position.z = 5;
-		camera.current.position.y = 0.1;
+		camera.current.position.y = 0.4;
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
