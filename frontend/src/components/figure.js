@@ -14,11 +14,11 @@ export class Figure {
 		this.headHue = 279;
 		this.bodyHue = 132;
 
-		this.headMaterial = new THREE.MeshBasicMaterial({
+		this.bodyMaterial = new THREE.MeshBasicMaterial({
 			color: 0x44aa88,
 		});
 		this.purpleMaterial = new THREE.MeshBasicMaterial({
-			color: 0xff21b0,
+			color: 0x33eeb0,
 		});
 
 		this.group = new THREE.Group();
@@ -46,13 +46,28 @@ export class Figure {
 
 		this.shoulder_radius = 1.8 * this.unit;
 		this.deltoid_radius = 1.8 * this.unit;
-		this.bigarm_size = 10 * this.unit;
+		this.bigarm_size = 8 * this.unit;
 		this.elbow_radius = 1.6 * this.unit;
 		this.smallarm_size = 8 * this.unit;
-		this.wrist_size = 0.8 * this.unit;
+		this.wrist_size = 1.2 * this.unit;
 
 		this.left_shoulder_pos = new THREE.Vector3();
 		this.right_shoulder_pos = new THREE.Vector3();
+
+		this.hip_radius = 2.8 * this.unit;
+
+		this.left_hip_pos = new THREE.Vector3();
+		this.right_hip_pos = new THREE.Vector3();
+
+		this.thigh_radius = 2.8 * this.unit;
+		this.thigh_size = 10 * this.unit;
+		this.knee_radius = 2.4 * this.unit;
+
+		this.left_knee_pos = new THREE.Vector3();
+		this.right_knee_pos = new THREE.Vector3();
+
+		this.crus_size = 10 * this.unit;
+		this.ankle_radius = 1.8 * this.unit;
 	}
 
 	createBody() {
@@ -69,7 +84,7 @@ export class Figure {
 			radialSegments
 		);
 
-		this.body = new THREE.Mesh(geometry, this.headMaterial);
+		this.body = new THREE.Mesh(geometry, this.bodyMaterial);
 
 		this.body.position.y = this.spine_size / 2;
 
@@ -95,7 +110,7 @@ export class Figure {
 
 		// Create the main cube of the head and add to the group
 		// const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-		const headMesh = new THREE.Mesh(head_geo, this.headMaterial);
+		const headMesh = new THREE.Mesh(head_geo, this.bodyMaterial);
 		this.head.add(headMesh);
 
 		// Position the head group
@@ -135,7 +150,7 @@ export class Figure {
 	createArms() {
 		// Set the variable
 
-		const should_geo = new THREE.SphereGeometry(this.shoulder_radius);
+		const shoulder_geo = new THREE.SphereGeometry(this.shoulder_radius);
 
 		const bigarm_geo = new THREE.CylinderGeometry(
 			this.deltoid_radius,
@@ -153,8 +168,8 @@ export class Figure {
 
 			const bigarm_group = new THREE.Group();
 
-			const shoulder = new THREE.Mesh(should_geo, this.purpleMaterial);
-			const arm = new THREE.Mesh(bigarm_geo, this.headMaterial);
+			const shoulder = new THREE.Mesh(shoulder_geo, this.purpleMaterial);
+			const arm = new THREE.Mesh(bigarm_geo, this.bodyMaterial);
 			const elbow = new THREE.Mesh(elbow_geo, this.purpleMaterial);
 
 			shoulder.position.y = 0;
@@ -198,14 +213,14 @@ export class Figure {
 		}
 
 		const smallarm_geo = new THREE.CylinderGeometry(
-			this.deltoid_radius,
 			this.elbow_radius,
+			this.wrist_size,
 			this.smallarm_size
 		);
 
 		for (let i = 0; i < 2; i++) {
 			const smallarm_group = new THREE.Group();
-			const arm = new THREE.Mesh(smallarm_geo, this.headMaterial);
+			const arm = new THREE.Mesh(smallarm_geo, this.bodyMaterial);
 
 			const sign = i % 2 === 0 ? 1 : -1;
 
@@ -245,21 +260,103 @@ export class Figure {
 	}
 
 	createLegs() {
-		const legs = new THREE.Group();
-		const geometry = new THREE.BoxGeometry(0.25, 0.4, 0.25);
+		const hip_geo = new THREE.SphereGeometry(this.hip_radius);
+
+		// for (let i = 0; i < 2; i++) {
+
+		// 	hip.position.x = (sign * this.hip_radius * 2) / 3;
+		// 	hip.position.y = 0;
+
+		// 	this.group.add(hip);
+		// }
+
+		const thigh_geo = new THREE.CylinderGeometry(
+			this.thigh_radius,
+			this.knee_radius,
+			this.thigh_size
+		);
+
+		const knee_geo = new THREE.SphereGeometry(this.knee_radius);
 
 		for (let i = 0; i < 2; i++) {
-			const leg = new THREE.Mesh(geometry, this.headMaterial);
-			const m = i % 2 === 0 ? 1 : -1;
+			const sign = i % 2 === 0 ? -1 : 1;
 
-			legs.add(leg);
-			leg.position.x = m * 0.22;
+			const thigh_group = new THREE.Group();
+
+			const hip = new THREE.Mesh(hip_geo, this.purpleMaterial);
+			const thigh = new THREE.Mesh(thigh_geo, this.bodyMaterial);
+			const knee = new THREE.Mesh(knee_geo, this.purpleMaterial);
+
+			hip.position.y = 0;
+
+			// Translate the arm (not the group) downwards by half the height
+			// so the group rotates at the shoulder
+			thigh.position.y = this.thigh_size * -0.5;
+
+			knee.position.y = this.thigh_size * -1;
+
+			thigh_group.add(hip);
+
+			thigh_group.add(thigh);
+
+			thigh_group.add(knee);
+
+			this.group.add(thigh_group);
+
+			thigh_group.position.x = sign * this.thigh_radius;
+
+			thigh_group.position.y = (-1 / 3) * this.hip_radius;
+
+			if (i % 2 === 0) {
+				thigh_group.rotation.x = degreesToRadians(-20);
+
+				knee.getWorldPosition(this.left_knee_pos);
+			} else {
+				// thigh_group.rotation.z = degreesToRadians(0);
+
+				knee.getWorldPosition(this.right_knee_pos);
+			}
+
+			// // Helper
+			// const box = new THREE.BoxHelper(bigarm_group, 0xffff00);
+			// this.group.add(box);
 		}
 
-		this.group.add(legs);
-		legs.position.y = -1.15;
+		const crus_geo = new THREE.CylinderGeometry(
+			this.knee_radius,
+			this.ankle_radius,
+			this.crus_size
+		);
 
-		this.body.add(legs);
+		for (let i = 0; i < 2; i++) {
+			const sign = i % 2 === 0 ? 1 : -1;
+
+			const crus_group = new THREE.Group();
+			const crus = new THREE.Mesh(crus_geo, this.bodyMaterial);
+
+			// Translate the arm (not the group) downwards by half the height
+			crus.position.y = this.crus_size * -0.5;
+
+			crus_group.add(crus);
+
+			this.group.add(crus_group);
+
+			if (i % 2 === 0) {
+				crus_group.position.x = this.left_knee_pos.x;
+				crus_group.position.y = this.left_knee_pos.y;
+				crus_group.position.z = this.left_knee_pos.z;
+			} else {
+				crus_group.position.x = this.right_knee_pos.x;
+				crus_group.position.y = this.right_knee_pos.y;
+				crus_group.position.z = this.right_knee_pos.z;
+
+				crus_group.rotation.x = degreesToRadians(10);
+			}
+
+			// // Helper
+			// const box = new THREE.BoxHelper(smallarm_group, 0xffff00);
+			// this.group.add(box);
+		}
 	}
 
 	init() {
@@ -267,7 +364,5 @@ export class Figure {
 		this.createHead();
 		this.createArms();
 		this.createLegs();
-
-		// console.log("draw");
 	}
 }
