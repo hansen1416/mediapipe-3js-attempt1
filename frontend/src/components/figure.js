@@ -287,4 +287,36 @@ export class Figure {
 		this.createArms();
 		this.createLegs();
 	}
+
+	bigArmRotate(rotation, sign) {
+		if (sign < 0) {
+			this.left_bigarm.rotation.set(...rotation);
+		} else {
+			this.right_bigarm.rotation.set(...rotation);
+		}
+	}
+
+	smallArmRotate(rotation, sign) {
+		if (sign < 0) {
+			this.left_smallarm.rotation.set(...rotation);
+		} else {
+			this.right_smallarm.rotation.set(...rotation);
+		}
+	}
+
+	thighRotate(rotation, sign) {
+		if (sign < 0) {
+			this.left_thigh.rotation.set(...rotation);
+		} else {
+			this.right_thigh.rotation.set(...rotation);
+		}
+	}
+
+	crusRotate(rotation, sign) {
+		if (sign < 0) {
+			this.left_crus.rotation.set(...rotation);
+		} else {
+			this.right_crus.rotation.set(...rotation);
+		}
+	}
 }

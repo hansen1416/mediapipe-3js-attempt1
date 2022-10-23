@@ -62,6 +62,18 @@ export default function Scene() {
 
 		figure.current.init();
 
+		figure.current.bigArmRotate([-0.5, 0, 0], -1);
+		figure.current.bigArmRotate([0.5, 0, 0], 1);
+
+		figure.current.smallArmRotate([-0.3, 0, 0], -1);
+		figure.current.smallArmRotate([-0.3, 0, 0], 1);
+
+		figure.current.thighRotate([0.5, 0, 0], -1);
+		figure.current.thighRotate([-0.5, 0, 0], 1);
+
+		figure.current.crusRotate([0.3, 0, 0], -1);
+		figure.current.crusRotate([0.3, 0, 0], 1);
+
 		camera.current.position.z = 5;
 		camera.current.position.y = 0.4;
 
