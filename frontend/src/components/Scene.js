@@ -58,7 +58,7 @@ export default function Scene() {
 		const axesHelper = new THREE.AxesHelper(5);
 		scene.current.add(axesHelper);
 
-		figure.current = new Figure(scene.current);
+		figure.current = new Figure(scene.current, [0, -0.5, -0.2]);
 
 		figure.current.init();
 
