@@ -5,6 +5,7 @@ import * as THREE from "three";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 import { Figure } from "./figure";
+import { tmppose } from "./tmppose";
 
 export default function Scene() {
 	const canvasRef = useRef(null);
@@ -190,7 +191,7 @@ export default function Scene() {
 	}
 
 	return (
-		<div ref={containerRef}>
+		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">

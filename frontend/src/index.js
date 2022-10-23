@@ -13,6 +13,7 @@ import ErrorPage from "./ErrorPage";
 import Home from "./components/Home";
 import Upload from "./components/Upload";
 import Video from "./components/Video";
+import WebCamera from "./components/WebCamera";
 
 const router = createBrowserRouter([
 	{
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
 			{
 				path: "/video",
 				element: <Video />,
+			},
+			{
+				path: "/camera",
+				element: <WebCamera />,
 			},
 		],
 	},

@@ -14,6 +14,8 @@ export default function WebCamera() {
 	const ws = useRef(null);
 	const camera = useRef(null);
 
+	const tmpcounter = useRef(0);
+
 	useEffect(() => {
 		// todo, retry stratergy
 		ws.current = new WebSocket(process.env.REACT_APP_WS_ENDPOINT);
@@ -43,6 +45,12 @@ export default function WebCamera() {
 					// we can start having fun
 					try {
 						videoRef.current.srcObject = stream;
+
+						let stream_settings = stream
+							.getVideoTracks()[0]
+							.getSettings();
+
+						console.log(stream_settings);
 					} catch (error) {
 						videoRef.current.src = URL.createObjectURL(stream);
 					}
@@ -106,7 +114,11 @@ export default function WebCamera() {
 			return;
 		}
 
-		// console.log(wlm);
+		tmpcounter.current += 1;
+
+		if (tmpcounter.current == 50) {
+			console.log(wlm);
+		}
 
 		let data = wlm.map((x) => Object.values(x));
 
@@ -119,7 +131,7 @@ export default function WebCamera() {
 
 		// console.log(data);
 
-		ws.current.send(data);
+		// ws.current.send(data);
 	}
 
 	function stopCamera() {
@@ -149,7 +161,7 @@ export default function WebCamera() {
 	// }
 
 	return (
-		<div>
+		<div className="web-camera">
 			<video ref={videoRef} autoPlay={true}></video>
 			<canvas ref={canvasRef} width="640px" height="360px"></canvas>
 			<div>

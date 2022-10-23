@@ -8,8 +8,24 @@ canvas {
   right: 0;
   transform: scaleX(-1);
 } */
-input[type=file] {
+/* input[type=file] {
   display: none;
+} */
+
+.box {
+  position: relative;
+  display: flex;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  
+}
+
+.web-camera {
+  position: relative;
+  width: 20%;
 }
 
 .btn-box {

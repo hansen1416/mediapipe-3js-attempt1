@@ -4,6 +4,7 @@ import "./App.css";
 function App() {
 	return (
 		<div className="App">
+			<Outlet />
 			<nav>
 				<ul>
 					<li>
@@ -15,9 +16,11 @@ function App() {
 					<li>
 						<Link to={`/video`}>Video</Link>
 					</li>
+					<li>
+						<Link to={`/camera`}>Camera</Link>
+					</li>
 				</ul>
 			</nav>
-			<Outlet />
 		</div>
 	);
 }
