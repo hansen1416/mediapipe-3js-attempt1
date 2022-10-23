@@ -171,20 +171,20 @@ export class Figure {
 			const bigarm_group = new THREE.Group();
 
 			const shoulder = new THREE.Mesh(shoulder_geo, this.purpleMaterial);
-			const arm = new THREE.Mesh(bigarm_geo, this.bodyMaterial);
+			const bigarm = new THREE.Mesh(bigarm_geo, this.bodyMaterial);
 			const elbow = new THREE.Mesh(elbow_geo, this.purpleMaterial);
 
 			shoulder.position.y = 0;
 
 			// Translate the arm (not the group) downwards by half the height
 			// so the group rotates at the shoulder
-			arm.position.y = this.bigarm_size * -0.5;
+			bigarm.position.y = this.bigarm_size * -0.5;
 
 			elbow.position.y = this.bigarm_size * -1;
 
 			bigarm_group.add(shoulder);
 
-			bigarm_group.add(arm);
+			bigarm_group.add(bigarm);
 
 			bigarm_group.add(elbow);
 
@@ -218,16 +218,14 @@ export class Figure {
 
 		for (let i = 0; i < 2; i++) {
 			const smallarm_group = new THREE.Group();
-			const arm = new THREE.Mesh(smallarm_geo, this.bodyMaterial);
-
-			const sign = i % 2 === 0 ? 1 : -1;
-
-			smallarm_group.add(arm);
-
-			this.group.add(smallarm_group);
+			const smallarm = new THREE.Mesh(smallarm_geo, this.bodyMaterial);
 
 			// Translate the arm (not the group) downwards by half the height
-			arm.position.y = this.smallarm_size * -0.5;
+			smallarm.position.y = this.smallarm_size * -0.5;
+
+			smallarm_group.add(smallarm);
+
+			this.group.add(smallarm_group);
 
 			if (i % 2 === 0) {
 				smallarm_group.position.x = this.left_elbow_pos.x;
@@ -246,27 +244,11 @@ export class Figure {
 				smallarm_group.rotation.y = degreesToRadians(-30);
 				smallarm_group.rotation.z = degreesToRadians(-30);
 			}
-
-			// armGroup.rotation.z = degreesToRadians(40 * sign);
-
-			// armGroup.rotation.y = degreesToRadians(40 * sign);
-
-			// // Helper
-			// const box = new THREE.BoxHelper(smallarm_group, 0xffff00);
-			// this.group.add(box);
 		}
 	}
 
 	createLegs() {
 		const hip_geo = new THREE.SphereGeometry(this.hip_radius);
-
-		// for (let i = 0; i < 2; i++) {
-
-		// 	hip.position.x = (sign * this.hip_radius * 2) / 3;
-		// 	hip.position.y = 0;
-
-		// 	this.group.add(hip);
-		// }
 
 		const thigh_geo = new THREE.CylinderGeometry(
 			this.thigh_radius,
@@ -314,10 +296,6 @@ export class Figure {
 
 				knee.getWorldPosition(this.right_knee_pos);
 			}
-
-			// // Helper
-			// const box = new THREE.BoxHelper(bigarm_group, 0xffff00);
-			// this.group.add(box);
 		}
 
 		const crus_geo = new THREE.CylinderGeometry(
@@ -327,8 +305,6 @@ export class Figure {
 		);
 
 		for (let i = 0; i < 2; i++) {
-			const sign = i % 2 === 0 ? 1 : -1;
-
 			const crus_group = new THREE.Group();
 			const crus = new THREE.Mesh(crus_geo, this.bodyMaterial);
 
@@ -350,10 +326,6 @@ export class Figure {
 
 				crus_group.rotation.x = degreesToRadians(10);
 			}
-
-			// // Helper
-			// const box = new THREE.BoxHelper(smallarm_group, 0xffff00);
-			// this.group.add(box);
 		}
 	}
 
