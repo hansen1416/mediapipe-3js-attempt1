@@ -5,7 +5,13 @@ import * as THREE from "three";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 import { Figure } from "./figure";
-import { tmppose } from "./tmppose";
+import { tmppose } from "./mypose";
+import {
+	joints,
+	pointsToVector,
+	distanceBetweenPoints,
+	magnitude,
+} from "./ropes";
 
 export default function Scene() {
 	const canvasRef = useRef(null);
@@ -190,11 +196,47 @@ export default function Scene() {
 		renderer.current.render(scene.current, camera.current);
 	}
 
+	function tmp_pose() {
+		const left_sholder_pos = tmppose[joints.indexOf("LEFT_SHOULDER")];
+		const left_elbow_pos = tmppose[joints.indexOf("LEFT_ELBOW")];
+		const left_wrist_pos = tmppose[joints.indexOf("LEFT_WRIST")];
+		const right_sholder_pos = tmppose[joints.indexOf("RIGHT_SHOULDER")];
+		const right_elbow_pos = tmppose[joints.indexOf("RIGHT_ELBOW")];
+		const right_wrist_pos = tmppose[joints.indexOf("RIGHT_WRIST")];
+
+		const left_bigarm = pointsToVector(left_sholder_pos, left_elbow_pos);
+		const left_bigarm_size = distanceBetweenPoints(
+			left_sholder_pos,
+			left_elbow_pos
+		);
+		const left_bigarm_idle = [0, left_bigarm_size, 0];
+
+		const right_bigarm = pointsToVector(right_sholder_pos, right_elbow_pos);
+		const right_bigarm_size = distanceBetweenPoints(
+			right_sholder_pos,
+			right_elbow_pos
+		);
+
+		const right_bigarm_idle = [0, right_bigarm_size, 0];
+
+		console.log(left_bigarm);
+		console.log(left_bigarm_idle);
+
+		console.log(right_bigarm);
+		console.log(right_bigarm_idle);
+
+		// console.log(left_wrist_pos);
+		// console.log(right_sholder_pos);
+		// console.log(right_elbow_pos);
+		// console.log(right_wrist_pos);
+	}
+
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">
+				<button onClick={tmp_pose}>tmp pose</button>
 				<button onClick={idle}>idle</button>
 				<button onClick={walk}>walk</button>
 			</div>
