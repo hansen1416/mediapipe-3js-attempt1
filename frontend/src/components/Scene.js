@@ -10,8 +10,7 @@ import {
 	joints,
 	pointsToVector,
 	distanceBetweenPoints,
-	magnitude,
-	crossProduct,
+	rotationEuler,
 } from "./ropes";
 
 export default function Scene() {
@@ -91,26 +90,26 @@ export default function Scene() {
 		// eslint-disable-next-line
 	}, []);
 
-	function get3dpos(event) {
-		var vec = new THREE.Vector3(); // create once and reuse
-		var pos = new THREE.Vector3(); // create once and reuse
+	// function get3dpos(event) {
+	// 	var vec = new THREE.Vector3(); // create once and reuse
+	// 	var pos = new THREE.Vector3(); // create once and reuse
 
-		vec.set(
-			(event.clientX / window.innerWidth) * 2 - 1,
-			-(event.clientY / window.innerHeight) * 2 + 1,
-			0.5
-		);
+	// 	vec.set(
+	// 		(event.clientX / window.innerWidth) * 2 - 1,
+	// 		-(event.clientY / window.innerHeight) * 2 + 1,
+	// 		0.5
+	// 	);
 
-		vec.unproject(camera.current);
+	// 	vec.unproject(camera.current);
 
-		vec.sub(camera.current.position).normalize();
+	// 	vec.sub(camera.current.position).normalize();
 
-		var distance = -camera.current.position.z / vec.z;
+	// 	var distance = -camera.current.position.z / vec.z;
 
-		pos.copy(camera.current.position).add(vec.multiplyScalar(distance));
+	// 	pos.copy(camera.current.position).add(vec.multiplyScalar(distance));
 
-		console.info(pos);
-	}
+	// 	console.info(pos);
+	// }
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();
@@ -210,28 +209,60 @@ export default function Scene() {
 			left_sholder_pos,
 			left_elbow_pos
 		);
-		const left_bigarm_idle = [0, left_bigarm_size, 0];
+		const left_bigarm_idle = [0, -1*left_bigarm_size, 0];
+
+		console.log(left_sholder_pos)
+		console.log(left_elbow_pos)
+
+		console.log(left_bigarm_idle)
+		console.log(left_bigarm)
 
 		const right_bigarm = pointsToVector(right_sholder_pos, right_elbow_pos);
 		const right_bigarm_size = distanceBetweenPoints(
 			right_sholder_pos,
 			right_elbow_pos
 		);
+		const right_bigarm_idle = [0, -1*right_bigarm_size, 0];
 
-		const right_bigarm_idle = [0, right_bigarm_size, 0];
+		// console.log(left_bigarm);
+		// console.log(right_bigarm);
 
-		console.log(left_bigarm);
-		console.log(left_bigarm_idle);
+		const left_bigarm_euler = rotationEuler(left_bigarm_idle, left_bigarm)
+		const right_bigarm_euler = rotationEuler(right_bigarm_idle, right_bigarm)
 
-		console.log(crossProduct(left_bigarm_idle, left_bigarm));
+		console.log(left_bigarm_euler)
+		console.log(right_bigarm_euler)
 
-		console.log(right_bigarm);
-		console.log(right_bigarm_idle);
+		figure.current.bigArmRotate(left_bigarm_euler, -1);
+		figure.current.bigArmRotate(right_bigarm_euler, 1);
+
+
+		const left_smallarm = pointsToVector(left_elbow_pos, left_wrist_pos);
+		const left_smallarm_size = distanceBetweenPoints(
+			left_elbow_pos,
+			left_wrist_pos
+		);
+		const left_smallarm_idle = [0, -1*left_smallarm_size, 0];
+
+		const right_smallarm = pointsToVector(right_elbow_pos, right_wrist_pos);
+		const right_smallarm_size = distanceBetweenPoints(
+			right_elbow_pos,
+			right_wrist_pos
+		);
+		const right_smallarm_idle = [0, -1*right_smallarm_size, 0];
+
+		const left_smallarm_euler = rotationEuler(left_smallarm_idle, left_smallarm)
+		const right_smallarm_euler = rotationEuler(right_smallarm_idle, right_smallarm)
+
+		figure.current.smallArmRotate(left_smallarm_euler, -1);
+		figure.current.smallArmRotate(right_smallarm_euler, 1);
 
 		// console.log(left_wrist_pos);
 		// console.log(right_sholder_pos);
 		// console.log(right_elbow_pos);
 		// console.log(right_wrist_pos);
+
+		renderer.current.render(scene.current, camera.current);
 	}
 
 	return (

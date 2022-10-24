@@ -41,12 +41,42 @@ export function magnitude(a) {
 	return Math.sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2);
 }
 
+export function normalizeVector(a) {
+	const m = magnitude(a)
+	return [a[0]/m, a[1]/m, a[2]/m];
+}
+
 export function crossProduct(a, b) {
 	return [
 		a[1] * b[2] - a[2] * b[1],
 		a[2] * b[0] - a[0] * b[2],
 		a[0] * b[1] - a[1] * b[0],
 	];
+}
+
+export function rotationMatrix(a, b) {
+
+	const c = normalizeVector(crossProduct(a, b))
+
+	return [
+		[a[0], c[0], b[0]],
+		[a[1], c[1], b[1]],
+		[a[2], c[2], b[2]],
+	]
+}
+
+export function rotationEuler(a, b) {
+
+	a = normalizeVector(a)
+	b = normalizeVector(b)
+
+	const matrix = rotationMatrix(a, b)
+
+	return [
+		Math.atan2(matrix[1][0], matrix[0][0]), 
+		Math.atan2(-1*matrix[2][0], Math.sqrt(matrix[2][1]**2 + matrix[2][2]**2)),
+		Math.atan2(matrix[2][1], matrix[2][2]),
+	]
 }
 
 export const joints = [
