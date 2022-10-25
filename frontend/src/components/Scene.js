@@ -6,10 +6,7 @@ import * as THREE from "three";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 import { Figure } from "./figure";
 import { tmppose } from "./mypose";
-import {
-	joints,
-	posePointsToVector,
-} from "./ropes";
+import { joints, getLimbFromPose } from "./ropes";
 
 export default function Scene() {
 	const canvasRef = useRef(null);
@@ -195,50 +192,41 @@ export default function Scene() {
 	}
 
 	function tmp_pose() {
-		const left_sholder_pos = tmppose[joints.indexOf("LEFT_SHOULDER")];
-		const left_elbow_pos = tmppose[joints.indexOf("LEFT_ELBOW")];
-		const left_wrist_pos = tmppose[joints.indexOf("LEFT_WRIST")];
-		const right_sholder_pos = tmppose[joints.indexOf("RIGHT_SHOULDER")];
-		const right_elbow_pos = tmppose[joints.indexOf("RIGHT_ELBOW")];
-		const right_wrist_pos = tmppose[joints.indexOf("RIGHT_WRIST")];
+		figure.current.limbRotate(
+			"LEFT_UPPERARM",
+			getLimbFromPose("LEFT_UPPERARM", tmppose)
+		);
+		figure.current.limbRotate(
+			"RIGHT_UPPERARM",
+			getLimbFromPose("RIGHT_UPPERARM", tmppose)
+		);
 
-		const left_bigarm = posePointsToVector(left_sholder_pos, left_elbow_pos);
+		figure.current.limbRotate(
+			"LEFT_FOREARM",
+			getLimbFromPose("LEFT_FOREARM", tmppose)
+		);
+		figure.current.limbRotate(
+			"RIGHT_FOREARM",
+			getLimbFromPose("RIGHT_FOREARM", tmppose)
+		);
 
-		// const left_bigarm_idle = new THREE.Vector3(0, -1, 0);
+		figure.current.limbRotate(
+			"LEFT_THIGH",
+			getLimbFromPose("LEFT_THIGH", tmppose)
+		);
+		figure.current.limbRotate(
+			"RIGHT_THIGH",
+			getLimbFromPose("RIGHT_THIGH", tmppose)
+		);
 
-		const right_bigarm = posePointsToVector(right_sholder_pos, right_elbow_pos);
-		// const right_bigarm_idle = new THREE.Vector3(0, -1, 0);
-
-		// const left_bigarm_quater = quaternionFromVectors(left_bigarm_idle, left_bigarm)
-		// const right_bigarm_quater = quaternionFromVectors(right_bigarm_idle, right_bigarm)
-
-		figure.current.bigArmRotate(left_bigarm, -1);
-		figure.current.bigArmRotate(right_bigarm, 1);
-
-		// const left_smallarm = posePointsToVector(left_elbow_pos, left_wrist_pos);
-		// const left_smallarm_size = distanceBetweenPoints(
-		// 	left_elbow_pos,
-		// 	left_wrist_pos
-		// );
-		// const left_smallarm_idle = [0, left_smallarm_size, 0];
-
-		// const right_smallarm = posePointsToVector(right_elbow_pos, right_wrist_pos);
-		// const right_smallarm_size = distanceBetweenPoints(
-		// 	right_elbow_pos,
-		// 	right_wrist_pos
-		// );
-		// const right_smallarm_idle = [0, right_smallarm_size, 0];
-
-		// const left_smallarm_euler = rotationEuler(left_smallarm_idle, left_smallarm)
-		// const right_smallarm_euler = rotationEuler(right_smallarm_idle, right_smallarm)
-
-		// figure.current.smallArmRotate(left_smallarm_euler, -1);
-		// figure.current.smallArmRotate(right_smallarm_euler, 1);
-
-		// console.log(left_wrist_pos);
-		// console.log(right_sholder_pos);
-		// console.log(right_elbow_pos);
-		// console.log(right_wrist_pos);
+		figure.current.limbRotate(
+			"LEFT_CRUS",
+			getLimbFromPose("LEFT_CRUS", tmppose)
+		);
+		figure.current.limbRotate(
+			"RIGHT_CRUS",
+			getLimbFromPose("RIGHT_CRUS", tmppose)
+		);
 
 		renderer.current.render(scene.current, camera.current);
 	}

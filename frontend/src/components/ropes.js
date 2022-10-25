@@ -32,7 +32,7 @@ export function radiansToDegrees(radian) {
 // }
 
 export function posePointsToVector(a, b) {
-	return new THREE.Vector3(b.x - a.x, a.y - b.y, b.z - a.z);
+	return new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
 export function distanceBetweenPoints(a, b) {
@@ -44,8 +44,8 @@ export function magnitude(a) {
 }
 
 export function normalizeVector(a) {
-	const m = magnitude(a)
-	return [a[0]/m, a[1]/m, a[2]/m];
+	const m = magnitude(a);
+	return [a[0] / m, a[1] / m, a[2] / m];
 }
 
 export function crossProduct(a, b) {
@@ -57,37 +57,37 @@ export function crossProduct(a, b) {
 }
 
 export function rotationMatrix(a, b) {
-
-	const c = normalizeVector(crossProduct(a, b))
+	const c = normalizeVector(crossProduct(a, b));
 
 	return [
 		[a[0], c[0], b[0]],
 		[a[1], c[1], b[1]],
 		[a[2], c[2], b[2]],
-	]
+	];
 }
 
 export function rotationEuler(a, b) {
+	a = normalizeVector(a);
+	b = normalizeVector(b);
 
-	a = normalizeVector(a)
-	b = normalizeVector(b)
-
-	const matrix = rotationMatrix(a, b)
+	const matrix = rotationMatrix(a, b);
 
 	return [
 		Math.atan2(matrix[2][1], matrix[2][2]),
-		Math.atan2(matrix[1][0], matrix[0][0]), 
-		Math.atan2(-1*matrix[2][0], Math.sqrt(matrix[2][1]**2 + matrix[2][2]**2)),
-	]
+		Math.atan2(matrix[1][0], matrix[0][0]),
+		Math.atan2(
+			-1 * matrix[2][0],
+			Math.sqrt(matrix[2][1] ** 2 + matrix[2][2] ** 2)
+		),
+	];
 }
 
 export function quaternionFromVectors(a, b) {
-
 	const quaternion = new THREE.Quaternion();
 
 	quaternion.setFromUnitVectors(a.normalize(), b.normalize());
 
-	return quaternion
+	return quaternion;
 }
 
 export const joints = [
@@ -126,8 +126,60 @@ export const joints = [
 	"RIGHT_FOOT_INDEX",
 ];
 
-export const limbs = ['LEFT_FOREARM', 'LEFT_UPPERARM', 'RIGHT_FOREARM', 'RIGHT_UPPERARM',
-'LEFT_THIGH', 'LEFT_CRUS', 'RIGHT_THIGH', 'RIGHT_CRUS']
+export const limbs = [
+	"LEFT_SHOULDER",
+	"RIGHT_SHOULDER",
+	"LEFT_ELBOW",
+	"RIGHT_ELBOW",
+	"LEFT_FOREARM",
+	"LEFT_UPPERARM",
+	"RIGHT_FOREARM",
+	"RIGHT_UPPERARM",
+	"LEFT_HIP",
+	"RIGHT_HIP",
+	"LEFT_THIGH",
+	"LEFT_CRUS",
+	"LEFT_KNEE",
+	"RIGHT_KNEE",
+	"RIGHT_THIGH",
+	"RIGHT_CRUS",
+];
+
+export function getLimbFromPose(limb_name, pose_landmark) {
+	let joint1 = "";
+	let joint2 = "";
+
+	if (limb_name === "LEFT_UPPERARM") {
+		joint1 = "LEFT_SHOULDER";
+		joint2 = "LEFT_ELBOW";
+	} else if (limb_name === "RIGHT_UPPERARM") {
+		joint1 = "RIGHT_SHOULDER";
+		joint2 = "RIGHT_ELBOW";
+	} else if (limb_name === "LEFT_FOREARM") {
+		joint1 = "LEFT_ELBOW";
+		joint2 = "LEFT_WRIST";
+	} else if (limb_name === "RIGHT_FOREARM") {
+		joint1 = "RIGHT_ELBOW";
+		joint2 = "RIGHT_WRIST";
+	} else if (limb_name === "LEFT_THIGH") {
+		joint1 = "LEFT_HIP";
+		joint2 = "LEFT_KNEE";
+	} else if (limb_name === "RIGHT_THIGH") {
+		joint1 = "RIGHT_HIP";
+		joint2 = "RIGHT_KNEE";
+	} else if (limb_name === "LEFT_CRUS") {
+		joint1 = "LEFT_KNEE";
+		joint2 = "LEFT_ANKLE";
+	} else if (limb_name === "RIGHT_CRUS") {
+		joint1 = "RIGHT_KNEE";
+		joint2 = "RIGHT_ANKLE";
+	}
+
+	return posePointsToVector(
+		pose_landmark[joints.indexOf(joint1)],
+		pose_landmark[joints.indexOf(joint2)]
+	);
+}
 
 // export function worldPointFromScreenPoint(screenPoint, camera) {
 // 	let worldPoint = new THREE.Vector3();
