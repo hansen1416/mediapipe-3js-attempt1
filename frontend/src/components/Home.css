@@ -1,9 +1,3 @@
-video {
-  display: none;
-  position: absolute;
-}
-
-
 .box {
   position: relative;
   display: flex;

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import "./Home.css";
+import "./Scene.css";
 
 import * as THREE from "three";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
