@@ -209,7 +209,7 @@ export default function Scene() {
 			left_sholder_pos,
 			left_elbow_pos
 		);
-		const left_bigarm_idle = [0, -1*left_bigarm_size, 0];
+		const left_bigarm_idle = [0, left_bigarm_size, 0];
 
 		console.log(left_sholder_pos)
 		console.log(left_elbow_pos)
@@ -222,7 +222,7 @@ export default function Scene() {
 			right_sholder_pos,
 			right_elbow_pos
 		);
-		const right_bigarm_idle = [0, -1*right_bigarm_size, 0];
+		const right_bigarm_idle = [0, right_bigarm_size, 0];
 
 		// console.log(left_bigarm);
 		// console.log(right_bigarm);
@@ -242,14 +242,14 @@ export default function Scene() {
 			left_elbow_pos,
 			left_wrist_pos
 		);
-		const left_smallarm_idle = [0, -1*left_smallarm_size, 0];
+		const left_smallarm_idle = [0, left_smallarm_size, 0];
 
 		const right_smallarm = pointsToVector(right_elbow_pos, right_wrist_pos);
 		const right_smallarm_size = distanceBetweenPoints(
 			right_elbow_pos,
 			right_wrist_pos
 		);
-		const right_smallarm_idle = [0, -1*right_smallarm_size, 0];
+		const right_smallarm_idle = [0, right_smallarm_size, 0];
 
 		const left_smallarm_euler = rotationEuler(left_smallarm_idle, left_smallarm)
 		const right_smallarm_euler = rotationEuler(right_smallarm_idle, right_smallarm)

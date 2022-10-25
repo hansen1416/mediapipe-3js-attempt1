@@ -73,9 +73,9 @@ export function rotationEuler(a, b) {
 	const matrix = rotationMatrix(a, b)
 
 	return [
+		Math.atan2(matrix[2][1], matrix[2][2]),
 		Math.atan2(matrix[1][0], matrix[0][0]), 
 		Math.atan2(-1*matrix[2][0], Math.sqrt(matrix[2][1]**2 + matrix[2][2]**2)),
-		Math.atan2(matrix[2][1], matrix[2][2]),
 	]
 }
 
