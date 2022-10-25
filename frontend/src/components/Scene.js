@@ -6,7 +6,11 @@ import * as THREE from "three";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 import { Figure } from "./figure";
 import { tmppose } from "./mypose";
-import { joints, getLimbFromPose } from "./ropes";
+import { getLimbFromPose } from "./ropes";
+
+import { Pose } from "@mediapipe/pose";
+import { Camera } from "@mediapipe/camera_utils";
+import { getUserMedia } from "./ropes";
 
 export default function Scene() {
 	const canvasRef = useRef(null);
@@ -23,6 +27,10 @@ export default function Scene() {
 
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
+
+	const videoRef = useRef(null);
+	const animationCounter = useRef(1);
+	const mediacamera = useRef(null);
 
 	useEffect(() => {
 		const backgroundColor = 0x363795;
@@ -191,7 +199,7 @@ export default function Scene() {
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	function tmp_pose() {
+	function tmp_pose(tmppose) {
 		figure.current.limbRotate(
 			"LEFT_UPPERARM",
 			getLimbFromPose("LEFT_UPPERARM", tmppose)
@@ -210,35 +218,139 @@ export default function Scene() {
 			getLimbFromPose("RIGHT_FOREARM", tmppose)
 		);
 
-		figure.current.limbRotate(
-			"LEFT_THIGH",
-			getLimbFromPose("LEFT_THIGH", tmppose)
-		);
-		figure.current.limbRotate(
-			"RIGHT_THIGH",
-			getLimbFromPose("RIGHT_THIGH", tmppose)
-		);
+		// figure.current.limbRotate(
+		// 	"LEFT_THIGH",
+		// 	getLimbFromPose("LEFT_THIGH", tmppose)
+		// );
+		// figure.current.limbRotate(
+		// 	"RIGHT_THIGH",
+		// 	getLimbFromPose("RIGHT_THIGH", tmppose)
+		// );
 
-		figure.current.limbRotate(
-			"LEFT_CRUS",
-			getLimbFromPose("LEFT_CRUS", tmppose)
-		);
-		figure.current.limbRotate(
-			"RIGHT_CRUS",
-			getLimbFromPose("RIGHT_CRUS", tmppose)
-		);
+		// figure.current.limbRotate(
+		// 	"LEFT_CRUS",
+		// 	getLimbFromPose("LEFT_CRUS", tmppose)
+		// );
+		// figure.current.limbRotate(
+		// 	"RIGHT_CRUS",
+		// 	getLimbFromPose("RIGHT_CRUS", tmppose)
+		// );
 
 		renderer.current.render(scene.current, camera.current);
 	}
 
+	function startCamera() {
+		if (videoRef.current) {
+			getUserMedia(
+				{ video: true },
+				(stream) => {
+					// Yay, now our webcam input is treated as a normal video and
+					// we can start having fun
+					try {
+						videoRef.current.srcObject = stream;
+
+						// let stream_settings = stream
+						// 	.getVideoTracks()[0]
+						// 	.getSettings();
+
+						// console.log(stream_settings);
+					} catch (error) {
+						videoRef.current.src = URL.createObjectURL(stream);
+					}
+					// Let's start drawing the canvas!
+				},
+				(err) => {
+					throw err;
+				}
+			);
+
+			const pose = new Pose({
+				locateFile: (file) => {
+					return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+					// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+				},
+			});
+			pose.setOptions({
+				modelComplexity: 2,
+				smoothLandmarks: true,
+				enableSegmentation: false,
+				smoothSegmentation: false,
+				minDetectionConfidence: 0.5,
+				minTrackingConfidence: 0.5,
+			});
+			pose.onResults(onPoseResults);
+
+			pose.initialize().then(() => {
+				console.info("Loaded pose model");
+			});
+
+			// const ctx = canvasRef.current.getContext("2d");
+
+			mediacamera.current = new Camera(videoRef.current, {
+				onFrame: async () => {
+					// onFrame(videoRef.current, ctx);
+
+					if (animationCounter.current % 4 === 0) {
+						await pose.send({ image: videoRef.current });
+
+						// animationCounter.current = 0;
+					}
+
+					animationCounter.current += 1;
+				},
+				width: 640,
+				height: 360,
+			});
+
+			mediacamera.current.start();
+		}
+	}
+
+	// function onFrame(video, ctx) {
+	// 	ctx.drawImage(video, 0, 0);
+	// }
+
+	function onPoseResults(results) {
+		const wlm = results.poseWorldLandmarks;
+
+		if (!wlm) {
+			return;
+		}
+
+		// console.log(wlm);
+		tmp_pose(wlm);
+
+		// tmpcounter.current += 1;
+
+		// if (tmpcounter.current == 50) {
+		// 	console.log(wlm);
+		// }
+
+		// let data = wlm.map((x) => Object.values(x));
+
+		// // flatten the array
+		// data = data.reduce((prev, next) => {
+		// 	return prev.concat(next);
+		// });
+
+		// data = new Float32Array(data);
+
+		// console.log(data);
+
+		// ws.current.send(data);
+	}
+
 	return (
 		<div className="scene" ref={containerRef}>
+			<video ref={videoRef} autoPlay={true}></video>
+
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">
-				<button onClick={tmp_pose}>tmp pose</button>
 				<button onClick={idle}>idle</button>
 				<button onClick={walk}>walk</button>
+				{/* <button onClick={tmp_pose}>tmp pose</button> */}
+				<button onClick={startCamera}>camera sync</button>
 			</div>
 		</div>
 	);

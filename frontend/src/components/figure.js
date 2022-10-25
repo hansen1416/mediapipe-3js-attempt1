@@ -304,5 +304,7 @@ export class Figure {
 		);
 
 		this.limbs[limb_name].applyQuaternion(quaternion);
+
+		this.limb_rotation_vectors[limb_name] = target_vector;
 	}
 }

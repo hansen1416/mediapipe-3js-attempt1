@@ -1,16 +1,8 @@
-/* video {
-  display: none;
-}
-canvas {
-  display: none;
+video {
+  /* display: none; */
   position: absolute;
-  bottom: 0;
-  right: 0;
-  transform: scaleX(-1);
-} */
-/* input[type=file] {
-  display: none;
-} */
+}
+
 
 .box {
   position: relative;
