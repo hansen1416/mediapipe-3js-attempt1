@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
 	if (!constraints || !successCallback || !errorCallback) {
@@ -29,8 +31,8 @@ export function radiansToDegrees(radian) {
 // 	];
 // }
 
-export function pointsToVector(a, b) {
-	return [b.x - a.x, b.y - a.y, b.z - a.z];
+export function posePointsToVector(a, b) {
+	return new THREE.Vector3(b.x - a.x, a.y - b.y, b.z - a.z);
 }
 
 export function distanceBetweenPoints(a, b) {
@@ -79,6 +81,15 @@ export function rotationEuler(a, b) {
 	]
 }
 
+export function quaternionFromVectors(a, b) {
+
+	const quaternion = new THREE.Quaternion();
+
+	quaternion.setFromUnitVectors(a.normalize(), b.normalize());
+
+	return quaternion
+}
+
 export const joints = [
 	"NOSE",
 	"LEFT_EYE_INNER",
@@ -114,6 +125,9 @@ export const joints = [
 	"LEFT_FOOT_INDEX",
 	"RIGHT_FOOT_INDEX",
 ];
+
+export const limbs = ['LEFT_FOREARM', 'LEFT_UPPERARM', 'RIGHT_FOREARM', 'RIGHT_UPPERARM',
+'LEFT_THIGH', 'LEFT_CRUS', 'RIGHT_THIGH', 'RIGHT_CRUS']
 
 // export function worldPointFromScreenPoint(screenPoint, camera) {
 // 	let worldPoint = new THREE.Vector3();

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { degreesToRadians } from "./ropes";
+import {  quaternionFromVectors, limbs } from "./ropes";
 
 export class Figure {
 	constructor(scene, figure_position, figure_rotation) {
@@ -53,6 +53,12 @@ export class Figure {
 
 		this.crus_size = 10 * this.unit;
 		this.ankle_radius = 1.8 * this.unit;
+
+		this.limb_rotation_vectors = {}
+
+		for (let l of limbs) {
+			limb_rotation_vectors[l] = new THREE.Vector3(0, -1, 0)
+		}
 	}
 
 	createBody() {
@@ -288,19 +294,28 @@ export class Figure {
 		this.createLegs();
 	}
 
-	bigArmRotate(rotation, sign) {
+	bigArmRotate(target_vector, sign) {
 		if (sign < 0) {
-			this.left_bigarm.rotation.set(...rotation);
+			const quaternion = quaternionFromVectors(this.left_bigarm_vector, target_vector)
+
+			// this.left_bigarm.rotation.set(...rotation);
+			this.left_bigarm.applyQuaternion(quaternion)
 		} else {
-			this.right_bigarm.rotation.set(...rotation);
+			const quaternion = quaternionFromVectors(this.right_bigarm_vector, target_vector)
+			// this.right_bigarm.rotation.set(...rotation);
+			this.right_bigarm.applyQuaternion(quaternion)
 		}
 	}
 
-	smallArmRotate(rotation, sign) {
+	smallArmRotate(target_vector, sign) {
 		if (sign < 0) {
-			this.left_smallarm.rotation.set(...rotation);
+			// this.left_smallarm.rotation.set(...rotation);
+			const quaternion = quaternionFromVectors(this.left_smallarm_vector, target_vector)
+
 		} else {
-			this.right_smallarm.rotation.set(...rotation);
+			// this.right_smallarm.rotation.set(...rotation);
+			const quaternion = quaternionFromVectors(this.left_smallarm_vector, target_vector)
+			this.right_smallarm.applyQuaternion(quaternion)
 		}
 	}
 

@@ -8,9 +8,7 @@ import { Figure } from "./figure";
 import { tmppose } from "./mypose";
 import {
 	joints,
-	pointsToVector,
-	distanceBetweenPoints,
-	rotationEuler,
+	posePointsToVector,
 } from "./ropes";
 
 export default function Scene() {
@@ -204,58 +202,38 @@ export default function Scene() {
 		const right_elbow_pos = tmppose[joints.indexOf("RIGHT_ELBOW")];
 		const right_wrist_pos = tmppose[joints.indexOf("RIGHT_WRIST")];
 
-		const left_bigarm = pointsToVector(left_sholder_pos, left_elbow_pos);
-		const left_bigarm_size = distanceBetweenPoints(
-			left_sholder_pos,
-			left_elbow_pos
-		);
-		const left_bigarm_idle = [0, left_bigarm_size, 0];
+		const left_bigarm = posePointsToVector(left_sholder_pos, left_elbow_pos);
 
-		console.log(left_sholder_pos)
-		console.log(left_elbow_pos)
+		// const left_bigarm_idle = new THREE.Vector3(0, -1, 0);
 
-		console.log(left_bigarm_idle)
-		console.log(left_bigarm)
+		const right_bigarm = posePointsToVector(right_sholder_pos, right_elbow_pos);
+		// const right_bigarm_idle = new THREE.Vector3(0, -1, 0);
 
-		const right_bigarm = pointsToVector(right_sholder_pos, right_elbow_pos);
-		const right_bigarm_size = distanceBetweenPoints(
-			right_sholder_pos,
-			right_elbow_pos
-		);
-		const right_bigarm_idle = [0, right_bigarm_size, 0];
+		// const left_bigarm_quater = quaternionFromVectors(left_bigarm_idle, left_bigarm)
+		// const right_bigarm_quater = quaternionFromVectors(right_bigarm_idle, right_bigarm)
 
-		// console.log(left_bigarm);
-		// console.log(right_bigarm);
+		figure.current.bigArmRotate(left_bigarm, -1);
+		figure.current.bigArmRotate(right_bigarm, 1);
 
-		const left_bigarm_euler = rotationEuler(left_bigarm_idle, left_bigarm)
-		const right_bigarm_euler = rotationEuler(right_bigarm_idle, right_bigarm)
+		// const left_smallarm = posePointsToVector(left_elbow_pos, left_wrist_pos);
+		// const left_smallarm_size = distanceBetweenPoints(
+		// 	left_elbow_pos,
+		// 	left_wrist_pos
+		// );
+		// const left_smallarm_idle = [0, left_smallarm_size, 0];
 
-		console.log(left_bigarm_euler)
-		console.log(right_bigarm_euler)
+		// const right_smallarm = posePointsToVector(right_elbow_pos, right_wrist_pos);
+		// const right_smallarm_size = distanceBetweenPoints(
+		// 	right_elbow_pos,
+		// 	right_wrist_pos
+		// );
+		// const right_smallarm_idle = [0, right_smallarm_size, 0];
 
-		figure.current.bigArmRotate(left_bigarm_euler, -1);
-		figure.current.bigArmRotate(right_bigarm_euler, 1);
+		// const left_smallarm_euler = rotationEuler(left_smallarm_idle, left_smallarm)
+		// const right_smallarm_euler = rotationEuler(right_smallarm_idle, right_smallarm)
 
-
-		const left_smallarm = pointsToVector(left_elbow_pos, left_wrist_pos);
-		const left_smallarm_size = distanceBetweenPoints(
-			left_elbow_pos,
-			left_wrist_pos
-		);
-		const left_smallarm_idle = [0, left_smallarm_size, 0];
-
-		const right_smallarm = pointsToVector(right_elbow_pos, right_wrist_pos);
-		const right_smallarm_size = distanceBetweenPoints(
-			right_elbow_pos,
-			right_wrist_pos
-		);
-		const right_smallarm_idle = [0, right_smallarm_size, 0];
-
-		const left_smallarm_euler = rotationEuler(left_smallarm_idle, left_smallarm)
-		const right_smallarm_euler = rotationEuler(right_smallarm_idle, right_smallarm)
-
-		figure.current.smallArmRotate(left_smallarm_euler, -1);
-		figure.current.smallArmRotate(right_smallarm_euler, 1);
+		// figure.current.smallArmRotate(left_smallarm_euler, -1);
+		// figure.current.smallArmRotate(right_smallarm_euler, 1);
 
 		// console.log(left_wrist_pos);
 		// console.log(right_sholder_pos);

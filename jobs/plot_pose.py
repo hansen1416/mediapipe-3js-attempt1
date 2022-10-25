@@ -229,6 +229,10 @@ if __name__ == "__main__":
 
         frame_pose_landmark: PoseLandmark = pickle.loads(pose_results[i])
 
+        print(frame_pose_landmark)
+
+        break
+
         # logger.info(frame_pose_landmark)
 
         pp = PosePlot()
