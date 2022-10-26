@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import "./Home.css";
 
 import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";

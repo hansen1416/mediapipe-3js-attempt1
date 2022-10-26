@@ -1,17 +1,15 @@
 import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
+import { Pose } from "@mediapipe/pose";
+import { Camera } from "@mediapipe/camera_utils";
+
 import { MatchManFigure } from "./models/MatchManFigure";
 import { tmppose } from "./mypose";
-// import { getLimbFromPose } from "./ropes";
-
-// import { Pose } from "@mediapipe/pose";
-// import { Camera } from "@mediapipe/camera_utils";
-// import { getUserMedia } from "./ropes";
+import { getUserMedia } from "./ropes";
 
 export default function MatchMan() {
-
-    const canvasRef = useRef(null);
+	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
@@ -26,16 +24,16 @@ export default function MatchMan() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-    const posedata = useRef([]);
-    const poseidx = useRef(0);
-    const animationFramePointer = useRef(0);
-    const animationStep = useRef(0);
+	const posedata = useRef([]);
+	const poseidx = useRef(0);
+	const animationFramePointer = useRef(0);
+	const animationStep = useRef(0);
 
 	const videoRef = useRef(null);
 	const animationCounter = useRef(1);
 	const mediacamera = useRef(null);
 
-    useEffect(() => {
+	useEffect(() => {
 		const backgroundColor = 0x000000;
 
 		const viewWidth = document.documentElement.clientWidth;
@@ -71,16 +69,16 @@ export default function MatchMan() {
 		// const axesHelper = new THREE.AxesHelper(5);
 		// scene.current.add(axesHelper);
 
-        figure.current = new MatchManFigure(scene.current)
+		figure.current = new MatchManFigure(scene.current);
 
 		figure.current.init();
 
-        figure.current.pose(tmppose)
+		figure.current.pose_dict(tmppose);
 
 		camera.current.position.z = 5;
 		camera.current.position.y = 0;
 
-        // camera.current.rotation.x = 0.1;
+		// camera.current.rotation.x = 0.1;
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -99,7 +97,6 @@ export default function MatchMan() {
 		};
 		// eslint-disable-next-line
 	}, []);
-
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();
@@ -154,13 +151,12 @@ export default function MatchMan() {
 		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
 
-
 	// function onFrame(video, ctx) {
 	// 	ctx.drawImage(video, 0, 0);
 	// }
 
-    function fetchPose() {
-        fetch(process.env.REACT_APP_API_URL + "/pose/data", {
+	function fetchPose() {
+		fetch(process.env.REACT_APP_API_URL + "/pose/data", {
 			method: "GET", // *GET, POST, PUT, DELETE, etc.
 			// mode: 'cors', // no-cors, *cors, same-origin
 			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -174,11 +170,10 @@ export default function MatchMan() {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				posedata.current = data.data
-                setTimeout(() => {
-                    playPose()
-                }, 10)
-                
+				posedata.current = data.data;
+				setTimeout(() => {
+					playPose();
+				}, 10);
 			})
 			.catch(function (error) {
 				console.log(
@@ -188,33 +183,111 @@ export default function MatchMan() {
 					error.config
 				);
 			});
-    }
+	}
 
+	function playPose() {
+		if (animationStep.current % 2 === 0) {
+			figure.current.pose_array(posedata.current[poseidx.current]);
 
-    function playPose() {
+			renderer.current.render(scene.current, camera.current);
 
-        if (animationStep.current % 2 === 0) {
+			poseidx.current += 1;
 
-            figure.current.pose(posedata.current[poseidx.current])
+			if (poseidx.current >= posedata.current.length) {
+				cancelAnimationFrame(animationFramePointer.current);
+			}
+		}
 
-            renderer.current.render(scene.current, camera.current);
+		animationStep.current += 1;
 
-            poseidx.current += 1
+		animationFramePointer.current = requestAnimationFrame(playPose);
+	}
 
-            if (poseidx.current >= posedata.current.length) {
-                cancelAnimationFrame(animationFramePointer.current)
-            }
-        }
+	function startCamera() {
+		if (videoRef.current) {
+			getUserMedia(
+				{ video: true },
+				(stream) => {
+					// Yay, now our webcam input is treated as a normal video and
+					// we can start having fun
+					try {
+						videoRef.current.srcObject = stream;
 
-        animationStep.current += 1
+						// let stream_settings = stream
+						// 	.getVideoTracks()[0]
+						// 	.getSettings();
 
-        animationFramePointer.current = requestAnimationFrame(playPose)
-    }
+						// console.log(stream_settings);
+					} catch (error) {
+						videoRef.current.src = URL.createObjectURL(stream);
+					}
+					// Let's start drawing the canvas!
+				},
+				(err) => {
+					throw err;
+				}
+			);
 
+			const pose = new Pose({
+				locateFile: (file) => {
+					return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+					// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+				},
+			});
+			pose.setOptions({
+				modelComplexity: 2,
+				smoothLandmarks: true,
+				enableSegmentation: false,
+				smoothSegmentation: false,
+				minDetectionConfidence: 0.5,
+				minTrackingConfidence: 0.5,
+			});
+			pose.onResults(onPoseResults);
 
-    return (
+			pose.initialize().then(() => {
+				console.info("Loaded pose model");
+			});
+
+			// const ctx = canvasRef.current.getContext("2d");
+
+			mediacamera.current = new Camera(videoRef.current, {
+				onFrame: async () => {
+					// onFrame(videoRef.current, ctx);
+
+					// if (animationCounter.current % 4 === 0) {
+					await pose.send({ image: videoRef.current });
+
+					// animationCounter.current = 0;
+					// }
+
+					// animationCounter.current += 1;
+				},
+				width: 640,
+				height: 360,
+			});
+
+			mediacamera.current.start();
+		}
+	}
+
+	function onPoseResults(results) {
+		const wlm = results.poseWorldLandmarks;
+
+		if (!wlm) {
+			return;
+		}
+
+		// console.log(wlm);
+		// tmp_pose(wlm);
+
+		figure.current.pose_dict(wlm);
+
+		renderer.current.render(scene.current, camera.current);
+	}
+
+	return (
 		<div className="scene" ref={containerRef}>
-			{/* <video ref={videoRef} autoPlay={true}></video> */}
+			<video ref={videoRef} autoPlay={true}></video>
 
 			<canvas ref={canvasRef}></canvas>
 
@@ -223,6 +296,7 @@ export default function MatchMan() {
 				{/* <button onClick={walk}>walk</button> */}
 				{/* <button onClick={tmp_pose}>tmp pose</button> */}
 				<button onClick={fetchPose}>action</button>
+				<button onClick={startCamera}>camera sync</button>
 			</div>
 		</div>
 	);

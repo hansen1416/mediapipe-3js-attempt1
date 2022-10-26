@@ -1,16 +1,13 @@
 import { useEffect, useRef } from "react";
-import "./Scene.css";
 
 import * as THREE from "three";
+import { Pose } from "@mediapipe/pose";
+import { Camera } from "@mediapipe/camera_utils";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 import { Figure } from "./figure";
 import { tmppose } from "./mypose";
-import { getLimbFromPose } from "./ropes";
-
-import { Pose } from "@mediapipe/pose";
-import { Camera } from "@mediapipe/camera_utils";
-import { getUserMedia } from "./ropes";
+import { getLimbFromPose, getUserMedia } from "./ropes";
 
 export default function GreenMan() {
 	const canvasRef = useRef(null);
@@ -33,7 +30,7 @@ export default function GreenMan() {
 	const mediacamera = useRef(null);
 
 	useEffect(() => {
-		const backgroundColor = 0x363795;
+		const backgroundColor = 0x000000;
 
 		const viewWidth = document.documentElement.clientWidth;
 		const viewHeight = document.documentElement.clientHeight;
@@ -184,18 +181,61 @@ export default function GreenMan() {
 	}
 
 	function walk() {
-		figure.current.bigArmRotate([-0.5, 0, 0], -1);
-		figure.current.bigArmRotate([0.5, 0, 0], 1);
+		figure.current.limbRotate(
+			"LEFT_UPPERARM",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, 0.5, "XYZ")
+			)
+		);
 
-		figure.current.smallArmRotate([-0.3, 0, 0], -1);
-		figure.current.smallArmRotate([-0.3, 0, 0], 1);
+		figure.current.limbRotate(
+			"RIGHT_UPPERARM",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, -0.5, "XYZ")
+			)
+		);
 
-		figure.current.thighRotate([0.5, 0, 0], -1);
-		figure.current.thighRotate([-0.5, 0, 0], 1);
+		figure.current.limbRotate(
+			"LEFT_FOREARM",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, 0.3, "XYZ")
+			)
+		);
 
-		figure.current.crusRotate([0.3, 0, 0], -1);
-		figure.current.crusRotate([0.3, 0, 0], 1);
+		figure.current.limbRotate(
+			"RIGHT_FOREARM",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, 0.3, "XYZ")
+			)
+		);
 
+		figure.current.limbRotate(
+			"LEFT_THIGH",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, 0.5, "XYZ")
+			)
+		);
+
+		figure.current.limbRotate(
+			"RIGHT_THIGH",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, -0.5, "XYZ")
+			)
+		);
+
+		figure.current.limbRotate(
+			"LEFT_CRUS",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, -0.3, "XYZ")
+			)
+		);
+
+		figure.current.limbRotate(
+			"RIGHT_CRUS",
+			new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(0, 0, -0.3, "XYZ")
+			)
+		);
 		renderer.current.render(scene.current, camera.current);
 	}
 

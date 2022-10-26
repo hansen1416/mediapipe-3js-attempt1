@@ -11,6 +11,8 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./ErrorPage";
 import Home from "./components/Home";
+import MatchMan from "./components/MatchMan";
+import GreenMan from "./components/GreenMan";
 import Upload from "./components/Upload";
 import Video from "./components/Video";
 import WebCamera from "./components/WebCamera";
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				element: <Home />,
+			},
+			{
+				path: "/greenman",
+				element: <GreenMan />,
+			},
+			{
+				path: "/matchman",
+				element: <MatchMan />,
 			},
 			{
 				path: "/upload",

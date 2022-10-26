@@ -8,7 +8,10 @@ function App() {
 			<nav>
 				<ul>
 					<li>
-						<Link to={`/`}>Home</Link>
+						<Link to={`/greenman`}>Green man</Link>
+					</li>
+					<li>
+						<Link to={`/matchman`}>Match man</Link>
 					</li>
 					<li>
 						<Link to={`/upload`}>Upload</Link>
