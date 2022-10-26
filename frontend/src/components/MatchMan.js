@@ -236,7 +236,7 @@ export default function MatchMan() {
 			});
 			pose.setOptions({
 				modelComplexity: 2,
-				smoothLandmarks: true,
+				smoothLandmarks: false,
 				enableSegmentation: false,
 				smoothSegmentation: false,
 				minDetectionConfidence: 0.5,
