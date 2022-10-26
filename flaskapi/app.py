@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 from flask import Flask
 from flask import request
 from flask_cors import CORS
+import numpy as np
 
 from ropes import logger, redis_client, pack_file_key, VIDEO_MIME_EXT
 # from oss_service import OSSService
@@ -57,3 +58,11 @@ def upload_progress():
 
     # If you return a dict or list from a view, it will be converted to a JSON response.
     return {'progress': progress}
+
+
+@app.route("/pose/data", methods=['GET'])
+def pose_data():
+
+    data = np.load(os.path.join('tmp', 'wlm3000-6000.npy'), allow_pickle=True)
+
+    return {'data': data[:100].tolist()}

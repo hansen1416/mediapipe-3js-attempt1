@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 import "./Home.css";
 
-import Scene from "./Scene";
+import MatchMan from "./MatchMan";
 
 export default function Home() {
 	useEffect(() => {}, []);
 
 	return (
 		<div className="box">
-			<Scene />
+			<MatchMan />
 		</div>
 	);
 }

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python -m flask --app app run --host 0.0.0.0
+py -m flask --app app --debug run --host 0.0.0.0

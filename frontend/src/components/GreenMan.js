@@ -12,7 +12,7 @@ import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 import { getUserMedia } from "./ropes";
 
-export default function Scene() {
+export default function GreenMan() {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
