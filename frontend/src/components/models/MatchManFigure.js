@@ -55,12 +55,14 @@ export class MatchManFigure {
 
 			// this.joints[j].position.set(0,0,0)
 		}
+	}
 
+	draw_lines() {
 		for (let jc in this.joints_connect) {
 			const points = [];
 
-			// points.push(this.joints[this.joints_connect[jc][0]].position);
-			// points.push(this.joints[this.joints_connect[jc][1]].position);
+			points.push(this.joints[this.joints_connect[jc][0]].position);
+			points.push(this.joints[this.joints_connect[jc][1]].position);
 
 			// points.push(new THREE.Vector3(-10, 0, 0));
 			// points.push(new THREE.Vector3(0, 10, 0));
@@ -94,6 +96,8 @@ export class MatchManFigure {
 				);
 			}
 		}
+
+		this.draw_lines();
 	}
 
 	pose_dict(landmark) {
@@ -113,5 +117,7 @@ export class MatchManFigure {
 				);
 			}
 		}
+
+		this.draw_lines();
 	}
 }
