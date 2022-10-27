@@ -8,9 +8,13 @@ export class MatchManFigure {
 			color: 0x33eeb0,
 		});
 
+		this.lineMaterial = new THREE.LineBasicMaterial({ color: 0x33eeb0 });
+
 		this.group = new THREE.Group();
 
 		scene.add(this.group);
+
+		// this.scene = scene;
 
 		if (figure_position) {
 			this.group.position.set(...figure_position);
@@ -28,6 +32,13 @@ export class MatchManFigure {
 		this.joints_size = 0.05;
 
 		this.joints = {};
+
+		this.joints_connect = [
+			["LEFT_SHOULDER", "RIGHT_SHOULDER"],
+			["LEFT_SHOULDER", "LEFT_ELBOW"],
+		];
+
+		this.line_geo = [];
 	}
 
 	init() {
@@ -43,6 +54,29 @@ export class MatchManFigure {
 			this.group.add(this.joints[j]);
 
 			// this.joints[j].position.set(0,0,0)
+		}
+
+		for (let jc in this.joints_connect) {
+			const points = [];
+
+			// points.push(this.joints[this.joints_connect[jc][0]].position);
+			// points.push(this.joints[this.joints_connect[jc][1]].position);
+
+			// points.push(new THREE.Vector3(-10, 0, 0));
+			// points.push(new THREE.Vector3(0, 10, 0));
+			// points.push(new THREE.Vector3(10, 0, 0));
+
+			console.log(points);
+
+			const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+			this.line_geo.push(geometry);
+
+			const line = new THREE.Line(geometry, this.lineMaterial);
+
+			this.group.add(line);
+
+			// this.scene.add(line);
 		}
 	}
 
