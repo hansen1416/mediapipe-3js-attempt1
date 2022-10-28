@@ -38,7 +38,7 @@ export class MatchManFigure {
 			["LEFT_SHOULDER", "LEFT_ELBOW"],
 		];
 
-		this.line_geo = [];
+		this.lines = [];
 	}
 
 	init() {
@@ -55,6 +55,8 @@ export class MatchManFigure {
 
 			// this.joints[j].position.set(0,0,0)
 		}
+
+		this.draw_lines()
 	}
 
 	draw_lines() {
@@ -68,13 +70,18 @@ export class MatchManFigure {
 			// points.push(new THREE.Vector3(0, 10, 0));
 			// points.push(new THREE.Vector3(10, 0, 0));
 
-			console.log(points);
+			// console.log(points);
 
 			const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-			this.line_geo.push(geometry);
+			geometry.setDrawRange( 0, 2 );
 
 			const line = new THREE.Line(geometry, this.lineMaterial);
+
+			// line.userData.from = this.joints_connect[jc][0]
+			// line.userData.to = this.joints_connect[jc][1]
+
+			this.lines.push(line);
 
 			this.group.add(line);
 
@@ -97,7 +104,12 @@ export class MatchManFigure {
 			}
 		}
 
-		this.draw_lines();
+		for (let i in this.lines) {
+			
+			this.lines[i].geometry.attributes.position.needsUpdate = true;
+
+			console.log(this.lines[i]);
+		}
 	}
 
 	pose_dict(landmark) {
@@ -118,6 +130,11 @@ export class MatchManFigure {
 			}
 		}
 
-		this.draw_lines();
+		for (let i in this.lines) {
+			
+			this.lines[i].geometry.attributes.position.needsUpdate = true;
+
+			console.log(this.lines[i]);
+		}
 	}
 }
