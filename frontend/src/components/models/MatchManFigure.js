@@ -36,6 +36,13 @@ export class MatchManFigure {
 		this.joints_connect = [
 			["LEFT_SHOULDER", "RIGHT_SHOULDER"],
 			["LEFT_SHOULDER", "LEFT_ELBOW"],
+			["LEFT_ELBOW", "LEFT_WRIST"],
+			["RIGHT_SHOULDER", "RIGHT_ELBOW"],
+			["RIGHT_ELBOW", "RIGHT_WRIST"],
+			["LEFT_HIP", "LEFT_KNEE"],
+			["LEFT_KNEE", "LEFT_ANKLE"],
+			["RIGHT_HIP", "RIGHT_KNEE"],
+			["RIGHT_KNEE", "RIGHT_ANKLE"],
 		];
 
 		this.lines = [];
@@ -56,7 +63,7 @@ export class MatchManFigure {
 			// this.joints[j].position.set(0,0,0)
 		}
 
-		this.draw_lines()
+		this.draw_lines();
 	}
 
 	draw_lines() {
@@ -66,26 +73,39 @@ export class MatchManFigure {
 			points.push(this.joints[this.joints_connect[jc][0]].position);
 			points.push(this.joints[this.joints_connect[jc][1]].position);
 
-			// points.push(new THREE.Vector3(-10, 0, 0));
-			// points.push(new THREE.Vector3(0, 10, 0));
-			// points.push(new THREE.Vector3(10, 0, 0));
-
-			// console.log(points);
-
 			const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-			geometry.setDrawRange( 0, 2 );
+			geometry.setDrawRange(0, 2);
 
 			const line = new THREE.Line(geometry, this.lineMaterial);
 
-			// line.userData.from = this.joints_connect[jc][0]
-			// line.userData.to = this.joints_connect[jc][1]
+			line.userData.from = this.joints_connect[jc][0];
+			line.userData.to = this.joints_connect[jc][1];
 
 			this.lines.push(line);
 
 			this.group.add(line);
 
 			// this.scene.add(line);
+		}
+	}
+
+	update_lines() {
+		for (let i in this.lines) {
+			this.lines[i].geometry.attributes.position.array[0] =
+				this.joints[this.lines[i].userData.from].position.x;
+			this.lines[i].geometry.attributes.position.array[1] =
+				this.joints[this.lines[i].userData.from].position.y;
+			this.lines[i].geometry.attributes.position.array[2] =
+				this.joints[this.lines[i].userData.from].position.z;
+			this.lines[i].geometry.attributes.position.array[3] =
+				this.joints[this.lines[i].userData.to].position.x;
+			this.lines[i].geometry.attributes.position.array[4] =
+				this.joints[this.lines[i].userData.to].position.y;
+			this.lines[i].geometry.attributes.position.array[5] =
+				this.joints[this.lines[i].userData.to].position.z;
+
+			this.lines[i].geometry.attributes.position.needsUpdate = true;
 		}
 	}
 
@@ -104,12 +124,7 @@ export class MatchManFigure {
 			}
 		}
 
-		for (let i in this.lines) {
-			
-			this.lines[i].geometry.attributes.position.needsUpdate = true;
-
-			console.log(this.lines[i]);
-		}
+		this.update_lines();
 	}
 
 	pose_dict(landmark) {
@@ -130,11 +145,6 @@ export class MatchManFigure {
 			}
 		}
 
-		for (let i in this.lines) {
-			
-			this.lines[i].geometry.attributes.position.needsUpdate = true;
-
-			console.log(this.lines[i]);
-		}
+		this.update_lines();
 	}
 }

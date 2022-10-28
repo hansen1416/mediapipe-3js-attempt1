@@ -63,7 +63,7 @@ def upload_progress():
 @app.route("/pose/data", methods=['GET'])
 def pose_data():
 
-    data = np.load(os.path.join('tmp', 'wlm3000-6000.npy'), allow_pickle=True)
-    # data = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
+    # data = np.load(os.path.join('tmp', 'wlm3000-6000.npy'), allow_pickle=True)
+    data = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
     return {'data': data.tolist()}
