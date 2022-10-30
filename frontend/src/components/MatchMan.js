@@ -15,6 +15,7 @@ export default function MatchMan() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const figure = useRef(null);
+	const figure2 = useRef(null);
 
 	// the radius of the sphere
 	// used to calculate the angle
@@ -28,6 +29,13 @@ export default function MatchMan() {
 	const poseidx = useRef(0);
 	const animationFramePointer = useRef(0);
 	const animationStep = useRef(0);
+
+	const posedata2 = useRef([]);
+	const poseidx2 = useRef(0);
+	const animationFramePointer2 = useRef(0);
+	const animationStep2 = useRef(0);
+
+	const speed = useRef(3);
 
 	const videoRef = useRef(null);
 	const animationCounter = useRef(1);
@@ -69,11 +77,17 @@ export default function MatchMan() {
 		// const axesHelper = new THREE.AxesHelper(5);
 		// scene.current.add(axesHelper);
 
-		figure.current = new MatchManFigure(scene.current);
+		figure.current = new MatchManFigure(scene.current, [0, 1, 0]);
 
 		figure.current.init();
 
 		figure.current.pose_dict(tmppose);
+
+		figure2.current = new MatchManFigure(scene.current, [0, -1, 0]);
+
+		figure2.current.init();
+
+		figure2.current.pose_dict(tmppose);
 
 		camera.current.position.z = 5;
 		camera.current.position.y = 0;
@@ -134,7 +148,7 @@ export default function MatchMan() {
 		moveAngle.current = relativePos(e);
 
 		// figure.current.group.rotation.x = moveAngle.current[1];
-		figure.current.group.rotation.y = moveAngle.current[0];
+		scene.current.rotation.y = moveAngle.current[0];
 
 		renderer.current.render(scene.current, camera.current);
 	}
@@ -191,7 +205,7 @@ export default function MatchMan() {
 	}
 
 	function playPose() {
-		if (animationStep.current % 2 === 0) {
+		if (animationStep.current % speed.current === 0) {
 			figure.current.pose_array(posedata.current[poseidx.current]);
 
 			renderer.current.render(scene.current, camera.current);
@@ -202,9 +216,70 @@ export default function MatchMan() {
 		animationStep.current += 1;
 
 		if (poseidx.current >= posedata.current.length) {
+			poseidx.current = 0;
+			animationStep.current = 0;
+
+			// animationFramePointer.current = requestAnimationFrame(playPose);
 			cancelAnimationFrame(animationFramePointer.current);
 		} else {
 			animationFramePointer.current = requestAnimationFrame(playPose);
+		}
+	}
+
+	function fetchPose2() {
+		fetch(process.env.REACT_APP_API_URL + "/pose/data2", {
+			method: "GET", // *GET, POST, PUT, DELETE, etc.
+			// mode: 'cors', // no-cors, *cors, same-origin
+			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			// credentials: 'same-origin', // include, *same-origin, omit
+			// headers: {
+			// 	"Content-Type": "multipart/form-data",
+			// },
+			// redirect: 'follow', // manual, *follow, error
+			// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+			// body: formData, // body data type must match "Content-Type" header
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data);
+
+				poseidx2.current = 0;
+
+				animationStep2.current = 0;
+
+				posedata2.current = data.data;
+
+				playPose2();
+			})
+			.catch(function (error) {
+				console.log(
+					error.message,
+					error.response,
+					error.request,
+					error.config
+				);
+			});
+	}
+
+	function playPose2() {
+		if (animationStep2.current % speed.current === 0) {
+			figure2.current.pose_array(posedata2.current[poseidx2.current]);
+
+			renderer.current.render(scene.current, camera.current);
+
+			poseidx2.current += 1;
+		}
+
+		animationStep2.current += 1;
+
+		if (poseidx2.current >= posedata2.current.length) {
+			poseidx2.current = 0;
+			animationStep2.current = 0;
+
+			// animationFramePointer.current = requestAnimationFrame(playPose);
+			cancelAnimationFrame(animationFramePointer2.current);
+		} else {
+			animationFramePointer2.current = requestAnimationFrame(playPose2);
 		}
 	}
 
@@ -300,7 +375,14 @@ export default function MatchMan() {
 				{/* <button onClick={idle}>idle</button> */}
 				{/* <button onClick={walk}>walk</button> */}
 				{/* <button onClick={tmp_pose}>tmp pose</button> */}
-				<button onClick={fetchPose}>action</button>
+				<button
+					onClick={() => {
+						fetchPose();
+						fetchPose2();
+					}}
+				>
+					action
+				</button>
 				<button onClick={startCamera}>camera sync</button>
 			</div>
 		</div>

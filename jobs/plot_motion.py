@@ -153,9 +153,7 @@ def curve_func_3d(x, a, b, c):
     return a*(x[0]**3) + b*(x[1]**3) + c
 
 
-def fit_motion_curve(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
-
-    pose_timeseries = np.array(list(map(np.array, pose_timeseries)))
+def fit_motion_curve(pose_timeseries, joint_name):
 
     xdata = pose_timeseries[:, PoseLandmark[joint_name], 0]
     ydata = pose_timeseries[:, PoseLandmark[joint_name], 1]
@@ -182,8 +180,6 @@ def draw_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
 
     ax = plt.axes(projection='3d')
 
-    pose_timeseries = np.array(list(map(np.array, pose_timeseries)))
-
     # Data for three-dimensional scattered points
     xdata = pose_timeseries[:, PoseLandmark[joint_name], 0]
     ydata = pose_timeseries[:, PoseLandmark[joint_name], 1]
@@ -209,21 +205,25 @@ if __name__ == "__main__":
     pose_results = np.load(os.path.join(
         'tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
-    pose_results = np.array(list(map(np.array, pose_results)))
+    # logger.info(pose_results_1.shape)
 
-    logger.info(pose_results.shape)
+    pose_results = np.array(list(map(np.array, pose_results[800:900])))
 
     # fit_motion_curve(pose_results[800:900], joint='LEFT_ELBOW', filename=os.path.join(
     #     'tmp', 'left_elbow_fit.png'))
 
-    # for i in PoseLandmark:
-    #     draw_motion(pose_results[800:900], i.name,
-    #                 os.path.join('tmp', i.name + '.png'))
+    np.save(os.path.join('tmp', 'wlm800-900.npy'), pose_results)
 
-    # logger.info(PoseLandmark)
+    pose_clean = pose_results.copy()
 
-    # draw_motion(pose_results[800:900], 'LEFT_ELBOW',
-    #             os.path.join('tmp', 'left_elbow.png'))
+    for i in PoseLandmark:
+        x, y, z = fit_motion_curve(pose_results, i.name)
+
+        pose_clean[:, i.value, 0] = x
+        pose_clean[:, i.value, 1] = y
+        pose_clean[:, i.value, 2] = z
+
+    np.save(os.path.join('tmp', 'wlmc800-900.npy'), pose_clean)
 
     # pp = PosePlot()
 
