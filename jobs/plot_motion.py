@@ -176,7 +176,7 @@ def fit_motion_curve(pose_timeseries, joint_name):
     return xline, yline, zline
 
 
-def draw_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
+def draw_fitted_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
 
     ax = plt.axes(projection='3d')
 
@@ -200,35 +200,36 @@ def draw_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
     plt.savefig(filename)
 
 
+def scatter_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
+
+    ax = plt.axes(projection='3d')
+
+    # Data for three-dimensional scattered points
+    xdata = pose_timeseries[:, PoseLandmark[joint_name], 0]
+    ydata = pose_timeseries[:, PoseLandmark[joint_name], 1]
+    zdata = pose_timeseries[:, PoseLandmark[joint_name], 2]
+
+    ax.scatter3D(xdata, ydata, zdata, c=zdata)  # , cmap='Greens')
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+
+    ax.view_init(elev=20, azim=45)
+
+    plt.savefig(filename)
+
+
 if __name__ == "__main__":
 
     pose_results = np.load(os.path.join(
-        'tmp', 'wlm0-3000.npy'), allow_pickle=True)
+        'tmp', 'wlm800-900.npy'), allow_pickle=True)
 
-    # logger.info(pose_results_1.shape)
-
-    pose_results = np.array(list(map(np.array, pose_results[800:900])))
-
-    # fit_motion_curve(pose_results[800:900], joint='LEFT_ELBOW', filename=os.path.join(
-    #     'tmp', 'left_elbow_fit.png'))
-
-    np.save(os.path.join('tmp', 'wlm800-900.npy'), pose_results)
-
-    pose_clean = pose_results.copy()
+    pose_clean = np.load(os.path.join(
+        'tmp', 'wlmc800-900.npy'), allow_pickle=True)
 
     for i in PoseLandmark:
-        x, y, z = fit_motion_curve(pose_results, i.name)
-
-        pose_clean[:, i.value, 0] = x
-        pose_clean[:, i.value, 1] = y
-        pose_clean[:, i.value, 2] = z
-
-    np.save(os.path.join('tmp', 'wlmc800-900.npy'), pose_clean)
-
-    # pp = PosePlot()
-
-    # for i, p in enumerate(pose_results[800:900]):
-
-    #     # pp.plot_world_pose(p, os.path.join('tmp', 'pose_{}.png'.format(i)))
-
-    #     break
+        scatter_motion(pose_results, i.name, os.path.join(
+            'tmp1', i.name + '_origin.png'))
+        scatter_motion(pose_clean, i.name, os.path.join(
+            'tmp1', i.name + '_smooth.png'))
