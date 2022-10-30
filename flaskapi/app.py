@@ -1,14 +1,12 @@
-from email.policy import default
 import os
 import time
 from tempfile import NamedTemporaryFile
 
-from flask import Flask
-from flask import request
+from flask import Flask, request, Response
 from flask_cors import CORS
 import numpy as np
 
-from ropes import logger, redis_client, pack_file_key, VIDEO_MIME_EXT
+from ropes import logger, redis_client, pack_file_key, VIDEO_MIME_EXT, oss_bucket
 # from oss_service import OSSService
 
 app = Flask(__name__)
@@ -60,10 +58,35 @@ def upload_progress():
     return {'progress': progress}
 
 
+@app.route("/pose/stream", methods=['GET'])
+def pose_stream():
+
+    object_stream = oss_bucket().get_object(
+        '8860f21aee324f9babf5bb1c771486c8/1665829847.0999663.mp4/wlm0-3000.npy')
+
+    """
+    ['_GetObjectResult__crc_enabled', '_GetObjectResult__crypto_provider', '__class__', '__delattr__', 
+    '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', '__format__', '__ge__', 
+    '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', 
+    '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', 
+    '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parse_range_str', '_server_crc', 
+    'client_crc', 'close', 'content_length', 'content_range', 'content_type', 'delete_marker', 'etag', 
+    'headers', 'last_modified', 'object_type', 'read', 'request_id', 'resp', 'server_crc', 'status', 
+    'stream', 'versionid']
+    """
+
+    # logger.info(dir(object_stream.stream))
+    # logger.info(object_stream.content_length)
+
+    def generate():
+        for row in range(0, object_stream.content_length, 8*1024):
+            yield object_stream.stream.next()
+    return Response(generate(), mimetype='text/csv')
+
+
 @app.route("/pose/data", methods=['GET'])
 def pose_data():
 
-    # data = np.load(os.path.join('tmp', 'wlm3000-6000.npy'), allow_pickle=True)
     data = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
-    return {'data': data.tolist()}
+    return {'data': data[800:900].tolist()}

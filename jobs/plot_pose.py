@@ -30,7 +30,6 @@ from ropes import logger
 mp_pose: pose = mp.solutions.pose
 
 
-
 class Annotation3D(Annotation):
 
     def __init__(self, text, xyz, *args, **kwargs):
@@ -100,11 +99,11 @@ class PosePlot():
         # self.cap = cv2.VideoCapture(video_path)
 
         # self.filename = os.path.split(video_path)[-1]
-        
+
         # total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        
+
         # fps = self.cap.get(cv2.CAP_PROP_FPS)
-        
+
         # logger.info('video filename {}, frames {}, fps {}'.format(self.filename, total_frames, fps))
 
         # self.frames_steps = 1
@@ -155,7 +154,6 @@ class PosePlot():
 
         return xdata, ydata, zdata
 
-
     def read_annotations_from_landmarks(self, landmarks):
         annotations = []
 
@@ -164,7 +162,6 @@ class PosePlot():
                 [j, self.landmark_to_point(landmarks[PoseLandmark[j]])])
 
         return annotations
-
 
     def read_arrows_from_landmarks(self, landmarks):
 
@@ -180,7 +177,6 @@ class PosePlot():
 
         return arrows
 
-
     def plot_world_pose(self, pose_landmark, filename='tmp-world.png'):
 
         xdata, ydata, zdata = self.read_points_from_landmarks(pose_landmark)
@@ -195,7 +191,7 @@ class PosePlot():
 
         for anno in annotations:
             ax.annotate3D(anno[0], tuple(*anno[1:]),
-                            xytext=(3, 3), textcoords='offset points')
+                          xytext=(3, 3), textcoords='offset points')
 
         for arro in arrows:
             ax.arrow3D(*arro)
@@ -237,4 +233,5 @@ if __name__ == "__main__":
 
         pp = PosePlot()
 
-        pp.plot_world_pose(frame_pose_landmark.landmark, os.path.join('imgs', '6packs.mp4_wlm' + str(i) + '.png'))
+        pp.plot_world_pose(frame_pose_landmark.landmark, os.path.join(
+            'imgs', '6packs.mp4_wlm' + str(i) + '.png'))

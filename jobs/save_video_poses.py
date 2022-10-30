@@ -176,8 +176,8 @@ class VideoProcesser():
 
         for j in self.joints:
 
-            data.append([landmarks[PoseLandmark[j]].x,
-                        landmarks[PoseLandmark[j]].y, landmarks[PoseLandmark[j]].z])
+            data.append([landmarks[PoseLandmark[j]].x, landmarks[PoseLandmark[j]].y,
+                         landmarks[PoseLandmark[j]].z, landmarks[PoseLandmark[j]].visibility])
 
         return data
 

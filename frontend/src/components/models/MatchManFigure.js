@@ -39,6 +39,8 @@ export class MatchManFigure {
 			["LEFT_ELBOW", "LEFT_WRIST"],
 			["RIGHT_SHOULDER", "RIGHT_ELBOW"],
 			["RIGHT_ELBOW", "RIGHT_WRIST"],
+			["LEFT_SHOULDER", "LEFT_HIP"],
+			["RIGHT_SHOULDER", "RIGHT_HIP"],
 			["LEFT_HIP", "LEFT_KNEE"],
 			["LEFT_KNEE", "LEFT_ANKLE"],
 			["RIGHT_HIP", "RIGHT_KNEE"],

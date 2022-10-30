@@ -58,5 +58,4 @@ def unpack_file_key(bytes_str):
         uuid, NamedTemporaryFile.name, current time in milliseconds, video mimetype
     """
 
-    return bytes_str[:16].hex(), bytes_str[16:24].decode('utf-8')\
-        , struct.unpack('<d', bytes_str[24:32])[0], bytes_str[32:].decode('utf-8')
+    return bytes_str[:16].hex(), bytes_str[16:24].decode('utf-8'), struct.unpack('<d', bytes_str[24:32])[0], bytes_str[32:].decode('utf-8')

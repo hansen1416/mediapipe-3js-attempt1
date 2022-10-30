@@ -170,10 +170,15 @@ export default function MatchMan() {
 		})
 			.then((response) => response.json())
 			.then((data) => {
+				console.log(data);
+
+				poseidx.current = 0;
+
+				animationStep.current = 0;
+
 				posedata.current = data.data;
-				setTimeout(() => {
-					playPose();
-				}, 10);
+
+				playPose();
 			})
 			.catch(function (error) {
 				console.log(
@@ -192,15 +197,15 @@ export default function MatchMan() {
 			renderer.current.render(scene.current, camera.current);
 
 			poseidx.current += 1;
-
-			if (poseidx.current >= posedata.current.length) {
-				cancelAnimationFrame(animationFramePointer.current);
-			}
 		}
 
 		animationStep.current += 1;
 
-		animationFramePointer.current = requestAnimationFrame(playPose);
+		if (poseidx.current >= posedata.current.length) {
+			cancelAnimationFrame(animationFramePointer.current);
+		} else {
+			animationFramePointer.current = requestAnimationFrame(playPose);
+		}
 	}
 
 	function startCamera() {

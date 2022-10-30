@@ -4,6 +4,8 @@ import sys
 import redis
 import struct
 
+import oss2
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -58,5 +60,15 @@ def unpack_file_key(bytes_str):
         uuid, NamedTemporaryFile.name, current time in milliseconds, video mimetype
     """
 
-    return bytes_str[:16].hex(), bytes_str[16:24].decode('utf-8')\
-        , struct.unpack('<d', bytes_str[24:32])[0], bytes_str[32:].decode('utf-8')
+    return bytes_str[:16].hex(), bytes_str[16:24].decode('utf-8'), struct.unpack('<d', bytes_str[24:32])[0], bytes_str[32:].decode('utf-8')
+
+
+def oss_bucket():
+
+    # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+    auth = oss2.Auth(os.getenv('ALIYUN_ACCESS_ID'),
+                     os.getenv('ALIYUN_ACCESS_SECRET'))
+    # yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
+    # 填写Bucket名称。
+    return oss2.Bucket(auth, os.getenv(
+        'OSS_ENDPOINT'), os.getenv('OSS_BUCKET'))
