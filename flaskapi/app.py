@@ -87,7 +87,10 @@ def pose_stream():
 @app.route("/pose/data", methods=['GET'])
 def pose_data():
 
-    data = np.load(os.path.join('tmp', 'wlmc800-900.npy'), allow_pickle=True)
+    action_name = request.args.get('action_name')
+
+    data = np.load(os.path.join(
+        'tmp', 'wlmc{}.npy'.format(action_name)), allow_pickle=True)
 
     return {'data': data.tolist()}
 
@@ -95,6 +98,10 @@ def pose_data():
 @app.route("/pose/data2", methods=['GET'])
 def pose_data2():
 
-    data = np.load(os.path.join('tmp', 'wlm800-900.npy'), allow_pickle=True)
+    action_name = request.args.get('action_name')
+
+    data = np.load(os.path.join(
+        'tmp', 'wlm{}.npy'.format(action_name)), allow_pickle=True)
+    # data = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
     return {'data': data.tolist()}

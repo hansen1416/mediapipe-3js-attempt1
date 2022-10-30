@@ -176,6 +176,22 @@ def fit_motion_curve(pose_timeseries, joint_name):
     return xline, yline, zline
 
 
+def save_fitted_motion(pose_timeseries, filename_origin, filename_clean):
+
+    np.save(filename_origin, pose_timeseries)
+
+    pose_clean = pose_timeseries.copy()
+
+    for i in PoseLandmark:
+        x, y, z = fit_motion_curve(pose_timeseries, i.name)
+
+        pose_clean[:, i.value, 0] = x
+        pose_clean[:, i.value, 1] = y
+        pose_clean[:, i.value, 2] = z
+
+    np.save(filename_clean, pose_clean)
+
+
 def draw_fitted_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
 
     ax = plt.axes(projection='3d')
@@ -222,14 +238,23 @@ def scatter_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
 
 if __name__ == "__main__":
 
+    # ---------- save a segment to fitted and origin motion
+    data3000 = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
+
+    data_seg = np.array(list(map(np.array, data3000[2300:2400])))
+
+    save_fitted_motion(data_seg, os.path.join(
+        'tmp', 'wlm2300-2400.npy'), os.path.join('tmp', 'wlmc2300-2400.npy'))
+    # ---------- save a segment to fitted and origin motion
+
     pose_results = np.load(os.path.join(
-        'tmp', 'wlm800-900.npy'), allow_pickle=True)
+        'tmp', 'wlm2300-2400.npy'), allow_pickle=True)
 
     pose_clean = np.load(os.path.join(
-        'tmp', 'wlmc800-900.npy'), allow_pickle=True)
+        'tmp', 'wlmc2300-2400.npy'), allow_pickle=True)
 
     for i in PoseLandmark:
         scatter_motion(pose_results, i.name, os.path.join(
-            'tmp1', i.name + '_origin.png'))
+            'tmp2300-2400', i.name + '_origin.png'))
         scatter_motion(pose_clean, i.name, os.path.join(
-            'tmp1', i.name + '_smooth.png'))
+            'tmp2300-2400', i.name + '_smooth.png'))

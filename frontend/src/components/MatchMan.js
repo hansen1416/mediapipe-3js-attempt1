@@ -77,20 +77,21 @@ export default function MatchMan() {
 		// const axesHelper = new THREE.AxesHelper(5);
 		// scene.current.add(axesHelper);
 
-		figure.current = new MatchManFigure(scene.current, [0, 1, 0]);
+		figure.current = new MatchManFigure(scene.current, [-3, -1, 0]);
 
 		figure.current.init();
 
 		figure.current.pose_dict(tmppose);
 
-		figure2.current = new MatchManFigure(scene.current, [0, -1, 0]);
+		figure2.current = new MatchManFigure(scene.current, [3, -1, 0]);
 
 		figure2.current.init();
 
 		figure2.current.pose_dict(tmppose);
 
-		camera.current.position.z = 5;
 		camera.current.position.y = 0;
+		camera.current.position.x = 0;
+		camera.current.position.z = 5;
 
 		// camera.current.rotation.x = 0.1;
 
@@ -169,19 +170,26 @@ export default function MatchMan() {
 	// 	ctx.drawImage(video, 0, 0);
 	// }
 
-	function fetchPose() {
-		fetch(process.env.REACT_APP_API_URL + "/pose/data", {
-			method: "GET", // *GET, POST, PUT, DELETE, etc.
-			// mode: 'cors', // no-cors, *cors, same-origin
-			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-			// credentials: 'same-origin', // include, *same-origin, omit
-			// headers: {
-			// 	"Content-Type": "multipart/form-data",
-			// },
-			// redirect: 'follow', // manual, *follow, error
-			// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-			// body: formData, // body data type must match "Content-Type" header
-		})
+	function fetchPose(action_name) {
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/pose/data?" +
+				new URLSearchParams({
+					action_name: action_name,
+				}),
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data);
@@ -226,19 +234,26 @@ export default function MatchMan() {
 		}
 	}
 
-	function fetchPose2() {
-		fetch(process.env.REACT_APP_API_URL + "/pose/data2", {
-			method: "GET", // *GET, POST, PUT, DELETE, etc.
-			// mode: 'cors', // no-cors, *cors, same-origin
-			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-			// credentials: 'same-origin', // include, *same-origin, omit
-			// headers: {
-			// 	"Content-Type": "multipart/form-data",
-			// },
-			// redirect: 'follow', // manual, *follow, error
-			// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-			// body: formData, // body data type must match "Content-Type" header
-		})
+	function fetchPose2(action_name) {
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/pose/data2?" +
+				new URLSearchParams({
+					action_name: action_name,
+				}),
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data);
@@ -372,16 +387,29 @@ export default function MatchMan() {
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">
-				{/* <button onClick={idle}>idle</button> */}
-				{/* <button onClick={walk}>walk</button> */}
-				{/* <button onClick={tmp_pose}>tmp pose</button> */}
 				<button
 					onClick={() => {
-						fetchPose();
-						fetchPose2();
+						fetchPose("800-900");
+						fetchPose2("800-900");
 					}}
 				>
-					action
+					action1
+				</button>{" "}
+				<button
+					onClick={() => {
+						fetchPose("1500-1600");
+						fetchPose2("1500-1600");
+					}}
+				>
+					action2
+				</button>
+				<button
+					onClick={() => {
+						fetchPose("2300-2400");
+						fetchPose2("2300-2400");
+					}}
+				>
+					action3
 				</button>
 				<button onClick={startCamera}>camera sync</button>
 			</div>
