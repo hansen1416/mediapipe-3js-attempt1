@@ -209,12 +209,16 @@ if __name__ == "__main__":
     pose_results = np.load(os.path.join(
         'tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
+    pose_results = np.array(list(map(np.array, pose_results)))
+
+    logger.info(pose_results.shape)
+
     # fit_motion_curve(pose_results[800:900], joint='LEFT_ELBOW', filename=os.path.join(
     #     'tmp', 'left_elbow_fit.png'))
 
-    for i in PoseLandmark:
-        draw_motion(pose_results[800:900], i.name,
-                    os.path.join('tmp', i.name + '.png'))
+    # for i in PoseLandmark:
+    #     draw_motion(pose_results[800:900], i.name,
+    #                 os.path.join('tmp', i.name + '.png'))
 
     # logger.info(PoseLandmark)
 
