@@ -14,6 +14,9 @@ function App() {
 						<Link to={`/matchman`}>Match man</Link>
 					</li>
 					<li>
+						<Link to={`/glbmodel`}>GLB Model</Link>
+					</li>
+					<li>
 						<Link to={`/upload`}>Upload</Link>
 					</li>
 					<li>

@@ -13,6 +13,7 @@ import ErrorPage from "./ErrorPage";
 import Home from "./components/Home";
 import MatchMan from "./components/MatchMan";
 import GreenMan from "./components/GreenMan";
+import GlbModel from "./components/GlbModel";
 import Upload from "./components/Upload";
 import Video from "./components/Video";
 import WebCamera from "./components/WebCamera";
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
 			{
 				path: "/matchman",
 				element: <MatchMan />,
+			},
+			{
+				path: "/glbmodel",
+				element: <GlbModel />,
 			},
 			{
 				path: "/upload",
