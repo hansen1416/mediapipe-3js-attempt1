@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { distanceBetweenPoints } from "../ropes";
+import { posePointsToVector, quaternionFromVectors } from "../ropes";
 
 export class CustomManFigure {
 	constructor(scene, figure_position, figure_rotation) {
@@ -154,19 +154,18 @@ export class CustomManFigure {
 			);
 
 			this.lines[i].position.needsUpdate = true;
-			// this.lines[i].geometry.attributes.position.array[0] =
-			// 	this.joints[this.lines[i].userData.from].position.x;
-			// this.lines[i].geometry.attributes.position.array[1] =
-			// 	this.joints[this.lines[i].userData.from].position.y;
-			// this.lines[i].geometry.attributes.position.array[2] =
-			// 	this.joints[this.lines[i].userData.from].position.z;
-			// this.lines[i].geometry.attributes.position.array[3] =
-			// 	this.joints[this.lines[i].userData.to].position.x;
-			// this.lines[i].geometry.attributes.position.array[4] =
-			// 	this.joints[this.lines[i].userData.to].position.y;
-			// this.lines[i].geometry.attributes.position.array[5] =
-			// 	this.joints[this.lines[i].userData.to].position.z;
-			// this.lines[i].geometry.attributes.position.needsUpdate = true;
+
+			const target_vector = posePointsToVector(
+				this.joints[this.lines[i].userData.from].position,
+				this.joints[this.lines[i].userData.to].position
+			);
+
+			const quaternion = quaternionFromVectors(
+				new THREE.Vector3(0, 1, 0),
+				target_vector
+			);
+
+			this.lines[i].applyQuaternion(quaternion);
 		}
 	}
 
