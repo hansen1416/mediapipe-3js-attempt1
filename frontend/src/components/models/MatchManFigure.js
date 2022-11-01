@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { joints } from "../ropes";
 
 export class MatchManFigure {
 	constructor(scene, figure_position, figure_rotation) {
