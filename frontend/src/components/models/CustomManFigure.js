@@ -1,6 +1,10 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { posePointsToVector, quaternionFromVectors, distanceBetweenPoints } from "../ropes";
+import {
+	posePointsToVector,
+	quaternionFromVectors,
+	hexagonVertices,
+} from "../ropes";
 
 export class CustomManFigure {
 	constructor(scene, figure_position, figure_rotation) {
@@ -34,20 +38,28 @@ export class CustomManFigure {
 		this.joints = {};
 
 		this.joints_connect = [
-			["LEFT_SHOULDER", "RIGHT_SHOULDER", 1.2381028532000913, ''],
-			["LEFT_SHOULDER", "LEFT_ELBOW", 1.1247838311094145, 'left_arm'],
-			["LEFT_ELBOW", "LEFT_WRIST", 0.8123971126504467, ''],
-			["RIGHT_SHOULDER", "RIGHT_ELBOW", 1.1247838311094145, ''],
-			["RIGHT_ELBOW", "RIGHT_WRIST", 0.8123971126504467, ''],
-			["LEFT_SHOULDER", "LEFT_HIP", 1.9537422593811369, ''],
-			["RIGHT_SHOULDER", "RIGHT_HIP", 1.9537422593811369, ''],
-			["LEFT_HIP", "LEFT_KNEE", 1.7646879068238623, ''],
-			["LEFT_KNEE", "LEFT_ANKLE", 1.4876400546972346, ''],
-			["RIGHT_HIP", "RIGHT_KNEE", 1.4388785699684465, ''],
-			["RIGHT_KNEE", "RIGHT_ANKLE", 1.7573154865681548, ''],
+			["LEFT_SHOULDER", "RIGHT_SHOULDER", 1.2381028532000913, ""],
+			["LEFT_SHOULDER", "LEFT_ELBOW", 1.1247838311094145, "left_arm"],
+			["LEFT_ELBOW", "LEFT_WRIST", 0.8123971126504467, ""],
+			["RIGHT_SHOULDER", "RIGHT_ELBOW", 1.1247838311094145, ""],
+			["RIGHT_ELBOW", "RIGHT_WRIST", 0.8123971126504467, ""],
+			["LEFT_SHOULDER", "LEFT_HIP", 1.9537422593811369, ""],
+			["RIGHT_SHOULDER", "RIGHT_HIP", 1.9537422593811369, ""],
+			["LEFT_HIP", "LEFT_KNEE", 1.7646879068238623, ""],
+			["LEFT_KNEE", "LEFT_ANKLE", 1.4876400546972346, ""],
+			["RIGHT_HIP", "RIGHT_KNEE", 1.4388785699684465, ""],
+			["RIGHT_KNEE", "RIGHT_ANKLE", 1.7573154865681548, ""],
 		];
 
 		this.parts = [];
+
+		this.limb_rotation_vectors = {};
+
+		for (let i in this.joints_connect) {
+			this.limb_rotation_vectors[
+				this.joints_connect[i][0] + this.joints_connect[i][1]
+			] = new THREE.Vector3(0, 1, 0);
+		}
 	}
 
 	init() {
@@ -77,8 +89,10 @@ export class CustomManFigure {
 			points.push(new THREE.Vector3(0, 0, 0));
 			points.push(new THREE.Vector3(0, this.joints_connect[jc][2], 0));
 
-			if (typeof this[this.joints_connect[jc][3]] === 'function') {
-				const tissue = this[this.joints_connect[jc][3]](this.joints_connect[jc][2]);
+			if (typeof this[this.joints_connect[jc][3]] === "function") {
+				const tissue = this[this.joints_connect[jc][3]](
+					this.joints_connect[jc][2]
+				);
 
 				group.add(tissue);
 
@@ -99,19 +113,7 @@ export class CustomManFigure {
 	}
 
 	left_arm(size) {
-
-		const unit_size = size / 6;
-
-		const vertices = [
-			// front
-			{ pos: [Math.sqrt(3)/2, 0, 0.5], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0.05, size, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, size, 0], norm: [0, 0, 0], uv: [0, 0] },
-
-			{ pos: [0, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0.05, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0.05, size, 0], norm: [0, 0, 0], uv: [0, 0] },
-		];
+		const vertices = hexagonVertices(size / 6, size);
 
 		const positions = [];
 		const normals = [];
@@ -164,11 +166,17 @@ export class CustomManFigure {
 			);
 
 			const quaternion = quaternionFromVectors(
-				new THREE.Vector3(0, 1, 0),
+				this.limb_rotation_vectors[
+					this.parts[i].userData.from + this.parts[i].userData.to
+				],
 				target_vector
 			);
 
 			this.parts[i].applyQuaternion(quaternion);
+
+			this.limb_rotation_vectors[
+				this.parts[i].userData.from + this.parts[i].userData.to
+			] = target_vector;
 		}
 	}
 
@@ -180,9 +188,12 @@ export class CustomManFigure {
 		for (let name in POSE_LANDMARKS) {
 			if (landmark[POSE_LANDMARKS[name]]) {
 				this.joints[name].position.set(
-					landmark[POSE_LANDMARKS[name]][0] * -this.pose_position_scale,
-					landmark[POSE_LANDMARKS[name]][1] * -this.pose_position_scale,
-					landmark[POSE_LANDMARKS[name]][2] * -this.pose_position_scale
+					landmark[POSE_LANDMARKS[name]][0] *
+						-this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]][1] *
+						-this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]][2] *
+						-this.pose_position_scale
 				);
 			}
 		}
@@ -201,9 +212,12 @@ export class CustomManFigure {
 				landmark[POSE_LANDMARKS[name]]["visibility"] > 0.5
 			) {
 				this.joints[name].position.set(
-					landmark[POSE_LANDMARKS[name]]["x"] * -this.pose_position_scale,
-					landmark[POSE_LANDMARKS[name]]["y"] * -this.pose_position_scale,
-					landmark[POSE_LANDMARKS[name]]["z"] * -this.pose_position_scale
+					landmark[POSE_LANDMARKS[name]]["x"] *
+						-this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]]["y"] *
+						-this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]]["z"] *
+						-this.pose_position_scale
 				);
 			}
 		}

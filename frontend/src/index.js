@@ -17,6 +17,7 @@ import BufferGeoModel from "./components/BufferGeoModel";
 import Upload from "./components/Upload";
 import Video from "./components/Video";
 import WebCamera from "./components/WebCamera";
+import Playground3D from "./components/Playground3D";
 
 const router = createBrowserRouter([
 	{
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
 			{
 				path: "/buffergeo",
 				element: <BufferGeoModel />,
+			},
+			{
+				path: "/3dplayground",
+				element: <Playground3D />,
 			},
 			{
 				path: "/upload",
