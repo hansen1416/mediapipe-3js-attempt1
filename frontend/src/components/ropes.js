@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
@@ -89,7 +90,7 @@ export function quaternionFromVectors(a, b) {
 
 	return quaternion;
 }
-
+/**
 export const joints = [
 	"NOSE",
 	"LEFT_EYE_INNER",
@@ -125,6 +126,7 @@ export const joints = [
 	"LEFT_FOOT_INDEX",
 	"RIGHT_FOOT_INDEX",
 ];
+ */
 
 export const limbs = [
 	"LEFT_SHOULDER",
@@ -176,8 +178,8 @@ export function getLimbFromPose(limb_name, pose_landmark) {
 	}
 
 	return posePointsToVector(
-		pose_landmark[joints.indexOf(joint1)],
-		pose_landmark[joints.indexOf(joint2)]
+		pose_landmark[POSE_LANDMARKS[joint1]],
+		pose_landmark[POSE_LANDMARKS[joint2]]
 	);
 }
 

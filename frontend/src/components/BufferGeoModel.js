@@ -1,3 +1,4 @@
+import { POSE_LANDMARKS } from "@mediapipe/pose";
 import { useEffect, useRef } from "react";
 
 import * as THREE from "three";

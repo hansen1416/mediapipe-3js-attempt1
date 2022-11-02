@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { posePointsToVector, quaternionFromVectors } from "../ropes";
+import { posePointsToVector, quaternionFromVectors, distanceBetweenPoints } from "../ropes";
 
 export class CustomManFigure {
 	constructor(scene, figure_position, figure_rotation) {
@@ -27,27 +27,27 @@ export class CustomManFigure {
 		// this.group.updateMatrix();
 
 		// the following parameters define the size of different parts of a body
-		this.unit = 4;
-
+		this.pose_position_scale = 4;
+		// this.unit_size = 0.1;
 		this.joints_size = 0.05;
 
 		this.joints = {};
 
 		this.joints_connect = [
-			["LEFT_SHOULDER", "RIGHT_SHOULDER", 1.2381028532000913],
-			["LEFT_SHOULDER", "LEFT_ELBOW", 0.7939997349833849],
-			["LEFT_ELBOW", "LEFT_WRIST", 0.7294965908810502],
-			["RIGHT_SHOULDER", "RIGHT_ELBOW", 1.1247838311094145],
-			["RIGHT_ELBOW", "RIGHT_WRIST", 0.8123971126504467],
-			["LEFT_SHOULDER", "LEFT_HIP", 1.7374364470364458],
-			["RIGHT_SHOULDER", "RIGHT_HIP", 1.9537422593811369],
-			["LEFT_HIP", "LEFT_KNEE", 1.7646879068238623],
-			["LEFT_KNEE", "LEFT_ANKLE", 1.4876400546972346],
-			["RIGHT_HIP", "RIGHT_KNEE", 1.4388785699684465],
-			["RIGHT_KNEE", "RIGHT_ANKLE", 1.7573154865681548],
+			["LEFT_SHOULDER", "RIGHT_SHOULDER", 1.2381028532000913, ''],
+			["LEFT_SHOULDER", "LEFT_ELBOW", 1.1247838311094145, 'left_arm'],
+			["LEFT_ELBOW", "LEFT_WRIST", 0.8123971126504467, ''],
+			["RIGHT_SHOULDER", "RIGHT_ELBOW", 1.1247838311094145, ''],
+			["RIGHT_ELBOW", "RIGHT_WRIST", 0.8123971126504467, ''],
+			["LEFT_SHOULDER", "LEFT_HIP", 1.9537422593811369, ''],
+			["RIGHT_SHOULDER", "RIGHT_HIP", 1.9537422593811369, ''],
+			["LEFT_HIP", "LEFT_KNEE", 1.7646879068238623, ''],
+			["LEFT_KNEE", "LEFT_ANKLE", 1.4876400546972346, ''],
+			["RIGHT_HIP", "RIGHT_KNEE", 1.4388785699684465, ''],
+			["RIGHT_KNEE", "RIGHT_ANKLE", 1.7573154865681548, ''],
 		];
 
-		this.lines = [];
+		this.parts = [];
 	}
 
 	init() {
@@ -77,19 +77,15 @@ export class CustomManFigure {
 			points.push(new THREE.Vector3(0, 0, 0));
 			points.push(new THREE.Vector3(0, this.joints_connect[jc][2], 0));
 
-			const geometry = new THREE.BufferGeometry().setFromPoints(points);
+			if (typeof this[this.joints_connect[jc][3]] === 'function') {
+				const tissue = this[this.joints_connect[jc][3]](this.joints_connect[jc][2]);
 
-			geometry.setDrawRange(0, 2);
+				group.add(tissue);
 
-			const line = new THREE.Line(geometry, this.lineMaterial);
-
-			group.add(line);
-
-			this.lines.push(group);
+				tissue.position.y = -1 * this.joints_connect[jc][2];
+			}
 
 			this.group.add(group);
-
-			line.position.y = -1 * this.joints_connect[jc][2];
 
 			group.userData.from = this.joints_connect[jc][0];
 			group.userData.to = this.joints_connect[jc][1];
@@ -98,16 +94,23 @@ export class CustomManFigure {
 				this.joints[this.joints_connect[jc][0]].position
 			);
 
-			// line.add(this.arm_geo());
+			this.parts.push(group);
 		}
 	}
 
-	arm_geo() {
+	left_arm(size) {
+
+		const unit_size = size / 6;
+
 		const vertices = [
 			// front
+			{ pos: [Math.sqrt(3)/2, 0, 0.5], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0.05, size, 0], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0, size, 0], norm: [0, 0, 0], uv: [0, 0] },
+
 			{ pos: [0, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [1, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, 1, 0], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0.05, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0.05, size, 0], norm: [0, 0, 0], uv: [0, 0] },
 		];
 
 		const positions = [];
@@ -146,18 +149,18 @@ export class CustomManFigure {
 	}
 
 	update_lines() {
-		for (let i in this.lines) {
-			this.lines[i].position.set(
-				this.joints[this.lines[i].userData.from].position.x,
-				this.joints[this.lines[i].userData.from].position.y,
-				this.joints[this.lines[i].userData.from].position.z
+		for (let i in this.parts) {
+			this.parts[i].position.set(
+				this.joints[this.parts[i].userData.from].position.x,
+				this.joints[this.parts[i].userData.from].position.y,
+				this.joints[this.parts[i].userData.from].position.z
 			);
 
-			this.lines[i].position.needsUpdate = true;
+			this.parts[i].position.needsUpdate = true;
 
 			const target_vector = posePointsToVector(
-				this.joints[this.lines[i].userData.from].position,
-				this.joints[this.lines[i].userData.to].position
+				this.joints[this.parts[i].userData.from].position,
+				this.joints[this.parts[i].userData.to].position
 			);
 
 			const quaternion = quaternionFromVectors(
@@ -165,7 +168,7 @@ export class CustomManFigure {
 				target_vector
 			);
 
-			this.lines[i].applyQuaternion(quaternion);
+			this.parts[i].applyQuaternion(quaternion);
 		}
 	}
 
@@ -177,9 +180,9 @@ export class CustomManFigure {
 		for (let name in POSE_LANDMARKS) {
 			if (landmark[POSE_LANDMARKS[name]]) {
 				this.joints[name].position.set(
-					landmark[POSE_LANDMARKS[name]][0] * -this.unit,
-					landmark[POSE_LANDMARKS[name]][1] * -this.unit,
-					landmark[POSE_LANDMARKS[name]][2] * -this.unit
+					landmark[POSE_LANDMARKS[name]][0] * -this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]][1] * -this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]][2] * -this.pose_position_scale
 				);
 			}
 		}
@@ -198,9 +201,9 @@ export class CustomManFigure {
 				landmark[POSE_LANDMARKS[name]]["visibility"] > 0.5
 			) {
 				this.joints[name].position.set(
-					landmark[POSE_LANDMARKS[name]]["x"] * -this.unit,
-					landmark[POSE_LANDMARKS[name]]["y"] * -this.unit,
-					landmark[POSE_LANDMARKS[name]]["z"] * -this.unit
+					landmark[POSE_LANDMARKS[name]]["x"] * -this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]]["y"] * -this.pose_position_scale,
+					landmark[POSE_LANDMARKS[name]]["z"] * -this.pose_position_scale
 				);
 			}
 		}

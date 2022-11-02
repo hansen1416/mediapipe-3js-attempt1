@@ -38,7 +38,7 @@ export default function MatchMan() {
 	const speed = useRef(3);
 
 	const videoRef = useRef(null);
-	const animationCounter = useRef(1);
+	// const animationCounter = useRef(1);
 	const mediacamera = useRef(null);
 
 	useEffect(() => {
