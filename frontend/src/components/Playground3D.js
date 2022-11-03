@@ -4,8 +4,10 @@ import * as THREE from "three";
 // import { Pose } from "@mediapipe/pose";
 // import { Camera } from "@mediapipe/camera_utils";
 // import { TextGeometry } from 'https://unpkg.com/three@0.138.3/examples/jsm/geometries/TextGeometry.js';
-import { FontLoader, TextGeometry } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-
+import {
+	FontLoader,
+	TextGeometry,
+} from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js";
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -55,10 +57,6 @@ export default function Playground3D() {
 			1000
 		);
 
-		const obj = upper_arm()
-
-		// scene.current.add(obj);
-
 		camera.current.position.y = 0;
 		camera.current.position.x = 0;
 		camera.current.position.z = 5;
@@ -68,6 +66,15 @@ export default function Playground3D() {
 		});
 
 		renderer.current.setSize(viewWidth, viewHeight);
+
+		const obj = upper_arm();
+
+		scene.current.add(obj);
+
+		const color = 0xffffff;
+		const intensity = 1;
+		const light = new THREE.AmbientLight(color, intensity);
+		scene.current.add(light);
 
 		renderer.current.render(scene.current, camera.current);
 
@@ -81,29 +88,44 @@ export default function Playground3D() {
 		// eslint-disable-next-line
 	}, []);
 
-
 	function upper_arm() {
-
-		const u = 1.4;
+		const u = 0.6;
 
 		const vertices = [
-			// front
-			{ pos: [-0.6, 0, 0.8], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, 0, 1], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, 1.2, 1], norm: [0, 0, 0], uv: [0, 0] },
+			// top of shoulder
+			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			// deltoid
+			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
 		];
 
 		for (let i in vertices) {
-			vertices[i]['pos'][0] = u*vertices[i]['pos'][0];
-			vertices[i]['pos'][1] = u*vertices[i]['pos'][1];
-			vertices[i]['pos'][2] = u*vertices[i]['pos'][2];
-
-			textLabel(new THREE.Vector3(...vertices[i]['pos']), vertices[i]['pos'][0]+',' +vertices[i]['pos'][1] +',' + vertices[i]['pos'][2])
+			vertices[i]["pos"][0] = u * vertices[i]["pos"][0];
+			vertices[i]["pos"][1] = u * vertices[i]["pos"][1];
+			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
 		}
 
-		const material = new THREE.MeshBasicMaterial({
-			color: 0xeeeeee,
-		});
+		const material = new THREE.MeshPhongMaterial({ color: 0xf1c27d });
+		// const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
 		const positions = [];
 		const normals = [];
@@ -140,40 +162,7 @@ export default function Playground3D() {
 		return new THREE.Mesh(geometry, material);
 	}
 
-	function textLabel(position, text) {
-		const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-
-		const loader = new FontLoader();
-
-		loader.load(process.env.PUBLIC_URL + '/font/helvetiker_regular.typeface.json', function ( font ) {
-
-			const geo = new TextGeometry(text, {
-				font: font,
-				size: 80,
-				height: 5,
-				curveSegments: 12,
-				bevelEnabled: true,
-				bevelThickness: 10,
-				bevelSize: 8,
-				bevelOffset: 0,
-				bevelSegments: 5
-			});
-
-			const mesh = new THREE.Mesh(geo, material);
-
-			scene.current.add(mesh)
-
-			mesh.position.set( ...position );
-
-			console.log(scene)
-		})
-	}
-
-
-
-
 	function hexagon() {
-
 		const unit_size = 0.8;
 		const length = 2;
 
@@ -186,11 +175,11 @@ export default function Playground3D() {
 				uv: [0, 0],
 			},
 			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-	
+
 			{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
 			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
 			{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-	
+
 			{
 				pos: [-1 * unit_size, 0, unit_size / 2],
 				norm: [0, 0, 0],
@@ -202,7 +191,7 @@ export default function Playground3D() {
 				uv: [0, 0],
 			},
 			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-	
+
 			{
 				pos: [-1 * unit_size, 0, unit_size / 2],
 				norm: [0, 0, 0],
@@ -250,7 +239,6 @@ export default function Playground3D() {
 
 		return new THREE.Mesh(geometry, material);
 	}
-
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();
@@ -289,7 +277,7 @@ export default function Playground3D() {
 
 		// figure.current.group.rotation.x = moveAngle.current[1];
 		scene.current.rotation.y = moveAngle.current[0];
-		// camera.current.rotation.x = moveAngle.current[1];
+		scene.current.rotation.x = moveAngle.current[1];
 
 		// console.log(moveAngle.current, scene.current.rotation.x);
 
