@@ -3,6 +3,9 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 // import { Pose } from "@mediapipe/pose";
 // import { Camera } from "@mediapipe/camera_utils";
+// import { TextGeometry } from 'https://unpkg.com/three@0.138.3/examples/jsm/geometries/TextGeometry.js';
+import { FontLoader, TextGeometry } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -54,7 +57,7 @@ export default function Playground3D() {
 
 		const obj = upper_arm()
 
-		scene.current.add(obj);
+		// scene.current.add(obj);
 
 		camera.current.position.y = 0;
 		camera.current.position.x = 0;
@@ -81,19 +84,22 @@ export default function Playground3D() {
 
 	function upper_arm() {
 
-		const u = 2;
+		const u = 1.4;
 
 		const vertices = [
 			// front
-			{ pos: [0, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [u * -0.9, u * -1.2, u*0.6], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [u*0.1, u*-1.3, u*1.2], norm: [0, 0, 0], uv: [0, 0] },
-	
-			{ pos: [0, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [u * -1, u * -1.2, u*0], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [u * -0.9, u * -1.2, u*0.6], norm: [0, 0, 0], uv: [0, 0] },
-		
+			{ pos: [-0.6, 0, 0.8], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0, 0, 1], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0, 1.2, 1], norm: [0, 0, 0], uv: [0, 0] },
 		];
+
+		for (let i in vertices) {
+			vertices[i]['pos'][0] = u*vertices[i]['pos'][0];
+			vertices[i]['pos'][1] = u*vertices[i]['pos'][1];
+			vertices[i]['pos'][2] = u*vertices[i]['pos'][2];
+
+			textLabel(new THREE.Vector3(...vertices[i]['pos']), vertices[i]['pos'][0]+',' +vertices[i]['pos'][1] +',' + vertices[i]['pos'][2])
+		}
 
 		const material = new THREE.MeshBasicMaterial({
 			color: 0xeeeeee,
@@ -133,6 +139,37 @@ export default function Playground3D() {
 
 		return new THREE.Mesh(geometry, material);
 	}
+
+	function textLabel(position, text) {
+		const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+
+		const loader = new FontLoader();
+
+		loader.load(process.env.PUBLIC_URL + '/font/helvetiker_regular.typeface.json', function ( font ) {
+
+			const geo = new TextGeometry(text, {
+				font: font,
+				size: 80,
+				height: 5,
+				curveSegments: 12,
+				bevelEnabled: true,
+				bevelThickness: 10,
+				bevelSize: 8,
+				bevelOffset: 0,
+				bevelSegments: 5
+			});
+
+			const mesh = new THREE.Mesh(geo, material);
+
+			scene.current.add(mesh)
+
+			mesh.position.set( ...position );
+
+			console.log(scene)
+		})
+	}
+
+
 
 
 	function hexagon() {
