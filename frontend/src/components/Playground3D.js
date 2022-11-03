@@ -52,14 +52,13 @@ export default function Playground3D() {
 			1000
 		);
 
-		// const axesHelper = new THREE.AxesHelper(5);
-		// scene.current.add(axesHelper);
+		const obj = upper_arm()
+
+		scene.current.add(obj);
 
 		camera.current.position.y = 0;
 		camera.current.position.x = 0;
 		camera.current.position.z = 5;
-
-		// camera.current.rotation.x = 0.1;
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -78,6 +77,143 @@ export default function Playground3D() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+
+	function upper_arm() {
+
+		const u = 2;
+
+		const vertices = [
+			// front
+			{ pos: [0, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [u * -0.9, u * -1.2, u*0.6], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [u*0.1, u*-1.3, u*1.2], norm: [0, 0, 0], uv: [0, 0] },
+	
+			{ pos: [0, 0, 0], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [u * -1, u * -1.2, u*0], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [u * -0.9, u * -1.2, u*0.6], norm: [0, 0, 0], uv: [0, 0] },
+		
+		];
+
+		const material = new THREE.MeshBasicMaterial({
+			color: 0xeeeeee,
+		});
+
+		const positions = [];
+		const normals = [];
+		const uvs = [];
+		for (const vertex of vertices) {
+			positions.push(...vertex.pos);
+			normals.push(...vertex.norm);
+			uvs.push(...vertex.uv);
+		}
+
+		const geometry = new THREE.BufferGeometry();
+		const positionNumComponents = 3;
+		const normalNumComponents = 3;
+		const uvNumComponents = 2;
+		geometry.setAttribute(
+			"position",
+			new THREE.BufferAttribute(
+				new Float32Array(positions),
+				positionNumComponents
+			)
+		);
+		geometry.setAttribute(
+			"normal",
+			new THREE.BufferAttribute(
+				new Float32Array(normals),
+				normalNumComponents
+			)
+		);
+		geometry.setAttribute(
+			"uv",
+			new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
+		);
+
+		return new THREE.Mesh(geometry, material);
+	}
+
+
+	function hexagon() {
+
+		const unit_size = 0.8;
+		const length = 2;
+
+		const vertices = [
+			// front
+			{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
+			{
+				pos: [unit_size, length, unit_size / 2],
+				norm: [0, 0, 0],
+				uv: [0, 0],
+			},
+			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+	
+			{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+	
+			{
+				pos: [-1 * unit_size, 0, unit_size / 2],
+				norm: [0, 0, 0],
+				uv: [0, 0],
+			},
+			{
+				pos: [-1 * unit_size, length, unit_size / 2],
+				norm: [0, 0, 0],
+				uv: [0, 0],
+			},
+			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+	
+			{
+				pos: [-1 * unit_size, 0, unit_size / 2],
+				norm: [0, 0, 0],
+				uv: [0, 0],
+			},
+			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+			{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+		];
+
+		const material = new THREE.MeshBasicMaterial({
+			color: 0xeeeeee,
+		});
+
+		const positions = [];
+		const normals = [];
+		const uvs = [];
+		for (const vertex of vertices) {
+			positions.push(...vertex.pos);
+			normals.push(...vertex.norm);
+			uvs.push(...vertex.uv);
+		}
+
+		const geometry = new THREE.BufferGeometry();
+		const positionNumComponents = 3;
+		const normalNumComponents = 3;
+		const uvNumComponents = 2;
+		geometry.setAttribute(
+			"position",
+			new THREE.BufferAttribute(
+				new Float32Array(positions),
+				positionNumComponents
+			)
+		);
+		geometry.setAttribute(
+			"normal",
+			new THREE.BufferAttribute(
+				new Float32Array(normals),
+				normalNumComponents
+			)
+		);
+		geometry.setAttribute(
+			"uv",
+			new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
+		);
+
+		return new THREE.Mesh(geometry, material);
+	}
+
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();
@@ -116,6 +252,9 @@ export default function Playground3D() {
 
 		// figure.current.group.rotation.x = moveAngle.current[1];
 		scene.current.rotation.y = moveAngle.current[0];
+		// camera.current.rotation.x = moveAngle.current[1];
+
+		// console.log(moveAngle.current, scene.current.rotation.x);
 
 		renderer.current.render(scene.current, camera.current);
 	}
