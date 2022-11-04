@@ -183,6 +183,55 @@ export function hexagonVertices(unit_size, length) {
 	];
 }
 
+
+export function bufferGeo(color, vertices) {
+	const material = new THREE.MeshPhongMaterial({ 
+		color: color, 
+		// vertexColors: true,
+	});
+	// const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+	const positions = [];
+	const normals = [];
+	const uvs = [];
+	// const colors = [];
+	for (const vertex of vertices) {
+		positions.push(...vertex.pos);
+		normals.push(...vertex.norm);
+		uvs.push(...vertex.uv);
+		// colors.push(...vertex.clr);
+	}
+
+	const geometry = new THREE.BufferGeometry();
+	const positionNumComponents = 3;
+	const normalNumComponents = 3;
+	const uvNumComponents = 2;
+	geometry.setAttribute(
+		"position",
+		new THREE.BufferAttribute(
+			new Float32Array(positions),
+			positionNumComponents
+		)
+	);
+	geometry.setAttribute(
+		"normal",
+		new THREE.BufferAttribute(
+			new Float32Array(normals),
+			normalNumComponents
+		)
+	);
+	geometry.setAttribute(
+		"uv",
+		new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
+	);
+	// geometry.setAttribute(
+	// 	"color",
+	// 	new THREE.BufferAttribute(new Float32Array(colors), uvNumComponents)
+	// );
+
+	return new THREE.Mesh(geometry, material);
+}
+
 /**
 export const joints = [
 	"NOSE",

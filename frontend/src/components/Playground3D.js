@@ -4,10 +4,11 @@ import * as THREE from "three";
 // import { Pose } from "@mediapipe/pose";
 // import { Camera } from "@mediapipe/camera_utils";
 // import { TextGeometry } from 'https://unpkg.com/three@0.138.3/examples/jsm/geometries/TextGeometry.js';
-import {
-	FontLoader,
-	TextGeometry,
-} from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js";
+// import {
+// 	FontLoader,
+// 	TextGeometry,
+// } from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js";
+import { bufferGeo } from "./ropes";
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -25,15 +26,252 @@ export default function Playground3D() {
 	const moveAngle = useRef([0, 0]);
 
 	useEffect(() => {
-		const backgroundColor = 0x000000;
+		
+		_scene()
 
-		const viewWidth = document.documentElement.clientWidth;
-		const viewHeight = document.documentElement.clientHeight;
+		_camera()
+
+		_light()
+
+		const obj = deltoid();
+		const obj1 = bicep();
+
+		scene.current.add(obj);
+		scene.current.add(obj1);
+
+		const axesHelper = new THREE.AxesHelper(3);
+		scene.current.add( axesHelper );
+
+		_render()
+
+		containerRef.current.addEventListener("mousedown", rotateStart);
+
+		// containerRef.current.addEventListener("click", get3dpos);
+
+		return () => {
+			renderer.current.dispose();
+
+			containerRef.current.removeEventListener("mousedown", rotateStart);
+		};
+		// eslint-disable-next-line
+	}, []);
+
+
+
+	function deltoid() {
+		const u = 0.6;
+
+		const farx = -2.2;
+
+		const vertices = [
+
+			// top of shoulder
+
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+
+			// upper deltoid
+
+			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
+			
+			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// middle line of upper deltoid
+
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			
+			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+
+			// lower deltoid
+			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// lower deltoid middle line 
+			
+			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			
+		];
+
+		for (let i in vertices) {
+			vertices[i]["pos"][0] = u * vertices[i]["pos"][0];
+			vertices[i]["pos"][1] = u * vertices[i]["pos"][1];
+			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
+		}
+
+		return bufferGeo(0xe0ac69, vertices);
+	}
+
+	function bicep() {
+		const u = 0.6;
+		const farx = -1.66
+		const upper_biceo_fary = -5.6
+		const lower_biceo_fary = -8
+
+		const vertices = [
+			//  upper bicep
+			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
+			
+			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [farx, upper_biceo_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// upper bicep middle line
+
+			{ pos: [farx, upper_biceo_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, upper_biceo_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			
+			{ pos: [-1.4, upper_biceo_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, upper_biceo_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			
+			{ pos: [0, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			
+			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// lower bicep
+
+			{ pos: [0, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, lower_biceo_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+			
+		];
+
+		for (let i in vertices) {
+			vertices[i]["pos"][0] = u * vertices[i]["pos"][0];
+			vertices[i]["pos"][1] = u * vertices[i]["pos"][1];
+			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
+		}
+
+		return bufferGeo(0xf1c27d, vertices);
+	}
+
+
+	function _scene() {
+		const backgroundColor = 0x000000;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
 		scene.current.fog = new THREE.Fog(backgroundColor, 60, 100);
+	}
 
+	function _camera() {
+		const viewWidth = document.documentElement.clientWidth;
+		const viewHeight = document.documentElement.clientHeight;
 		/**
 		 * The first attribute is the field of view.
 		 * FOV is the extent of the scene that is seen on the display at any given moment.
@@ -57,187 +295,32 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = 0;
+		camera.current.position.y = -3;
 		camera.current.position.x = 0;
 		camera.current.position.z = 5;
+	}
 
+	function _light() {
+		const color = 0xffffff;
+		const amblight = new THREE.AmbientLight(color, 0.3);
+		scene.current.add(amblight);
+
+		const plight = new THREE.PointLight(color, 3);
+		plight.position.set(10, -10, 2);
+		scene.current.add(plight);
+	}
+
+	function _render() {
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
 		});
 
+		const viewWidth = document.documentElement.clientWidth;
+		const viewHeight = document.documentElement.clientHeight;
+
 		renderer.current.setSize(viewWidth, viewHeight);
 
-		const obj = upper_arm();
-
-		scene.current.add(obj);
-
-		const color = 0xffffff;
-		const intensity = 1;
-		const light = new THREE.AmbientLight(color, intensity);
-		scene.current.add(light);
-
 		renderer.current.render(scene.current, camera.current);
-
-		containerRef.current.addEventListener("mousedown", rotateStart);
-
-		// containerRef.current.addEventListener("click", get3dpos);
-
-		return () => {
-			renderer.current.dispose();
-		};
-		// eslint-disable-next-line
-	}, []);
-
-	function upper_arm() {
-		const u = 0.6;
-
-		const vertices = [
-			// top of shoulder
-			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
-			// deltoid
-			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
-		];
-
-		for (let i in vertices) {
-			vertices[i]["pos"][0] = u * vertices[i]["pos"][0];
-			vertices[i]["pos"][1] = u * vertices[i]["pos"][1];
-			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
-		}
-
-		const material = new THREE.MeshPhongMaterial({ color: 0xf1c27d });
-		// const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
-		const positions = [];
-		const normals = [];
-		const uvs = [];
-		for (const vertex of vertices) {
-			positions.push(...vertex.pos);
-			normals.push(...vertex.norm);
-			uvs.push(...vertex.uv);
-		}
-
-		const geometry = new THREE.BufferGeometry();
-		const positionNumComponents = 3;
-		const normalNumComponents = 3;
-		const uvNumComponents = 2;
-		geometry.setAttribute(
-			"position",
-			new THREE.BufferAttribute(
-				new Float32Array(positions),
-				positionNumComponents
-			)
-		);
-		geometry.setAttribute(
-			"normal",
-			new THREE.BufferAttribute(
-				new Float32Array(normals),
-				normalNumComponents
-			)
-		);
-		geometry.setAttribute(
-			"uv",
-			new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
-		);
-
-		return new THREE.Mesh(geometry, material);
-	}
-
-	function hexagon() {
-		const unit_size = 0.8;
-		const length = 2;
-
-		const vertices = [
-			// front
-			{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
-			{
-				pos: [unit_size, length, unit_size / 2],
-				norm: [0, 0, 0],
-				uv: [0, 0],
-			},
-			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-
-			{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-
-			{
-				pos: [-1 * unit_size, 0, unit_size / 2],
-				norm: [0, 0, 0],
-				uv: [0, 0],
-			},
-			{
-				pos: [-1 * unit_size, length, unit_size / 2],
-				norm: [0, 0, 0],
-				uv: [0, 0],
-			},
-			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-
-			{
-				pos: [-1 * unit_size, 0, unit_size / 2],
-				norm: [0, 0, 0],
-				uv: [0, 0],
-			},
-			{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-			{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-		];
-
-		const material = new THREE.MeshBasicMaterial({
-			color: 0xeeeeee,
-		});
-
-		const positions = [];
-		const normals = [];
-		const uvs = [];
-		for (const vertex of vertices) {
-			positions.push(...vertex.pos);
-			normals.push(...vertex.norm);
-			uvs.push(...vertex.uv);
-		}
-
-		const geometry = new THREE.BufferGeometry();
-		const positionNumComponents = 3;
-		const normalNumComponents = 3;
-		const uvNumComponents = 2;
-		geometry.setAttribute(
-			"position",
-			new THREE.BufferAttribute(
-				new Float32Array(positions),
-				positionNumComponents
-			)
-		);
-		geometry.setAttribute(
-			"normal",
-			new THREE.BufferAttribute(
-				new Float32Array(normals),
-				normalNumComponents
-			)
-		);
-		geometry.setAttribute(
-			"uv",
-			new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
-		);
-
-		return new THREE.Mesh(geometry, material);
 	}
 
 	function relativePos(eventObj) {
