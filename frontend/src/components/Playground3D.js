@@ -25,24 +25,44 @@ export default function Playground3D() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
+	/**** positions on the body */
+	// shoulder to body x
+	const sbx = 1.2;
+	// deltoid farx, distance away from body
+	const dd_fx = -2.2;
+	// upper deltoid far z positive
+	const udd_fzp = 1.3;
+
+	// bicep far x negative, away from body
+	const bfxg = -1.66;
+	// bicep far x negative, close from body
+	const bp_fxp = 1.39;
+	// bicep far z positive
+	const bfzp = 1.46;
+	// upper bicep far y negative
+	const ubp_fary = -6.0;
+	// lower bicep far y negative
+	const lbp_fary = -9;
+
 	useEffect(() => {
-		
-		_scene()
+		_scene();
 
-		_camera()
+		_camera();
 
-		_light()
+		_light();
 
-		const obj = deltoid();
-		const obj1 = bicep();
+		const unit_size = 0.4;
+
+		const obj = deltoid(unit_size);
+		const obj1 = bicep(unit_size);
 
 		scene.current.add(obj);
 		scene.current.add(obj1);
 
 		const axesHelper = new THREE.AxesHelper(3);
-		scene.current.add( axesHelper );
+		scene.current.add(axesHelper);
 
-		_render()
+		_render();
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
@@ -56,16 +76,9 @@ export default function Playground3D() {
 		// eslint-disable-next-line
 	}, []);
 
-
-
-	function deltoid() {
-		const u = 0.6;
-
-		const farx = -2.2;
-
+	function deltoid(u) {
 		const vertices = [
-
-			// top of shoulder
+			// top of shoulder outside
 
 			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
@@ -83,33 +96,79 @@ export default function Playground3D() {
 			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 
-			// upper deltoid
+			// top of shoulder inside
+
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, 0.1, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [sbx, 0.1, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// upper deltoid outside
 
 			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
-			
+
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// upper deltoid inside, positove z
+
+			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -1.4, udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			// upper deltoid inside, negative z
+
+			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, -udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, -udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -1.4, -udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 
 			// middle line of upper deltoid
 
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
@@ -122,7 +181,7 @@ export default function Playground3D() {
 			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
-			
+
 			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
@@ -142,20 +201,20 @@ export default function Playground3D() {
 
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
 
-			// lower deltoid middle line 
-			
+			// lower deltoid middle line
+
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
@@ -169,7 +228,6 @@ export default function Playground3D() {
 			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
-			
 		];
 
 		for (let i in vertices) {
@@ -181,74 +239,146 @@ export default function Playground3D() {
 		return bufferGeo(0xe0ac69, vertices);
 	}
 
-	function bicep() {
-		const u = 0.6;
-		const farx = -1.66
-		const upper_biceo_fary = -5.6
-		const lower_biceo_fary = -8
-
+	function bicep(u) {
 		const vertices = [
-			//  upper bicep
+			//  upper bicep, negative x, away from body
 			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			
-			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [farx, upper_biceo_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			//  upper bicep, positive x, close to body
+
+			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, -2.8, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			//  upper bicep, positive x, close to body, middle line
+
+			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, -2.8, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [sbx, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 
 			// upper bicep middle line
 
-			{ pos: [farx, upper_biceo_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, upper_biceo_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
-			
-			{ pos: [-1.4, upper_biceo_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, upper_biceo_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
-			
-			{ pos: [0, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
-			
+
 			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, upper_biceo_fary, -1.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			// lower bicep
 
-			{ pos: [0, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1, upper_biceo_fary, 1.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1, lower_biceo_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, upper_biceo_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, lower_biceo_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
-			
+			{ pos: [-1, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// lower bicep middle line
+
+			{ pos: [-1.4, lbp_fary, -0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, lbp_fary, -0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, lbp_fary, -0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
 		];
 
 		for (let i in vertices) {
@@ -259,7 +389,6 @@ export default function Playground3D() {
 
 		return bufferGeo(0xf1c27d, vertices);
 	}
-
 
 	function _scene() {
 		const backgroundColor = 0x000000;
@@ -295,7 +424,7 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -3;
+		camera.current.position.y = -2;
 		camera.current.position.x = 0;
 		camera.current.position.z = 5;
 	}
@@ -306,7 +435,7 @@ export default function Playground3D() {
 		scene.current.add(amblight);
 
 		const plight = new THREE.PointLight(color, 3);
-		plight.position.set(10, -10, 2);
+		plight.position.set(5, 5, 2);
 		scene.current.add(plight);
 	}
 
