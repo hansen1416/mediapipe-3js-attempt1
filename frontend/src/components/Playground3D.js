@@ -43,6 +43,8 @@ export default function Playground3D() {
 	const ubp_fary = -6.0;
 	// lower bicep far y negative
 	const lbp_fary = -9;
+	// lower bicep end positove z
+	const lbp_pz = 1;
 
 	useEffect(() => {
 		_scene();
@@ -332,9 +334,9 @@ export default function Playground3D() {
 
 			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, lbp_pz], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, lbp_pz], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
 
@@ -353,6 +355,42 @@ export default function Playground3D() {
 			{ pos: [-1.4, lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [bfxg, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.4, lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// lower bicep, positive x, positive z, close to body
+
+			{ pos: [0, ubp_fary, bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, lbp_pz], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, lbp_fary, lbp_pz], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, lbp_fary, 0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, lbp_fary, 0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, lbp_fary, 0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			// lower bicep, positive x, negative z, close to body
+
+			{ pos: [1, lbp_fary, -0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, lbp_fary, -0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [bp_fxp, ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, lbp_fary, -lbp_pz], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, lbp_fary, -0.4], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, ubp_fary, -bfzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, lbp_fary, -lbp_pz], norm: [0, 0, 1], uv: [0, 0] },
 
 			// lower bicep middle line
 
