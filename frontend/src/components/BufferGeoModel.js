@@ -70,6 +70,8 @@ export default function BufferGeoModel() {
 		camera.current.position.x = 0;
 		camera.current.position.z = 5;
 
+		_light();
+
 		// camera.current.rotation.x = 0.1;
 
 		figure.current = new CustomManFigure(scene.current, [0, 0, 0]);
@@ -95,6 +97,16 @@ export default function BufferGeoModel() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	function _light() {
+		const color = 0xffffff;
+		const amblight = new THREE.AmbientLight(color, 0.3);
+		scene.current.add(amblight);
+
+		const plight = new THREE.PointLight(color, 3);
+		plight.position.set(5, 5, 2);
+		scene.current.add(plight);
+	}
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();

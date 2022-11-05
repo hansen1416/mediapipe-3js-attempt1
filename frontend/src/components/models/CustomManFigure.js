@@ -5,9 +5,11 @@ import {
 	quaternionFromVectors,
 	hexagonVertices,
 } from "../ropes";
+import { BodyGeometry } from "./BodyGeometry";
 
-export class CustomManFigure {
+export class CustomManFigure extends BodyGeometry {
 	constructor(scene, figure_position, figure_rotation) {
+		super();
 		this.basicMaterial = new THREE.MeshBasicMaterial({
 			color: 0x33eeb0,
 		});
@@ -77,10 +79,10 @@ export class CustomManFigure {
 			// this.joints[j].position.set(0,0,0)
 		}
 
-		this.draw_lines();
+		this.draw_figure();
 	}
 
-	draw_lines() {
+	draw_figure() {
 		for (let jc in this.joints_connect) {
 			const group = new THREE.Group();
 
@@ -90,6 +92,7 @@ export class CustomManFigure {
 			points.push(new THREE.Vector3(0, this.joints_connect[jc][2], 0));
 
 			if (typeof this[this.joints_connect[jc][3]] === "function") {
+				// run limbs geometry functions
 				const tissue = this[this.joints_connect[jc][3]](
 					this.joints_connect[jc][2]
 				);
@@ -113,41 +116,17 @@ export class CustomManFigure {
 	}
 
 	left_arm(size) {
-		const vertices = hexagonVertices(size / 6, size);
+		const unit_size = 0.111;
 
-		const positions = [];
-		const normals = [];
-		const uvs = [];
-		for (const vertex of vertices) {
-			positions.push(...vertex.pos);
-			normals.push(...vertex.norm);
-			uvs.push(...vertex.uv);
-		}
+		const group = new THREE.Group();
 
-		const geometry = new THREE.BufferGeometry();
-		const positionNumComponents = 3;
-		const normalNumComponents = 3;
-		const uvNumComponents = 2;
-		geometry.setAttribute(
-			"position",
-			new THREE.BufferAttribute(
-				new Float32Array(positions),
-				positionNumComponents
-			)
-		);
-		geometry.setAttribute(
-			"normal",
-			new THREE.BufferAttribute(
-				new Float32Array(normals),
-				normalNumComponents
-			)
-		);
-		geometry.setAttribute(
-			"uv",
-			new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
-		);
+		const obj = this.deltoid(unit_size);
+		const obj1 = this.bicep(unit_size);
 
-		return new THREE.Mesh(geometry, this.basicMaterial);
+		group.add(obj);
+		group.add(obj1);
+
+		return group;
 	}
 
 	update_lines() {
