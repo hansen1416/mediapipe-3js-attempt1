@@ -20,6 +20,8 @@ export default function Playground3D() {
 
 	const body = new BodyGeometry();
 
+	const helperDots = [];
+
 	useEffect(() => {
 		_scene();
 
@@ -29,20 +31,39 @@ export default function Playground3D() {
 
 		const unit_size = 0.4;
 
-		const obj = body.deltoid(unit_size);
-		const obj1 = body.bicep(unit_size);
+		const deltoid_vex = body.deltoid(unit_size);
+		const bicep_vex = body.bicep(unit_size);
 
-		scene.current.add(obj);
-		scene.current.add(obj1);
+		dotsHelper(deltoid_vex, scene.current);
+		dotsHelper(bicep_vex, scene.current);
+
+		scene.current.add(body.bufferGeo(0xf1c27d, deltoid_vex));
+		scene.current.add(body.bufferGeo(0xf1c27d, bicep_vex));
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
 
 		_render();
 
+		for (let p of helperDots) {
+			p.updateWorldMatrix(true, false);
+
+			const v = new THREE.Vector3(0, 0, 0);
+
+			console.log(p.getWorldPosition(v));
+
+			console.log(v);
+		}
+
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
 		// containerRef.current.addEventListener("click", get3dpos);
+
+		renderer.current.domElement.addEventListener(
+			"click",
+			onClickObject,
+			true
+		);
 
 		return () => {
 			renderer.current.dispose();
@@ -55,6 +76,56 @@ export default function Playground3D() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	function dotsHelper(vertices) {
+		// const positions = [];
+
+		for (const vertex of vertices) {
+			// positions.push(...vertex.pos);
+
+			const geometry = new THREE.BufferGeometry();
+			geometry.setAttribute(
+				"position",
+				new THREE.Float32BufferAttribute(vertex.pos, 3)
+			);
+
+			const material = new THREE.PointsMaterial({
+				size: 0.2,
+				color: 0xff0000,
+			});
+
+			const point = new THREE.Points(geometry, material);
+
+			// const material = new THREE.MeshBasicMaterial({
+			// 	// size: 0.2,
+			// 	color: 0xff0000,
+			// });
+
+			// const point = new THREE.Mesh(geometry, material);
+
+			helperDots.push(point);
+
+			scene.current.add(point);
+		}
+
+		// points.userData.position =
+	}
+
+	function onClickObject() {
+		const raycaster = new THREE.Raycaster();
+		const mouse = new THREE.Vector2();
+		raycaster.setFromCamera(mouse, camera.current);
+
+		const intersects = raycaster.intersectObjects(
+			scene.current.children,
+			true
+		); //array
+
+		if (intersects.length > 0) {
+			const selectedObject = intersects[0];
+			console.log(selectedObject.object.userData.position);
+		}
+	}
 
 	function _scene() {
 		const backgroundColor = 0x000000;

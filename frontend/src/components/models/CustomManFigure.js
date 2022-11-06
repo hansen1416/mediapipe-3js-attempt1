@@ -1,10 +1,6 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import {
-	posePointsToVector,
-	quaternionFromVectors,
-	hexagonVertices,
-} from "../ropes";
+import { posePointsToVector, quaternionFromVectors } from "../ropes";
 import { BodyGeometry } from "./BodyGeometry";
 
 export class CustomManFigure extends BodyGeometry {

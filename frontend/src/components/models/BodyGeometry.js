@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { rect } from "../ropes";
 
 export class BodyGeometry {
 	constructor() {
@@ -195,27 +196,26 @@ export class BodyGeometry {
 			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
 		}
 
-		return this.bufferGeo(0xe0ac69, vertices);
+		return vertices;
 	}
 
 	bicep(u) {
 		const vertices = [
 			//  upper bicep, negative x, away from body
-			{ pos: [0, -2.2, 1.1] },
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [0, this.u_bp_y, this.u_bp_y1_zn2] },
 
-			{ pos: [0, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [-1, this.u_bp_y, this.u_bp_y1_zn2] },
+			...rect(
+				[-1, -2.8, 1.0],
+				[0, -2.2, 1.1],
+				[0, this.u_bp_y, this.u_bp_y1_zn2],
+				[-1, this.u_bp_y, this.u_bp_y1_zn2]
+			),
 
-			{ pos: [-1, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [-1.4, this.u_bp_y, 1.2] },
-
-			{ pos: [-1.4, this.u_bp_y, 1.2] },
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [-1.2, -3.6, 0] },
+			...rect(
+				[-1.2, -3.6, 0],
+				[-1, -2.8, 1.0],
+				[-1, this.u_bp_y, this.u_bp_y1_zn2],
+				[-1.4, this.u_bp_y, 1.2]
+			),
 
 			{ pos: [-1.4, this.u_bp_y, 1.2] },
 			{ pos: [-1.2, -3.6, 0] },
@@ -289,83 +289,73 @@ export class BodyGeometry {
 
 			// lower bicep
 
-			{ pos: [0, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [0, this.l_bp_y1, this.l_bp_y1_zp2] },
+			...rect(
+				[this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2],
+				[0, this.u_bp_y, this.u_bp_y1_zn2],
+				[0, this.l_bp_y1, this.l_bp_y1_zp2],
+				[this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1]
+			),
+			...rect(
+				[-1.4, this.u_bp_y, 1.2],
+				[this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2],
 
-			{ pos: [0, this.l_bp_y1, this.l_bp_y1_zp2] },
-			{ pos: [this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1] },
-
-			{ pos: [this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [-1.4, this.u_bp_y, 1.2] },
-			{ pos: [this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1] },
-
-			{ pos: [this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1] },
-			{ pos: [-1.4, this.u_bp_y, 1.2] },
-			{ pos: [this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3] },
-
-			{ pos: [this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3] },
-			{ pos: [-1.4, this.u_bp_y, 1.2] },
-			{ pos: [this.bp_xa, this.u_bp_y, 0] },
-
-			{ pos: [this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3] },
-			{ pos: [this.bp_xa, this.u_bp_y, 0] },
-			{ pos: [this.l_bp_y1_xn0, this.l_bp_y1, 0] },
+				[this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1],
+				[this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3]
+			),
+			...rect(
+				[this.bp_xa, this.u_bp_y, 0],
+				[-1.4, this.u_bp_y, 1.2],
+				[this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3],
+				[this.l_bp_y1_xn0, this.l_bp_y1, 0]
+			),
 
 			// lower bicep, positive x, positive z, close to body
 
-			{ pos: [0, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [0, this.l_bp_y1, this.l_bp_y1_zp2] },
-			{ pos: [1, this.u_bp_y, 1.0] },
+			...rect(
+				[0, this.u_bp_y, this.u_bp_y1_zn2],
+				[1, this.u_bp_y, 1.0],
+				[1, this.l_bp_y1, this.l_bp_y1_zp4],
+				[0, this.l_bp_y1, this.l_bp_y1_zp2]
+			),
 
-			{ pos: [0, this.l_bp_y1, this.l_bp_y1_zp2] },
-			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zp4] },
-			{ pos: [1, this.u_bp_y, 1] },
-
-			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zp4] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-			{ pos: [1, this.u_bp_y, 1.0] },
-
-			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zp4] },
-			{ pos: [1, this.l_bp_y1, 0] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
+			...rect(
+				[1, this.u_bp_y, 1.0],
+				[this.bp_xt, this.u_bp_y, 0],
+				[1, this.l_bp_y1, 0],
+				[1, this.l_bp_y1, this.l_bp_y1_zp4]
+			),
 
 			// lower bicep, positive x, negative z, close to body
 
-			{ pos: [this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-			{ pos: [this.l_bp_y1_xp0, this.l_bp_y1, 0] },
+			...rect(
+				[this.bp_xt, this.u_bp_y, 0],
+				[1, this.u_bp_y, -1.0],
+				[this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4],
+				[this.l_bp_y1_xp0, this.l_bp_y1, 0]
+			),
 
-			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zn4] },
-			{ pos: [1, this.u_bp_y, -1.0] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-
-			{ pos: [0, this.l_bp_y1, -this.l_bp_y1_zp2] },
-			{ pos: [1, this.u_bp_y, -1.0] },
-			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zn4] },
-
-			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [1, this.u_bp_y, -1.0] },
-			{ pos: [0, this.l_bp_y1, -this.l_bp_y1_zp2] },
+			...rect(
+				[1, this.u_bp_y, -1.0],
+				[0, this.u_bp_y, -this.u_bp_y1_zn2],
+				[0, this.l_bp_y1, -this.l_bp_y1_zp2],
+				[this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4]
+			),
 
 			// lower bicep middle line
 
-			{ pos: [-1.4, this.l_bp_y1, -0.6] },
-			{ pos: [-1.4, this.l_bp_y1, 0] },
-			{ pos: [this.bp_xa, this.u_bp_y, 0] },
+			...rect(
+				[-1.4, this.u_bp_y, -1.2],
+				[this.bp_xa, this.u_bp_y, 0],
+				[-1.4, this.l_bp_y1, 0],
+				[-1.4, this.l_bp_y1, -0.6]
+			),
 
-			{ pos: [-1.4, this.l_bp_y1, -0.6] },
-			{ pos: [this.bp_xa, this.u_bp_y, 0] },
-			{ pos: [-1.4, this.u_bp_y, -1.2] },
-
-			{ pos: [-1, this.l_bp_y1, -1] },
-			{ pos: [-1.4, this.l_bp_y1, -0.6] },
-			{ pos: [-1.4, this.u_bp_y, -1.2] },
-
-			{ pos: [-1, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [-1, this.l_bp_y1, -1] },
-			{ pos: [-1.4, this.u_bp_y, -1.2] },
+			...rect(
+				[-1, this.u_bp_y, -this.u_bp_y1_zn2],
+				[-1.4, this.u_bp_y, -1.2],
+				[-1.4, this.l_bp_y1, -0.6],
+				[-1, this.l_bp_y1, -1]
+			),
 
 			{ pos: [0, this.l_bp_y1, -1] },
 			{ pos: [-1, this.l_bp_y1, -1] },
@@ -382,7 +372,9 @@ export class BodyGeometry {
 			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
 		}
 
-		return this.bufferGeo(0xf1c27d, vertices);
+		return vertices;
+
+		// return this.bufferGeo(0xf1c27d, vertices);
 	}
 
 	elbow(u) {

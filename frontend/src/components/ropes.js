@@ -146,40 +146,14 @@ export function getLimbFromPose(limb_name, pose_landmark) {
 	);
 }
 
-export function hexagonVertices(unit_size, length) {
+export function rect(p0, p1, p2, p3) {
 	return [
-		// front
-		{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
-		{
-			pos: [unit_size, length, unit_size / 2],
-			norm: [0, 0, 0],
-			uv: [0, 0],
-		},
-		{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-
-		{ pos: [unit_size, 0, unit_size / 2], norm: [0, 0, 0], uv: [0, 0] },
-		{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-		{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-
-		{
-			pos: [-1 * unit_size, 0, unit_size / 2],
-			norm: [0, 0, 0],
-			uv: [0, 0],
-		},
-		{
-			pos: [-1 * unit_size, length, unit_size / 2],
-			norm: [0, 0, 0],
-			uv: [0, 0],
-		},
-		{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-
-		{
-			pos: [-1 * unit_size, 0, unit_size / 2],
-			norm: [0, 0, 0],
-			uv: [0, 0],
-		},
-		{ pos: [0, length, unit_size], norm: [0, 0, 0], uv: [0, 0] },
-		{ pos: [0, 0, unit_size], norm: [0, 0, 0], uv: [0, 0] },
+		{ pos: Array.from(p0) },
+		{ pos: Array.from(p3) },
+		{ pos: Array.from(p1) },
+		{ pos: Array.from(p2) },
+		{ pos: Array.from(p1) },
+		{ pos: Array.from(p3) },
 	];
 }
 
