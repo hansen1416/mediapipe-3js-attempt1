@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
 import { BodyGeometry } from "./models/BodyGeometry";
+import { InteractionManager } from "three.interactive";
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -45,25 +46,23 @@ export default function Playground3D() {
 
 		_render();
 
-		for (let p of helperDots) {
-			p.updateWorldMatrix(true, false);
-
-			const v = new THREE.Vector3(0, 0, 0);
-
-			console.log(p.getWorldPosition(v));
-
-			console.log(v);
-		}
+		const interactionManager = new InteractionManager(
+			renderer.current,
+			camera.current,
+			renderer.current.domElement
+		);
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
 		// containerRef.current.addEventListener("click", get3dpos);
 
-		renderer.current.domElement.addEventListener(
-			"click",
-			onClickObject,
-			true
-		);
+		// renderer.current.domElement.addEventListener(
+		// 	"click",
+		// 	onClickObject,
+		// 	true
+		// );
+
+		console.log(interactionManager);
 
 		return () => {
 			renderer.current.dispose();
@@ -111,21 +110,21 @@ export default function Playground3D() {
 		// points.userData.position =
 	}
 
-	function onClickObject() {
-		const raycaster = new THREE.Raycaster();
-		const mouse = new THREE.Vector2();
-		raycaster.setFromCamera(mouse, camera.current);
+	// function onClickObject() {
+	// 	const raycaster = new THREE.Raycaster();
+	// 	const mouse = new THREE.Vector2();
+	// 	raycaster.setFromCamera(mouse, camera.current);
 
-		const intersects = raycaster.intersectObjects(
-			scene.current.children,
-			true
-		); //array
+	// 	const intersects = raycaster.intersectObjects(
+	// 		scene.current.children,
+	// 		true
+	// 	); //array
 
-		if (intersects.length > 0) {
-			const selectedObject = intersects[0];
-			console.log(selectedObject.object.userData.position);
-		}
-	}
+	// 	if (intersects.length > 0) {
+	// 		const selectedObject = intersects[0];
+	// 		console.log(selectedObject.object.userData.position);
+	// 	}
+	// }
 
 	function _scene() {
 		const backgroundColor = 0x000000;
