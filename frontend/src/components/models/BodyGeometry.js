@@ -4,24 +4,23 @@ export class BodyGeometry {
 	constructor() {
 		/**** positions on the body */
 		// shoulder to body x
-		this.sbx = 1.2;
+		this.sd_xt = 1.2;
 		// deltoid farx, distance away from body
-		this.dd_fx = -2.2;
+		this.dd_xa = -2.2;
 		// upper deltoid far z positive
-		this.udd_fzp = 1.3;
-
+		this.dd_zf = 1.3;
 		// bicep far x negative, away from body
-		this.bfxg = -1.66;
-		// bicep far x negative, close from body
-		this.bp_fxp = 1.39;
+		this.bp_xa = -1.66;
+		// bicep far x, towards body
+		this.bp_xt = 1.39;
 		// bicep far z positive
-		this.bfzp = 1.46;
+		this.bp_zf = 1.46;
 		// upper bicep far y negative
-		this.ubp_fary = -6.0;
+		this.u_bp_y = -5.4;
 		// lower bicep far y negative
-		this.lbp_fary = -9;
+		this.l_bp_y = -9;
 		// lower bicep end positove z
-		this.lbp_pz = 1;
+		this.l_bp_zf = 1;
 	}
 
 	deltoid(u) {
@@ -48,17 +47,17 @@ export class BodyGeometry {
 
 			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, 0.1, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, 0.1, 0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [this.sbx, 0.1, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, 0.1, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [this.sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, 0.25, 0], norm: [0, 0, 1], uv: [0, 0] },
 
@@ -66,15 +65,15 @@ export class BodyGeometry {
 
 			{ pos: [0, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -1.4, this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, -1.4, this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, -1.4, this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, -1.4, this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, -1.4, this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
@@ -82,49 +81,49 @@ export class BodyGeometry {
 
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.dd_xa, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			// upper deltoid inside, positove z
 
 			{ pos: [-0.8, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -1.4, this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, -1.4, this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.sbx, -1.4, this.udd_fzp],
+				pos: [this.sd_xt, -1.4, this.dd_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [this.sbx, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, 1], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [0, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
 
 			// upper deltoid inside, negative z
 
 			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, -1.4, -this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, -this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [0, -1.4, -this.udd_fzp], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [0, -1.4, -this.dd_zf], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.sbx, -1.4, -this.udd_fzp],
+				pos: [this.sd_xt, -1.4, -this.dd_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			{ pos: [0, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 
 			// middle line of upper deltoid
 
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.dd_xa, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1.4, 0, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-0.8, -0.3, -1], norm: [0, 0, 1], uv: [0, 0] },
@@ -157,20 +156,20 @@ export class BodyGeometry {
 
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, 0.7], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.dd_xa, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.dd_xa, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			// lower deltoid middle line
 
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.dd_xa, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.dd_fx, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.dd_xa, -1.4, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.7, -1.4, -0.7], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
@@ -200,125 +199,149 @@ export class BodyGeometry {
 			//  upper bicep, negative x, away from body
 			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, this.ubp_fary, this.bfzp], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, this.ubp_fary, this.bfzp], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [-1, this.ubp_fary, this.bfzp],
+				pos: [0, this.u_bp_y, this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			{
-				pos: [-1, this.ubp_fary, this.bfzp],
+				pos: [0, this.u_bp_y, this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [-1, this.u_bp_y, this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
 
-			{ pos: [-1.4, this.ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [-1, this.u_bp_y, this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1.4, this.u_bp_y, 1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1.4, this.ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, 1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.bfxg, this.ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [this.bp_xa, this.u_bp_y, 0],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
 
 			//  upper bicep, positive x, close to body
 
 			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -1.4, 1.3], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [0, -2.2, 1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [0, this.ubp_fary, this.bfzp], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, this.ubp_fary, this.bfzp], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [0, this.u_bp_y, this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{
+				pos: [0, this.u_bp_y, this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [1, this.u_bp_y, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			{ pos: [1, -2.8, 1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [this.bp_fxp, -2.8, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.bp_xt, -2.8, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			//  upper bicep, positive x, close to body, middle line
 
 			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.bp_fxp, -2.8, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.bp_xt, -2.8, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [1, this.ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{
-				pos: [0, this.ubp_fary, -this.bfzp],
+				pos: [0, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [0, this.ubp_fary, -this.bfzp],
+				pos: [0, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.sbx, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [this.sd_xt, -1.4, -1.3], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [1, -2.8, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 
 			// upper bicep middle line
 
-			{ pos: [this.bfxg, this.ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [this.bp_xa, this.u_bp_y, 0],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, -1.2], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1.4, this.ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, -1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1.2, -3.6, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{
-				pos: [-1, this.ubp_fary, -this.bfzp],
+				pos: [-1, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [-1.4, this.ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, -1.2], norm: [0, 0, 1], uv: [0, 0] },
 			{ pos: [-1, -2.8, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 
 			{
-				pos: [0, this.ubp_fary, -this.bfzp],
+				pos: [0, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 			{
-				pos: [-1, this.ubp_fary, -this.bfzp],
+				pos: [-1, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
@@ -326,7 +349,7 @@ export class BodyGeometry {
 
 			{ pos: [0, -2.2, -1.1], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [0, this.ubp_fary, -this.bfzp],
+				pos: [0, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
@@ -334,160 +357,184 @@ export class BodyGeometry {
 
 			// lower bicep
 
-			{ pos: [0, this.ubp_fary, this.bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [-1, this.ubp_fary, this.bfzp],
+				pos: [0, this.u_bp_y, this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 			{
-				pos: [0, this.lbp_fary, this.lbp_pz],
+				pos: [-1, this.u_bp_y, this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{
+				pos: [0, this.l_bp_y, this.l_bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			{
-				pos: [0, this.lbp_fary, this.lbp_pz],
+				pos: [0, this.l_bp_y, this.l_bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 			{
-				pos: [-1, this.ubp_fary, this.bfzp],
+				pos: [-1, this.u_bp_y, this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [-1, this.lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, this.l_bp_y, 1], norm: [0, 0, 1], uv: [0, 0] },
 
 			{
-				pos: [-1, this.ubp_fary, this.bfzp],
+				pos: [-1, this.u_bp_y, this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [-1.4, this.ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, this.lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, this.l_bp_y, 1], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1, this.lbp_fary, 1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, this.l_bp_y, 1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.l_bp_y, 0.6], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [-1.4, this.lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, 1.2], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.bfxg, this.ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.l_bp_y, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, 1.2], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [this.bp_xa, this.u_bp_y, 0],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
 
-			{ pos: [-1.4, this.lbp_fary, 0.6], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.bfxg, this.ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.l_bp_y, 0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [this.bp_xa, this.u_bp_y, 0],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [-1.4, this.l_bp_y, 0], norm: [0, 0, 1], uv: [0, 0] },
 
 			// lower bicep, positive x, positive z, close to body
 
-			{ pos: [0, this.ubp_fary, this.bfzp], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [0, this.lbp_fary, this.lbp_pz],
+				pos: [0, this.u_bp_y, this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [1, this.ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
-
 			{
-				pos: [0, this.lbp_fary, this.lbp_pz],
+				pos: [0, this.l_bp_y, this.l_bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [1, this.lbp_fary, 0.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [1, this.lbp_fary, 0.4], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [0, this.l_bp_y, this.l_bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [1, this.ubp_fary, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, 0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, 1.0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [1, this.lbp_fary, 0.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, 0.4], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [this.bp_xt, this.u_bp_y, 0],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [1, this.u_bp_y, 1.0], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [1, this.l_bp_y, 0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			// lower bicep, positive x, negative z, close to body
 
-			{ pos: [1, this.lbp_fary, -0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, -0.4], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [1, this.lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, 0], norm: [0, 0, 1], uv: [0, 0] },
 
-			{ pos: [1, this.lbp_fary, -0.4], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, -0.4], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, -1.0], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [this.bp_fxp, this.ubp_fary, 0],
+				pos: [this.bp_xt, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-
-			{
-				pos: [0, this.lbp_fary, -this.lbp_pz],
-				norm: [0, 0, 1],
-				uv: [0, 0],
-			},
-			{ pos: [1, this.ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [1, this.lbp_fary, -0.4], norm: [0, 0, 1], uv: [0, 0] },
 
 			{
-				pos: [0, this.ubp_fary, -this.bfzp],
+				pos: [0, this.l_bp_y, -this.l_bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [1, this.ubp_fary, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.u_bp_y, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [1, this.l_bp_y, -0.4], norm: [0, 0, 1], uv: [0, 0] },
+
 			{
-				pos: [0, this.lbp_fary, -this.lbp_pz],
+				pos: [0, this.u_bp_y, -this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [1, this.u_bp_y, -1.0], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [0, this.l_bp_y, -this.l_bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
 			// lower bicep middle line
 
-			{ pos: [-1.4, this.lbp_fary, -0.6], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.lbp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.bfxg, this.ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [-1.4, this.lbp_fary, -0.6], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [this.bfxg, this.ubp_fary, 0], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [-1, this.lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.lbp_fary, -0.6], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
-
+			{ pos: [-1.4, this.l_bp_y, -0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.l_bp_y, 0], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [-1, this.ubp_fary, -this.bfzp],
-				norm: [0, 0, 1],
-				uv: [0, 0],
-			},
-			{ pos: [-1, this.lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1.4, this.ubp_fary, -1.2], norm: [0, 0, 1], uv: [0, 0] },
-
-			{ pos: [0, this.lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{ pos: [-1, this.lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
-			{
-				pos: [-1, this.ubp_fary, -this.bfzp],
+				pos: [this.bp_xa, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
 
+			{ pos: [-1.4, this.l_bp_y, -0.6], norm: [0, 0, 1], uv: [0, 0] },
 			{
-				pos: [0, this.ubp_fary, -this.bfzp],
+				pos: [this.bp_xa, this.u_bp_y, 0],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},
-			{ pos: [0, this.lbp_fary, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [-1, this.l_bp_y, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.l_bp_y, -0.6], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
 			{
-				pos: [-1, this.ubp_fary, -this.bfzp],
+				pos: [-1, this.u_bp_y, -this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [-1, this.l_bp_y, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1.4, this.u_bp_y, -1.2], norm: [0, 0, 1], uv: [0, 0] },
+
+			{ pos: [0, this.l_bp_y, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{ pos: [-1, this.l_bp_y, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [-1, this.u_bp_y, -this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+
+			{
+				pos: [0, this.u_bp_y, -this.bp_zf],
+				norm: [0, 0, 1],
+				uv: [0, 0],
+			},
+			{ pos: [0, this.l_bp_y, -1], norm: [0, 0, 1], uv: [0, 0] },
+			{
+				pos: [-1, this.u_bp_y, -this.bp_zf],
 				norm: [0, 0, 1],
 				uv: [0, 0],
 			},

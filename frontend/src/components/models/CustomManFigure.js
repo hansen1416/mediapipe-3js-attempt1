@@ -99,7 +99,7 @@ export class CustomManFigure extends BodyGeometry {
 
 				group.add(tissue);
 
-				tissue.position.y = -1 * this.joints_connect[jc][2];
+				// tissue.position.y = -1 * this.joints_connect[jc][2];
 			}
 
 			this.group.add(group);
