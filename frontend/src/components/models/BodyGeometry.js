@@ -20,6 +20,9 @@ export class BodyGeometry {
 		// lower bicep far y negative
 		this.l_bp_y1 = -9;
 		// lower bicep end positove z
+		this.l_bp_y1_xp0 = 1.0;
+		this.l_bp_y1_xp1 = 1.0;
+
 		this.l_bp_y1_xn0 = -1.4;
 		this.l_bp_y1_xn2 = -1.4;
 		this.l_bp_y1_xn4 = -1;
@@ -27,6 +30,9 @@ export class BodyGeometry {
 		this.l_bp_y1_zp1 = 1;
 		this.l_bp_y1_zp2 = 1;
 		this.l_bp_y1_zp3 = 0.6;
+		this.l_bp_y1_zp4 = 0.4;
+
+		this.l_bp_y1_zn4 = -0.4;
 	}
 
 	deltoid(u) {
@@ -314,30 +320,30 @@ export class BodyGeometry {
 			{ pos: [1, this.u_bp_y, 1.0] },
 
 			{ pos: [0, this.l_bp_y1, this.l_bp_y1_zp2] },
-			{ pos: [1, this.l_bp_y1, 0.4] },
-			{ pos: [1, this.u_bp_y, 1.0] },
+			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zp4] },
+			{ pos: [1, this.u_bp_y, 1] },
 
-			{ pos: [1, this.l_bp_y1, 0.4] },
+			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zp4] },
 			{ pos: [this.bp_xt, this.u_bp_y, 0] },
 			{ pos: [1, this.u_bp_y, 1.0] },
 
-			{ pos: [1, this.l_bp_y1, 0.4] },
+			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zp4] },
 			{ pos: [1, this.l_bp_y1, 0] },
 			{ pos: [this.bp_xt, this.u_bp_y, 0] },
 
 			// lower bicep, positive x, negative z, close to body
 
-			{ pos: [1, this.l_bp_y1, -0.4] },
+			{ pos: [this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4] },
 			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-			{ pos: [1, this.l_bp_y1, 0] },
+			{ pos: [this.l_bp_y1_xp0, this.l_bp_y1, 0] },
 
-			{ pos: [1, this.l_bp_y1, -0.4] },
+			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zn4] },
 			{ pos: [1, this.u_bp_y, -1.0] },
 			{ pos: [this.bp_xt, this.u_bp_y, 0] },
 
 			{ pos: [0, this.l_bp_y1, -this.l_bp_y1_zp2] },
 			{ pos: [1, this.u_bp_y, -1.0] },
-			{ pos: [1, this.l_bp_y1, -0.4] },
+			{ pos: [1, this.l_bp_y1, this.l_bp_y1_zn4] },
 
 			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
 			{ pos: [1, this.u_bp_y, -1.0] },
