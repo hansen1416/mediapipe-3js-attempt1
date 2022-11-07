@@ -112,15 +112,12 @@ export class CustomManFigure extends BodyGeometry {
 	}
 
 	left_arm(size) {
-		const unit_size = 0.111;
+		const unit_size = 0.1;
 
 		const group = new THREE.Group();
 
-		const obj = this.deltoid(unit_size);
-		const obj1 = this.bicep(unit_size);
-
-		group.add(obj);
-		group.add(obj1);
+		group.add(this.bufferGeo(0xf1c27d, this.deltoid(unit_size)));
+		group.add(this.bufferGeo(0xf1c27d, this.bicep(unit_size)));
 
 		return group;
 	}
