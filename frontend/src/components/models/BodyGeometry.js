@@ -357,13 +357,13 @@ export class BodyGeometry {
 				[-1, this.l_bp_y1, -1]
 			),
 
-			{ pos: [0, this.l_bp_y1, -1] },
-			{ pos: [-1, this.l_bp_y1, -1] },
-			{ pos: [-1, this.u_bp_y, -this.u_bp_y1_zn2] },
+			...rect(
+				[0, this.u_bp_y, -this.u_bp_y1_zn2],
+				[-1, this.u_bp_y, -this.u_bp_y1_zn2],
+				[-1, this.l_bp_y1, -1],
+				[0, this.l_bp_y1, -1]
+			),
 
-			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [0, this.l_bp_y1, -1] },
-			{ pos: [-1, this.u_bp_y, -this.u_bp_y1_zn2] },
 		];
 
 		for (let i in vertices) {

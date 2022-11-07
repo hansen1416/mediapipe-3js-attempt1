@@ -98,10 +98,7 @@ export default function Playground3D() {
 
 			point.addEventListener('click', (event) => {
 				event.stopPropagation();
-
-				console.log(event);
-				
-				console.log(event.target.userData.position);
+				console.log(event.target.userData.position, event);
 			  });
 
 			scene.current.add(point);
@@ -162,7 +159,7 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -2;
+		camera.current.position.y = -4;
 		camera.current.position.x = 0;
 		camera.current.position.z = 10;
 	}
@@ -226,8 +223,6 @@ export default function Playground3D() {
 		// figure.current.group.rotation.x = moveAngle.current[1];
 		scene.current.rotation.y = moveAngle.current[0];
 		scene.current.rotation.x = moveAngle.current[1];
-
-		// console.log(moveAngle.current, scene.current.rotation.x);
 
 		interactionManager.current.update();
 
