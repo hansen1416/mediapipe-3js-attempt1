@@ -11,6 +11,7 @@ export default function Playground3D() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const interactionManager = useRef(null);
+	const addedDots = useRef({});
 
 	// the radius of the sphere
 	// used to calculate the angle
@@ -29,13 +30,10 @@ export default function Playground3D() {
 
 		_light();
 
-		const unit_size = 0.4;
+		const unit_size = 1;
 
 		const deltoid_vex = body.deltoid(unit_size);
 		const bicep_vex = body.bicep(unit_size);
-
-		dotsHelper(deltoid_vex, scene.current);
-		dotsHelper(bicep_vex, scene.current);
 
 		scene.current.add(body.bufferGeo(0xf1c27d, deltoid_vex));
 		scene.current.add(body.bufferGeo(0xf1c27d, bicep_vex));
@@ -50,6 +48,13 @@ export default function Playground3D() {
 			camera.current,
 			renderer.current.domElement
 		);
+
+		dotsHelper(deltoid_vex, scene.current);
+		dotsHelper(bicep_vex, scene.current);
+
+		interactionManager.current.update();
+
+		renderer.current.render(scene.current, camera.current);
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
@@ -69,7 +74,12 @@ export default function Playground3D() {
 		// const positions = [];
 
 		for (const vertex of vertices) {
-			// positions.push(...vertex.pos);
+			
+			if (addedDots.current[JSON.stringify(vertex.pos)]) {
+				continue;
+			}
+
+			addedDots.current[JSON.stringify(vertex.pos)] = true;
 
 			const geometry = new THREE.BufferGeometry();
 			geometry.setAttribute(
@@ -84,8 +94,10 @@ export default function Playground3D() {
 
 			const point = new THREE.Points(geometry, material);
 
+			point.userData.position = vertex.pos;
+
 			point.addEventListener('click', (event) => {
-				console.log(event);
+				console.log(event.target.userData.position);
 			  });
 
 			scene.current.add(point);
@@ -148,7 +160,7 @@ export default function Playground3D() {
 
 		camera.current.position.y = -2;
 		camera.current.position.x = 0;
-		camera.current.position.z = 5;
+		camera.current.position.z = 10;
 	}
 
 	function _light() {
@@ -170,10 +182,6 @@ export default function Playground3D() {
 		const viewHeight = document.documentElement.clientHeight;
 
 		renderer.current.setSize(viewWidth, viewHeight);
-
-		interactionManager.update();
-
-		renderer.current.render(scene.current, camera.current);
 	}
 
 	function relativePos(eventObj) {
@@ -217,7 +225,7 @@ export default function Playground3D() {
 
 		// console.log(moveAngle.current, scene.current.rotation.x);
 
-		interactionManager.update();
+		interactionManager.current.update();
 
 		renderer.current.render(scene.current, camera.current);
 	}
