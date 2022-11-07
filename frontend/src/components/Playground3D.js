@@ -97,6 +97,10 @@ export default function Playground3D() {
 			point.userData.position = vertex.pos;
 
 			point.addEventListener('click', (event) => {
+				event.stopPropagation();
+
+				console.log(event);
+				
 				console.log(event.target.userData.position);
 			  });
 
