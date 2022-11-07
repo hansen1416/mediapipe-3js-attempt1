@@ -34,6 +34,29 @@ export class BodyGeometry {
 		this.l_bp_y1_zp4 = 0.4;
 
 		this.l_bp_y1_zn4 = -0.4;
+
+		// elbow
+		this.el_y0 = 0;
+
+		this.eb_y0_xn0 = -1.4;
+		this.eb_y0_xn2 = -1.4;
+		this.eb_y0_xn4 = -1;
+		this.eb_y0_xp4 = 0;
+
+		this.eb_y0_zp1 = 1;
+		this.eb_y0_zp2 = 1;
+		this.eb_y0_zp3 = 0.6;
+
+		this.el_y1 = -1;
+
+		this.eb_y1_xn0 = -1.4;
+		this.eb_y1_xn2 = -1.4;
+		this.eb_y1_xn4 = -1;
+		this.eb_y1_xp4 = 0;
+
+		this.eb_y1_zp1 = 1;
+		this.eb_y1_zp2 = 1;
+		this.eb_y1_zp3 = 0.6;
 	}
 
 	deltoid(u) {
@@ -363,7 +386,6 @@ export class BodyGeometry {
 				[-1, this.l_bp_y1, -1],
 				[0, this.l_bp_y1, -1]
 			),
-
 		];
 
 		for (let i in vertices) {
@@ -379,13 +401,26 @@ export class BodyGeometry {
 
 	elbow(u) {
 		const vertices = [
-			// lower bicep middle line
+			...rect(
+				[this.eb_y0_xn4, this.el_y0, this.eb_y0_zp1],
+				[this.eb_y0_xp4, this.el_y0, this.eb_y0_zp2],
+				[this.eb_y1_xp4, this.el_y1, this.eb_y1_zp2],
+				[this.eb_y1_xn4, this.el_y1, this.eb_y1_zp1]
+			),
 
-			{ pos: [0, this.l_bp_y1, -0.6] },
-			{ pos: [0, this.l_bp_y1, 0] },
-			{
-				pos: [this.bp_xa, this.u_bp_y, 0],
-			},
+			...rect(
+				[this.eb_y0_xn2, this.el_y0, this.eb_y0_zp3],
+				[this.eb_y0_xn4, this.el_y0, this.eb_y0_zp1],
+				[this.eb_y1_xn4, this.el_y1, this.eb_y1_zp1],
+				[this.eb_y1_xn2, this.el_y1, this.eb_y1_zp3]
+			),
+
+			...rect(
+				[this.eb_y0_xn0, this.el_y0, 0],
+				[this.eb_y0_xn2, this.el_y0, this.eb_y0_zp3],
+				[this.eb_y1_xn2, this.el_y1, this.eb_y1_zp3],
+				[this.eb_y1_xn0, this.el_y1 + 0.4, 0]
+			),
 		];
 
 		for (let i in vertices) {
@@ -394,7 +429,7 @@ export class BodyGeometry {
 			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
 		}
 
-		return this.bufferGeo(0xf1ff7d, vertices);
+		return vertices;
 	}
 
 	bufferGeo(color, vertices) {

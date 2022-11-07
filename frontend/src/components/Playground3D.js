@@ -23,6 +23,9 @@ export default function Playground3D() {
 
 	const body = new BodyGeometry();
 
+	const upparmGroup = new THREE.Group();
+	const elbowGroup = new THREE.Group();
+
 	useEffect(() => {
 		_scene();
 
@@ -34,9 +37,21 @@ export default function Playground3D() {
 
 		const deltoid_vex = body.deltoid(unit_size);
 		const bicep_vex = body.bicep(unit_size);
+		const elbow_vex = body.elbow(unit_size);
 
-		scene.current.add(body.bufferGeo(0xf1c27d, deltoid_vex));
-		scene.current.add(body.bufferGeo(0xf1c27d, bicep_vex));
+		const deltoid = body.bufferGeo(0xf1c27d, deltoid_vex);
+		const bicep = body.bufferGeo(0xf1c27d, bicep_vex);
+		const elbow = body.bufferGeo(0xf1c27d, elbow_vex);
+
+		upparmGroup.add(deltoid);
+		upparmGroup.add(bicep);
+
+		elbowGroup.add(elbow);
+
+		scene.current.add(upparmGroup);
+		scene.current.add(elbowGroup);
+
+		elbowGroup.position.y = unit_size * body.l_bp_y1;
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
@@ -49,8 +64,9 @@ export default function Playground3D() {
 			renderer.current.domElement
 		);
 
-		dotsHelper(deltoid_vex, scene.current);
-		dotsHelper(bicep_vex, scene.current);
+		dotsHelper(deltoid_vex, upparmGroup);
+		dotsHelper(bicep_vex, upparmGroup);
+		dotsHelper(elbow_vex, elbowGroup);
 
 		interactionManager.current.update();
 
@@ -70,11 +86,10 @@ export default function Playground3D() {
 		// eslint-disable-next-line
 	}, []);
 
-	function dotsHelper(vertices) {
+	function dotsHelper(vertices, group) {
 		// const positions = [];
 
 		for (const vertex of vertices) {
-			
 			if (addedDots.current[JSON.stringify(vertex.pos)]) {
 				continue;
 			}
@@ -96,12 +111,12 @@ export default function Playground3D() {
 
 			point.userData.position = vertex.pos;
 
-			point.addEventListener('click', (event) => {
+			point.addEventListener("click", (event) => {
 				event.stopPropagation();
 				console.log(event.target.userData.position, event);
-			  });
+			});
 
-			scene.current.add(point);
+			group.add(point);
 
 			interactionManager.current.add(point);
 		}
@@ -159,9 +174,9 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -4;
+		camera.current.position.y = -8;
 		camera.current.position.x = 0;
-		camera.current.position.z = 10;
+		camera.current.position.z = 12;
 	}
 
 	function _light() {
