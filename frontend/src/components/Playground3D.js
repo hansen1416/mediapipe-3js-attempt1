@@ -10,6 +10,7 @@ export default function Playground3D() {
 	const scene = useRef(null);
 	const camera = useRef(null);
 	const renderer = useRef(null);
+	const interactionManager = useRef(null);
 
 	// the radius of the sphere
 	// used to calculate the angle
@@ -20,8 +21,6 @@ export default function Playground3D() {
 	const moveAngle = useRef([0, 0]);
 
 	const body = new BodyGeometry();
-
-	const helperDots = [];
 
 	useEffect(() => {
 		_scene();
@@ -46,7 +45,7 @@ export default function Playground3D() {
 
 		_render();
 
-		const interactionManager = new InteractionManager(
+		interactionManager.current = new InteractionManager(
 			renderer.current,
 			camera.current,
 			renderer.current.domElement
@@ -54,24 +53,14 @@ export default function Playground3D() {
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
-		// containerRef.current.addEventListener("click", get3dpos);
-
-		// renderer.current.domElement.addEventListener(
-		// 	"click",
-		// 	onClickObject,
-		// 	true
-		// );
-
-		console.log(interactionManager);
-
 		return () => {
 			renderer.current.dispose();
-			if (containerRef.current) {
-				containerRef.current.removeEventListener(
-					"mousedown",
-					rotateStart
-				);
-			}
+			// if (containerRef.current) {
+			// 	containerRef.current.removeEventListener(
+			// 		"mousedown",
+			// 		rotateStart
+			// 	);
+			// }
 		};
 		// eslint-disable-next-line
 	}, []);
@@ -95,16 +84,13 @@ export default function Playground3D() {
 
 			const point = new THREE.Points(geometry, material);
 
-			// const material = new THREE.MeshBasicMaterial({
-			// 	// size: 0.2,
-			// 	color: 0xff0000,
-			// });
-
-			// const point = new THREE.Mesh(geometry, material);
-
-			helperDots.push(point);
+			point.addEventListener('click', (event) => {
+				console.log(event);
+			  });
 
 			scene.current.add(point);
+
+			interactionManager.current.add(point);
 		}
 
 		// points.userData.position =
@@ -185,6 +171,8 @@ export default function Playground3D() {
 
 		renderer.current.setSize(viewWidth, viewHeight);
 
+		interactionManager.update();
+
 		renderer.current.render(scene.current, camera.current);
 	}
 
@@ -228,6 +216,8 @@ export default function Playground3D() {
 		scene.current.rotation.x = moveAngle.current[1];
 
 		// console.log(moveAngle.current, scene.current.rotation.x);
+
+		interactionManager.update();
 
 		renderer.current.render(scene.current, camera.current);
 	}

@@ -115,7 +115,7 @@ export default function WebCamera() {
 
 		tmpcounter.current += 1;
 
-		if (tmpcounter.current == 50) {
+		if (tmpcounter.current === 50) {
 			console.log(wlm);
 		}
 
@@ -128,7 +128,7 @@ export default function WebCamera() {
 
 		data = new Float32Array(data);
 
-		// console.log(data);
+		console.log(data);
 
 		// ws.current.send(data);
 	}
