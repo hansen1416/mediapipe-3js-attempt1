@@ -36,27 +36,77 @@ export class BodyGeometry {
 		this.l_bp_y1_zn4 = -0.4;
 
 		// elbow
-		this.el_y0 = 0;
+		this.eb_y0 = 0;
 
-		this.eb_y0_xn0 = -1.4;
-		this.eb_y0_xn2 = -1.4;
-		this.eb_y0_xn4 = -1;
-		this.eb_y0_xp4 = 0;
+		this.eb_y0_x0 = -1;
+		this.eb_y0_x1 = -1.4;
+		this.eb_y0_x2 = -1.4;
+		this.eb_y0_x3 = -1.4;
+		this.eb_y0_x4 = -1;
+		this.eb_y0_x5 = 0;
+		this.eb_y0_x6 = 1;
+		this.eb_y0_x7 = 1;
+		this.eb_y0_x8 = 1;
+		this.eb_y0_x9 = 0;
 
-		this.eb_y0_zp1 = 1;
-		this.eb_y0_zp2 = 1;
-		this.eb_y0_zp3 = 0.6;
+		this.eb_y0_z0 = 1;
+		this.eb_y0_z1 = 0.6;
+		this.eb_y0_z2 = 0;
+		this.eb_y0_z3 = -0.6;
+		this.eb_y0_z4 = -1;
+		this.eb_y0_z5 = -1;
+		this.eb_y0_z6 = -0.4;
+		this.eb_y0_z7 = 0;
+		this.eb_y0_z8 = 0.4;
+		this.eb_y0_z9 = 1;
 
-		this.el_y1 = -1;
+		this.eb_y1 = -1;
 
-		this.eb_y1_xn0 = -1.4;
-		this.eb_y1_xn2 = -1.4;
-		this.eb_y1_xn4 = -1;
-		this.eb_y1_xp4 = 0;
+		this.eb_y1_x0 = -1;
+		this.eb_y1_x1 = -1.4;
+		this.eb_y1_x2 = -1.4;
+		this.eb_y1_x3 = -1.4;
+		this.eb_y1_x4 = -1;
+		this.eb_y1_x5 = 0;
+		this.eb_y1_x6 = 1;
+		this.eb_y1_x7 = 1;
+		this.eb_y1_x8 = 1;
+		this.eb_y1_x9 = 0;
 
-		this.eb_y1_zp1 = 1;
-		this.eb_y1_zp2 = 1;
-		this.eb_y1_zp3 = 0.6;
+		this.eb_y1_z0 = 1;
+		this.eb_y1_z1 = 0.6;
+		this.eb_y1_z2 = 0;
+		this.eb_y1_z3 = -0.6;
+		this.eb_y1_z4 = -1;
+		this.eb_y1_z5 = -1;
+		this.eb_y1_z6 = -0.4;
+		this.eb_y1_z7 = 0;
+		this.eb_y1_z8 = 0.4;
+		this.eb_y1_z9 = 1;
+
+		this.eb_y2 = -2;
+
+		this.eb_y2_x0 = -1;
+		this.eb_y2_x1 = -1.4;
+		this.eb_y2_x2 = -1.4;
+		this.eb_y2_x3 = -1.4;
+		this.eb_y2_x4 = -1;
+		this.eb_y2_x5 = 0;
+		this.eb_y2_x6 = 1;
+		this.eb_y2_x7 = 1;
+		this.eb_y2_x8 = 1;
+		this.eb_y2_x9 = 0;
+
+		this.eb_y2_z0 = 1;
+		this.eb_y2_z1 = 0.6;
+		this.eb_y2_z2 = 0;
+		this.eb_y2_z3 = -0.6;
+		this.eb_y2_z4 = -1;
+		this.eb_y2_z5 = -1;
+		this.eb_y2_z6 = -0.4;
+		this.eb_y2_z7 = 0;
+		this.eb_y2_z8 = 0.4;
+		this.eb_y2_z9 = 1;
 	}
 
 	deltoid(u) {
@@ -402,24 +452,143 @@ export class BodyGeometry {
 	elbow(u) {
 		const vertices = [
 			...rect(
-				[this.eb_y0_xn4, this.el_y0, this.eb_y0_zp1],
-				[this.eb_y0_xp4, this.el_y0, this.eb_y0_zp2],
-				[this.eb_y1_xp4, this.el_y1, this.eb_y1_zp2],
-				[this.eb_y1_xn4, this.el_y1, this.eb_y1_zp1]
+				[this.eb_y0_x0, this.eb_y0, this.eb_y0_z0],
+				[this.eb_y0_x9, this.eb_y0, this.eb_y0_z9],
+				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
+				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0]
 			),
 
 			...rect(
-				[this.eb_y0_xn2, this.el_y0, this.eb_y0_zp3],
-				[this.eb_y0_xn4, this.el_y0, this.eb_y0_zp1],
-				[this.eb_y1_xn4, this.el_y1, this.eb_y1_zp1],
-				[this.eb_y1_xn2, this.el_y1, this.eb_y1_zp3]
+				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
+				[this.eb_y0_x0, this.eb_y0, this.eb_y0_z0],
+				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
+				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1]
 			),
 
 			...rect(
-				[this.eb_y0_xn0, this.el_y0, 0],
-				[this.eb_y0_xn2, this.el_y0, this.eb_y0_zp3],
-				[this.eb_y1_xn2, this.el_y1, this.eb_y1_zp3],
-				[this.eb_y1_xn0, this.el_y1 + 0.4, 0]
+				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
+				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
+				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
+				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2]
+			),
+
+			...rect(
+				[this.eb_y0_x3, this.eb_y0, this.eb_y0_z3],
+				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
+				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
+				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3]
+			),
+
+			...rect(
+				[this.eb_y0_x4, this.eb_y0, this.eb_y0_z4],
+				[this.eb_y0_x3, this.eb_y0, this.eb_y0_z3],
+				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
+				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4]
+			),
+
+			...rect(
+				[this.eb_y0_x5, this.eb_y0, this.eb_y0_z5],
+				[this.eb_y0_x4, this.eb_y0, this.eb_y0_z4],
+				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
+				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
+			),
+
+			...rect(
+				[this.eb_y0_x6, this.eb_y0, this.eb_y0_z6],
+				[this.eb_y0_x5, this.eb_y0, this.eb_y0_z5],
+				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
+				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
+			),
+			
+			...rect(
+				[this.eb_y0_x7, this.eb_y0, this.eb_y0_z7],
+				[this.eb_y0_x6, this.eb_y0, this.eb_y0_z6],
+				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
+				[this.eb_y1_x7, this.eb_y1, this.eb_y1_z7],
+			),
+			
+			...rect(
+				[this.eb_y0_x8, this.eb_y0, this.eb_y0_z8],
+				[this.eb_y0_x7, this.eb_y0, this.eb_y0_z7],
+				[this.eb_y1_x7, this.eb_y1, this.eb_y1_z7],
+				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
+			),
+
+			...rect(
+				[this.eb_y0_x9, this.eb_y0, this.eb_y0_z9],
+				[this.eb_y0_x8, this.eb_y0, this.eb_y0_z8],
+				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
+				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
+			),
+
+			...rect(
+				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
+				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
+				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
+				[this.eb_y2_x0, this.eb_y2, this.eb_y2_z0]
+			),
+			
+			...rect(
+				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
+				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
+				[this.eb_y2_x0, this.eb_y2, this.eb_y2_z0],
+				[this.eb_y2_x1, this.eb_y2, this.eb_y2_z1]
+			),
+			
+			...rect(
+				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
+				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
+				[this.eb_y2_x1, this.eb_y2, this.eb_y2_z1],
+				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2]
+			),
+			
+			...rect(
+				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
+				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
+				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2],
+				[this.eb_y2_x3, this.eb_y2, this.eb_y2_z3]
+			),
+			
+			...rect(
+				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
+				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
+				[this.eb_y2_x3, this.eb_y2, this.eb_y2_z3],
+				[this.eb_y2_x4, this.eb_y2, this.eb_y2_z4]
+			),
+			
+			...rect(
+				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
+				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
+				[this.eb_y2_x4, this.eb_y2, this.eb_y2_z4],
+				[this.eb_y2_x5, this.eb_y2, this.eb_y2_z5],
+			),
+			
+			...rect(
+				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
+				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
+				[this.eb_y2_x5, this.eb_y2, this.eb_y2_z5],
+				[this.eb_y2_x6, this.eb_y2, this.eb_y2_z6],
+			),
+			
+			...rect(
+				[this.eb_y1_x7, this.eb_y1, this.eb_y1_z7],
+				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
+				[this.eb_y2_x6, this.eb_y2, this.eb_y2_z6],
+				[this.eb_y2_x7, this.eb_y2, this.eb_y2_z7],
+			),
+			
+			...rect(
+				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
+				[this.eb_y1_x7, this.eb_y1, this.eb_y1_z7],
+				[this.eb_y2_x7, this.eb_y2, this.eb_y2_z7],
+				[this.eb_y2_x8, this.eb_y2, this.eb_y2_z8],
+			),
+
+			...rect(
+				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
+				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
+				[this.eb_y2_x8, this.eb_y2, this.eb_y2_z8],
+				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
 			),
 		];
 
@@ -433,10 +602,7 @@ export class BodyGeometry {
 	}
 
 	bufferGeo(color, vertices) {
-		const material = new THREE.MeshPhongMaterial({
-			color: color,
-			// vertexColors: true,
-		});
+		const material = new THREE.MeshPhongMaterial({color: color});
 		// const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
 		const positions = [];

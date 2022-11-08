@@ -43,6 +43,8 @@ export default function Playground3D() {
 		const bicep = body.bufferGeo(0xf1c27d, bicep_vex);
 		const elbow = body.bufferGeo(0xf1c27d, elbow_vex);
 
+		// d4a763
+
 		upparmGroup.add(deltoid);
 		upparmGroup.add(bicep);
 
