@@ -40,6 +40,31 @@ export class BodyGeometry {
 
 		this.l_bp_y1_zn4 = -0.4;
 
+
+		this.ua_ym1 = 0.25;
+
+		this.ua_y0_0 = 0.3;
+		this.ua_y0_1 = 0.3;
+		this.ua_y0_2 = 0;
+		this.ua_y0_3 = 0.3;
+		this.ua_y0_4 = 0.3;
+		this.ua_y0_5 = 0.3;
+		this.ua_y0_6 = 0.3;
+		this.ua_y0_7 = 0.3;
+		this.ua_y0_9 = 0.3;
+		this.ua_y0_9 = 0.3;
+
+
+
+		
+
+		this.elbowPosInit();
+
+		this.forearmPosInit();
+
+	}
+
+	elbowPosInit() {
 		// elbow
 		this.eb_y0 = 0;
 
@@ -112,7 +137,9 @@ export class BodyGeometry {
 		this.eb_y2_z7 = 0;
 		this.eb_y2_z8 = 0.4;
 		this.eb_y2_z9 = 1;
+	}
 
+	forearmPosInit() {
 		// forearm
 		this.fa_y0 = 0;
 
@@ -163,7 +190,6 @@ export class BodyGeometry {
 		this.fa_y2_z7 = 0;
 		this.fa_y2_z8 = 0.1;
 		this.fa_y2_z9 = 0.6;
-
 	}
 
 	deltoid(u) {

@@ -16,7 +16,7 @@ export default function Playground3D() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-	const showDotsHelper = useRef(false);
+	const showDotsHelper = useRef(true);
 
 	const body = new BodyGeometry();
 
@@ -38,7 +38,7 @@ export default function Playground3D() {
 		const elbow_vex = body.elbow(unit_size);
 		const forearm_vex = body.forearm(unit_size);
 
-		const deltoid = body.bufferGeo(body.skincolor1, deltoid_vex);
+		const deltoid = body.bufferGeo(body.skincolor3, deltoid_vex);
 		const bicep = body.bufferGeo(body.skincolor1, bicep_vex);
 		const elbow = body.bufferGeo(body.skincolor1, elbow_vex);
 		const forearm = body.bufferGeo(body.skincolor1, forearm_vex);
@@ -51,8 +51,8 @@ export default function Playground3D() {
 		forearmGroup.add(forearm);
 
 		scene.current.add(upparmGroup);
-		scene.current.add(elbowGroup);
-		scene.current.add(forearmGroup);
+		// scene.current.add(elbowGroup);
+		// scene.current.add(forearmGroup);
 
 		elbowGroup.position.y = unit_size * body.l_bp_y1;
 		forearmGroup.position.y = unit_size * (body.l_bp_y1 + body.eb_y2);
@@ -181,17 +181,17 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -10;
+		camera.current.position.y = -5;
 		camera.current.position.x = 0;
-		camera.current.position.z = 15;
+		camera.current.position.z = 10;
 	}
 
 	function _light() {
 		const color = 0xffffff;
-		const amblight = new THREE.AmbientLight(color, .3);
+		const amblight = new THREE.AmbientLight(color, 0.8);
 		scene.current.add(amblight);
 
-		const plight = new THREE.PointLight(color, 3);
+		const plight = new THREE.PointLight(color, 1);
 		plight.position.set(5, 5, 2);
 		scene.current.add(plight);
 	}
