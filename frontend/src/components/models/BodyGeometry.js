@@ -104,6 +104,14 @@ export class BodyGeometry {
 		this.ua_y1_z6 = -1.3;
 		this.ua_y1_z7 = -1.3;
 		this.ua_y1_z9 = 1.3;
+
+		this.ua_y0_0 = 0;
+		this.ua_y0_1 = 0;
+		this.ua_y0_2 = 0;
+		this.ua_y0_3 = 0;
+		this.ua_y0_4 = 0;
+		this.ua_y0_5 = 0;
+		this.ua_y0_6 = -1.4;
 	}
 
 	elbowPosInit() {
@@ -319,10 +327,6 @@ export class BodyGeometry {
 			// ================================
 			// upper deltoid inside, positove z
 
-			{ pos: [0, -1.4, 1.3] },
-			{ pos: [0, -2.2, 1.1] },
-			{ pos: [this.sd_xt, -1.4, 1.3] },
-
 			// upper deltoid inside, negative z
 
 			{ pos: [0, -1.4, -1.3] },
@@ -332,9 +336,13 @@ export class BodyGeometry {
 			// middle line of upper deltoid
 
 			// lower deltoid
-			{ pos: [0, -1.4, 1.3] },
-			{ pos: [-1, -1.4, 1.3] },
-			{ pos: [0, -2.2, 1.1] },
+			// { pos: [0, -1.4, 1.3] },
+			// { pos: [0, -2.2, 1.1] },
+			// { pos: [this.sd_xt, -1.4, 1.3] },
+
+			// { pos: [0, -1.4, 1.3] },
+			// { pos: [-1, -1.4, 1.3] },
+			// { pos: [0, -2.2, 1.1] },
 
 			{ pos: [0, -2.2, 1.1] },
 			{ pos: [-1, -1.4, 1.3] },
