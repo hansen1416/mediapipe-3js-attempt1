@@ -146,14 +146,14 @@ export function getLimbFromPose(limb_name, pose_landmark) {
 	);
 }
 
-export function rect(p0, p1, p2, p3) {
+export function rect(p0, p1, p2, p3, clr0, clr1, clr2, clr3) {
 	return [
-		{ pos: Array.from(p0) },
-		{ pos: Array.from(p3) },
-		{ pos: Array.from(p1) },
-		{ pos: Array.from(p2) },
-		{ pos: Array.from(p1) },
-		{ pos: Array.from(p3) },
+		{ pos: Array.from(p0), clr: clr0 ? clr0 : null },
+		{ pos: Array.from(p3), clr: clr3 ? clr3 : null },
+		{ pos: Array.from(p1), clr: clr1 ? clr1 : null },
+		{ pos: Array.from(p2), clr: clr2 ? clr2 : null },
+		{ pos: Array.from(p1), clr: clr1 ? clr1 : null },
+		{ pos: Array.from(p3), clr: clr3 ? clr3 : null },
 	];
 }
 

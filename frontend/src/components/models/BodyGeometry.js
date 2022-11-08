@@ -3,6 +3,11 @@ import { rect } from "../ropes";
 
 export class BodyGeometry {
 	constructor() {
+
+		this.skincolor0 = [239, 214, 178];
+		this.skincolor1 = [241, 194, 125];
+		this.skincolor2 = [226, 180, 112];
+		this.skincolor3 = [212, 167, 99];
 		/**** positions on the body */
 		// shoulder to body x
 		this.sd_xt = 1.2;
@@ -68,8 +73,8 @@ export class BodyGeometry {
 		this.eb_y1_x3 = -1.4;
 		this.eb_y1_x4 = -1;
 		this.eb_y1_x5 = 0;
-		this.eb_y1_x6 = 0.7;
-		this.eb_y1_x7 = 0.7;
+		this.eb_y1_x6 = 0.9;
+		this.eb_y1_x7 = 0.8;
 		this.eb_y1_x8 = 0.7;
 		this.eb_y1_x9 = 0;
 
@@ -82,7 +87,7 @@ export class BodyGeometry {
 		this.eb_y1_z6 = -0.4;
 		this.eb_y1_z7 = 0;
 		this.eb_y1_z8 = 0.4;
-		this.eb_y1_z9 = 1;
+		this.eb_y1_z9 = 0.8;
 
 		this.eb_y2 = -1.2;
 
@@ -507,7 +512,8 @@ export class BodyGeometry {
 				[this.eb_y0_x0, this.eb_y0, this.eb_y0_z0],
 				[this.eb_y0_x9, this.eb_y0, this.eb_y0_z9],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
-				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0]
+				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
+				null, null, this.skincolor0, null,
 			),
 
 			...rect(
@@ -521,14 +527,16 @@ export class BodyGeometry {
 				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
 				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
-				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2]
+				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
+				null, null, null, this.skincolor3,
 			),
 
 			...rect(
 				[this.eb_y0_x3, this.eb_y0, this.eb_y0_z3],
 				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
-				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3]
+				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
+				null, null, this.skincolor3 ,null,
 			),
 
 			...rect(
@@ -571,13 +579,15 @@ export class BodyGeometry {
 				[this.eb_y0_x8, this.eb_y0, this.eb_y0_z8],
 				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
+				null, null,  null, this.skincolor0,
 			),
 
 			...rect(
 				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
 				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
-				[this.eb_y2_x0, this.eb_y2, this.eb_y2_z0]
+				[this.eb_y2_x0, this.eb_y2, this.eb_y2_z0],
+				null, this.skincolor0, null, null,
 			),
 			
 			...rect(
@@ -591,14 +601,16 @@ export class BodyGeometry {
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
 				[this.eb_y2_x1, this.eb_y2, this.eb_y2_z1],
-				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2]
+				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2],
+				this.skincolor3 ,null, null, null,
 			),
 			
 			...rect(
 				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
 				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2],
-				[this.eb_y2_x3, this.eb_y2, this.eb_y2_z3]
+				[this.eb_y2_x3, this.eb_y2, this.eb_y2_z3],
+				null, this.skincolor3 ,null, null,
 			),
 			
 			...rect(
@@ -641,6 +653,7 @@ export class BodyGeometry {
 				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
 				[this.eb_y2_x8, this.eb_y2, this.eb_y2_z8],
 				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
+				this.skincolor0, null, null, null,
 			),
 		];
 
@@ -807,26 +820,29 @@ export class BodyGeometry {
 	}
 
 	bufferGeo(color, vertices) {
-		const material = new THREE.MeshPhongMaterial({color: color});
-		// const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+		const material = new THREE.MeshPhongMaterial({vertexColors: true});
 
 		const positions = [];
 		const normals = [];
 		const uvs = [];
-		// const colors = [];
+		const colors = [];
 		for (const vertex of vertices) {
 			positions.push(...vertex.pos);
-			// normals.push(...vertex.norm);
-			// uvs.push(...vertex.uv);
-			// colors.push(...vertex.clr);
 			normals.push(...[0, 0, 1]);
 			uvs.push(...[0, 0]);
+
+			if (vertex.clr) {
+				colors.push(...vertex.clr);
+			} else {
+				colors.push(...color);
+			}
 		}
 
 		const geometry = new THREE.BufferGeometry();
 		const positionNumComponents = 3;
 		const normalNumComponents = 3;
 		const uvNumComponents = 2;
+		const colorNumComponents = 3;
 		geometry.setAttribute(
 			"position",
 			new THREE.BufferAttribute(
@@ -845,10 +861,10 @@ export class BodyGeometry {
 			"uv",
 			new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents)
 		);
-		// geometry.setAttribute(
-		// 	"color",
-		// 	new THREE.BufferAttribute(new Float32Array(colors), uvNumComponents)
-		// );
+		geometry.setAttribute(
+			"color",
+			new THREE.BufferAttribute(new Uint8Array(colors), colorNumComponents, true)
+		);
 
 		return new THREE.Mesh(geometry, material);
 	}

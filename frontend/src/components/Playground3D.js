@@ -38,12 +38,10 @@ export default function Playground3D() {
 		const elbow_vex = body.elbow(unit_size);
 		const forearm_vex = body.forearm(unit_size);
 
-		const deltoid = body.bufferGeo(0xf1c27d, deltoid_vex);
-		const bicep = body.bufferGeo(0xf1c27d, bicep_vex);
-		const elbow = body.bufferGeo(0xf1c27d, elbow_vex);
-		const forearm = body.bufferGeo(0xf1c27d, forearm_vex);
-
-		// d4a763
+		const deltoid = body.bufferGeo(body.skincolor1, deltoid_vex);
+		const bicep = body.bufferGeo(body.skincolor1, bicep_vex);
+		const elbow = body.bufferGeo(body.skincolor1, elbow_vex);
+		const forearm = body.bufferGeo(body.skincolor1, forearm_vex);
 
 		upparmGroup.add(deltoid);
 		upparmGroup.add(bicep);
@@ -190,12 +188,12 @@ export default function Playground3D() {
 
 	function _light() {
 		const color = 0xffffff;
-		const amblight = new THREE.AmbientLight(color, 0.3);
+		const amblight = new THREE.AmbientLight(color, 1);
 		scene.current.add(amblight);
 
-		const plight = new THREE.PointLight(color, 3);
-		plight.position.set(5, 5, 2);
-		scene.current.add(plight);
+		// const plight = new THREE.PointLight(color, 3);
+		// plight.position.set(5, 5, 2);
+		// scene.current.add(plight);
 	}
 
 	function _render() {

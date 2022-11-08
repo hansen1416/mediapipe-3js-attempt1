@@ -44,3 +44,9 @@ nav a {
   bottom: 10px;
   right: 10px;
 }
+
+.testing-element {
+  color: rgb(241, 194, 125);
+  color: rgb(226, 180, 112);
+  color: rgb(212, 167, 99);
+}
