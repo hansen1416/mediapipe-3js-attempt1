@@ -188,12 +188,12 @@ export default function Playground3D() {
 
 	function _light() {
 		const color = 0xffffff;
-		const amblight = new THREE.AmbientLight(color, 1);
+		const amblight = new THREE.AmbientLight(color, .3);
 		scene.current.add(amblight);
 
-		// const plight = new THREE.PointLight(color, 3);
-		// plight.position.set(5, 5, 2);
-		// scene.current.add(plight);
+		const plight = new THREE.PointLight(color, 3);
+		plight.position.set(5, 5, 2);
+		scene.current.add(plight);
 	}
 
 	function _render() {

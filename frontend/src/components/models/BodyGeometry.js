@@ -6,7 +6,7 @@ export class BodyGeometry {
 
 		this.skincolor0 = [239, 214, 178];
 		this.skincolor1 = [241, 194, 125];
-		this.skincolor2 = [226, 180, 112];
+		this.skincolor2 = [230, 186, 118];
 		this.skincolor3 = [212, 167, 99];
 		/**** positions on the body */
 		// shoulder to body x
@@ -513,14 +513,15 @@ export class BodyGeometry {
 				[this.eb_y0_x9, this.eb_y0, this.eb_y0_z9],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
 				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
-				null, null, this.skincolor0, null,
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
 				[this.eb_y0_x0, this.eb_y0, this.eb_y0_z0],
 				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
-				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1]
+				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -528,7 +529,7 @@ export class BodyGeometry {
 				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
-				null, null, null, this.skincolor3,
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor3,
 			),
 
 			...rect(
@@ -536,14 +537,15 @@ export class BodyGeometry {
 				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
 				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
-				null, null, this.skincolor3 ,null,
+				this.skincolor2, this.skincolor2, this.skincolor3 ,this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y0_x4, this.eb_y0, this.eb_y0_z4],
 				[this.eb_y0_x3, this.eb_y0, this.eb_y0_z3],
 				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
-				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4]
+				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -551,6 +553,7 @@ export class BodyGeometry {
 				[this.eb_y0_x4, this.eb_y0, this.eb_y0_z4],
 				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
 				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -558,6 +561,7 @@ export class BodyGeometry {
 				[this.eb_y0_x5, this.eb_y0, this.eb_y0_z5],
 				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
 				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
+				null, this.skincolor2, this.skincolor2, null,
 			),
 			
 			...rect(
@@ -579,7 +583,7 @@ export class BodyGeometry {
 				[this.eb_y0_x8, this.eb_y0, this.eb_y0_z8],
 				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
-				null, null,  null, this.skincolor0,
+				this.skincolor2, null,  null, this.skincolor2,
 			),
 
 			...rect(
@@ -587,14 +591,15 @@ export class BodyGeometry {
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
 				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
 				[this.eb_y2_x0, this.eb_y2, this.eb_y2_z0],
-				null, this.skincolor0, null, null,
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
 				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
 				[this.eb_y2_x0, this.eb_y2, this.eb_y2_z0],
-				[this.eb_y2_x1, this.eb_y2, this.eb_y2_z1]
+				[this.eb_y2_x1, this.eb_y2, this.eb_y2_z1],
+				this.skincolor2, this.skincolor2, this.skincolor2,this.skincolor2,
 			),
 			
 			...rect(
@@ -602,7 +607,7 @@ export class BodyGeometry {
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
 				[this.eb_y2_x1, this.eb_y2, this.eb_y2_z1],
 				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2],
-				this.skincolor3 ,null, null, null,
+				this.skincolor3 ,this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
@@ -610,14 +615,15 @@ export class BodyGeometry {
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
 				[this.eb_y2_x2, this.eb_y2, this.eb_y2_z2],
 				[this.eb_y2_x3, this.eb_y2, this.eb_y2_z3],
-				null, this.skincolor3 ,null, null,
+				this.skincolor2, this.skincolor3 ,this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
 				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
 				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
 				[this.eb_y2_x3, this.eb_y2, this.eb_y2_z3],
-				[this.eb_y2_x4, this.eb_y2, this.eb_y2_z4]
+				[this.eb_y2_x4, this.eb_y2, this.eb_y2_z4],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
@@ -625,6 +631,7 @@ export class BodyGeometry {
 				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
 				[this.eb_y2_x4, this.eb_y2, this.eb_y2_z4],
 				[this.eb_y2_x5, this.eb_y2, this.eb_y2_z5],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
@@ -632,6 +639,7 @@ export class BodyGeometry {
 				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
 				[this.eb_y2_x5, this.eb_y2, this.eb_y2_z5],
 				[this.eb_y2_x6, this.eb_y2, this.eb_y2_z6],
+				null, this.skincolor2, this.skincolor2, null,
 			),
 			
 			...rect(
@@ -653,7 +661,7 @@ export class BodyGeometry {
 				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
 				[this.eb_y2_x8, this.eb_y2, this.eb_y2_z8],
 				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
-				this.skincolor0, null, null, null,
+				this.skincolor2, null, null, this.skincolor2,
 			),
 		];
 
@@ -673,49 +681,56 @@ export class BodyGeometry {
 				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
 				[this.eb_y2_x9, this.fa_y0, this.eb_y2_z9],
 				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9],
-				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0]
+				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y2_x1, this.fa_y0, this.eb_y2_z1],
 				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
 				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
-				[this.fa_y1_x1, this.fa_y1, this.fa_y1_z1]
+				[this.fa_y1_x1, this.fa_y1, this.fa_y1_z1],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y2_x2, this.fa_y0, this.eb_y2_z2],
 				[this.eb_y2_x1, this.fa_y0, this.eb_y2_z1],
 				[this.fa_y1_x1, this.fa_y1, this.fa_y1_z1],
-				[this.fa_y1_x2, this.fa_y1, this.fa_y1_z2]
+				[this.fa_y1_x2, this.fa_y1, this.fa_y1_z2],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y2_x3, this.fa_y0, this.eb_y2_z3],
 				[this.eb_y2_x2, this.fa_y0, this.eb_y2_z2],
 				[this.fa_y1_x2, this.fa_y1, this.fa_y1_z2],
-				[this.fa_y1_x3, this.fa_y1, this.fa_y1_z3]
+				[this.fa_y1_x3, this.fa_y1, this.fa_y1_z3],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y2_x4, this.fa_y0, this.eb_y2_z4],
 				[this.eb_y2_x3, this.fa_y0, this.eb_y2_z3],
 				[this.fa_y1_x3, this.fa_y1, this.fa_y1_z3],
-				[this.fa_y1_x4, this.fa_y1, this.fa_y1_z4]
+				[this.fa_y1_x4, this.fa_y1, this.fa_y1_z4],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y2_x5, this.fa_y0, this.eb_y2_z5],
 				[this.eb_y2_x4, this.fa_y0, this.eb_y2_z4],
 				[this.fa_y1_x4, this.fa_y1, this.fa_y1_z4],
-				[this.fa_y1_x5, this.fa_y1, this.fa_y1_z5]
+				[this.fa_y1_x5, this.fa_y1, this.fa_y1_z5],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
 				[this.eb_y2_x6, this.fa_y0, this.eb_y2_z6],
 				[this.eb_y2_x5, this.fa_y0, this.eb_y2_z5],
 				[this.fa_y1_x5, this.fa_y1, this.fa_y1_z5],
-				[this.fa_y1_x6, this.fa_y1, this.fa_y1_z6]
+				[this.fa_y1_x6, this.fa_y1, this.fa_y1_z6],
+				null, this.skincolor2, this.skincolor2, null,
 			),
 			
 			...rect(
@@ -736,7 +751,8 @@ export class BodyGeometry {
 				[this.eb_y2_x9, this.fa_y0, this.eb_y2_z9],
 				[this.eb_y2_x8, this.fa_y0, this.eb_y2_z8],
 				[this.fa_y1_x8, this.fa_y1, this.fa_y1_z8],
-				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9]
+				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9],
+				this.skincolor2, null, null, this.skincolor2,
 			),
 
 			...rect(
@@ -744,6 +760,7 @@ export class BodyGeometry {
 				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9],
 				[this.fa_y2_x9, this.fa_y2, this.fa_y2_z9],
 				[this.fa_y2_x0, this.fa_y2, this.fa_y2_z0],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
@@ -751,6 +768,7 @@ export class BodyGeometry {
 				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
 				[this.fa_y2_x0, this.fa_y2, this.fa_y2_z0],
 				[this.fa_y2_x1, this.fa_y2, this.fa_y2_z1],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 			
 			...rect(
@@ -758,6 +776,7 @@ export class BodyGeometry {
 				[this.fa_y1_x1, this.fa_y1, this.fa_y1_z1],
 				[this.fa_y2_x1, this.fa_y2, this.fa_y2_z1],
 				[this.fa_y2_x2, this.fa_y2, this.fa_y2_z2],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -765,6 +784,7 @@ export class BodyGeometry {
 				[this.fa_y1_x2, this.fa_y1, this.fa_y1_z2],
 				[this.fa_y2_x2, this.fa_y2, this.fa_y2_z2],
 				[this.fa_y2_x3, this.fa_y2, this.fa_y2_z3],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -772,6 +792,7 @@ export class BodyGeometry {
 				[this.fa_y1_x3, this.fa_y1, this.fa_y1_z3],
 				[this.fa_y2_x3, this.fa_y2, this.fa_y2_z3],
 				[this.fa_y2_x4, this.fa_y2, this.fa_y2_z4],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -779,6 +800,7 @@ export class BodyGeometry {
 				[this.fa_y1_x4, this.fa_y1, this.fa_y1_z4],
 				[this.fa_y2_x4, this.fa_y2, this.fa_y2_z4],
 				[this.fa_y2_x5, this.fa_y2, this.fa_y2_z5],
+				this.skincolor2, this.skincolor2, this.skincolor2, this.skincolor2,
 			),
 
 			...rect(
@@ -786,6 +808,7 @@ export class BodyGeometry {
 				[this.fa_y1_x5, this.fa_y1, this.fa_y1_z5],
 				[this.fa_y2_x5, this.fa_y2, this.fa_y2_z5],
 				[this.fa_y2_x6, this.fa_y2, this.fa_y2_z6],
+				null, this.skincolor2, this.skincolor2, null, 
 			),
 
 			...rect(
@@ -807,6 +830,7 @@ export class BodyGeometry {
 				[this.fa_y1_x8, this.fa_y1, this.fa_y1_z8],
 				[this.fa_y2_x8, this.fa_y2, this.fa_y2_z8],
 				[this.fa_y2_x9, this.fa_y2, this.fa_y2_z9],
+				this.skincolor2, null, null, this.skincolor2,
 			),
 		]
 
