@@ -40,28 +40,39 @@ export class BodyGeometry {
 
 		this.l_bp_y1_zn4 = -0.4;
 
-
-		this.ua_ym1 = 0.25;
-
-		this.ua_y0_0 = 0.3;
-		this.ua_y0_1 = 0.3;
-		this.ua_y0_2 = 0;
-		this.ua_y0_3 = 0.3;
-		this.ua_y0_4 = 0.3;
-		this.ua_y0_5 = 0.3;
-		this.ua_y0_6 = 0.3;
-		this.ua_y0_7 = 0.3;
-		this.ua_y0_9 = 0.3;
-		this.ua_y0_9 = 0.3;
-
-
-
-		
+		//******* */
+		this.upperarmPosInit();
 
 		this.elbowPosInit();
 
 		this.forearmPosInit();
+	}
 
+	upperarmPosInit() {
+
+		this.ua_ym1 = 0.25;
+
+		this.ua_y0_x0 = 0;
+		this.ua_y0_x1 = -0.8;
+		this.ua_y0_x2 = -1.4;
+		this.ua_y0_x3 = -0.8;
+		this.ua_y0_x4 = 0;
+		this.ua_y0_x5 = 1.2;
+		this.ua_y0_x6 = 1.2;
+		this.ua_y0_x7 = 1.2;
+		this.ua_y0_x8 = 1.2;
+		this.ua_y0_x9 = 1.2;
+
+		this.ua_y0_z0 = 1;
+		this.ua_y0_z1 = -0.8;
+		this.ua_y0_z2 = -1.4;
+		this.ua_y0_z3 = -0.8;
+		this.ua_y0_z4 = 0;
+		this.ua_y0_z5 = 1.2;
+		this.ua_y0_z6 = 1.2;
+		this.ua_y0_z7 = 1.2;
+		this.ua_y0_z8 = 1.2;
+		this.ua_y0_z9 = 1.2;
 	}
 
 	elbowPosInit() {
@@ -195,7 +206,6 @@ export class BodyGeometry {
 	deltoid(u) {
 		const vertices = [
 			// top of shoulder outside
-
 			{ pos: [0, 0.25, 0] },
 			{ pos: [-0.8, -0.3, 1] },
 			{ pos: [0, -0.3, 1] },
