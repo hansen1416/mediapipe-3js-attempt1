@@ -25,6 +25,7 @@ export default function Playground3D() {
 
 	const upparmGroup = new THREE.Group();
 	const elbowGroup = new THREE.Group();
+	const forearmGroup = new THREE.Group();
 
 	useEffect(() => {
 		_scene();
@@ -38,10 +39,12 @@ export default function Playground3D() {
 		const deltoid_vex = body.deltoid(unit_size);
 		const bicep_vex = body.bicep(unit_size);
 		const elbow_vex = body.elbow(unit_size);
+		const forearm_vex = body.forearm(unit_size);
 
 		const deltoid = body.bufferGeo(0xf1c27d, deltoid_vex);
 		const bicep = body.bufferGeo(0xf1c27d, bicep_vex);
 		const elbow = body.bufferGeo(0xf1c27d, elbow_vex);
+		const forearm = body.bufferGeo(0xf1c27d, forearm_vex);
 
 		// d4a763
 
@@ -50,10 +53,14 @@ export default function Playground3D() {
 
 		elbowGroup.add(elbow);
 
+		forearmGroup.add(forearm);
+
 		scene.current.add(upparmGroup);
 		scene.current.add(elbowGroup);
+		scene.current.add(forearmGroup);
 
 		elbowGroup.position.y = unit_size * body.l_bp_y1;
+		forearmGroup.position.y = unit_size * (body.l_bp_y1 + body.eb_y2);
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
@@ -69,6 +76,7 @@ export default function Playground3D() {
 		dotsHelper(deltoid_vex, upparmGroup);
 		dotsHelper(bicep_vex, upparmGroup);
 		dotsHelper(elbow_vex, elbowGroup);
+		dotsHelper(forearm_vex, forearmGroup);
 
 		interactionManager.current.update();
 

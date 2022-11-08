@@ -107,6 +107,58 @@ export class BodyGeometry {
 		this.eb_y2_z7 = 0;
 		this.eb_y2_z8 = 0.4;
 		this.eb_y2_z9 = 1;
+
+		// forearm
+		this.fa_y0 = 0;
+
+		this.fa_y1 = -1.6;
+
+		this.fa_y1_x0 = -1;
+		this.fa_y1_x1 = -1.2;
+		this.fa_y1_x2 = -1.3;
+		this.fa_y1_x3 = -1.2;
+		this.fa_y1_x4 = -1;
+		this.fa_y1_x5 = -0;
+		this.fa_y1_x6 = 0.9;
+		this.fa_y1_x7 = 1.0;
+		this.fa_y1_x8 = 0.9;
+		this.fa_y1_x9 = -0;
+
+		this.fa_y1_z0 = 1.2;
+		this.fa_y1_z1 = 0.5;
+		this.fa_y1_z2 = 0;
+		this.fa_y1_z3 = -0.5;
+		this.fa_y1_z4 = -1.2;
+		this.fa_y1_z5 = -1.2;
+		this.fa_y1_z6 = -0.6;
+		this.fa_y1_z7 = 0;
+		this.fa_y1_z8 = 0.6;
+		this.fa_y1_z9 = 1.2;
+
+		this.fa_y2 = -5;
+
+		this.fa_y2_x0 = -0.3;
+		this.fa_y2_x1 = -0.5;
+		this.fa_y2_x2 = -0.6;
+		this.fa_y2_x3 = -0.5;
+		this.fa_y2_x4 = -0.3;
+		this.fa_y2_x5 = 0.3;
+		this.fa_y2_x6 = 0.5;
+		this.fa_y2_x7 = 0.6;
+		this.fa_y2_x8 = 0.5;
+		this.fa_y2_x9 = 0.3;
+
+		this.fa_y2_z0 = 0.6;
+		this.fa_y2_z1 = 0.1;
+		this.fa_y2_z2 = 0;
+		this.fa_y2_z3 = -0.1;
+		this.fa_y2_z4 = -0.6;
+		this.fa_y2_z5 = -0.6;
+		this.fa_y2_z6 = -0.1;
+		this.fa_y2_z7 = 0;
+		this.fa_y2_z8 = 0.1;
+		this.fa_y2_z9 = 0.6;
+
 	}
 
 	deltoid(u) {
@@ -591,6 +643,91 @@ export class BodyGeometry {
 				[this.eb_y2_x9, this.eb_y2, this.eb_y2_z9],
 			),
 		];
+
+		for (let i in vertices) {
+			vertices[i]["pos"][0] = u * vertices[i]["pos"][0];
+			vertices[i]["pos"][1] = u * vertices[i]["pos"][1];
+			vertices[i]["pos"][2] = u * vertices[i]["pos"][2];
+		}
+
+		return vertices;
+	}
+
+	forearm(u) {
+
+		const vertices = [
+			...rect(
+				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
+				[this.eb_y2_x9, this.fa_y0, this.eb_y2_z9],
+				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9],
+				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0]
+			),
+
+			...rect(
+				[this.eb_y2_x1, this.fa_y0, this.eb_y2_z1],
+				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
+				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
+				[this.fa_y1_x1, this.fa_y1, this.fa_y1_z1]
+			),
+
+			...rect(
+				[this.eb_y2_x2, this.fa_y0, this.eb_y2_z2],
+				[this.eb_y2_x1, this.fa_y0, this.eb_y2_z1],
+				[this.fa_y1_x1, this.fa_y1, this.fa_y1_z1],
+				[this.fa_y1_x2, this.fa_y1, this.fa_y1_z2]
+			),
+
+			...rect(
+				[this.eb_y2_x3, this.fa_y0, this.eb_y2_z3],
+				[this.eb_y2_x2, this.fa_y0, this.eb_y2_z2],
+				[this.fa_y1_x2, this.fa_y1, this.fa_y1_z2],
+				[this.fa_y1_x3, this.fa_y1, this.fa_y1_z3]
+			),
+
+			...rect(
+				[this.eb_y2_x4, this.fa_y0, this.eb_y2_z4],
+				[this.eb_y2_x3, this.fa_y0, this.eb_y2_z3],
+				[this.fa_y1_x3, this.fa_y1, this.fa_y1_z3],
+				[this.fa_y1_x4, this.fa_y1, this.fa_y1_z4]
+			),
+
+			...rect(
+				[this.eb_y2_x5, this.fa_y0, this.eb_y2_z5],
+				[this.eb_y2_x4, this.fa_y0, this.eb_y2_z4],
+				[this.fa_y1_x4, this.fa_y1, this.fa_y1_z4],
+				[this.fa_y1_x5, this.fa_y1, this.fa_y1_z5]
+			),
+
+			...rect(
+				[this.eb_y2_x6, this.fa_y0, this.eb_y2_z6],
+				[this.eb_y2_x5, this.fa_y0, this.eb_y2_z5],
+				[this.fa_y1_x5, this.fa_y1, this.fa_y1_z5],
+				[this.fa_y1_x6, this.fa_y1, this.fa_y1_z6]
+			),
+			
+			...rect(
+				[this.eb_y2_x7, this.fa_y0, this.eb_y2_z7],
+				[this.eb_y2_x6, this.fa_y0, this.eb_y2_z6],
+				[this.fa_y1_x6, this.fa_y1, this.fa_y1_z6],
+				[this.fa_y1_x7, this.fa_y1, this.fa_y1_z7]
+			),
+			
+			...rect(
+				[this.eb_y2_x8, this.fa_y0, this.eb_y2_z8],
+				[this.eb_y2_x7, this.fa_y0, this.eb_y2_z7],
+				[this.fa_y1_x7, this.fa_y1, this.fa_y1_z7],
+				[this.fa_y1_x8, this.fa_y1, this.fa_y1_z8]
+			),
+			
+			...rect(
+				[this.eb_y2_x9, this.fa_y0, this.eb_y2_z9],
+				[this.eb_y2_x8, this.fa_y0, this.eb_y2_z8],
+				[this.fa_y1_x8, this.fa_y1, this.fa_y1_z8],
+				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9]
+			),
+
+			
+		]
 
 		for (let i in vertices) {
 			vertices[i]["pos"][0] = u * vertices[i]["pos"][0];
