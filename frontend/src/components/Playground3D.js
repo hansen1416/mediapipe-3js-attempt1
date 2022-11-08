@@ -13,13 +13,10 @@ export default function Playground3D() {
 	const interactionManager = useRef(null);
 	const addedDots = useRef({});
 
-	// the radius of the sphere
-	// used to calculate the angle
-	// the smaller, the faster the angle changes
-	const radius = 100;
-
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
+
+	const showDotsHelper = useRef(false);
 
 	const body = new BodyGeometry();
 
@@ -97,7 +94,9 @@ export default function Playground3D() {
 	}, []);
 
 	function dotsHelper(vertices, group) {
-		// const positions = [];
+		if (!showDotsHelper.current) {
+			return;
+		}
 
 		for (const vertex of vertices) {
 			if (addedDots.current[JSON.stringify(vertex.pos)]) {
@@ -184,9 +183,9 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -8;
+		camera.current.position.y = -10;
 		camera.current.position.x = 0;
-		camera.current.position.z = 12;
+		camera.current.position.z = 15;
 	}
 
 	function _light() {
@@ -211,6 +210,11 @@ export default function Playground3D() {
 	}
 
 	function relativePos(eventObj) {
+		// the radius of the sphere
+		// used to calculate the angle
+		// the smaller, the faster the angle changes
+		const radius = 100;
+
 		const box = containerRef.current.getBoundingClientRect();
 
 		const x = eventObj.pageX - box.width / 2;
