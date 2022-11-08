@@ -68,9 +68,9 @@ export class BodyGeometry {
 		this.eb_y1_x3 = -1.4;
 		this.eb_y1_x4 = -1;
 		this.eb_y1_x5 = 0;
-		this.eb_y1_x6 = 1;
-		this.eb_y1_x7 = 1;
-		this.eb_y1_x8 = 1;
+		this.eb_y1_x6 = 0.85;
+		this.eb_y1_x7 = 0.85;
+		this.eb_y1_x8 = 0.85;
 		this.eb_y1_x9 = 0;
 
 		this.eb_y1_z0 = 1;
@@ -92,9 +92,9 @@ export class BodyGeometry {
 		this.eb_y2_x3 = -1.4;
 		this.eb_y2_x4 = -1;
 		this.eb_y2_x5 = 0;
-		this.eb_y2_x6 = 1;
-		this.eb_y2_x7 = 1;
-		this.eb_y2_x8 = 1;
+		this.eb_y2_x6 = 0.9;
+		this.eb_y2_x7 = 0.9;
+		this.eb_y2_x8 = 0.9;
 		this.eb_y2_x9 = 0;
 
 		this.eb_y2_z0 = 1;
