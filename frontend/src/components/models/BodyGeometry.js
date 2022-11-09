@@ -105,13 +105,27 @@ export class BodyGeometry {
 		this.ua_y1_z7 = -1.3;
 		this.ua_y1_z9 = 1.3;
 
-		this.ua_y0_0 = 0;
-		this.ua_y0_1 = 0;
-		this.ua_y0_2 = 0;
-		this.ua_y0_3 = 0;
-		this.ua_y0_4 = 0;
-		this.ua_y0_5 = 0;
-		this.ua_y0_6 = -1.4;
+		this.ua_y2_0 = -2.2;
+		this.ua_y2_1 = -2.8;
+		this.ua_y2_2 = -3.6;
+		this.ua_y2_3 = -2.8;
+		this.ua_y2_4 = -2.2;
+		this.ua_y2_5 = -1.4;
+		this.ua_y2_9 = -1.4;
+
+		this.ua_y2_x0 = 0;
+		this.ua_y2_x1 = -1;
+		this.ua_y2_x2 = -1.2;
+		this.ua_y2_x3 = -1;
+		this.ua_y2_x4 = 0;
+		this.ua_y2_x9 = 1.2;
+
+		this.ua_y2_z0 = 1.1;
+		this.ua_y2_z1 = 1;
+		this.ua_y2_z2 = 0;
+		this.ua_y2_z3 = -1;
+		this.ua_y2_z4 = -1.1;
+		this.ua_y2_z9 = 1.4;
 	}
 
 	elbowPosInit() {
@@ -251,136 +265,104 @@ export class BodyGeometry {
 				[this.ua_y0_x0, this.ua_y0_0, this.ua_y0_z0],
 				[this.ua_y0_x1, this.ua_y0_1, this.ua_y0_z1]
 			),
-
 			...rect(
 				[this.ua_y0_x3, this.ua_y0_3, this.ua_y0_z3],
 				[this.ua_y0_x4, this.ua_y0_4, this.ua_y0_z4],
 				[0, this.ua_ym1, 0],
 				[this.ua_y0_x2, this.ua_y0_2, this.ua_y0_z2]
 			),
-
 			...rect(
 				[this.ua_y0_x4, this.ua_y0_4, this.ua_y0_z4],
 				[this.ua_y0_x5, this.ua_y0_5, this.ua_y0_z5],
 				[this.ua_y0_x6, this.ua_y0_6, this.ua_y0_z6],
 				[0, this.ua_ym1, 0]
 			),
-
 			...rect(
 				[0, this.ua_ym1, 0],
 				[this.ua_y0_x8, this.ua_y0_8, this.ua_y0_z8],
 				[this.ua_y0_x9, this.ua_y0_9, this.ua_y0_z9],
 				[this.ua_y0_x0, this.ua_y0_0, this.ua_y0_z0]
 			),
-
 			// upper deltoid
-
 			...rect(
 				[this.ua_y0_x1, this.ua_y0_1, this.ua_y0_z1],
 				[this.ua_y0_x0, this.ua_y0_0, this.ua_y0_z0],
 				[this.ua_y1_x0, this.ua_y1, this.ua_y1_z0],
 				[this.ua_y1_x1, this.ua_y1, this.ua_y1_z1]
 			),
-
 			...rect(
 				[this.ua_y0_x2, this.ua_y0_2, this.ua_y0_z2],
 				[this.ua_y0_x1, this.ua_y0_1, this.ua_y0_z1],
 				[this.ua_y1_x1, this.ua_y1, this.ua_y1_z1],
 				[this.ua_y1_x2, this.ua_y1, this.ua_y1_z2]
 			),
-
 			...rect(
 				[this.ua_y1_x2, this.ua_y1, this.ua_y1_z2],
 				[this.ua_y1_x3, this.ua_y1, this.ua_y1_z3],
 				[this.ua_y1_x4, this.ua_y1, this.ua_y1_z4],
 				[this.ua_y0_x2, this.ua_y0_2, this.ua_y0_z2]
 			),
-
 			...rect(
 				[this.ua_y0_x3, this.ua_y0_3, this.ua_y0_z3],
 				[this.ua_y0_x2, this.ua_y0_2, this.ua_y0_z2],
 				[this.ua_y1_x4, this.ua_y1, this.ua_y1_z4],
 				[this.ua_y1_x5, this.ua_y1, this.ua_y1_z5]
 			),
-
 			...rect(
 				[this.ua_y0_x4, this.ua_y0_4, this.ua_y0_z4],
 				[this.ua_y0_x3, this.ua_y0_3, this.ua_y0_z3],
 				[this.ua_y1_x5, this.ua_y1, this.ua_y1_z5],
 				[this.ua_y1_x6, this.ua_y1, this.ua_y1_z6]
 			),
-
 			...rect(
 				[this.ua_y0_x5, this.ua_y0_5, this.ua_y0_z5],
 				[this.ua_y0_x4, this.ua_y0_4, this.ua_y0_z4],
 				[this.ua_y1_x6, this.ua_y1, this.ua_y1_z6],
 				[this.ua_y1_x7, this.ua_y1, this.ua_y1_z7]
 			),
-
 			...rect(
 				[this.ua_y0_x0, this.ua_y0_0, this.ua_y0_z0],
 				[this.ua_y0_x9, this.ua_y0_9, this.ua_y0_z9],
 				[this.ua_y1_x9, this.ua_y1, this.ua_y1_z9],
 				[this.ua_y1_x0, this.ua_y1, this.ua_y1_z0]
 			),
-
-			// ================================
-			// upper deltoid inside, positove z
-
-			// upper deltoid inside, negative z
-
-			{ pos: [0, -1.4, -1.3] },
-			{ pos: [this.sd_xt, -1.4, -1.3] },
-			{ pos: [0, -2.2, -1.1] },
-
-			// middle line of upper deltoid
-
 			// lower deltoid
-			// { pos: [0, -1.4, 1.3] },
-			// { pos: [0, -2.2, 1.1] },
-			// { pos: [this.sd_xt, -1.4, 1.3] },
-
-			// { pos: [0, -1.4, 1.3] },
-			// { pos: [-1, -1.4, 1.3] },
-			// { pos: [0, -2.2, 1.1] },
-
-			{ pos: [0, -2.2, 1.1] },
-			{ pos: [-1, -1.4, 1.3] },
-			{ pos: [-1, -2.8, 1.0] },
-
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [-1, -1.4, 1.3] },
-			{ pos: [-1.7, -1.4, 0.7] },
-
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [-1.7, -1.4, 0.7] },
-			{ pos: [this.dd_xa, -1.4, 0] },
-
-			{ pos: [-1, -2.8, 1.0] },
-			{ pos: [this.dd_xa, -1.4, 0] },
-			{ pos: [-1.2, -3.6, 0] },
-
-			// lower deltoid middle line
-
-			{ pos: [-1.2, -3.6, 0] },
-			{ pos: [this.dd_xa, -1.4, 0] },
-			{ pos: [-1, -2.8, -1.0] },
-
-			{ pos: [-1, -2.8, -1.0] },
-			{ pos: [this.dd_xa, -1.4, 0] },
-			{ pos: [-1.7, -1.4, -0.7] },
-
-			{ pos: [-1, -2.8, -1.0] },
-			{ pos: [-1.7, -1.4, -0.7] },
-			{ pos: [-1, -1.4, -1.3] },
-
-			{ pos: [0, -2.2, -1.1] },
-			{ pos: [-1, -2.8, -1.0] },
-			{ pos: [-1, -1.4, -1.3] },
-
-			{ pos: [0, -1.4, -1.3] },
-			{ pos: [0, -2.2, -1.1] },
-			{ pos: [-1, -1.4, -1.3] },
+			...rect(
+				[this.ua_y1_x1, this.ua_y1, this.ua_y1_z1],
+				[this.ua_y1_x0, this.ua_y1, this.ua_y1_z0],
+				[this.ua_y1_x9, this.ua_y1, this.ua_y1_z9],
+				[this.ua_y2_x0, this.ua_y2_0, this.ua_y2_z0]
+			),
+			...rect(
+				[this.ua_y1_x2, this.ua_y1, this.ua_y1_z2],
+				[this.ua_y1_x1, this.ua_y1, this.ua_y1_z1],
+				[this.ua_y2_x0, this.ua_y2_0, this.ua_y2_z0],
+				[this.ua_y2_x1, this.ua_y2_1, this.ua_y2_z1]
+			),
+			...rect(
+				[this.ua_y1_x3, this.ua_y1, this.ua_y1_z3],
+				[this.ua_y1_x2, this.ua_y1, this.ua_y1_z2],
+				[this.ua_y2_x1, this.ua_y2_1, this.ua_y2_z1],
+				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2]
+			),
+			...rect(
+				[this.ua_y1_x4, this.ua_y1, this.ua_y1_z4],
+				[this.ua_y1_x3, this.ua_y1, this.ua_y1_z3],
+				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2],
+				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3]
+			),
+			...rect(
+				[this.ua_y1_x5, this.ua_y1, this.ua_y1_z5],
+				[this.ua_y1_x4, this.ua_y1, this.ua_y1_z4],
+				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3],
+				[this.ua_y2_x4, this.ua_y2_4, this.ua_y2_z4]
+			),
+			...rect(
+				[this.ua_y1_x6, this.ua_y1, this.ua_y1_z6],
+				[this.ua_y1_x5, this.ua_y1, this.ua_y1_z5],
+				[this.ua_y2_x4, this.ua_y2_4, this.ua_y2_z4],
+				[this.ua_y1_x7, this.ua_y2_5, this.ua_y1_z7]
+			),
 		];
 
 		for (let i in vertices) {
