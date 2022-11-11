@@ -37,8 +37,9 @@ export class CustomManFigure extends BodyGeometry {
 
 		this.joints_connect = [
 			["LEFT_SHOULDER", "RIGHT_SHOULDER", 1.2381028532000913, ""],
-			["LEFT_SHOULDER", "LEFT_ELBOW", 1.1247838311094145, "left_arm"],
-			["LEFT_ELBOW", "LEFT_WRIST", 0.8123971126504467, ""],
+			["LEFT_SHOULDER", "LEFT_ELBOW", 1.1247838311094145, "left_upperarm"],
+			["LEFT_ELBOW", "LEFT_ELBOW", 0, "left_elbow"],
+			["LEFT_ELBOW", "LEFT_WRIST", 0.8123971126504467, "left_forearm"],
 			["RIGHT_SHOULDER", "RIGHT_ELBOW", 1.1247838311094145, ""],
 			["RIGHT_ELBOW", "RIGHT_WRIST", 0.8123971126504467, ""],
 			["LEFT_SHOULDER", "LEFT_HIP", 1.9537422593811369, ""],
@@ -82,10 +83,10 @@ export class CustomManFigure extends BodyGeometry {
 		for (let jc in this.joints_connect) {
 			const group = new THREE.Group();
 
-			const points = [];
+			// const points = [];
 
-			points.push(new THREE.Vector3(0, 0, 0));
-			points.push(new THREE.Vector3(0, this.joints_connect[jc][2], 0));
+			// points.push(new THREE.Vector3(0, 0, 0));
+			// points.push(new THREE.Vector3(0, this.joints_connect[jc][2], 0));
 
 			if (typeof this[this.joints_connect[jc][3]] === "function") {
 				// run limbs geometry functions
@@ -111,13 +112,35 @@ export class CustomManFigure extends BodyGeometry {
 		}
 	}
 
-	left_arm(size) {
+	left_upperarm(size) {
+		const unit_size = Math.abs(size / this.l_bp_y1);
+
+		const group = new THREE.Group();
+
+		group.add(this.bufferGeo(this.skincolor3, this.deltoid(unit_size)));
+		group.add(this.bufferGeo(this.skincolor1, this.bicep(unit_size)));
+
+		return group;
+	}
+
+	left_elbow(size) {
+		// place elbow in the upperarm and update the vertices 
+		// keep it always connected with forearm
 		const unit_size = 0.1;
 
 		const group = new THREE.Group();
 
-		group.add(this.bufferGeo(0xf1c27d, this.deltoid(unit_size)));
-		group.add(this.bufferGeo(0xf1c27d, this.bicep(unit_size)));
+		group.add(this.bufferGeo(this.skincolor3, this.elbow(unit_size)));
+
+		return group;
+	}
+
+	left_forearm(size) {
+		const unit_size = Math.abs(size / this.fa_y2);
+
+		const group = new THREE.Group();
+
+		group.add(this.bufferGeo(this.skincolor2, this.forearm(unit_size)));
 
 		return group;
 	}

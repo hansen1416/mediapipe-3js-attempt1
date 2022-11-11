@@ -68,7 +68,7 @@ export default function BufferGeoModel() {
 
 		camera.current.position.y = 0;
 		camera.current.position.x = 0;
-		camera.current.position.z = 5;
+		camera.current.position.z = 3;
 
 		_light();
 
