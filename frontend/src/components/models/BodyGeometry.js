@@ -8,36 +8,36 @@ export class BodyGeometry {
 		this.skincolor2 = [230, 186, 118];
 		this.skincolor3 = [212, 167, 99];
 		/**** positions on the body */
-		// shoulder to body x
-		this.sd_xt = 1.2;
-		// deltoid farx, distance away from body
-		this.dd_xa = -2.2;
-		// upper deltoid far z positive
-		this.dd_zf = 1.3;
-		// bicep far x negative, away from body
-		this.bp_xa = -1.66;
-		// bicep far x, towards body
-		this.bp_xt = 1.39;
-		// bicep far z positive
-		this.u_bp_y1_zn2 = 1.46;
-		// upper bicep far y negative
-		this.u_bp_y = -5.4;
-		// lower bicep far y negative
-		this.l_bp_y1 = -9;
-		// lower bicep end positove z
-		this.l_bp_y1_xp0 = 1.0;
-		this.l_bp_y1_xp1 = 1.0;
+		// // shoulder to body x
+		// this.sd_xt = 1.2;
+		// // deltoid farx, distance away from body
+		// this.dd_xa = -2.2;
+		// // upper deltoid far z positive
+		// this.dd_zf = 1.3;
+		// // bicep far x negative, away from body
+		// this.bp_xa = -1.66;
+		// // bicep far x, towards body
+		// this.bp_xt = 1.39;
+		// // bicep far z positive
+		// this.u_bp_y1_zn2 = 1.46;
+		// // upper bicep far y negative
+		// this.u_bp_y = -5.4;
+		// // lower bicep far y negative
+		// this.l_bp_y1 = -9;
+		// // lower bicep end positove z
+		// this.l_bp_y1_xp0 = 1.0;
+		// this.l_bp_y1_xp1 = 1.0;
 
-		this.l_bp_y1_xn0 = -1.4;
-		this.l_bp_y1_xn2 = -1.4;
-		this.l_bp_y1_xn4 = -1;
+		// this.l_bp_y1_xn0 = -1.4;
+		// this.l_bp_y1_xn2 = -1.4;
+		// this.l_bp_y1_xn4 = -1;
 
-		this.l_bp_y1_zp1 = 1;
-		this.l_bp_y1_zp2 = 1;
-		this.l_bp_y1_zp3 = 0.6;
-		this.l_bp_y1_zp4 = 0.4;
+		// this.l_bp_y1_zp1 = 1;
+		// this.l_bp_y1_zp2 = 1;
+		// this.l_bp_y1_zp3 = 0.6;
+		// this.l_bp_y1_zp4 = 0.4;
 
-		this.l_bp_y1_zn4 = -0.4;
+		// this.l_bp_y1_zn4 = -0.4;
 
 		//******* */
 		this.upperarmPosInit();
