@@ -134,6 +134,30 @@ export class BodyGeometry {
 		this.ua_y2_z5 = -1.1;
 		this.ua_y2_z7 = 0;
 		this.ua_y2_z9 = 1.1;
+
+		this.ua_y3 = -5.4;
+
+		this.ua_y3_x0 = 0;
+		this.ua_y3_x1 = -1;
+		this.ua_y3_x2 = -1.4;
+		this.ua_y3_x3 = -1.66;
+		this.ua_y3_x4 = -1.4;
+		this.ua_y3_x5 = -1;
+		this.ua_y3_x6 = 0;
+		this.ua_y3_x7 = 1;
+		this.ua_y3_x8 = 1.39;
+		this.ua_y3_x9 = 1;
+
+		this.ua_y3_z0 = 1.46;
+		this.ua_y3_z1 = 1.46;
+		this.ua_y3_z2 = 1.2;
+		this.ua_y3_z3 = 0;
+		this.ua_y3_z4 = -1.2;
+		this.ua_y3_z5 = -1.46;
+		this.ua_y3_z6 = -1.46;
+		this.ua_y3_z7 = -1;
+		this.ua_y3_z8 = 0;
+		this.ua_y3_z9 = 1;
 	}
 
 	elbowPosInit() {
@@ -387,88 +411,75 @@ export class BodyGeometry {
 			//  upper bicep, negative x, away from body
 
 			...rect(
-				[-1, -2.8, 1.0],
-				[0, -2.2, 1.1],
-				[0, this.u_bp_y, this.u_bp_y1_zn2],
-				[-1, this.u_bp_y, this.u_bp_y1_zn2]
+				[this.ua_y2_x1, this.ua_y2_1, this.ua_y2_z1],
+				[this.ua_y2_x0, this.ua_y2_0, this.ua_y2_z0],
+				[this.ua_y3_x0, this.ua_y3, this.ua_y3_z0],
+				[this.ua_y3_x1, this.ua_y3, this.ua_y3_z1]
+			),
+			...rect(
+				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2],
+				[this.ua_y2_x1, this.ua_y2_1, this.ua_y2_z1],
+				[this.ua_y3_x1, this.ua_y3, this.ua_y3_z1],
+				[this.ua_y3_x2, this.ua_y3, this.ua_y3_z2]
 			),
 
 			...rect(
-				[-1.2, -3.6, 0],
-				[-1, -2.8, 1.0],
-				[-1, this.u_bp_y, this.u_bp_y1_zn2],
-				[-1.4, this.u_bp_y, 1.2]
+				[this.ua_y3_x2, this.ua_y3, this.ua_y3_z2],
+				[this.ua_y3_x3, this.ua_y3, this.ua_y3_z3],
+				[this.ua_y3_x4, this.ua_y3, this.ua_y3_z4],
+				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2]
 			),
 
-			{ pos: [-1.4, this.u_bp_y, 1.2] },
-			{ pos: [-1.2, -3.6, 0] },
-			{ pos: [this.bp_xa, this.u_bp_y, 0] },
+			...rect(
+				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3],
+				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2],
+				[this.ua_y3_x4, this.ua_y3, this.ua_y3_z4],
+				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5]
+			),
 
-			{ pos: [this.bp_xa, this.u_bp_y, 0] },
-			{ pos: [-1.2, -3.6, 0] },
-			{ pos: [-1.4, this.u_bp_y, -1.2] },
+			...rect(
+				[this.ua_y2_x4, this.ua_y2_4, this.ua_y2_z4],
+				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3],
+				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5],
+				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6]
+			),
 
-			// //  upper bicep, positive x, close to body
+			...rect(
+				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
+				[this.ua_y2_x5, this.ua_y2_5, this.ua_y2_z5],
+				[this.ua_y1_x7, this.ua_y1, this.ua_y1_z7],
+				[this.ua_y2_x4, this.ua_y2_4, this.ua_y2_z4]
+			),
 
-			{ pos: [0, -2.2, 1.1] },
-			{ pos: [1, -2.8, 1.1] },
-			{ pos: [this.sd_xt, -1.4, 1.3] },
+			...rect(
+				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
+				[this.ua_y3_x7, this.ua_y3, this.ua_y3_z7],
+				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8],
+				[this.ua_y2_x5, this.ua_y2_5, this.ua_y2_z5]
+			),
 
-			{ pos: [0, -2.2, 1.1] },
-			{ pos: [0, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [1, -2.8, 1.1] },
+			...rect(
+				[this.ua_y2_x9, this.ua_y2_9, this.ua_y2_z9],
+				[this.ua_y2_x7, this.ua_y2_7, this.ua_y2_z7],
+				[this.ua_y2_x5, this.ua_y2_5, this.ua_y2_z5],
+				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8]
+			),
 
-			{ pos: [0, this.u_bp_y, this.u_bp_y1_zn2] },
-			{ pos: [1, this.u_bp_y, 1.0] },
-			{ pos: [1, -2.8, 1.1] },
+			...rect(
+				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8],
+				[this.ua_y3_x9, this.ua_y3, this.ua_y3_z9],
+				[this.ua_y3_x0, this.ua_y3, this.ua_y3_z0],
+				[this.ua_y2_x9, this.ua_y2_9, this.ua_y2_z9]
+			),
 
-			{ pos: [1, -2.8, 1.1] },
-			{ pos: [1, this.u_bp_y, 1.0] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-
-			{ pos: [1, -2.8, 1.1] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-			{ pos: [this.bp_xt, -2.8, 0] },
-
-			//  upper bicep, positive x, close to body, middle line
-
-			{ pos: [1, -2.8, -1.1] },
-			{ pos: [this.bp_xt, -2.8, 0] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-
-			{ pos: [1, -2.8, -1.1] },
-			{ pos: [this.bp_xt, this.u_bp_y, 0] },
-			{ pos: [1, this.u_bp_y, -1.0] },
-
-			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [1, -2.8, -1.1] },
-			{ pos: [1, this.u_bp_y, -1.0] },
-
-			{ pos: [0, -2.2, -1.1] },
-			{ pos: [1, -2.8, -1.1] },
-			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
-
-			{ pos: [0, -2.2, -1.1] },
-			{ pos: [this.sd_xt, -1.4, -1.3] },
-			{ pos: [1, -2.8, -1.1] },
+			...rect(
+				[this.ua_y1_x9, this.ua_y1, this.ua_y1_z9],
+				[this.ua_y2_x9, this.ua_y2_9, this.ua_y2_z9],
+				[this.ua_y3_x0, this.ua_y3, this.ua_y3_z0],
+				[this.ua_y2_x0, this.ua_y2_0, this.ua_y2_z0]
+			),
 
 			// upper bicep middle line
-
-			{ pos: [-1.4, this.u_bp_y, -1.2] },
-			{ pos: [-1.2, -3.6, 0] },
-			{ pos: [-1, -2.8, -1.0] },
-
-			{ pos: [-1, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [-1.4, this.u_bp_y, -1.2] },
-			{ pos: [-1, -2.8, -1.0] },
-
-			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [-1, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [-1, -2.8, -1.0] },
-
-			{ pos: [0, -2.2, -1.1] },
-			{ pos: [0, this.u_bp_y, -this.u_bp_y1_zn2] },
-			{ pos: [-1, -2.8, -1.0] },
 
 			// lower bicep
 
