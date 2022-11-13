@@ -161,16 +161,16 @@ export class BodyGeometry {
 
 		this.ua_y4 = -9;
 
-		this.ua_y4_x0 = 0;
-		this.ua_y4_x1 = -1;
+		this.ua_y4_x0 = -1;
+		this.ua_y4_x1 = -1.4;
 		this.ua_y4_x2 = -1.4;
 		this.ua_y4_x3 = -1.4;
-		this.ua_y4_x4 = -1.4;
-		this.ua_y4_x5 = -1;
-		this.ua_y4_x6 = 0;
+		this.ua_y4_x4 = -1;
+		this.ua_y4_x5 = 0;
+		this.ua_y4_x6 = 1;
 		this.ua_y4_x7 = 1;
 		this.ua_y4_x8 = 1;
-		this.ua_y4_x9 = 1;
+		this.ua_y4_x9 = 0;
 
 		this.ua_y4_z0 = 1;
 		this.ua_y4_z1 = 0.6;
