@@ -158,6 +158,30 @@ export class BodyGeometry {
 		this.ua_y3_z7 = -1;
 		this.ua_y3_z8 = 0;
 		this.ua_y3_z9 = 1;
+
+		this.ua_y4 = -9;
+
+		this.ua_y4_x0 = 0;
+		this.ua_y4_x1 = -1;
+		this.ua_y4_x2 = -1.4;
+		this.ua_y4_x3 = -1.4;
+		this.ua_y4_x4 = -1.4;
+		this.ua_y4_x5 = -1;
+		this.ua_y4_x6 = 0;
+		this.ua_y4_x7 = 1;
+		this.ua_y4_x8 = 1;
+		this.ua_y4_x9 = 1;
+
+		this.ua_y4_z0 = 1;
+		this.ua_y4_z1 = 0.6;
+		this.ua_y4_z2 = 0;
+		this.ua_y4_z3 = -0.6;
+		this.ua_y4_z4 = -1;
+		this.ua_y4_z5 = -1;
+		this.ua_y4_z6 = -0.4;
+		this.ua_y4_z7 = 0;
+		this.ua_y4_z8 = 0.4;
+		this.ua_y4_z9 = 1;
 	}
 
 	elbowPosInit() {
@@ -422,56 +446,48 @@ export class BodyGeometry {
 				[this.ua_y3_x1, this.ua_y3, this.ua_y3_z1],
 				[this.ua_y3_x2, this.ua_y3, this.ua_y3_z2]
 			),
-
 			...rect(
 				[this.ua_y3_x2, this.ua_y3, this.ua_y3_z2],
 				[this.ua_y3_x3, this.ua_y3, this.ua_y3_z3],
 				[this.ua_y3_x4, this.ua_y3, this.ua_y3_z4],
 				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2]
 			),
-
 			...rect(
-				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3],
 				[this.ua_y2_x2, this.ua_y2_2, this.ua_y2_z2],
 				[this.ua_y3_x4, this.ua_y3, this.ua_y3_z4],
-				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5]
+				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5],
+				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3]
 			),
-
 			...rect(
 				[this.ua_y2_x4, this.ua_y2_4, this.ua_y2_z4],
 				[this.ua_y2_x3, this.ua_y2_3, this.ua_y2_z3],
 				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5],
 				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6]
 			),
-
 			...rect(
 				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
 				[this.ua_y2_x5, this.ua_y2_5, this.ua_y2_z5],
 				[this.ua_y1_x7, this.ua_y1, this.ua_y1_z7],
 				[this.ua_y2_x4, this.ua_y2_4, this.ua_y2_z4]
 			),
-
 			...rect(
 				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
 				[this.ua_y3_x7, this.ua_y3, this.ua_y3_z7],
 				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8],
 				[this.ua_y2_x5, this.ua_y2_5, this.ua_y2_z5]
 			),
-
 			...rect(
 				[this.ua_y2_x9, this.ua_y2_9, this.ua_y2_z9],
 				[this.ua_y2_x7, this.ua_y2_7, this.ua_y2_z7],
 				[this.ua_y2_x5, this.ua_y2_5, this.ua_y2_z5],
 				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8]
 			),
-
 			...rect(
 				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8],
 				[this.ua_y3_x9, this.ua_y3, this.ua_y3_z9],
 				[this.ua_y3_x0, this.ua_y3, this.ua_y3_z0],
 				[this.ua_y2_x9, this.ua_y2_9, this.ua_y2_z9]
 			),
-
 			...rect(
 				[this.ua_y1_x9, this.ua_y1, this.ua_y1_z9],
 				[this.ua_y2_x9, this.ua_y2_9, this.ua_y2_z9],
@@ -479,84 +495,146 @@ export class BodyGeometry {
 				[this.ua_y2_x0, this.ua_y2_0, this.ua_y2_z0]
 			),
 
-			// upper bicep middle line
-
 			// lower bicep
-
 			...rect(
-				[this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2],
-				[0, this.u_bp_y, this.u_bp_y1_zn2],
-				[0, this.l_bp_y1, this.l_bp_y1_zp2],
-				[this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1]
+				[this.ua_y3_x1, this.ua_y3, this.ua_y3_z1],
+				[this.ua_y3_x0, this.ua_y3, this.ua_y3_z0],
+				[this.ua_y4_x0, this.ua_y4, this.ua_y4_z0],
+				[this.ua_y4_x1, this.ua_y4, this.ua_y4_z1]
 			),
 			...rect(
-				[-1.4, this.u_bp_y, 1.2],
-				[this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2],
-
-				[this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1],
-				[this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3]
+				[this.ua_y3_x2, this.ua_y3, this.ua_y3_z2],
+				[this.ua_y3_x1, this.ua_y3, this.ua_y3_z1],
+				[this.ua_y4_x1, this.ua_y4, this.ua_y4_z1],
+				[this.ua_y4_x2, this.ua_y4, this.ua_y4_z2]
 			),
 			...rect(
-				[this.bp_xa, this.u_bp_y, 0],
-				[-1.4, this.u_bp_y, 1.2],
-				[this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3],
-				[this.l_bp_y1_xn0, this.l_bp_y1, 0]
+				[this.ua_y3_x3, this.ua_y3, this.ua_y3_z3],
+				[this.ua_y3_x2, this.ua_y3, this.ua_y3_z2],
+				[this.ua_y4_x2, this.ua_y4, this.ua_y4_z2],
+				[this.ua_y4_x3, this.ua_y4, this.ua_y4_z3]
 			),
-
-			// lower bicep, positive x, positive z, close to body
-
 			...rect(
-				[0, this.u_bp_y, this.u_bp_y1_zn2],
-				[1, this.u_bp_y, 1.0],
-				[1, this.l_bp_y1, this.l_bp_y1_zp4],
-				[0, this.l_bp_y1, this.l_bp_y1_zp2]
+				[this.ua_y3_x4, this.ua_y3, this.ua_y3_z4],
+				[this.ua_y3_x3, this.ua_y3, this.ua_y3_z3],
+				[this.ua_y4_x3, this.ua_y4, this.ua_y4_z3],
+				[this.ua_y4_x4, this.ua_y4, this.ua_y4_z4]
 			),
-
 			...rect(
-				[1, this.u_bp_y, 1.0],
-				[this.bp_xt, this.u_bp_y, 0],
-				[1, this.l_bp_y1, 0],
-				[1, this.l_bp_y1, this.l_bp_y1_zp4]
+				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5],
+				[this.ua_y3_x4, this.ua_y3, this.ua_y3_z4],
+				[this.ua_y4_x4, this.ua_y4, this.ua_y4_z4],
+				[this.ua_y4_x5, this.ua_y4, this.ua_y4_z5]
 			),
-
-			// lower bicep, positive x, negative z, close to body
-
 			...rect(
-				[this.bp_xt, this.u_bp_y, 0],
-				[1, this.u_bp_y, -1.0],
-				[this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4],
-				[this.l_bp_y1_xp0, this.l_bp_y1, 0]
+				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
+				[this.ua_y3_x5, this.ua_y3, this.ua_y3_z5],
+				[this.ua_y4_x5, this.ua_y4, this.ua_y4_z5],
+				[this.ua_y4_x6, this.ua_y4, this.ua_y4_z6]
 			),
-
 			...rect(
-				[1, this.u_bp_y, -1.0],
-				[0, this.u_bp_y, -this.u_bp_y1_zn2],
-				[0, this.l_bp_y1, -this.l_bp_y1_zp2],
-				[this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4]
+				[this.ua_y3_x7, this.ua_y3, this.ua_y3_z7],
+
+				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
+
+				[this.ua_y4_x6, this.ua_y4, this.ua_y4_z6],
+				[this.ua_y4_x7, this.ua_y4, this.ua_y4_z7]
 			),
-
-			// lower bicep middle line
-
 			...rect(
-				[-1.4, this.u_bp_y, -1.2],
-				[this.bp_xa, this.u_bp_y, 0],
-				[-1.4, this.l_bp_y1, 0],
-				[-1.4, this.l_bp_y1, -0.6]
+				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8],
+				[this.ua_y3_x7, this.ua_y3, this.ua_y3_z7],
+				[this.ua_y4_x7, this.ua_y4, this.ua_y4_z7],
+				[this.ua_y4_x8, this.ua_y4, this.ua_y4_z8]
+			),
+			...rect(
+				[this.ua_y3_x9, this.ua_y3, this.ua_y3_z9],
+				[this.ua_y3_x8, this.ua_y3, this.ua_y3_z8],
+				[this.ua_y4_x8, this.ua_y4, this.ua_y4_z8],
+				[this.ua_y4_x9, this.ua_y4, this.ua_y4_z9]
+			),
+			...rect(
+				[this.ua_y3_x0, this.ua_y3, this.ua_y3_z0],
+				[this.ua_y3_x9, this.ua_y3, this.ua_y3_z9],
+				[this.ua_y4_x9, this.ua_y4, this.ua_y4_z9],
+				[this.ua_y4_x0, this.ua_y4, this.ua_y4_z0]
 			),
 
-			...rect(
-				[-1, this.u_bp_y, -this.u_bp_y1_zn2],
-				[-1.4, this.u_bp_y, -1.2],
-				[-1.4, this.l_bp_y1, -0.6],
-				[-1, this.l_bp_y1, -1]
-			),
+			// ...rect(
+			// 	[this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2],
+			// 	[0, this.u_bp_y, this.u_bp_y1_zn2],
+			// 	[0, this.l_bp_y1, this.l_bp_y1_zp2],
+			// 	[this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1]
+			// ),
 
-			...rect(
-				[0, this.u_bp_y, -this.u_bp_y1_zn2],
-				[-1, this.u_bp_y, -this.u_bp_y1_zn2],
-				[-1, this.l_bp_y1, -1],
-				[0, this.l_bp_y1, -1]
-			),
+			// ...rect(
+			// 	[-1.4, this.u_bp_y, 1.2],
+			// 	[this.l_bp_y1_xn4, this.u_bp_y, this.u_bp_y1_zn2],
+
+			// 	[this.l_bp_y1_xn4, this.l_bp_y1, this.l_bp_y1_zp1],
+			// 	[this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3]
+			// ),
+
+			// ...rect(
+			// 	[this.bp_xa, this.u_bp_y, 0],
+			// 	[-1.4, this.u_bp_y, 1.2],
+			// 	[this.l_bp_y1_xn2, this.l_bp_y1, this.l_bp_y1_zp3],
+			// 	[this.l_bp_y1_xn0, this.l_bp_y1, 0]
+			// ),
+
+			// // lower bicep, positive x, positive z, close to body
+
+			// ...rect(
+			// 	[0, this.u_bp_y, this.u_bp_y1_zn2],
+			// 	[1, this.u_bp_y, 1.0],
+			// 	[1, this.l_bp_y1, this.l_bp_y1_zp4],
+			// 	[0, this.l_bp_y1, this.l_bp_y1_zp2]
+			// ),
+
+			// ...rect(
+			// 	[1, this.u_bp_y, 1.0],
+			// 	[this.bp_xt, this.u_bp_y, 0],
+			// 	[1, this.l_bp_y1, 0],
+			// 	[1, this.l_bp_y1, this.l_bp_y1_zp4]
+			// ),
+
+			// // lower bicep, positive x, negative z, close to body
+
+			// ...rect(
+			// 	[this.bp_xt, this.u_bp_y, 0],
+			// 	[1, this.u_bp_y, -1.0],
+			// 	[this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4],
+			// 	[this.l_bp_y1_xp0, this.l_bp_y1, 0]
+			// ),
+
+			// ...rect(
+			// 	[1, this.u_bp_y, -1.0],
+			// 	[0, this.u_bp_y, -this.u_bp_y1_zn2],
+			// 	[0, this.l_bp_y1, -this.l_bp_y1_zp2],
+			// 	[this.l_bp_y1_xp1, this.l_bp_y1, this.l_bp_y1_zn4]
+			// ),
+
+			// // lower bicep middle line
+
+			// ...rect(
+			// 	[-1.4, this.u_bp_y, -1.2],
+			// 	[this.bp_xa, this.u_bp_y, 0],
+			// 	[-1.4, this.l_bp_y1, 0],
+			// 	[-1.4, this.l_bp_y1, -0.6]
+			// ),
+
+			// ...rect(
+			// 	[-1, this.u_bp_y, -this.u_bp_y1_zn2],
+			// 	[-1.4, this.u_bp_y, -1.2],
+			// 	[-1.4, this.l_bp_y1, -0.6],
+			// 	[-1, this.l_bp_y1, -1]
+			// ),
+
+			// ...rect(
+			// 	[0, this.u_bp_y, -this.u_bp_y1_zn2],
+			// 	[-1, this.u_bp_y, -this.u_bp_y1_zn2],
+			// 	[-1, this.l_bp_y1, -1],
+			// 	[0, this.l_bp_y1, -1]
+			// ),
 		];
 
 		for (let i in vertices) {
