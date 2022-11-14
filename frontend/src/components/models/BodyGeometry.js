@@ -186,30 +186,6 @@ export class BodyGeometry {
 
 	elbowPosInit() {
 		// elbow
-		this.eb_y0 = -9;
-
-		this.ua_y4_x0 = 0;
-		this.eb_y0_x1 = -1;
-		this.eb_y0_x2 = -1.4;
-		this.eb_y0_x3 = -1.4;
-		this.eb_y0_x4 = -1.4;
-		this.eb_y0_x5 = -1;
-		this.eb_y0_x6 = 0;
-		this.eb_y0_x7 = 1;
-		this.eb_y0_x8 = 1;
-		this.eb_y0_x9 = 1;
-
-		this.eb_y0_z0 = 1;
-		this.eb_y0_z1 = 1;
-		this.eb_y0_z2 = 0.6;
-		this.eb_y0_z3 = 0;
-		this.eb_y0_z4 = -0.6;
-		this.eb_y0_z5 = -1;
-		this.eb_y0_z6 = -1;
-		this.eb_y0_z7 = -0.4;
-		this.eb_y0_z8 = 0;
-		this.eb_y0_z9 = 0.4;
-
 		this.eb_y1 = -9.6;
 
 		this.eb_y1_x0 = 0;
@@ -649,8 +625,8 @@ export class BodyGeometry {
 	elbow(u) {
 		const vertices = [
 			...rect(
-				[this.ua_y4_x0, this.eb_y0, this.eb_y0_z0],
-				[this.eb_y0_x9, this.eb_y0, this.eb_y0_z9],
+				[this.ua_y4_x0, this.ua_y4, this.ua_y4_z0],
+				[this.ua_y4_x9, this.ua_y4, this.ua_y4_z9],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
 				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
 				this.skincolor2,
@@ -660,8 +636,8 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
-				[this.ua_y4_x0, this.eb_y0, this.eb_y0_z0],
+				[this.ua_y4_x1, this.ua_y4, this.ua_y4_z1],
+				[this.ua_y4_x0, this.ua_y4, this.ua_y4_z0],
 				[this.eb_y1_x0, this.eb_y1, this.eb_y1_z0],
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
 				this.skincolor2,
@@ -671,8 +647,8 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
-				[this.eb_y0_x1, this.eb_y0, this.eb_y0_z1],
+				[this.ua_y4_x2, this.ua_y4, this.ua_y4_z2],
+				[this.ua_y4_x1, this.ua_y4, this.ua_y4_z1],
 				[this.eb_y1_x1, this.eb_y1, this.eb_y1_z1],
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
 				this.skincolor2,
@@ -682,8 +658,8 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x3, this.eb_y0, this.eb_y0_z3],
-				[this.eb_y0_x2, this.eb_y0, this.eb_y0_z2],
+				[this.ua_y4_x3, this.ua_y4, this.ua_y4_z3],
+				[this.ua_y4_x2, this.ua_y4, this.ua_y4_z2],
 				[this.eb_y1_x2, this.eb_y1, this.eb_y1_z2],
 				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
 				this.skincolor2,
@@ -693,8 +669,8 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x4, this.eb_y0, this.eb_y0_z4],
-				[this.eb_y0_x3, this.eb_y0, this.eb_y0_z3],
+				[this.ua_y4_x4, this.ua_y4, this.ua_y4_z4],
+				[this.ua_y4_x3, this.ua_y4, this.ua_y4_z3],
 				[this.eb_y1_x3, this.eb_y1, this.eb_y1_z3],
 				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
 				this.skincolor2,
@@ -704,8 +680,8 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x5, this.eb_y0, this.eb_y0_z5],
-				[this.eb_y0_x4, this.eb_y0, this.eb_y0_z4],
+				[this.ua_y4_x5, this.ua_y4, this.ua_y4_z5],
+				[this.ua_y4_x4, this.ua_y4, this.ua_y4_z4],
 				[this.eb_y1_x4, this.eb_y1, this.eb_y1_z4],
 				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
 				this.skincolor2,
@@ -715,8 +691,8 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x6, this.eb_y0, this.eb_y0_z6],
-				[this.eb_y0_x5, this.eb_y0, this.eb_y0_z5],
+				[this.ua_y4_x6, this.ua_y4, this.ua_y4_z6],
+				[this.ua_y4_x5, this.ua_y4, this.ua_y4_z5],
 				[this.eb_y1_x5, this.eb_y1, this.eb_y1_z5],
 				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
 				null,
@@ -726,22 +702,22 @@ export class BodyGeometry {
 			),
 
 			...rect(
-				[this.eb_y0_x7, this.eb_y0, this.eb_y0_z7],
-				[this.eb_y0_x6, this.eb_y0, this.eb_y0_z6],
+				[this.ua_y4_x7, this.ua_y4, this.ua_y4_z7],
+				[this.ua_y4_x6, this.ua_y4, this.ua_y4_z6],
 				[this.eb_y1_x6, this.eb_y1, this.eb_y1_z6],
 				[this.eb_y1_x7, this.eb_y1, this.eb_y1_z7]
 			),
 
 			...rect(
-				[this.eb_y0_x8, this.eb_y0, this.eb_y0_z8],
-				[this.eb_y0_x7, this.eb_y0, this.eb_y0_z7],
+				[this.ua_y4_x8, this.ua_y4, this.ua_y4_z8],
+				[this.ua_y4_x7, this.ua_y4, this.ua_y4_z7],
 				[this.eb_y1_x7, this.eb_y1, this.eb_y1_z7],
 				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8]
 			),
 
 			...rect(
-				[this.eb_y0_x9, this.eb_y0, this.eb_y0_z9],
-				[this.eb_y0_x8, this.eb_y0, this.eb_y0_z8],
+				[this.ua_y4_x9, this.ua_y4, this.ua_y4_z9],
+				[this.ua_y4_x8, this.ua_y4, this.ua_y4_z8],
 				[this.eb_y1_x8, this.eb_y1, this.eb_y1_z8],
 				[this.eb_y1_x9, this.eb_y1, this.eb_y1_z9],
 				this.skincolor2,
