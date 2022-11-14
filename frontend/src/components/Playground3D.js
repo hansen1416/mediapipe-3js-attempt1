@@ -22,7 +22,7 @@ export default function Playground3D() {
 
 	const upparmGroup = new THREE.Group();
 	const elbowGroup = new THREE.Group();
-	const forearmGroup = new THREE.Group();
+	// const forearmGroup = new THREE.Group();
 
 	useEffect(() => {
 		_scene();
@@ -48,15 +48,47 @@ export default function Playground3D() {
 
 		elbowGroup.add(elbow);
 
-		forearmGroup.add(forearm);
+		// forearmGroup.add(forearm);
 
 		scene.current.add(upparmGroup);
 		scene.current.add(elbowGroup);
-		scene.current.add(forearmGroup);
+		// scene.current.add(forearmGroup);
+		scene.current.add(forearm);
 
-		// elbowGroup.position.y = unit_size * body.l_bp_y1;
-		forearmGroup.position.y = unit_size * body.eb_y2;
+		// forearmGroup.position.y = unit_size * body.eb_y2;
+		// forearmGroup.rotation.z = 1;
+		forearm.position.y = unit_size * body.eb_y2;
+		/**
+		 *
+		 */
+		const positionAttribute1 = forearm.geometry.getAttribute("position");
+		const vertex1 = new THREE.Vector3();
+		vertex1.fromBufferAttribute(positionAttribute1, 3);
 
+		forearm.updateMatrixWorld();
+
+		forearm.localToWorld(vertex1);
+
+		console.log(vertex1);
+		/**
+		 *
+		 */
+		forearm.rotation.z = 1;
+		/**
+		 *
+		 */
+		const positionAttribute = forearm.geometry.getAttribute("position");
+		const vertex = new THREE.Vector3();
+		vertex.fromBufferAttribute(positionAttribute, 3);
+
+		forearm.updateMatrixWorld();
+
+		forearm.localToWorld(vertex);
+
+		console.log(vertex);
+		/**
+		 *
+		 */
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
 
@@ -71,7 +103,8 @@ export default function Playground3D() {
 		dotsHelper(deltoid_vex, upparmGroup);
 		dotsHelper(bicep_vex, upparmGroup);
 		dotsHelper(elbow_vex, elbowGroup);
-		dotsHelper(forearm_vex, forearmGroup);
+		// dotsHelper(forearm_vex, forearmGroup);
+		dotsHelper(forearm_vex, forearm);
 
 		interactionManager.current.update();
 
