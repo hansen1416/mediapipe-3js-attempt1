@@ -841,17 +841,6 @@ export class BodyGeometry {
 	forearm(u) {
 		const vertices = [
 			...rect(
-				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
-				[this.eb_y2_x9, this.fa_y0, this.eb_y2_z9],
-				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9],
-				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
-				this.skincolor2,
-				this.skincolor2,
-				this.skincolor2,
-				this.skincolor2
-			),
-
-			...rect(
 				[this.eb_y2_x1, this.fa_y0, this.eb_y2_z1],
 				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
 				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
@@ -939,6 +928,17 @@ export class BodyGeometry {
 				this.skincolor2,
 				null,
 				null,
+				this.skincolor2
+			),
+
+			...rect(
+				[this.eb_y2_x0, this.fa_y0, this.eb_y2_z0],
+				[this.eb_y2_x9, this.fa_y0, this.eb_y2_z9],
+				[this.fa_y1_x9, this.fa_y1, this.fa_y1_z9],
+				[this.fa_y1_x0, this.fa_y1, this.fa_y1_z0],
+				this.skincolor2,
+				this.skincolor2,
+				this.skincolor2,
 				this.skincolor2
 			),
 

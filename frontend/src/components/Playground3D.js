@@ -61,29 +61,39 @@ export default function Playground3D() {
 
 		/**************************************/
 		const positionAttribute1 = forearm.geometry.getAttribute("position");
+
+		const vertex0 = new THREE.Vector3();
 		const vertex1 = new THREE.Vector3();
-		vertex1.fromBufferAttribute(positionAttribute1, 3);
+		const vertex2 = new THREE.Vector3();
+		const vertex3 = new THREE.Vector3();
+		const vertex4 = new THREE.Vector3();
+		const vertex5 = new THREE.Vector3();
+
+		vertex0.fromBufferAttribute(positionAttribute1, 0);
+		vertex1.fromBufferAttribute(positionAttribute1, 2);
+		vertex2.fromBufferAttribute(positionAttribute1, 4);
+		vertex3.fromBufferAttribute(positionAttribute1, 6);
+		vertex4.fromBufferAttribute(positionAttribute1, 8);
+		vertex5.fromBufferAttribute(positionAttribute1, 10);
 
 		forearm.updateMatrixWorld();
 
+		forearm.localToWorld(vertex0);
 		forearm.localToWorld(vertex1);
+		forearm.localToWorld(vertex2);
+		forearm.localToWorld(vertex3);
+		forearm.localToWorld(vertex4);
+		forearm.localToWorld(vertex5);
 
-		console.log(vertex1);
+		// console.log(vertex0);
+		// console.log(vertex1);
+		// console.log(vertex2);
+		console.log(vertex3);
+		// console.log(vertex4);
+		// console.log(vertex5);
 		/**************************************/
 
 		forearm.rotation.z = 1;
-
-		/**************************************/
-		const positionAttribute = forearm.geometry.getAttribute("position");
-		const vertex = new THREE.Vector3();
-		vertex.fromBufferAttribute(positionAttribute, 3);
-
-		forearm.updateMatrixWorld();
-
-		forearm.localToWorld(vertex);
-
-		console.log(vertex);
-		/**************************************/
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
@@ -105,6 +115,18 @@ export default function Playground3D() {
 		interactionManager.current.update();
 
 		renderer.current.render(scene.current, camera.current);
+
+		/**************************************/
+		const positionAttribute = forearm.geometry.getAttribute("position");
+		const vertex = new THREE.Vector3();
+		vertex.fromBufferAttribute(positionAttribute, 6);
+
+		forearm.updateMatrixWorld();
+
+		forearm.localToWorld(vertex);
+
+		console.log(vertex);
+		/**************************************/
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
