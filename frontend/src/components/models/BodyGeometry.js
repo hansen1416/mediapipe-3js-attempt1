@@ -161,32 +161,32 @@ export class BodyGeometry {
 
 		this.ua_y4 = -9;
 
-		this.ua_y4_x0 = -1;
-		this.ua_y4_x1 = -1.4;
+		this.ua_y4_x0 = 0;
+		this.ua_y4_x1 = -1;
 		this.ua_y4_x2 = -1.4;
 		this.ua_y4_x3 = -1.4;
-		this.ua_y4_x4 = -1;
-		this.ua_y4_x5 = 0;
-		this.ua_y4_x6 = 1;
+		this.ua_y4_x4 = -1.4;
+		this.ua_y4_x5 = -1;
+		this.ua_y4_x6 = 0;
 		this.ua_y4_x7 = 1;
 		this.ua_y4_x8 = 1;
-		this.ua_y4_x9 = 0;
+		this.ua_y4_x9 = 1;
 
 		this.ua_y4_z0 = 1;
-		this.ua_y4_z1 = 0.6;
-		this.ua_y4_z2 = 0;
-		this.ua_y4_z3 = -0.6;
-		this.ua_y4_z4 = -1;
+		this.ua_y4_z1 = 1;
+		this.ua_y4_z2 = 0.6;
+		this.ua_y4_z3 = 0;
+		this.ua_y4_z4 = -0.6;
 		this.ua_y4_z5 = -1;
-		this.ua_y4_z6 = -0.4;
-		this.ua_y4_z7 = 0;
-		this.ua_y4_z8 = 0.4;
-		this.ua_y4_z9 = 1;
+		this.ua_y4_z6 = -1;
+		this.ua_y4_z7 = -0.4;
+		this.ua_y4_z8 = 0;
+		this.ua_y4_z9 = 0.4;
 	}
 
 	elbowPosInit() {
 		// elbow
-		this.eb_y0 = 0;
+		this.eb_y0 = -9;
 
 		this.eb_y0_x0 = -1;
 		this.eb_y0_x1 = -1.4;
@@ -210,7 +210,7 @@ export class BodyGeometry {
 		this.eb_y0_z8 = 0.4;
 		this.eb_y0_z9 = 1;
 
-		this.eb_y1 = -0.6;
+		this.eb_y1 = -9.6;
 
 		this.eb_y1_x0 = -1;
 		this.eb_y1_x1 = -1.4;
@@ -234,7 +234,7 @@ export class BodyGeometry {
 		this.eb_y1_z8 = 0.4;
 		this.eb_y1_z9 = 0.8;
 
-		this.eb_y2 = -1.2;
+		this.eb_y2 = -10.2;
 
 		this.eb_y2_x0 = -1;
 		this.eb_y2_x1 = -1.4;
@@ -534,9 +534,7 @@ export class BodyGeometry {
 			),
 			...rect(
 				[this.ua_y3_x7, this.ua_y3, this.ua_y3_z7],
-
 				[this.ua_y3_x6, this.ua_y3, this.ua_y3_z6],
-
 				[this.ua_y4_x6, this.ua_y4, this.ua_y4_z6],
 				[this.ua_y4_x7, this.ua_y4, this.ua_y4_z7]
 			),
