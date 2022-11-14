@@ -52,10 +52,10 @@ export default function Playground3D() {
 
 		scene.current.add(upparmGroup);
 		scene.current.add(elbowGroup);
-		// scene.current.add(forearmGroup);
+		scene.current.add(forearmGroup);
 
 		// elbowGroup.position.y = unit_size * body.l_bp_y1;
-		forearmGroup.position.y = unit_size * (body.l_bp_y1 + body.eb_y2);
+		forearmGroup.position.y = unit_size * body.eb_y2;
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);

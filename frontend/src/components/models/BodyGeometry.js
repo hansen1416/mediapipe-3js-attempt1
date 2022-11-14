@@ -241,51 +241,51 @@ export class BodyGeometry {
 
 		this.fa_y1 = -1.6;
 
-		this.fa_y1_x0 = -1;
-		this.fa_y1_x1 = -1.2;
-		this.fa_y1_x2 = -1.3;
-		this.fa_y1_x3 = -1.2;
-		this.fa_y1_x4 = -1;
-		this.fa_y1_x5 = -0;
-		this.fa_y1_x6 = 0.9;
-		this.fa_y1_x7 = 1.0;
-		this.fa_y1_x8 = 0.9;
-		this.fa_y1_x9 = -0;
+		this.fa_y1_x0 = -0;
+		this.fa_y1_x1 = -1;
+		this.fa_y1_x2 = -1.2;
+		this.fa_y1_x3 = -1.3;
+		this.fa_y1_x4 = -1.2;
+		this.fa_y1_x5 = -1;
+		this.fa_y1_x6 = -0;
+		this.fa_y1_x7 = 0.9;
+		this.fa_y1_x8 = 1.0;
+		this.fa_y1_x9 = 0.9;
 
 		this.fa_y1_z0 = 1.4;
-		this.fa_y1_z1 = 0.5;
-		this.fa_y1_z2 = 0;
-		this.fa_y1_z3 = -0.5;
-		this.fa_y1_z4 = -1.4;
+		this.fa_y1_z1 = 1.4;
+		this.fa_y1_z2 = 0.5;
+		this.fa_y1_z3 = 0;
+		this.fa_y1_z4 = -0.5;
 		this.fa_y1_z5 = -1.4;
-		this.fa_y1_z6 = -0.6;
-		this.fa_y1_z7 = 0;
-		this.fa_y1_z8 = 0.6;
-		this.fa_y1_z9 = 1.4;
+		this.fa_y1_z6 = -1.4;
+		this.fa_y1_z7 = -0.6;
+		this.fa_y1_z8 = 0;
+		this.fa_y1_z9 = 0.6;
 
 		this.fa_y2 = -7;
 
-		this.fa_y2_x0 = -0.3;
-		this.fa_y2_x1 = -0.5;
-		this.fa_y2_x2 = -0.6;
-		this.fa_y2_x3 = -0.5;
-		this.fa_y2_x4 = -0.3;
-		this.fa_y2_x5 = 0.3;
-		this.fa_y2_x6 = 0.5;
-		this.fa_y2_x7 = 0.6;
-		this.fa_y2_x8 = 0.5;
-		this.fa_y2_x9 = 0.3;
+		this.fa_y2_x0 = 0.3;
+		this.fa_y2_x1 = -0.3;
+		this.fa_y2_x2 = -0.5;
+		this.fa_y2_x3 = -0.6;
+		this.fa_y2_x4 = -0.5;
+		this.fa_y2_x5 = -0.3;
+		this.fa_y2_x6 = 0.3;
+		this.fa_y2_x7 = 0.5;
+		this.fa_y2_x8 = 0.6;
+		this.fa_y2_x9 = 0.5;
 
 		this.fa_y2_z0 = 0.6;
-		this.fa_y2_z1 = 0.1;
-		this.fa_y2_z2 = 0;
-		this.fa_y2_z3 = -0.1;
-		this.fa_y2_z4 = -0.6;
+		this.fa_y2_z1 = 0.6;
+		this.fa_y2_z2 = 0.1;
+		this.fa_y2_z3 = 0;
+		this.fa_y2_z4 = -0.1;
 		this.fa_y2_z5 = -0.6;
-		this.fa_y2_z6 = -0.1;
-		this.fa_y2_z7 = 0;
-		this.fa_y2_z8 = 0.1;
-		this.fa_y2_z9 = 0.6;
+		this.fa_y2_z6 = -0.6;
+		this.fa_y2_z7 = -0.1;
+		this.fa_y2_z8 = 0;
+		this.fa_y2_z9 = 0.1;
 	}
 
 	deltoid(u) {
