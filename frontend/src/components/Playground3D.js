@@ -181,9 +181,9 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -5;
+		camera.current.position.y = -10;
 		camera.current.position.x = 0;
-		camera.current.position.z = 10;
+		camera.current.position.z = 15;
 	}
 
 	function _light() {
