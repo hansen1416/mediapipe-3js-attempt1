@@ -252,13 +252,13 @@ export class BodyGeometry {
 		this.fa_y1_x8 = 1.0;
 		this.fa_y1_x9 = 0.9;
 
-		this.fa_y1_z0 = 1.4;
-		this.fa_y1_z1 = 1.4;
+		this.fa_y1_z0 = 1.2;
+		this.fa_y1_z1 = 1.2;
 		this.fa_y1_z2 = 0.5;
 		this.fa_y1_z3 = 0;
 		this.fa_y1_z4 = -0.5;
-		this.fa_y1_z5 = -1.4;
-		this.fa_y1_z6 = -1.4;
+		this.fa_y1_z5 = -1.2;
+		this.fa_y1_z6 = -1.2;
 		this.fa_y1_z7 = -0.6;
 		this.fa_y1_z8 = 0;
 		this.fa_y1_z9 = 0.6;
