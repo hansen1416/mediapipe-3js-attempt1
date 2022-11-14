@@ -58,9 +58,8 @@ export default function Playground3D() {
 		// forearmGroup.position.y = unit_size * body.eb_y2;
 		// forearmGroup.rotation.z = 1;
 		forearm.position.y = unit_size * body.eb_y2;
-		/**
-		 *
-		 */
+
+		/**************************************/
 		const positionAttribute1 = forearm.geometry.getAttribute("position");
 		const vertex1 = new THREE.Vector3();
 		vertex1.fromBufferAttribute(positionAttribute1, 3);
@@ -70,13 +69,11 @@ export default function Playground3D() {
 		forearm.localToWorld(vertex1);
 
 		console.log(vertex1);
-		/**
-		 *
-		 */
+		/**************************************/
+
 		forearm.rotation.z = 1;
-		/**
-		 *
-		 */
+
+		/**************************************/
 		const positionAttribute = forearm.geometry.getAttribute("position");
 		const vertex = new THREE.Vector3();
 		vertex.fromBufferAttribute(positionAttribute, 3);
@@ -86,9 +83,8 @@ export default function Playground3D() {
 		forearm.localToWorld(vertex);
 
 		console.log(vertex);
-		/**
-		 *
-		 */
+		/**************************************/
+
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
 
