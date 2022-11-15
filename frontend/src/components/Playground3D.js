@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 import { BodyGeometry } from "./models/BodyGeometry";
@@ -23,9 +23,8 @@ export default function Playground3D() {
 
 	const body = new BodyGeometry();
 
-	// const upparmGroup = new THREE.Group();
-	// const elbowGroup = new THREE.Group();
-	// const forearmGroup = new THREE.Group();
+	const [forearm_top_idx, set_forearm_top_idx] = useState([]);
+	const [upperarm_bottom_idx, set_upperarm_bottom_idx] = useState([]);
 
 	useEffect(() => {
 		_scene();
@@ -36,38 +35,21 @@ export default function Playground3D() {
 
 		const unit_size = 1;
 
-		// const deltoid_vex = body.deltoid(unit_size);
-		// const bicep_vex = body.bicep(unit_size);
-		// const elbow_vex = body.elbow(unit_size);
-
 		const uppderarm_vex = body.uppderarm(unit_size);
 		const forearm_vex = body.forearm(unit_size);
 
-		// const deltoid = body.bufferGeo(body.skincolor3, deltoid_vex);
-		// const bicep = body.bufferGeo(body.skincolor1, bicep_vex);
-		// const elbow = body.bufferGeo(body.skincolor1, elbow_vex);
 		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex);
 		forearm = body.bufferGeo(body.skincolor1, forearm_vex);
 
-		// upparmGroup.add(deltoid);
-		// upparmGroup.add(bicep);
-
-		// elbowGroup.add(elbow);
-
-		// forearmGroup.add(forearm);
-
-		// scene.current.add(upparmGroup);
-		// scene.current.add(elbowGroup);
-		// scene.current.add(forearmGroup);
-
-		// forearmGroup.position.y = unit_size * body.eb_y2;
-		// forearmGroup.rotation.z = 1;
+		set_forearm_top_idx(getEdgeVerticesIndex(forearm, 0));
+		set_upperarm_bottom_idx(getEdgeVerticesIndex(uppderarm, body.eb_y2));
 
 		scene.current.add(uppderarm);
 		scene.current.add(forearm);
 
 		forearm.position.y = unit_size * body.eb_y2;
-		// forearm.rotation.x = 1;
+
+		uppderarm.rotation.z = -0.2;
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
@@ -106,41 +88,68 @@ export default function Playground3D() {
 
 		return () => {
 			renderer.current.dispose();
-			// if (containerRef.current) {
-			// 	containerRef.current.removeEventListener(
-			// 		"mousedown",
-			// 		rotateStart
-			// 	);
-			// }
+			if (containerRef.current) {
+				containerRef.current.removeEventListener(
+					"mousedown",
+					rotateStart
+				);
+			}
 		};
 		// eslint-disable-next-line
 	}, []);
 
-	function getTopVerticesIndex(mesh) {
+	// useEffect(() => {
+	// 	console.log(forearm_top_idx.length, forearm_top_idx);
+	// }, [forearm_top_idx]);
+
+	// useEffect(() => {
+	// 	console.log(upperarm_bottom_idx.length, upperarm_bottom_idx);
+	// }, [upperarm_bottom_idx]);
+
+	function getEdgeVerticesIndex(mesh, threshold_y) {
 		const positionAttribute = mesh.geometry.getAttribute("position");
 
-		forearm.updateMatrixWorld();
+		const vex = [];
 
 		for (let i = 0; i < positionAttribute.count; i++) {
 			const vertex = new THREE.Vector3();
 			vertex.fromBufferAttribute(positionAttribute, i);
 
-			// forearm.localToWorld(vertex);
-
-			// if (vertex.y == 0) {
-			console.log(i, vertex);
-			// }
+			if (Math.abs(vertex.y - threshold_y) < 0.000001) {
+				// console.log(vertex.y, threshold_y);
+				vex.push(i);
+			}
 		}
+
+		return vex;
 	}
 
 	function updateVertices() {
 		forearm.rotation.z = 1;
 
-		getTopVerticesIndex(forearm);
+		console.log(upperarm_bottom_idx);
 
-		const positions = forearm.geometry.attributes.position.array;
+		forearm.updateMatrixWorld();
 
-		// positions[1] = 0.3;
+		const positionAttribute = forearm.geometry.getAttribute("position");
+
+		for (let i = 0; i < positionAttribute.count; i++) {
+			// get world position of positions
+			const vertex = new THREE.Vector3();
+			vertex.fromBufferAttribute(positionAttribute, i);
+
+			forearm.localToWorld(vertex);
+
+			console.log(vertex);
+			// console.log("x", positions[i]);
+			// console.log("y", positions[i + 1]);
+			// console.log("z", positions[i + 2]);
+			uppderarm.worldToLocal(vertex);
+
+			// create a mapping from upperarm bottom to forearm top
+
+			console.log(vertex);
+		}
 
 		forearm.geometry.attributes.position.needsUpdate = true; // required after the first render
 
