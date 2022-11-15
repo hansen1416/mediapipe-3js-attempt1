@@ -838,6 +838,10 @@ export class BodyGeometry {
 		return vertices;
 	}
 
+	uppderarm(u) {
+		return this.deltoid(u).concat(this.bicep(u), this.elbow(u))
+	}
+
 	forearm(u) {
 		const vertices = [
 			...rect(

@@ -4,6 +4,9 @@ import * as THREE from "three";
 import { BodyGeometry } from "./models/BodyGeometry";
 import { InteractionManager } from "three.interactive";
 
+let uppderarm = null;
+let forearm = null;
+
 export default function Playground3D() {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
@@ -33,67 +36,38 @@ export default function Playground3D() {
 
 		const unit_size = 1;
 
-		const deltoid_vex = body.deltoid(unit_size);
-		const bicep_vex = body.bicep(unit_size);
-		const elbow_vex = body.elbow(unit_size);
+		// const deltoid_vex = body.deltoid(unit_size);
+		// const bicep_vex = body.bicep(unit_size);
+		// const elbow_vex = body.elbow(unit_size);
+
+		const uppderarm_vex = body.uppderarm(unit_size);
 		const forearm_vex = body.forearm(unit_size);
 
-		const deltoid = body.bufferGeo(body.skincolor3, deltoid_vex);
-		const bicep = body.bufferGeo(body.skincolor1, bicep_vex);
-		const elbow = body.bufferGeo(body.skincolor1, elbow_vex);
-		const forearm = body.bufferGeo(body.skincolor1, forearm_vex);
+		// const deltoid = body.bufferGeo(body.skincolor3, deltoid_vex);
+		// const bicep = body.bufferGeo(body.skincolor1, bicep_vex);
+		// const elbow = body.bufferGeo(body.skincolor1, elbow_vex);
+		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex)
+		forearm = body.bufferGeo(body.skincolor1, forearm_vex);
 
-		upparmGroup.add(deltoid);
-		upparmGroup.add(bicep);
+		// upparmGroup.add(deltoid);
+		// upparmGroup.add(bicep);
 
-		elbowGroup.add(elbow);
+		// elbowGroup.add(elbow);
 
 		// forearmGroup.add(forearm);
 
-		scene.current.add(upparmGroup);
-		scene.current.add(elbowGroup);
+		// scene.current.add(upparmGroup);
+		// scene.current.add(elbowGroup);
 		// scene.current.add(forearmGroup);
-		scene.current.add(forearm);
-
+		
 		// forearmGroup.position.y = unit_size * body.eb_y2;
 		// forearmGroup.rotation.z = 1;
+		
+		scene.current.add(uppderarm);
+		scene.current.add(forearm);
+
 		forearm.position.y = unit_size * body.eb_y2;
-
-		/**************************************/
-		const positionAttribute1 = forearm.geometry.getAttribute("position");
-
-		const vertex0 = new THREE.Vector3();
-		const vertex1 = new THREE.Vector3();
-		const vertex2 = new THREE.Vector3();
-		const vertex3 = new THREE.Vector3();
-		const vertex4 = new THREE.Vector3();
-		const vertex5 = new THREE.Vector3();
-
-		vertex0.fromBufferAttribute(positionAttribute1, 0);
-		vertex1.fromBufferAttribute(positionAttribute1, 2);
-		vertex2.fromBufferAttribute(positionAttribute1, 4);
-		vertex3.fromBufferAttribute(positionAttribute1, 6);
-		vertex4.fromBufferAttribute(positionAttribute1, 8);
-		vertex5.fromBufferAttribute(positionAttribute1, 10);
-
-		forearm.updateMatrixWorld();
-
-		forearm.localToWorld(vertex0);
-		forearm.localToWorld(vertex1);
-		forearm.localToWorld(vertex2);
-		forearm.localToWorld(vertex3);
-		forearm.localToWorld(vertex4);
-		forearm.localToWorld(vertex5);
-
-		// console.log(vertex0);
-		// console.log(vertex1);
-		// console.log(vertex2);
-		console.log(vertex3);
-		// console.log(vertex4);
-		// console.log(vertex5);
-		/**************************************/
-
-		forearm.rotation.z = 1;
+		// forearm.rotation.x = 1;
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
@@ -106,10 +80,10 @@ export default function Playground3D() {
 			renderer.current.domElement
 		);
 
-		dotsHelper(deltoid_vex, upparmGroup);
-		dotsHelper(bicep_vex, upparmGroup);
-		dotsHelper(elbow_vex, elbowGroup);
-		// dotsHelper(forearm_vex, forearmGroup);
+		// dotsHelper(deltoid_vex, upparmGroup);
+		// dotsHelper(bicep_vex, upparmGroup);
+		// dotsHelper(elbow_vex, elbowGroup);
+		dotsHelper(uppderarm_vex, uppderarm);
 		dotsHelper(forearm_vex, forearm);
 
 		interactionManager.current.update();
@@ -125,7 +99,7 @@ export default function Playground3D() {
 
 		forearm.localToWorld(vertex);
 
-		console.log(vertex);
+		// console.log(vertex);
 		/**************************************/
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
@@ -141,6 +115,43 @@ export default function Playground3D() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	function getTopVerticesIndex(mesh) {
+		const positionAttribute = mesh.geometry.getAttribute("position");
+
+		forearm.updateMatrixWorld();
+
+		
+
+		for (let i = 0; i < positionAttribute.count; i++) {
+			const vertex = new THREE.Vector3();
+			vertex.fromBufferAttribute(positionAttribute, i);
+
+			// forearm.localToWorld(vertex);
+
+			// if (vertex.y == 0) {
+				console.log(i, vertex);
+			// }
+		}
+	}
+
+	function updateVertices() {
+
+		forearm.rotation.z=1;
+
+		getTopVerticesIndex(forearm);
+
+		const positions = forearm.geometry.attributes.position.array;
+
+		// positions[1] = 0.3;
+
+		forearm.geometry.attributes.position.needsUpdate = true; // required after the first render
+
+		forearm.geometry.computeBoundingBox();
+		forearm.geometry.computeBoundingSphere();
+
+		renderer.current.render(scene.current, camera.current);
+	}
 
 	function dotsHelper(vertices, group) {
 		if (!showDotsHelper.current) {
@@ -322,6 +333,16 @@ export default function Playground3D() {
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
+			
+			<div className="btn-box">
+				<button
+					onClick={() => {
+						updateVertices();
+					}}
+				>
+					action1
+				</button>
+			</div>
 		</div>
 	);
 }
