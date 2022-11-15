@@ -23,8 +23,8 @@ export default function Playground3D() {
 
 	const body = new BodyGeometry();
 
-	const upparmGroup = new THREE.Group();
-	const elbowGroup = new THREE.Group();
+	// const upparmGroup = new THREE.Group();
+	// const elbowGroup = new THREE.Group();
 	// const forearmGroup = new THREE.Group();
 
 	useEffect(() => {
@@ -46,7 +46,7 @@ export default function Playground3D() {
 		// const deltoid = body.bufferGeo(body.skincolor3, deltoid_vex);
 		// const bicep = body.bufferGeo(body.skincolor1, bicep_vex);
 		// const elbow = body.bufferGeo(body.skincolor1, elbow_vex);
-		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex)
+		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex);
 		forearm = body.bufferGeo(body.skincolor1, forearm_vex);
 
 		// upparmGroup.add(deltoid);
@@ -59,10 +59,10 @@ export default function Playground3D() {
 		// scene.current.add(upparmGroup);
 		// scene.current.add(elbowGroup);
 		// scene.current.add(forearmGroup);
-		
+
 		// forearmGroup.position.y = unit_size * body.eb_y2;
 		// forearmGroup.rotation.z = 1;
-		
+
 		scene.current.add(uppderarm);
 		scene.current.add(forearm);
 
@@ -121,8 +121,6 @@ export default function Playground3D() {
 
 		forearm.updateMatrixWorld();
 
-		
-
 		for (let i = 0; i < positionAttribute.count; i++) {
 			const vertex = new THREE.Vector3();
 			vertex.fromBufferAttribute(positionAttribute, i);
@@ -130,14 +128,13 @@ export default function Playground3D() {
 			// forearm.localToWorld(vertex);
 
 			// if (vertex.y == 0) {
-				console.log(i, vertex);
+			console.log(i, vertex);
 			// }
 		}
 	}
 
 	function updateVertices() {
-
-		forearm.rotation.z=1;
+		forearm.rotation.z = 1;
 
 		getTopVerticesIndex(forearm);
 
@@ -333,7 +330,7 @@ export default function Playground3D() {
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-			
+
 			<div className="btn-box">
 				<button
 					onClick={() => {
