@@ -124,7 +124,7 @@ export default function Playground3D() {
 	}
 
 	function updateVertices() {
-		forearm.rotation.z = 2.4;
+		forearm.rotation.z = 1;
 
 		forearm.updateMatrixWorld();
 
