@@ -157,6 +157,59 @@ export function rect(p0, p1, p2, p3, clr0, clr1, clr2, clr3) {
 	];
 }
 
+export function isFloatClose(a, b) {
+	return Math.abs(a - b) < 0.000001;
+}
+
+
+export function getEdgeVerticesIndexMapping(axis, mesh1, threshold1, mesh2, threshold2) {
+
+	const positionAttribute1 = mesh1.geometry.getAttribute("position");
+	const idx1 = [];
+	const vex1 = [];
+
+	for (let i = 0; i < positionAttribute1.count; i++) {
+		const vertex = new THREE.Vector3();
+		vertex.fromBufferAttribute(positionAttribute1, i);
+
+		if (isFloatClose(vertex[axis], threshold1)) {
+			idx1.push(i)
+			vex1.push(vertex);
+		}
+	}
+
+	const positionAttribute2 = mesh2.geometry.getAttribute("position");
+	const idx2 = [];
+	const vex2 = [];
+
+	for (let i = 0; i < positionAttribute2.count; i++) {
+		const vertex = new THREE.Vector3();
+		vertex.fromBufferAttribute(positionAttribute2, i);
+
+		if (isFloatClose(vertex[axis], threshold2)) {
+			idx2.push(i)
+			vex2.push(vertex);
+		}
+	}
+
+	const dimen = ['x', 'y', 'z'].filter(x => x !== axis);
+
+	const mapping = {}
+	// mesh1 is to be updated, following mesh2
+	for (let i in vex1) {
+		for (let j in vex2) {
+			if (isFloatClose(vex1[i][dimen[0]], vex2[j][dimen[0]]) && isFloatClose(vex1[i][dimen[1]], vex2[j][dimen[1]])) {
+
+				mapping[idx1[i]] = idx2[j];
+
+				break
+			}
+		}
+	}
+
+	return [idx1, idx2, mapping];
+}
+
 /**
 export const joints = [
 	"NOSE",

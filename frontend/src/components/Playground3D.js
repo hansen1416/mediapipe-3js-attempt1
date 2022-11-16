@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { BodyGeometry } from "./models/BodyGeometry";
 import { InteractionManager } from "three.interactive";
+import { getEdgeVerticesIndexMapping, isFloatClose } from "./ropes";
 
 let uppderarm = null;
 let forearm = null;
@@ -19,14 +20,16 @@ export default function Playground3D() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-	const showDotsHelper = useRef(true);
+	const showDotsHelper = useRef(false);
 
 	const body = new BodyGeometry();
 
-	const [forearm_top_idx, set_forearm_top_idx] = useState([]);
-	const [upperarm_bottom_idx, set_upperarm_bottom_idx] = useState([]);
+	const [forearmTopIdx, setforearmTopIdx] = useState([]);
+	const [upperarmBottomIdx, setupperarmBottomIdx] = useState([]);
+	const [armsMapping, setarmsMapping] = useState({});
 
 	useEffect(() => {
+
 		_scene();
 
 		_camera();
@@ -41,15 +44,18 @@ export default function Playground3D() {
 		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex);
 		forearm = body.bufferGeo(body.skincolor1, forearm_vex);
 
-		set_forearm_top_idx(getEdgeVerticesIndex(forearm, 0));
-		set_upperarm_bottom_idx(getEdgeVerticesIndex(uppderarm, body.eb_y2));
+		const [idx1, idx2, mapping] = getEdgeVerticesIndexMapping('y', uppderarm, body.eb_y2, forearm, body.fa_y0);
+
+		setupperarmBottomIdx(idx1);
+		setforearmTopIdx(idx2);
+		setarmsMapping(mapping);
 
 		scene.current.add(uppderarm);
 		scene.current.add(forearm);
 
 		forearm.position.y = unit_size * body.eb_y2;
 
-		uppderarm.rotation.z = -0.2;
+		// uppderarm.rotation.z = -0.2;
 
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
@@ -98,13 +104,6 @@ export default function Playground3D() {
 		// eslint-disable-next-line
 	}, []);
 
-	// useEffect(() => {
-	// 	console.log(forearm_top_idx.length, forearm_top_idx);
-	// }, [forearm_top_idx]);
-
-	// useEffect(() => {
-	// 	console.log(upperarm_bottom_idx.length, upperarm_bottom_idx);
-	// }, [upperarm_bottom_idx]);
 
 	function getEdgeVerticesIndex(mesh, threshold_y) {
 		const positionAttribute = mesh.geometry.getAttribute("position");
@@ -115,7 +114,7 @@ export default function Playground3D() {
 			const vertex = new THREE.Vector3();
 			vertex.fromBufferAttribute(positionAttribute, i);
 
-			if (Math.abs(vertex.y - threshold_y) < 0.000001) {
+			if (isFloatClose(vertex.y, threshold_y)) {
 				// console.log(vertex.y, threshold_y);
 				vex.push(i);
 			}
@@ -125,31 +124,66 @@ export default function Playground3D() {
 	}
 
 	function updateVertices() {
-		forearm.rotation.z = 1;
-
-		console.log(upperarm_bottom_idx);
+		forearm.rotation.z = 2.4;
 
 		forearm.updateMatrixWorld();
 
-		const positionAttribute = forearm.geometry.getAttribute("position");
+		const positionForearm = forearm.geometry.getAttribute("position");
 
-		for (let i = 0; i < positionAttribute.count; i++) {
-			// get world position of positions
+		const indexedPositonForearm = {};
+
+		for (let i of forearmTopIdx) {
 			const vertex = new THREE.Vector3();
-			vertex.fromBufferAttribute(positionAttribute, i);
+
+			vertex.fromBufferAttribute(positionForearm, i);
 
 			forearm.localToWorld(vertex);
 
-			console.log(vertex);
-			// console.log("x", positions[i]);
-			// console.log("y", positions[i + 1]);
-			// console.log("z", positions[i + 2]);
 			uppderarm.worldToLocal(vertex);
 
-			// create a mapping from upperarm bottom to forearm top
-
-			console.log(vertex);
+			indexedPositonForearm[i] = vertex;
 		}
+
+		console.log(indexedPositonForearm);
+
+		const positionUpperarmArray = uppderarm.geometry.getAttribute("position").array; 
+
+		console.log(positionUpperarmArray);
+
+		for (let j of upperarmBottomIdx) {
+			const targetVertex = indexedPositonForearm[armsMapping[j]];
+
+			// console.log(target)
+
+			positionUpperarmArray[j*3] = targetVertex.x;
+			positionUpperarmArray[j*3+1] = targetVertex.y;
+			positionUpperarmArray[j*3+2] = targetVertex.z;
+		}
+
+		// const positionAttribute = forearm.geometry.getAttribute("position");
+
+		// for (let i = 0; i < positionAttribute.count; i++) {
+		// 	// get world position of positions
+		// 	const vertex = new THREE.Vector3();
+		// 	vertex.fromBufferAttribute(positionAttribute, i);
+
+		// 	forearm.localToWorld(vertex);
+
+		// 	console.log(vertex);
+		// 	// console.log("x", positions[i]);
+		// 	// console.log("y", positions[i + 1]);
+		// 	// console.log("z", positions[i + 2]);
+		// 	uppderarm.worldToLocal(vertex);
+
+		// 	// create a mapping from upperarm bottom to forearm top
+
+		// 	console.log(vertex);
+		// }
+
+		uppderarm.geometry.attributes.position.needsUpdate = true; // required after the first render
+
+		uppderarm.geometry.computeBoundingBox();
+		uppderarm.geometry.computeBoundingSphere();
 
 		forearm.geometry.attributes.position.needsUpdate = true; // required after the first render
 
