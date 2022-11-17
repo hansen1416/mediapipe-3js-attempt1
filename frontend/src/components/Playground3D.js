@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { BodyGeometry } from "./models/BodyGeometry";
 import { InteractionManager } from "three.interactive";
-import { getEdgeVerticesIndexMapping, isFloatClose } from "./ropes";
+import { getEdgeVerticesIndexMapping } from "./ropes";
 
 let uppderarm = null;
 let forearm = null;
@@ -29,7 +29,6 @@ export default function Playground3D() {
 	const [armsMapping, setarmsMapping] = useState({});
 
 	useEffect(() => {
-
 		_scene();
 
 		_camera();
@@ -44,7 +43,13 @@ export default function Playground3D() {
 		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex);
 		forearm = body.bufferGeo(body.skincolor1, forearm_vex);
 
-		const [idx1, idx2, mapping] = getEdgeVerticesIndexMapping('y', uppderarm, body.eb_y2, forearm, body.fa_y0);
+		const [idx1, idx2, mapping] = getEdgeVerticesIndexMapping(
+			"y",
+			uppderarm,
+			body.eb_y2,
+			forearm,
+			body.fa_y0
+		);
 
 		setupperarmBottomIdx(idx1);
 		setforearmTopIdx(idx2);
@@ -92,36 +97,17 @@ export default function Playground3D() {
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
+		const containerCurrent = containerRef.current;
+
 		return () => {
 			renderer.current.dispose();
-			if (containerRef.current) {
-				containerRef.current.removeEventListener(
-					"mousedown",
-					rotateStart
-				);
+			if (containerCurrent) {
+				containerCurrent.removeEventListener("mousedown", rotateStart);
 			}
+			// eslint-disable-next-line
 		};
 		// eslint-disable-next-line
 	}, []);
-
-
-	function getEdgeVerticesIndex(mesh, threshold_y) {
-		const positionAttribute = mesh.geometry.getAttribute("position");
-
-		const vex = [];
-
-		for (let i = 0; i < positionAttribute.count; i++) {
-			const vertex = new THREE.Vector3();
-			vertex.fromBufferAttribute(positionAttribute, i);
-
-			if (isFloatClose(vertex.y, threshold_y)) {
-				// console.log(vertex.y, threshold_y);
-				vex.push(i);
-			}
-		}
-
-		return vex;
-	}
 
 	function updateVertices() {
 		forearm.rotation.z = 1;
@@ -146,7 +132,8 @@ export default function Playground3D() {
 
 		console.log(indexedPositonForearm);
 
-		const positionUpperarmArray = uppderarm.geometry.getAttribute("position").array; 
+		const positionUpperarmArray =
+			uppderarm.geometry.getAttribute("position").array;
 
 		console.log(positionUpperarmArray);
 
@@ -155,9 +142,9 @@ export default function Playground3D() {
 
 			// console.log(target)
 
-			positionUpperarmArray[j*3] = targetVertex.x;
-			positionUpperarmArray[j*3+1] = targetVertex.y;
-			positionUpperarmArray[j*3+2] = targetVertex.z;
+			positionUpperarmArray[j * 3] = targetVertex.x;
+			positionUpperarmArray[j * 3 + 1] = targetVertex.y;
+			positionUpperarmArray[j * 3 + 2] = targetVertex.z;
 		}
 
 		// const positionAttribute = forearm.geometry.getAttribute("position");
