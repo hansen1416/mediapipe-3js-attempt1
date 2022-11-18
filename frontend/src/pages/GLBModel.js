@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
 
@@ -15,10 +15,24 @@ export default function GLBModel() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-	const [leftArm, setleftArm] = useState(null);
-	const [leftForearm, setleftForearm] = useState(null);
-	const [rightArm, setrightArm] = useState(null);
-	const [rightForearm, setrightForearm] = useState(null);
+	const BodyParts = useRef({
+		'Head': null,
+		'Neck': null,
+		'LeftShoulder': null,
+		'LeftArm': null,
+		'LeftForeArm': null,
+		'LeftHand': null, 
+		'RightShoulder': null,
+		'RightArm': null,
+		'RightForeArm': null,
+		'RightHand': null,
+		'LeftUpLeg': null,
+		'LeftLeg': null,
+		'LeftFoot': null,
+		'RightUpLeg': null,
+		'RightLeg': null,
+		'RightFoot': null,
+	});
 
 	const MODEL_PATH = process.env.PUBLIC_URL + "/models/my.glb";
 
@@ -57,6 +71,8 @@ export default function GLBModel() {
 
 			travelModel(avatar);
 
+			// console.log(BodyParts)
+
 			avatar.position.set(0, 0, 0);
 
 			scene.current.add(avatar);
@@ -67,19 +83,12 @@ export default function GLBModel() {
 
 	function travelModel(model) {
 
-		if (model.name === 'LeftArm') {
-			setleftArm(model);
+		for (let name in BodyParts.current) {
+			if (name === model.name) {
+				BodyParts.current[name] = model;
+			}
 		}
-		if (model.name === 'LeftForeArm') {
-			setleftForearm(model);
-		}
-		if (model.name === 'RightArm') {
-			setrightArm(model);
-		}
-		if (model.name === 'RightForeArm') {
-			setrightForearm(model);
-		}
-		
+
 		model.children.forEach((child) => {
 			// console.log(child)
 			travelModel(child);
@@ -209,18 +218,7 @@ export default function GLBModel() {
 
 	function action1() {
 
-		console.log(leftArm);
-		console.log(leftForearm);
-		console.log(rightArm);
-		console.log(rightForearm);
-
-		leftArm.rotation.x = -1;
-		leftArm.rotation.y = 0;
-		leftArm.rotation.z = 0;
-
-		leftForearm.rotation.x = 0;
-		leftForearm.rotation.y = 0;
-		leftForearm.rotation.z = 0;
+		BodyParts.current['Head'].rotation.y = 0.2;
 
 		renderer.current.render(scene.current, camera.current);
 	}
