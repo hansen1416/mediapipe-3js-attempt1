@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 
-import { loadGLTF } from "../components/ropes";
+import { loadGLTF, dumpObject } from "../components/ropes";
 
 
 export default function GLBModel() {
@@ -47,7 +47,7 @@ export default function GLBModel() {
 		loadGLTF(MODEL_PATH).then((gltf) => {
 
 			const avatar = gltf.scene.children[0]
-			avatar.position.set(0, -4, 0)
+			avatar.position.set(0, 0, 0)
 			// avatar.scale.setScalar(SCALE)
 	
 			scene.current.add(avatar);
@@ -90,9 +90,11 @@ export default function GLBModel() {
 			1000
 		);
 
-		camera.current.position.y = -3;
+		camera.current.position.y = 1.4;
 		camera.current.position.x = 0;
 		camera.current.position.z = 2;
+
+		camera.current.rotation.x = -0.1;
 	}
 
 	function _light() {
