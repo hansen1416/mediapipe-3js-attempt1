@@ -1,9 +1,7 @@
 import { useEffect, useRef } from "react";
-
 import * as THREE from "three";
 
 import { loadGLTF, dumpObject } from "../components/ropes";
-
 
 export default function GLBModel() {
 	const canvasRef = useRef(null);
@@ -15,23 +13,39 @@ export default function GLBModel() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
+	/**
+	 * `Hips` is the ancestor of all obj, move its position, all the others shall follow
+	 * `Spine` control entire upper body
+	 * `Spine1` control the shoulder,
+	 * `Spine2` control the waist,
+	 * 
+		├─Hips [Bone]
+		│ ├─Spine [Bone]
+		│ │ └─Spine1 [Bone]
+		│ │   └─Spine2 [Bone]
+	 *
+	 */
 	const BodyParts = useRef({
-		'Head': null,
-		'Neck': null,
-		'LeftShoulder': null,
-		'LeftArm': null,
-		'LeftForeArm': null,
-		'LeftHand': null, 
-		'RightShoulder': null,
-		'RightArm': null,
-		'RightForeArm': null,
-		'RightHand': null,
-		'LeftUpLeg': null,
-		'LeftLeg': null,
-		'LeftFoot': null,
-		'RightUpLeg': null,
-		'RightLeg': null,
-		'RightFoot': null,
+		Hips: null,
+		Spine: null,
+		Spine1: null,
+		Spine2: null,
+		Neck: null,
+		Head: null,
+		LeftShoulder: null,
+		LeftArm: null,
+		LeftForeArm: null,
+		LeftHand: null,
+		RightShoulder: null,
+		RightArm: null,
+		RightForeArm: null,
+		RightHand: null,
+		LeftUpLeg: null,
+		LeftLeg: null,
+		LeftFoot: null,
+		RightUpLeg: null,
+		RightLeg: null,
+		RightFoot: null,
 	});
 
 	const MODEL_PATH = process.env.PUBLIC_URL + "/models/my.glb";
@@ -60,11 +74,8 @@ export default function GLBModel() {
 		// eslint-disable-next-line
 	}, []);
 
-
 	function init() {
-	
 		loadGLTF(MODEL_PATH).then((gltf) => {
-
 			const avatar = gltf.scene.children[0];
 
 			console.log(dumpObject(avatar));
@@ -82,7 +93,6 @@ export default function GLBModel() {
 	}
 
 	function travelModel(model) {
-
 		for (let name in BodyParts.current) {
 			if (name === model.name) {
 				BodyParts.current[name] = model;
@@ -217,8 +227,14 @@ export default function GLBModel() {
 	}
 
 	function action1() {
+		BodyParts.current["Hips"].rotation.x = -1;
+		BodyParts.current["Hips"].rotation.z = -1.5;
 
-		BodyParts.current['Head'].rotation.y = 0.2;
+		BodyParts.current["Spine"].rotation.x = 0.3;
+
+		BodyParts.current["Spine1"].rotation.y = 0.5;
+
+		BodyParts.current["Spine2"].rotation.y = -1;
 
 		renderer.current.render(scene.current, camera.current);
 	}
@@ -228,11 +244,7 @@ export default function GLBModel() {
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">
-				<button
-					onClick={action1}
-				>
-					action1
-				</button>
+				<button onClick={action1}>action1</button>
 			</div>
 		</div>
 	);
