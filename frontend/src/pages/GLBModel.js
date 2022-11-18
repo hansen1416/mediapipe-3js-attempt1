@@ -46,10 +46,12 @@ export default function GLBModel() {
 	
 		loadGLTF(MODEL_PATH).then((gltf) => {
 
-			const avatar = gltf.scene.children[0]
-			avatar.position.set(0, 0, 0)
-			// avatar.scale.setScalar(SCALE)
-	
+			const avatar = gltf.scene.children[0];
+
+			console.log(dumpObject(avatar));
+
+			avatar.position.set(0, 0, 0);
+
 			scene.current.add(avatar);
 
 			renderer.current.render(scene.current, camera.current);
@@ -99,7 +101,7 @@ export default function GLBModel() {
 
 	function _light() {
 		const color = 0xffffff;
-		const amblight = new THREE.AmbientLight(color, 0.8);
+		const amblight = new THREE.AmbientLight(color, 1);
 		scene.current.add(amblight);
 
 		const plight = new THREE.PointLight(color, 1);
