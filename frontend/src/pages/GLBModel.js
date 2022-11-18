@@ -50,11 +50,20 @@ export default function GLBModel() {
 
 			console.log(dumpObject(avatar));
 
+			travelModel(avatar);
+
 			avatar.position.set(0, 0, 0);
 
 			scene.current.add(avatar);
 
 			renderer.current.render(scene.current, camera.current);
+		});
+	}
+
+	function travelModel(model) {
+		model.children.forEach((child, ndx) => {
+			console.log(child, ndx);
+			travelModel(child);
 		});
 	}
 
