@@ -1,21 +1,19 @@
 import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
-import { Pose } from "@mediapipe/pose";
-import { Camera } from "@mediapipe/camera_utils";
+// import { Pose } from "@mediapipe/pose";
+// import { Camera } from "@mediapipe/camera_utils";
 
-import { MatchManFigure } from "./models/MatchManFigure";
-import { tmppose } from "./mypose";
-import { getUserMedia } from "./ropes";
+import { CustomManFigure } from "../models/CustomManFigure";
+import { tmppose } from "../components/mypose";
 
-export default function MatchMan() {
+export default function BufferGeoModel() {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const figure = useRef(null);
-	const figure2 = useRef(null);
 
 	// the radius of the sphere
 	// used to calculate the angle
@@ -30,16 +28,7 @@ export default function MatchMan() {
 	const animationFramePointer = useRef(0);
 	const animationStep = useRef(0);
 
-	const posedata2 = useRef([]);
-	const poseidx2 = useRef(0);
-	const animationFramePointer2 = useRef(0);
-	const animationStep2 = useRef(0);
-
 	const speed = useRef(3);
-
-	const videoRef = useRef(null);
-	// const animationCounter = useRef(1);
-	const mediacamera = useRef(null);
 
 	useEffect(() => {
 		const backgroundColor = 0x000000;
@@ -77,23 +66,19 @@ export default function MatchMan() {
 		// const axesHelper = new THREE.AxesHelper(5);
 		// scene.current.add(axesHelper);
 
-		figure.current = new MatchManFigure(scene.current, [-3, -1, 0]);
-
-		figure.current.init();
-
-		figure.current.pose_dict(tmppose);
-
-		figure2.current = new MatchManFigure(scene.current, [3, -1, 0]);
-
-		figure2.current.init();
-
-		figure2.current.pose_dict(tmppose);
-
 		camera.current.position.y = 0;
 		camera.current.position.x = 0;
 		camera.current.position.z = 5;
 
+		_light();
+
 		// camera.current.rotation.x = 0.1;
+
+		figure.current = new CustomManFigure(scene.current, [0, 0, 0]);
+
+		figure.current.init();
+
+		figure.current.pose_dict(tmppose);
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -112,6 +97,16 @@ export default function MatchMan() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	function _light() {
+		const color = 0xffffff;
+		const amblight = new THREE.AmbientLight(color, 0.3);
+		scene.current.add(amblight);
+
+		const plight = new THREE.PointLight(color, 3);
+		plight.position.set(5, 5, 2);
+		scene.current.add(plight);
+	}
 
 	function relativePos(eventObj) {
 		const box = containerRef.current.getBoundingClientRect();
@@ -165,10 +160,6 @@ export default function MatchMan() {
 		containerRef.current.removeEventListener("mouseup", rotateFinish);
 		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
-
-	// function onFrame(video, ctx) {
-	// 	ctx.drawImage(video, 0, 0);
-	// }
 
 	function fetchPose(action_name) {
 		fetch(
@@ -234,184 +225,18 @@ export default function MatchMan() {
 		}
 	}
 
-	function fetchPose2(action_name) {
-		fetch(
-			process.env.REACT_APP_API_URL +
-				"/pose/data2?" +
-				new URLSearchParams({
-					action_name: action_name,
-				}),
-			{
-				method: "GET", // *GET, POST, PUT, DELETE, etc.
-				// mode: 'cors', // no-cors, *cors, same-origin
-				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-				// credentials: 'same-origin', // include, *same-origin, omit
-				// headers: {
-				// 	"Content-Type": "multipart/form-data",
-				// },
-				// redirect: 'follow', // manual, *follow, error
-				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-				// body: formData, // body data type must match "Content-Type" header
-			}
-		)
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-
-				poseidx2.current = 0;
-
-				animationStep2.current = 0;
-
-				posedata2.current = data.data;
-
-				playPose2();
-			})
-			.catch(function (error) {
-				console.log(
-					error.message,
-					error.response,
-					error.request,
-					error.config
-				);
-			});
-	}
-
-	function playPose2() {
-		if (animationStep2.current % speed.current === 0) {
-			figure2.current.pose_array(posedata2.current[poseidx2.current]);
-
-			renderer.current.render(scene.current, camera.current);
-
-			poseidx2.current += 1;
-		}
-
-		animationStep2.current += 1;
-
-		if (poseidx2.current >= posedata2.current.length) {
-			poseidx2.current = 0;
-			animationStep2.current = 0;
-
-			// animationFramePointer.current = requestAnimationFrame(playPose);
-			cancelAnimationFrame(animationFramePointer2.current);
-		} else {
-			animationFramePointer2.current = requestAnimationFrame(playPose2);
-		}
-	}
-
-	function startCamera() {
-		if (videoRef.current) {
-			getUserMedia(
-				{ video: true },
-				(stream) => {
-					// Yay, now our webcam input is treated as a normal video and
-					// we can start having fun
-					try {
-						videoRef.current.srcObject = stream;
-
-						// let stream_settings = stream
-						// 	.getVideoTracks()[0]
-						// 	.getSettings();
-
-						// console.log(stream_settings);
-					} catch (error) {
-						videoRef.current.src = URL.createObjectURL(stream);
-					}
-					// Let's start drawing the canvas!
-				},
-				(err) => {
-					throw err;
-				}
-			);
-
-			const pose = new Pose({
-				locateFile: (file) => {
-					return process.env.PUBLIC_URL + `/mediapipe/${file}`;
-					// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-				},
-			});
-			pose.setOptions({
-				modelComplexity: 2,
-				smoothLandmarks: false,
-				enableSegmentation: false,
-				smoothSegmentation: false,
-				minDetectionConfidence: 0.5,
-				minTrackingConfidence: 0.5,
-			});
-			pose.onResults(onPoseResults);
-
-			pose.initialize().then(() => {
-				console.info("Loaded pose model");
-			});
-
-			// const ctx = canvasRef.current.getContext("2d");
-
-			mediacamera.current = new Camera(videoRef.current, {
-				onFrame: async () => {
-					// onFrame(videoRef.current, ctx);
-
-					// if (animationCounter.current % 4 === 0) {
-					await pose.send({ image: videoRef.current });
-
-					// animationCounter.current = 0;
-					// }
-
-					// animationCounter.current += 1;
-				},
-				width: 640,
-				height: 360,
-			});
-
-			mediacamera.current.start();
-		}
-	}
-
-	function onPoseResults(results) {
-		const wlm = results.poseWorldLandmarks;
-
-		if (!wlm) {
-			return;
-		}
-
-		// console.log(wlm);
-		// tmp_pose(wlm);
-
-		figure.current.pose_dict(wlm);
-
-		renderer.current.render(scene.current, camera.current);
-	}
-
 	return (
 		<div className="scene" ref={containerRef}>
-			<video ref={videoRef} autoPlay={true}></video>
-
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">
 				<button
 					onClick={() => {
 						fetchPose("800-900");
-						fetchPose2("800-900");
 					}}
 				>
 					action1
-				</button>{" "}
-				<button
-					onClick={() => {
-						fetchPose("1500-1600");
-						fetchPose2("1500-1600");
-					}}
-				>
-					action2
 				</button>
-				<button
-					onClick={() => {
-						fetchPose("2300-2400");
-						fetchPose2("2300-2400");
-					}}
-				>
-					action3
-				</button>
-				<button onClick={startCamera}>camera sync</button>
 			</div>
 		</div>
 	);

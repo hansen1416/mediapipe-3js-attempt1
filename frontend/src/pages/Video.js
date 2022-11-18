@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import VideoPlayer from "./VideoPlayer";
+import VideoPlayer from "../components/VideoPlayer";
 
 export default function Video() {
 	const [videoJsOptions] = useState({

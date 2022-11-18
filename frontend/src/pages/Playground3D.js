@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
-import { BodyGeometry } from "./models/BodyGeometry";
+import { BodyGeometry } from "../models/BodyGeometry";
 import { InteractionManager } from "three.interactive";
-import { getEdgeVerticesIndexMapping } from "./ropes";
+import { getEdgeVerticesIndexMapping } from "../components/ropes";
 
 let uppderarm = null;
 let forearm = null;

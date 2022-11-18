@@ -9,15 +9,16 @@ import {
 	// Route,
 	// Link,
 } from "react-router-dom";
-import ErrorPage from "./ErrorPage";
-import Home from "./components/Home";
-import MatchMan from "./components/MatchMan";
-import GreenMan from "./components/GreenMan";
-import BufferGeoModel from "./components/BufferGeoModel";
-import Upload from "./components/Upload";
-import Video from "./components/Video";
-import WebCamera from "./components/WebCamera";
-import Playground3D from "./components/Playground3D";
+import ErrorPage from "./pages/ErrorPage";
+import Home from "./pages/Home";
+import MatchMan from "./pages/MatchMan";
+import GreenMan from "./pages/GreenMan";
+import BufferGeoModel from "./pages/BufferGeoModel";
+import Upload from "./pages/Upload";
+import Video from "./pages/Video";
+import WebCamera from "./pages/WebCamera";
+import Playground3D from "./pages/Playground3D";
+import GLBModel from './pages/GLBModel';
 
 const router = createBrowserRouter([
 	{
@@ -28,6 +29,18 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				element: <Home />,
+			},
+			{
+				path: "/upload",
+				element: <Upload />,
+			},
+			{
+				path: "/video",
+				element: <Video />,
+			},
+			{
+				path: "/camera",
+				element: <WebCamera />,
 			},
 			{
 				path: "/greenman",
@@ -46,16 +59,8 @@ const router = createBrowserRouter([
 				element: <Playground3D />,
 			},
 			{
-				path: "/upload",
-				element: <Upload />,
-			},
-			{
-				path: "/video",
-				element: <Video />,
-			},
-			{
-				path: "/camera",
-				element: <WebCamera />,
+				path: "/glbmodel",
+				element: <GLBModel />,
 			},
 		],
 	},

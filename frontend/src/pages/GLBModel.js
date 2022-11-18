@@ -1,45 +1,55 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
-// import { Pose } from "@mediapipe/pose";
-// import { Camera } from "@mediapipe/camera_utils";
 
-import { CustomManFigure } from "./models/CustomManFigure";
-import { tmppose } from "./mypose";
 
-export default function BufferGeoModel() {
+export default function GLBModel() {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
 	const renderer = useRef(null);
-	const figure = useRef(null);
-
-	// the radius of the sphere
-	// used to calculate the angle
-	// the smaller, the faster the angle changes
-	const radius = 100;
 
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-	const posedata = useRef([]);
-	const poseidx = useRef(0);
-	const animationFramePointer = useRef(0);
-	const animationStep = useRef(0);
-
-	const speed = useRef(3);
-
 	useEffect(() => {
-		const backgroundColor = 0x000000;
+		_scene();
 
-		const viewWidth = document.documentElement.clientWidth;
-		const viewHeight = document.documentElement.clientHeight;
+		_camera();
+
+		_light();
+
+		_render();
+
+		renderer.current.render(scene.current, camera.current);
+
+		containerRef.current.addEventListener("mousedown", rotateStart);
+
+		const containerCurrent = containerRef.current;
+
+		return () => {
+			renderer.current.dispose();
+			if (containerCurrent) {
+				containerCurrent.removeEventListener("mousedown", rotateStart);
+			}
+			// eslint-disable-next-line
+		};
+		// eslint-disable-next-line
+	}, []);
+
+
+	function _scene() {
+		const backgroundColor = 0x000000;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
 		scene.current.fog = new THREE.Fog(backgroundColor, 60, 100);
+	}
 
+	function _camera() {
+		const viewWidth = document.documentElement.clientWidth;
+		const viewHeight = document.documentElement.clientHeight;
 		/**
 		 * The first attribute is the field of view.
 		 * FOV is the extent of the scene that is seen on the display at any given moment.
@@ -63,52 +73,38 @@ export default function BufferGeoModel() {
 			1000
 		);
 
-		// const axesHelper = new THREE.AxesHelper(5);
-		// scene.current.add(axesHelper);
-
-		camera.current.position.y = 0;
+		camera.current.position.y = -10;
 		camera.current.position.x = 0;
-		camera.current.position.z = 5;
-
-		_light();
-
-		// camera.current.rotation.x = 0.1;
-
-		figure.current = new CustomManFigure(scene.current, [0, 0, 0]);
-
-		figure.current.init();
-
-		figure.current.pose_dict(tmppose);
-
-		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current,
-		});
-
-		renderer.current.setSize(viewWidth, viewHeight);
-
-		renderer.current.render(scene.current, camera.current);
-
-		containerRef.current.addEventListener("mousedown", rotateStart);
-
-		// containerRef.current.addEventListener("click", get3dpos);
-
-		return () => {
-			renderer.current.dispose();
-		};
-		// eslint-disable-next-line
-	}, []);
+		camera.current.position.z = 15;
+	}
 
 	function _light() {
 		const color = 0xffffff;
-		const amblight = new THREE.AmbientLight(color, 0.3);
+		const amblight = new THREE.AmbientLight(color, 0.8);
 		scene.current.add(amblight);
 
-		const plight = new THREE.PointLight(color, 3);
+		const plight = new THREE.PointLight(color, 1);
 		plight.position.set(5, 5, 2);
 		scene.current.add(plight);
 	}
 
+	function _render() {
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+		});
+
+		const viewWidth = document.documentElement.clientWidth;
+		const viewHeight = document.documentElement.clientHeight;
+
+		renderer.current.setSize(viewWidth, viewHeight);
+	}
+
 	function relativePos(eventObj) {
+		// the radius of the sphere
+		// used to calculate the angle
+		// the smaller, the faster the angle changes
+		const radius = 100;
+
 		const box = containerRef.current.getBoundingClientRect();
 
 		const x = eventObj.pageX - box.width / 2;
@@ -145,6 +141,7 @@ export default function BufferGeoModel() {
 
 		// figure.current.group.rotation.x = moveAngle.current[1];
 		scene.current.rotation.y = moveAngle.current[0];
+		scene.current.rotation.x = moveAngle.current[1];
 
 		renderer.current.render(scene.current, camera.current);
 	}
@@ -161,70 +158,6 @@ export default function BufferGeoModel() {
 		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
 
-	function fetchPose(action_name) {
-		fetch(
-			process.env.REACT_APP_API_URL +
-				"/pose/data?" +
-				new URLSearchParams({
-					action_name: action_name,
-				}),
-			{
-				method: "GET", // *GET, POST, PUT, DELETE, etc.
-				// mode: 'cors', // no-cors, *cors, same-origin
-				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-				// credentials: 'same-origin', // include, *same-origin, omit
-				// headers: {
-				// 	"Content-Type": "multipart/form-data",
-				// },
-				// redirect: 'follow', // manual, *follow, error
-				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-				// body: formData, // body data type must match "Content-Type" header
-			}
-		)
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-
-				poseidx.current = 0;
-
-				animationStep.current = 0;
-
-				posedata.current = data.data;
-
-				playPose();
-			})
-			.catch(function (error) {
-				console.log(
-					error.message,
-					error.response,
-					error.request,
-					error.config
-				);
-			});
-	}
-
-	function playPose() {
-		if (animationStep.current % speed.current === 0) {
-			figure.current.pose_array(posedata.current[poseidx.current]);
-
-			renderer.current.render(scene.current, camera.current);
-
-			poseidx.current += 1;
-		}
-
-		animationStep.current += 1;
-
-		if (poseidx.current >= posedata.current.length) {
-			poseidx.current = 0;
-			animationStep.current = 0;
-
-			// animationFramePointer.current = requestAnimationFrame(playPose);
-			cancelAnimationFrame(animationFramePointer.current);
-		} else {
-			animationFramePointer.current = requestAnimationFrame(playPose);
-		}
-	}
-
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
@@ -232,7 +165,7 @@ export default function BufferGeoModel() {
 			<div className="btn-box">
 				<button
 					onClick={() => {
-						fetchPose("800-900");
+						
 					}}
 				>
 					action1

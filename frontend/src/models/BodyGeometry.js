@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { rect } from "../ropes";
+import { rect } from "../components/ropes";
 
 export class BodyGeometry {
 	constructor() {

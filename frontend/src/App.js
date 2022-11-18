@@ -8,6 +8,15 @@ function App() {
 			<nav>
 				<ul>
 					<li>
+						<Link to={`/upload`}>Upload</Link>
+					</li>
+					<li>
+						<Link to={`/video`}>Video</Link>
+					</li>
+					<li>
+						<Link to={`/camera`}>Camera</Link>
+					</li>
+					<li>
 						<Link to={`/greenman`}>Green man</Link>
 					</li>
 					<li>
@@ -17,16 +26,7 @@ function App() {
 						<Link to={`/buffergeo`}>Buffer Geo Model</Link>
 					</li>
 					<li>
-						<Link to={`/3dplayground`}>3D Playground</Link>
-					</li>
-					<li>
-						<Link to={`/upload`}>Upload</Link>
-					</li>
-					<li>
-						<Link to={`/video`}>Video</Link>
-					</li>
-					<li>
-						<Link to={`/camera`}>Camera</Link>
+						<Link to={`/glbmodel`}>GLBModel</Link>
 					</li>
 				</ul>
 			</nav>

@@ -5,9 +5,9 @@ import { Pose } from "@mediapipe/pose";
 import { Camera } from "@mediapipe/camera_utils";
 // import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
-import { Figure } from "./figure";
+import { Figure } from "../components/figure";
 // import { tmppose } from "./mypose";
-import { getLimbFromPose, getUserMedia } from "./ropes";
+import { getLimbFromPose, getUserMedia } from "../components/ropes";
 
 export default function GreenMan() {
 	const canvasRef = useRef(null);
