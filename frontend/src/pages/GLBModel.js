@@ -15,6 +15,11 @@ export default function GLBModel() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
+	const [leftArm, setleftArm] = useState(null);
+	const [leftForearm, setleftForearm] = useState(null);
+	const [rightArm, setrightArm] = useState(null);
+	const [rightForearm, setrightForearm] = useState(null);
+
 	const MODEL_PATH = process.env.PUBLIC_URL + "/models/my.glb";
 
 	useEffect(() => {
@@ -61,8 +66,22 @@ export default function GLBModel() {
 	}
 
 	function travelModel(model) {
-		model.children.forEach((child, ndx) => {
-			console.log(child, ndx);
+
+		if (model.name === 'LeftArm') {
+			setleftArm(model);
+		}
+		if (model.name === 'LeftForeArm') {
+			setleftForearm(model);
+		}
+		if (model.name === 'RightArm') {
+			setrightArm(model);
+		}
+		if (model.name === 'RightForeArm') {
+			setrightForearm(model);
+		}
+		
+		model.children.forEach((child) => {
+			// console.log(child)
 			travelModel(child);
 		});
 	}
@@ -101,11 +120,11 @@ export default function GLBModel() {
 			1000
 		);
 
-		camera.current.position.y = 1.4;
+		camera.current.position.y = 1;
 		camera.current.position.x = 0;
 		camera.current.position.z = 2;
 
-		camera.current.rotation.x = -0.1;
+		// camera.current.rotation.x = -0.1;
 	}
 
 	function _light() {
@@ -188,15 +207,31 @@ export default function GLBModel() {
 		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
 
+	function action1() {
+
+		console.log(leftArm);
+		console.log(leftForearm);
+		console.log(rightArm);
+		console.log(rightForearm);
+
+		leftArm.rotation.x = -1;
+		leftArm.rotation.y = 0;
+		leftArm.rotation.z = 0;
+
+		leftForearm.rotation.x = 0;
+		leftForearm.rotation.y = 0;
+		leftForearm.rotation.z = 0;
+
+		renderer.current.render(scene.current, camera.current);
+	}
+
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
 
 			<div className="btn-box">
 				<button
-					onClick={() => {
-						
-					}}
+					onClick={action1}
 				>
 					action1
 				</button>
