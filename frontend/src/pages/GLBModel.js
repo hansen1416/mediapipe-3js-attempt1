@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 
+import { loadGLTF } from "../components/ropes";
+
 
 export default function GLBModel() {
 	const canvasRef = useRef(null);
@@ -13,6 +15,8 @@ export default function GLBModel() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
+	const MODEL_PATH = process.env.PUBLIC_URL + "/models/my.glb";
+
 	useEffect(() => {
 		_scene();
 
@@ -22,22 +26,35 @@ export default function GLBModel() {
 
 		_render();
 
-		renderer.current.render(scene.current, camera.current);
-
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
 		const containerCurrent = containerRef.current;
+
+		init();
 
 		return () => {
 			renderer.current.dispose();
 			if (containerCurrent) {
 				containerCurrent.removeEventListener("mousedown", rotateStart);
 			}
-			// eslint-disable-next-line
 		};
 		// eslint-disable-next-line
 	}, []);
 
+
+	function init() {
+	
+		loadGLTF(MODEL_PATH).then((gltf) => {
+
+			const avatar = gltf.scene.children[0]
+			avatar.position.set(0, -4, 0)
+			// avatar.scale.setScalar(SCALE)
+	
+			scene.current.add(avatar);
+
+			renderer.current.render(scene.current, camera.current);
+		});
+	}
 
 	function _scene() {
 		const backgroundColor = 0x000000;
@@ -73,9 +90,9 @@ export default function GLBModel() {
 			1000
 		);
 
-		camera.current.position.y = -10;
+		camera.current.position.y = -3;
 		camera.current.position.x = 0;
-		camera.current.position.z = 15;
+		camera.current.position.z = 2;
 	}
 
 	function _light() {
@@ -141,7 +158,7 @@ export default function GLBModel() {
 
 		// figure.current.group.rotation.x = moveAngle.current[1];
 		scene.current.rotation.y = moveAngle.current[0];
-		scene.current.rotation.x = moveAngle.current[1];
+		// scene.current.rotation.x = moveAngle.current[1];
 
 		renderer.current.render(scene.current, camera.current);
 	}

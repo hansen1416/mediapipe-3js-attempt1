@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
@@ -161,7 +162,6 @@ export function isFloatClose(a, b) {
 	return Math.abs(a - b) < 0.000001;
 }
 
-
 export function getEdgeVerticesIndexMapping(axis, mesh1, threshold1, mesh2, threshold2) {
 
 	const positionAttribute1 = mesh1.geometry.getAttribute("position");
@@ -209,6 +209,14 @@ export function getEdgeVerticesIndexMapping(axis, mesh1, threshold1, mesh2, thre
 
 	return [idx1, idx2, mapping];
 }
+
+export function loadGLTF(url) {
+	return new Promise((resolve) => {
+		const loader = new GLTFLoader()
+		loader.load(url, (gltf) => resolve(gltf))
+	})
+}
+
 
 /**
 export const joints = [
