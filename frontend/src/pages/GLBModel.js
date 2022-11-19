@@ -256,7 +256,10 @@ export default function GLBModel() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				playPose(data.data[0]);
+				moveHips(data.data[0]);
+				moveSpine(data.data[0]);
+
+				renderer.current.render(scene.current, camera.current);
 			})
 			.catch(function (error) {
 				console.log(
@@ -283,19 +286,7 @@ export default function GLBModel() {
 		);
 	}
 
-	function playPose(data) {
-		const d1 = dot();
-		const d2 = dot();
-		const d3 = dot();
-		const d4 = dot();
-		const d5 = dot(0xff0000);
-		const d6 = dot(0xff0000);
-
-		d1.position.set(...data[POSE_LANDMARKS["LEFT_SHOULDER"]]);
-		d2.position.set(...data[POSE_LANDMARKS["RIGHT_SHOULDER"]]);
-		d3.position.set(...data[POSE_LANDMARKS["LEFT_HIP"]]);
-		d4.position.set(...data[POSE_LANDMARKS["RIGHT_HIP"]]);
-
+	function moveHips(data) {
 		const m1 = middlePosition(
 			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
@@ -306,31 +297,30 @@ export default function GLBModel() {
 			data[POSE_LANDMARKS["RIGHT_HIP"]]
 		);
 
-		d5.position.set(...m1);
-		d6.position.set(...m2);
-
 		const v = posePositionToVector(m1, m2);
-
-		console.log(v);
-
-		const o = new THREE.Vector3(-1, -1, 1).applyEuler(
+		// the main body is originally a vector 0,-1,0
+		const o = new THREE.Vector3(0, -1, 0).applyEuler(
 			BodyParts.current["Hips"].rotation
 		);
 
 		const quaternion = quaternionFromVectors(o, v);
 
-		console.log(quaternion);
-
 		BodyParts.current["Hips"].applyQuaternion(quaternion);
 
-		scene.current.add(d1);
-		scene.current.add(d2);
-		scene.current.add(d3);
-		scene.current.add(d4);
-		scene.current.add(d5);
-		scene.current.add(d6);
+		BodyParts.current["Hips"].rotation.x = -1;
+	}
 
-		renderer.current.render(scene.current, camera.current);
+	function moveSpine(data) {
+		// console.log(BodyParts.current["Spine"].rotation);
+		// BodyParts.current["Spine"].rotation.x = 0;
+		// BodyParts.current["Spine"].rotation.y = -1;
+		// BodyParts.current["Spine"].rotation.z = 0;
+		// BodyParts.current["Spine1"].rotation.x = 0;
+		// BodyParts.current["Spine1"].rotation.y = -1;
+		// BodyParts.current["Spine1"].rotation.z = 0;
+		// BodyParts.current["Spine2"].rotation.x = 0;
+		// BodyParts.current["Spine2"].rotation.y = -1;
+		// BodyParts.current["Spine2"].rotation.z = 0;
 	}
 
 	return (
