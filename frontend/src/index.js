@@ -17,6 +17,7 @@ import Upload from "./pages/Upload";
 import Video from "./pages/Video";
 import WebCamera from "./pages/WebCamera";
 import Playground3D from "./pages/Playground3D";
+import GLBModelStatic from "./pages/GLBModelStatic";
 import GLBModel from "./pages/GLBModel";
 
 const router = createBrowserRouter([
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
 			{
 				path: "/3dplayground",
 				element: <Playground3D />,
+			},
+			{
+				path: "/glbmodelstatic",
+				element: <GLBModelStatic />,
 			},
 			{
 				path: "/glbmodel",
