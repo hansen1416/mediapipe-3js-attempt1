@@ -183,10 +183,10 @@ export default function GLBModelStatic() {
 														name
 													].rotation[axis] = v;
 
-													// renderer.current.render(
-													// 	scene.current,
-													// 	camera.current
-													// );
+													renderer.current.render(
+														scene.current,
+														camera.current
+													);
 												}}
 											/>
 										</div>
@@ -196,6 +196,11 @@ export default function GLBModelStatic() {
 													BodyParts.current[
 														name
 													].rotation[axis] = 0;
+
+													renderer.current.render(
+														scene.current,
+														camera.current
+													);
 												}}
 											>
 												reset
