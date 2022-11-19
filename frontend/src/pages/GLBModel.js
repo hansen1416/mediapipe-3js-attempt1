@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { Slider } from "antd";
 
-import { loadGLTF /*, dumpObject*/ } from "../components/ropes";
+import {
+	loadGLTF,
+	middlePosition,
+	posePositionToVector,
+	quaternionFromVectors,
+} from "../components/ropes";
 
 export default function GLBModel() {
 	const canvasRef = useRef(null);
@@ -252,7 +256,7 @@ export default function GLBModel() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				playPose(data);
+				playPose(data.data[0]);
 			})
 			.catch(function (error) {
 				console.log(
@@ -264,62 +268,74 @@ export default function GLBModel() {
 			});
 	}
 
+	function dot(color, radius) {
+		if (!color) {
+			color = 0xffffff;
+		}
+
+		if (!radius) {
+			radius = 0.01;
+		}
+
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius),
+			new THREE.MeshBasicMaterial({ color: color })
+		);
+	}
+
 	function playPose(data) {
-		console.log(POSE_LANDMARKS["LEFT_SHOULDER"]);
-		console.log(POSE_LANDMARKS["RIGHT_SHOULDER"]);
-		console.log(POSE_LANDMARKS["LEFT_HIP"]);
-		console.log(POSE_LANDMARKS["RIGHT_HIP"]);
+		const d1 = dot();
+		const d2 = dot();
+		const d3 = dot();
+		const d4 = dot();
+		const d5 = dot(0xff0000);
+		const d6 = dot(0xff0000);
+
+		d1.position.set(...data[POSE_LANDMARKS["LEFT_SHOULDER"]]);
+		d2.position.set(...data[POSE_LANDMARKS["RIGHT_SHOULDER"]]);
+		d3.position.set(...data[POSE_LANDMARKS["LEFT_HIP"]]);
+		d4.position.set(...data[POSE_LANDMARKS["RIGHT_HIP"]]);
+
+		const m1 = middlePosition(
+			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
+			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		);
+
+		const m2 = middlePosition(
+			data[POSE_LANDMARKS["LEFT_HIP"]],
+			data[POSE_LANDMARKS["RIGHT_HIP"]]
+		);
+
+		d5.position.set(...m1);
+		d6.position.set(...m2);
+
+		const v = posePositionToVector(m1, m2);
+
+		console.log(v);
+
+		const o = new THREE.Vector3(-1, -1, 1).applyEuler(
+			BodyParts.current["Hips"].rotation
+		);
+
+		const quaternion = quaternionFromVectors(o, v);
+
+		console.log(quaternion);
+
+		BodyParts.current["Hips"].applyQuaternion(quaternion);
+
+		scene.current.add(d1);
+		scene.current.add(d2);
+		scene.current.add(d3);
+		scene.current.add(d4);
+		scene.current.add(d5);
+		scene.current.add(d6);
+
+		renderer.current.render(scene.current, camera.current);
 	}
 
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-			<div className="right-sider">
-				{BodyPartsList.map((name, i1) => {
-					return (
-						<div key={i1}>
-							<span>{name}</span>
-							{["x", "y", "z"].map((axis, i2) => {
-								return (
-									<div key={i2} style={{ display: "flex" }}>
-										<div>{axis}</div>
-										<div style={{ flexGrow: 1 }}>
-											<Slider
-												defaultValue={0}
-												min={-3.14}
-												max={3.14}
-												step={0.01}
-												onChange={(v) => {
-													BodyParts.current[
-														name
-													].rotation[axis] = v;
-
-													// renderer.current.render(
-													// 	scene.current,
-													// 	camera.current
-													// );
-												}}
-											/>
-										</div>
-										<div>
-											<button
-												onClick={() => {
-													BodyParts.current[
-														name
-													].rotation[axis] = 0;
-												}}
-											>
-												reset
-											</button>
-										</div>
-									</div>
-								);
-							})}
-						</div>
-					);
-				})}
-			</div>
-
 			<div className="btn-box">
 				<button
 					onClick={() => {

@@ -37,6 +37,10 @@ export function posePointsToVector(a, b) {
 	return new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
+export function posePositionToVector(a, b) {
+	return new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+
 export function distanceBetweenPoints(a, b) {
 	return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2);
 }
@@ -56,6 +60,10 @@ export function crossProduct(a, b) {
 		a[2] * b[0] - a[0] * b[2],
 		a[0] * b[1] - a[1] * b[0],
 	];
+}
+
+export function middlePosition(a, b) {
+	return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 }
 
 export function rotationMatrix(a, b) {
