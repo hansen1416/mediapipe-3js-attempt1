@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { POSE_LANDMARKS } from "@mediapipe/pose";
+import { Slider } from "antd";
 
-import { loadGLTF, dumpObject } from "../components/ropes";
+import { loadGLTF /*, dumpObject*/ } from "../components/ropes";
 
 export default function GLBModel() {
 	const canvasRef = useRef(null);
@@ -48,9 +50,13 @@ export default function GLBModel() {
 		RightFoot: null,
 	});
 
+	const [BodyPartsList, setBodyPartsList] = useState([]);
+
 	const MODEL_PATH = process.env.PUBLIC_URL + "/models/my.glb";
 
 	useEffect(() => {
+		setBodyPartsList(Object.keys(BodyParts.current));
+
 		_scene();
 
 		_camera();
@@ -78,11 +84,9 @@ export default function GLBModel() {
 		loadGLTF(MODEL_PATH).then((gltf) => {
 			const avatar = gltf.scene.children[0];
 
-			console.log(dumpObject(avatar));
+			// console.log(dumpObject(avatar));
 
 			travelModel(avatar);
-
-			// console.log(BodyParts)
 
 			avatar.position.set(0, 0, 0);
 
@@ -226,25 +230,104 @@ export default function GLBModel() {
 		containerRef.current.addEventListener("mousedown", rotateStart);
 	}
 
-	function action1() {
-		BodyParts.current["Hips"].rotation.x = -1;
-		BodyParts.current["Hips"].rotation.z = -1.5;
+	function fetchPose(action_name) {
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/pose/data2?" +
+				new URLSearchParams({
+					action_name: action_name,
+				}),
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
+			.then((response) => response.json())
+			.then((data) => {
+				playPose(data);
+			})
+			.catch(function (error) {
+				console.log(
+					error.message,
+					error.response,
+					error.request,
+					error.config
+				);
+			});
+	}
 
-		BodyParts.current["Spine"].rotation.x = 0.3;
-
-		BodyParts.current["Spine1"].rotation.y = 0.5;
-
-		BodyParts.current["Spine2"].rotation.y = -1;
-
-		renderer.current.render(scene.current, camera.current);
+	function playPose(data) {
+		console.log(POSE_LANDMARKS["LEFT_SHOULDER"]);
+		console.log(POSE_LANDMARKS["RIGHT_SHOULDER"]);
+		console.log(POSE_LANDMARKS["LEFT_HIP"]);
+		console.log(POSE_LANDMARKS["RIGHT_HIP"]);
 	}
 
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
+			<div className="right-sider">
+				{BodyPartsList.map((name, i1) => {
+					return (
+						<div key={i1}>
+							<span>{name}</span>
+							{["x", "y", "z"].map((axis, i2) => {
+								return (
+									<div key={i2} style={{ display: "flex" }}>
+										<div>{axis}</div>
+										<div style={{ flexGrow: 1 }}>
+											<Slider
+												defaultValue={0}
+												min={-3.14}
+												max={3.14}
+												step={0.01}
+												onChange={(v) => {
+													BodyParts.current[
+														name
+													].rotation[axis] = v;
+
+													// renderer.current.render(
+													// 	scene.current,
+													// 	camera.current
+													// );
+												}}
+											/>
+										</div>
+										<div>
+											<button
+												onClick={() => {
+													BodyParts.current[
+														name
+													].rotation[axis] = 0;
+												}}
+											>
+												reset
+											</button>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					);
+				})}
+			</div>
 
 			<div className="btn-box">
-				<button onClick={action1}>action1</button>
+				<button
+					onClick={() => {
+						fetchPose("800-900");
+					}}
+				>
+					action1
+				</button>
 			</div>
 		</div>
 	);

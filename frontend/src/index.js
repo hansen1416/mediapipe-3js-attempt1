@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import {
@@ -18,7 +17,7 @@ import Upload from "./pages/Upload";
 import Video from "./pages/Video";
 import WebCamera from "./pages/WebCamera";
 import Playground3D from "./pages/Playground3D";
-import GLBModel from './pages/GLBModel';
+import GLBModel from "./pages/GLBModel";
 
 const router = createBrowserRouter([
 	{
