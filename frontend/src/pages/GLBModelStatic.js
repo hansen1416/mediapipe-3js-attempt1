@@ -59,6 +59,9 @@ export default function GLBModelStatic() {
 
 		_light();
 
+		const axesHelper = new THREE.AxesHelper(5);
+		scene.current.add(axesHelper);
+
 		_render();
 
 		init();

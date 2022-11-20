@@ -256,8 +256,8 @@ export default function GLBModel() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				moveHips(data.data[0]);
-				moveSpine(data.data[0]);
+				// moveSpine(data.data[0]);
+				moveArms(data.data[0]);
 
 				renderer.current.render(scene.current, camera.current);
 			})
@@ -286,7 +286,7 @@ export default function GLBModel() {
 		);
 	}
 
-	function moveHips(data) {
+	function moveSpine(data) {
 		const m1 = middlePosition(
 			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
@@ -297,30 +297,86 @@ export default function GLBModel() {
 			data[POSE_LANDMARKS["RIGHT_HIP"]]
 		);
 
-		const v = posePositionToVector(m1, m2);
 		// the main body is originally a vector 0,-1,0
-		const o = new THREE.Vector3(0, -1, 0).applyEuler(
+		const o1 = new THREE.Vector3(0, -1, 0).applyEuler(
 			BodyParts.current["Hips"].rotation
 		);
 
-		const quaternion = quaternionFromVectors(o, v);
+		const v1 = posePositionToVector(m1, m2);
 
-		BodyParts.current["Hips"].applyQuaternion(quaternion);
+		const q1 = quaternionFromVectors(o1, v1);
 
+		BodyParts.current["Hips"].applyQuaternion(q1);
+
+		// const o2 = new THREE.Vector3(1, 0, 0);
+
+		// const v2 = posePositionToVector(
+		// 	data[POSE_LANDMARKS["LEFT_HIP"]],
+		// 	data[POSE_LANDMARKS["RIGHT_HIP"]]
+		// );
+
+		// console.log(v2);
+
+		// const q2 = quaternionFromVectors(o2, v2);
+
+		// BodyParts.current["Hips"].applyQuaternion(q2);
 		BodyParts.current["Hips"].rotation.x = -1;
 	}
 
-	function moveSpine(data) {
-		// console.log(BodyParts.current["Spine"].rotation);
-		// BodyParts.current["Spine"].rotation.x = 0;
-		// BodyParts.current["Spine"].rotation.y = -1;
-		// BodyParts.current["Spine"].rotation.z = 0;
-		// BodyParts.current["Spine1"].rotation.x = 0;
-		// BodyParts.current["Spine1"].rotation.y = -1;
-		// BodyParts.current["Spine1"].rotation.z = 0;
-		// BodyParts.current["Spine2"].rotation.x = 0;
-		// BodyParts.current["Spine2"].rotation.y = -1;
-		// BodyParts.current["Spine2"].rotation.z = 0;
+	function moveArms(data) {
+		// the arm is originally a vector 1,0,0
+		const o1 = new THREE.Vector3(1, 0, 0);
+
+		let p11 = data[POSE_LANDMARKS["LEFT_SHOULDER"]];
+		let p12 = data[POSE_LANDMARKS["LEFT_ELBOW"]];
+
+		p11 = [p11[2], p11[1], p11[0]];
+		p12 = [p12[2], p12[1], p12[0]];
+
+		const v1 = posePositionToVector(p11, p12);
+
+		const q1 = quaternionFromVectors(o1, v1);
+
+		BodyParts.current["LeftArm"].applyQuaternion(q1);
+
+		// the arm is originally a vector 1,0,0
+		const o3 = new THREE.Vector3(1, 0, 0);
+
+		let p21 = data[POSE_LANDMARKS["LEFT_ELBOW"]];
+		let p22 = data[POSE_LANDMARKS["LEFT_WRIST"]];
+
+		p21 = [p21[2], p21[1], p21[0]];
+		p22 = [p22[2], p22[1], p22[0]];
+
+		const v3 = posePositionToVector(p21, p22);
+
+		const q3 = quaternionFromVectors(o3, v3);
+
+		BodyParts.current["LeftForeArm"].applyQuaternion(q3);
+
+		// // the arm is originally a vector 1,0,0
+		// const o2 = new THREE.Vector3(-1, 0, 0);
+
+		// const v2 = posePositionToVector(
+		// 	data[POSE_LANDMARKS["RIGHT_SHOULDER"]],
+		// 	data[POSE_LANDMARKS["RIGHT_ELBOW"]]
+		// );
+
+		// const q2 = quaternionFromVectors(o2, v2);
+
+		// BodyParts.current["RightArm"].applyQuaternion(q2);
+
+		// // the arm is originally a vector 1,0,0
+		// const o4 = new THREE.Vector3(-1, 0, 0);
+
+		// const v4 = posePositionToVector(
+		// 	data[POSE_LANDMARKS["RIGHT_ELBOW"]],
+		// 	data[POSE_LANDMARKS["RIGHT_WRIST"]]
+		// );
+
+		// const q4 = quaternionFromVectors(o4, v4);
+
+		// BodyParts.current["RightForeArm"].applyQuaternion(q4);
 	}
 
 	return (
