@@ -7,6 +7,7 @@ import {
 	middlePosition,
 	posePositionToVector,
 	quaternionFromVectors,
+	vectorFromPointsMinus,
 } from "../components/ropes";
 
 export default function GLBModel() {
@@ -256,7 +257,7 @@ export default function GLBModel() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				// moveSpine(data.data[0]);
+				moveSpine(data.data[0]);
 				moveArms(data.data[0]);
 
 				renderer.current.render(scene.current, camera.current);
@@ -297,16 +298,37 @@ export default function GLBModel() {
 			data[POSE_LANDMARKS["RIGHT_HIP"]]
 		);
 
-		// the main body is originally a vector 0,-1,0
-		const o1 = new THREE.Vector3(0, -1, 0).applyEuler(
-			BodyParts.current["Hips"].rotation
-		);
+		const spineVector = vectorFromPointsMinus(m2, m1).normalize();
+		const ini = new THREE.Vector3(0, 1, 0);
 
-		const v1 = posePositionToVector(m1, m2);
+		const r = spineVector.angleTo(ini, spineVector);
 
-		const q1 = quaternionFromVectors(o1, v1);
+		console.log(spineVector);
+		console.log(r);
 
-		BodyParts.current["Hips"].applyQuaternion(q1);
+		const norm = new THREE.Vector3()
+			.crossVectors(spineVector, ini)
+			.normalize();
+
+		console.log(norm);
+
+		// // the main body is originally a vector 0,-1,0
+		// const o1 = new THREE.Vector3(0, -1, 0).applyEuler(
+		// 	BodyParts.current["Hips"].rotation
+		// );
+
+		const quaternion = new THREE.Quaternion();
+		quaternion.setFromAxisAngle(norm, r);
+
+		console.log(quaternion);
+
+		BodyParts.current["Hips"].applyQuaternion(quaternion);
+
+		// const v1 = posePositionToVector(m1, m2);
+
+		// const q1 = quaternionFromVectors(o1, v1);
+
+		// BodyParts.current["Hips"].applyQuaternion(q1);
 
 		// const o2 = new THREE.Vector3(1, 0, 0);
 
@@ -320,10 +342,11 @@ export default function GLBModel() {
 		// const q2 = quaternionFromVectors(o2, v2);
 
 		// BodyParts.current["Hips"].applyQuaternion(q2);
-		BodyParts.current["Hips"].rotation.x = -1;
+		// BodyParts.current["Hips"].rotation.x = -1;
 	}
 
 	function moveArms(data) {
+		return;
 		// the arm is originally a vector 1,0,0
 		const o1 = new THREE.Vector3(1, 0, 0);
 
