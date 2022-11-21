@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { BodyGeometry } from "../models/BodyGeometry";
 import { InteractionManager } from "three.interactive";
-import { getEdgeVerticesIndexMapping } from "../components/ropes";
+import { getEdgeVerticesIndexMapping, quaternionFromVectors } from "../components/ropes";
+import { Vector3 } from "three";
 
 let uppderarm = null;
 let forearm = null;
@@ -55,8 +56,21 @@ export default function Playground3D() {
 		setforearmTopIdx(idx2);
 		setarmsMapping(mapping);
 
-		scene.current.add(uppderarm);
-		scene.current.add(forearm);
+		const material = new THREE.MeshBasicMaterial({color: 0xeeeeee});
+		var geometry = new THREE.PlaneGeometry(1, 1);
+		var mesh = new THREE.Mesh(geometry, material);
+
+		const quaternion = quaternionFromVectors(
+			new Vector3(0,0,1),
+			new Vector3(1,1,1),
+		);
+
+		mesh.applyQuaternion(quaternion)
+
+		scene.current.add(mesh);
+
+		// scene.current.add(uppderarm);
+		// scene.current.add(forearm);
 
 		forearm.position.y = unit_size * body.eb_y2;
 
@@ -270,9 +284,9 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = -10;
+		camera.current.position.y = 1;
 		camera.current.position.x = 0;
-		camera.current.position.z = 15;
+		camera.current.position.z = 5;
 	}
 
 	function _light() {

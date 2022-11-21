@@ -26,6 +26,9 @@ function App() {
 						<Link to={`/buffergeo`}>Buffer Geo Model</Link>
 					</li>
 					<li>
+						<Link to={`/3dplayground`}>3d Playground</Link>
+					</li>
+					<li>
 						<Link to={`/glbmodelstatic`}>GLBModel Static</Link>
 					</li>
 					<li>
