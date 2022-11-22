@@ -261,9 +261,9 @@ export default function GLBModel() {
 			.then((data) => {
 				moveSpine(data.data[0]);
 
-				renderer.current.render(scene.current, camera.current);
-
 				moveArms(data.data[0]);
+
+				renderer.current.render(scene.current, camera.current);
 			})
 			.catch(function (error) {
 				console.log(
@@ -291,7 +291,6 @@ export default function GLBModel() {
 	// }
 
 	function moveSpine(data) {
-		return;
 		const m1 = middlePosition(
 			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
@@ -311,13 +310,34 @@ export default function GLBModel() {
 	}
 
 	function moveArms(data) {
-		BodyParts.current["LeftShoulder"].updateMatrixWorld();
-		BodyParts.current["LeftArm"].updateMatrixWorld();
+		// const p1 = BodyParts.current["LeftArm"].position;
+		// const p2 = BodyParts.current["LeftForeArm"].position;
+		// const p3 = BodyParts.current["LeftHand"].position;
 
-		console.log(BodyParts.current["LeftShoulder"].position);
-		console.log(BodyParts.current["LeftArm"].position);
-		console.log(BodyParts.current["LeftForeArm"].position);
-		console.log(BodyParts.current["LeftHand"].position);
+		// const a1 = new THREE.Vector3(p1.z, p1.y, p1.x);
+		// const b1 = new THREE.Vector3(p2.z, p2.y, p2.x);
+		// const c1 = new THREE.Vector3(p3.z, p3.y, p3.x);
+
+		// const a2 = new THREE.Vector3(...data[POSE_LANDMARKS["LEFT_SHOULDER"]]);
+		// const b2 = new THREE.Vector3(...data[POSE_LANDMARKS["LEFT_ELBOW"]]);
+		// const c2 = new THREE.Vector3(...data[POSE_LANDMARKS["LEFT_WRIST"]]);
+
+		// const quaternion = quaternionFromPositions(a1, b1, c1, a2, b2, c2);
+
+		// const e = new THREE.Euler().setFromQuaternion(quaternion);
+
+		// console.log(e);
+
+		// BodyParts.current["LeftArm"].applyQuaternion(quaternion);
+		// BodyParts.current["LeftShoulder"].position.x = 1.2;
+
+		BodyParts.current["LeftArm"].rotation.set(1.29, -0.74, 1.55);
+		BodyParts.current["LeftForeArm"].rotation.set(0, 0, 2.3);
+
+		// BodyParts.current["RightArm"].rotation.set(-1.29, -0.74, -1.55);
+		// BodyParts.current["RightForeArm"].rotation.set(0, 0, -2.3);
+
+		// BodyParts.current["LeftForeArm"].position.x = 1;
 
 		// // the arm is originally a vector 1,0,0
 		// const o1 = new THREE.Vector3(1, 0, 0);
