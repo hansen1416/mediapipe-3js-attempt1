@@ -252,6 +252,18 @@ export function dumpObject(obj, lines = [], isLast = true, prefix = "") {
 	return lines;
 }
 
+export function matrixFromPoints(a, b, c) {
+
+	const axis1 = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z-b.z).normalize();
+	const axis2 = new THREE.Vector3(c.x - b.x, c.y - b.y, c.z-b.z).normalize();
+
+	return new THREE.Matrix4().makeBasis(axis1, axis2, new THREE.Vector3().crossVectors(axis1, axis2).normalize());
+}
+
+export function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
+	return new THREE.Quaternion().setFromRotationMatrix(matrixFromPoints(a2, b2, c2).multiply(matrixFromPoints(a1, b1, c1).invert()));
+}
+
 /**
  * POSE_LANDMARKS
  * 

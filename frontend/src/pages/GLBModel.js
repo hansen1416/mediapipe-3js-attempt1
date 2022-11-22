@@ -7,7 +7,9 @@ import {
 	middlePosition,
 	posePositionToVector,
 	quaternionFromVectors,
-	vectorFromPointsMinus,
+	// vectorFromPointsMinus,
+	// matrixFromPoints,
+	quaternionFromPositions,
 } from "../components/ropes";
 
 export default function GLBModel() {
@@ -258,7 +260,7 @@ export default function GLBModel() {
 			.then((response) => response.json())
 			.then((data) => {
 				moveSpine(data.data[0]);
-				moveArms(data.data[0]);
+				// moveArms(data.data[0]);
 
 				renderer.current.render(scene.current, camera.current);
 			})
@@ -272,20 +274,20 @@ export default function GLBModel() {
 			});
 	}
 
-	function dot(color, radius) {
-		if (!color) {
-			color = 0xffffff;
-		}
+	// function dot(color, radius) {
+	// 	if (!color) {
+	// 		color = 0xffffff;
+	// 	}
 
-		if (!radius) {
-			radius = 0.01;
-		}
+	// 	if (!radius) {
+	// 		radius = 0.01;
+	// 	}
 
-		return new THREE.Mesh(
-			new THREE.SphereGeometry(radius),
-			new THREE.MeshBasicMaterial({ color: color })
-		);
-	}
+	// 	return new THREE.Mesh(
+	// 		new THREE.SphereGeometry(radius),
+	// 		new THREE.MeshBasicMaterial({ color: color })
+	// 	);
+	// }
 
 	function moveSpine(data) {
 		const m1 = middlePosition(
@@ -293,34 +295,44 @@ export default function GLBModel() {
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
 		);
 
-		const m2 = middlePosition(
-			data[POSE_LANDMARKS["LEFT_HIP"]],
-			data[POSE_LANDMARKS["RIGHT_HIP"]]
-		);
-
-		const spineVector = vectorFromPointsMinus(m2, m1).normalize();
-		const ini = new THREE.Vector3(0, 1, 0);
-
-		const r = spineVector.angleTo(ini, spineVector);
-
-		console.log(spineVector);
-		console.log(r);
-
-		const norm = new THREE.Vector3()
-			.crossVectors(spineVector, ini)
-			.normalize();
-
-		console.log(norm);
-
-		// // the main body is originally a vector 0,-1,0
-		// const o1 = new THREE.Vector3(0, -1, 0).applyEuler(
-		// 	BodyParts.current["Hips"].rotation
+		// const m2 = middlePosition(
+		// 	data[POSE_LANDMARKS["LEFT_HIP"]],
+		// 	data[POSE_LANDMARKS["RIGHT_HIP"]]
 		// );
 
-		const quaternion = new THREE.Quaternion();
-		quaternion.setFromAxisAngle(norm, r);
+		// const spineVector = vectorFromPointsMinus(m2, m1).normalize();
+		// const ini = new THREE.Vector3(0, 1, 0);
 
-		console.log(quaternion);
+		// const r = spineVector.angleTo(ini, spineVector);
+
+		// console.log(spineVector);
+		// console.log(r);
+
+		// const norm = new THREE.Vector3()
+		// 	.crossVectors(spineVector, ini)
+		// 	.normalize();
+
+		// console.log(norm);
+
+		// // // the main body is originally a vector 0,-1,0
+		// // const o1 = new THREE.Vector3(0, -1, 0).applyEuler(
+		// // 	BodyParts.current["Hips"].rotation
+		// // );
+
+		// const quaternion = new THREE.Quaternion();
+		// quaternion.setFromAxisAngle(norm, r);
+
+		// console.log(quaternion);
+
+		const a1 = new THREE.Vector3(-0.5, 0, 0);
+		const b1 = new THREE.Vector3(0, 1, 0);
+		const c1 = new THREE.Vector3(-0.5, 0, 0);
+
+		const a2 = new THREE.Vector3(...data[POSE_LANDMARKS["LEFT_HIP"]]);
+		const b2 = new THREE.Vector3(...m1);
+		const c2 = new THREE.Vector3(...data[POSE_LANDMARKS["RIGHT_HIP"]]);
+
+		const quaternion = quaternionFromPositions(a1, b1, c1, a2, b2, c2);
 
 		BodyParts.current["Hips"].applyQuaternion(quaternion);
 
