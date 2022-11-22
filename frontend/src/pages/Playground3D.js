@@ -17,7 +17,6 @@ export default function Playground3D() {
 
 	const oplane = useRef(null);
 
-
 	useEffect(() => {
 		_scene();
 
@@ -49,44 +48,47 @@ export default function Playground3D() {
 	}, []);
 
 	function scene1() {
-
-		const m1 = new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.1, transparent: true});
+		const m1 = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			opacity: 0.1,
+			transparent: true,
+		});
 		const g1 = new THREE.PlaneGeometry(8, 16);
 		const p1 = new THREE.Mesh(g1, m1);
-		
-		const m2 = new THREE.MeshBasicMaterial({color: 0xffd700});
+
+		const m2 = new THREE.MeshBasicMaterial({ color: 0xffd700 });
 		const g2 = new THREE.PlaneGeometry(1, 16);
 		const p2 = new THREE.Mesh(g2, m2);
-		
+
 		p2.position.x = -3;
-		
-		const m3 = new THREE.MeshBasicMaterial({color: 0x800080});
+
+		const m3 = new THREE.MeshBasicMaterial({ color: 0x800080 });
 		const g3 = new THREE.PlaneGeometry(7, 1);
 		const p3 = new THREE.Mesh(g3, m3);
-		
+
 		p3.position.y = -8;
-		
-		const m4 = new THREE.MeshBasicMaterial({color: 0xff0000});
+
+		const m4 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 		const g4 = new THREE.PlaneGeometry(1, 1);
 		const d4 = new THREE.Mesh(g4, m4);
-		
+
 		d4.position.x = 3;
 		d4.position.y = -8;
-		
-		const m5 = new THREE.MeshBasicMaterial({color: 0x00ff00});
+
+		const m5 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 		const g5 = new THREE.PlaneGeometry(1, 1);
 		const d5 = new THREE.Mesh(g5, m5);
-		
+
 		d5.position.x = -3;
 		d5.position.y = -8;
-		
-		const m6 = new THREE.MeshBasicMaterial({color: 0x0000ff});
+
+		const m6 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 		const g6 = new THREE.PlaneGeometry(1, 1);
 		const d6 = new THREE.Mesh(g6, m6);
-		
+
 		d6.position.x = -3;
 		d6.position.y = 8;
-		
+
 		p1.add(p2);
 		p1.add(p3);
 		p1.add(d4);
@@ -94,9 +96,9 @@ export default function Playground3D() {
 		p1.add(d6);
 
 		oplane.current = p1;
-		
+
 		scene.current.add(p1);
-		
+
 		renderer.current.render(scene.current, camera.current);
 
 		const d4v = new THREE.Vector3();
@@ -113,57 +115,60 @@ export default function Playground3D() {
 
 		renderer.current.render(scene.current, camera.current);
 	}
-	  
+
 	function scene2() {
-	  
-		const m1 = new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.1, transparent: true});
+		const m1 = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			opacity: 0.1,
+			transparent: true,
+		});
 		const g1 = new THREE.PlaneGeometry(8, 16);
 		const p1 = new THREE.Mesh(g1, m1);
-		
-		const m2 = new THREE.MeshBasicMaterial({color: 0xffd700});
+
+		const m2 = new THREE.MeshBasicMaterial({ color: 0xffd700 });
 		const g2 = new THREE.PlaneGeometry(1, 16);
 		const p2 = new THREE.Mesh(g2, m2);
-		
+
 		p2.position.x = -3;
-		
-		const m3 = new THREE.MeshBasicMaterial({color: 0x800080});
+
+		const m3 = new THREE.MeshBasicMaterial({ color: 0x800080 });
 		const g3 = new THREE.PlaneGeometry(7, 1);
 		const p3 = new THREE.Mesh(g3, m3);
-		
+
 		p3.position.y = -8;
-		
-		const m4 = new THREE.MeshBasicMaterial({color: 0xff0000});
+
+		const m4 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 		const g4 = new THREE.PlaneGeometry(1, 1);
 		const d4 = new THREE.Mesh(g4, m4);
-		
+
 		d4.position.x = 3;
 		d4.position.y = -8;
-		
-		const m5 = new THREE.MeshBasicMaterial({color: 0x00ff00});
+
+		const m5 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 		const g5 = new THREE.PlaneGeometry(1, 1);
 		const d5 = new THREE.Mesh(g5, m5);
-		
+
 		d5.position.x = -3;
 		d5.position.y = -8;
-		
-		const m6 = new THREE.MeshBasicMaterial({color: 0x0000ff});
+
+		const m6 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 		const g6 = new THREE.PlaneGeometry(1, 1);
 		const d6 = new THREE.Mesh(g6, m6);
-		
+
 		d6.position.x = -3;
 		d6.position.y = 8;
-		
+
 		p1.add(p2);
 		p1.add(p3);
 		p1.add(d4);
 		p1.add(d5);
 		p1.add(d6);
-		
-		p1.rotation.x = -Math.PI/2;
-		p1.rotation.z = Math.PI/4.5;
-		
+
+		p1.rotation.x = -Math.PI / 2;
+		p1.rotation.z = Math.PI / 4.5;
+
 		scene.current.add(p1);
-		
+
 		renderer.current.render(scene.current, camera.current);
 
 		const d4v = new THREE.Vector3();
@@ -184,17 +189,25 @@ export default function Playground3D() {
 	}
 
 	function matrixFromPoints(a, b, c) {
-		const axis1 = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z-b.z).normalize()
-		const axis2 = new THREE.Vector3(c.x - b.x, c.y - b.y, c.z-b.z).normalize()
+		const axis1 = new THREE.Vector3(
+			a.x - b.x,
+			a.y - b.y,
+			a.z - b.z
+		).normalize();
+		const axis2 = new THREE.Vector3(
+			c.x - b.x,
+			c.y - b.y,
+			c.z - b.z
+		).normalize();
 
-		const axis3 = new THREE.Vector3().crossVectors(axis1, axis2).normalize();
+		const axis3 = new THREE.Vector3()
+			.crossVectors(axis1, axis2)
+			.normalize();
 
 		return new THREE.Matrix4().makeBasis(axis1, axis2, axis3);
 	}
 
-
 	function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
-
 		const matrix1 = matrixFromPoints(a1, b1, c1);
 		const matrix1i = matrix1.invert();
 
@@ -218,7 +231,6 @@ export default function Playground3D() {
 
 		renderer.current.render(scene.current, camera.current);
 	}
-
 
 	function _scene() {
 		const backgroundColor = 0x000000;
@@ -346,7 +358,10 @@ export default function Playground3D() {
 			<div className="btn-box">
 				<button
 					onClick={() => {
-						quaternionFromPositions(...positionBeforeRotation.current, ...positionAfterRotation.current);
+						quaternionFromPositions(
+							...positionBeforeRotation.current,
+							...positionAfterRotation.current
+						);
 					}}
 				>
 					action1
