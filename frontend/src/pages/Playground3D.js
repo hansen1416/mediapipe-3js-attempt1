@@ -1,13 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
-import { BodyGeometry } from "../models/BodyGeometry";
-import { InteractionManager } from "three.interactive";
-import { getEdgeVerticesIndexMapping, quaternionFromVectors } from "../components/ropes";
-import { Vector3 } from "three";
-
-let uppderarm = null;
-let forearm = null;
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -15,19 +8,15 @@ export default function Playground3D() {
 	const scene = useRef(null);
 	const camera = useRef(null);
 	const renderer = useRef(null);
-	const interactionManager = useRef(null);
-	const addedDots = useRef({});
 
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-	const showDotsHelper = useRef(false);
+	const positionBeforeRotation = useRef([]);
+	const positionAfterRotation = useRef([]);
 
-	const body = new BodyGeometry();
+	const oplane = useRef(null);
 
-	const [forearmTopIdx, setforearmTopIdx] = useState([]);
-	const [upperarmBottomIdx, setupperarmBottomIdx] = useState([]);
-	const [armsMapping, setarmsMapping] = useState({});
 
 	useEffect(() => {
 		_scene();
@@ -36,219 +25,200 @@ export default function Playground3D() {
 
 		_light();
 
-		const unit_size = 1;
-
-		const uppderarm_vex = body.uppderarm(unit_size);
-		const forearm_vex = body.forearm(unit_size);
-
-		uppderarm = body.bufferGeo(body.skincolor1, uppderarm_vex);
-		forearm = body.bufferGeo(body.skincolor1, forearm_vex);
-
-		const [idx1, idx2, mapping] = getEdgeVerticesIndexMapping(
-			"y",
-			uppderarm,
-			body.eb_y2,
-			forearm,
-			body.fa_y0
-		);
-
-		setupperarmBottomIdx(idx1);
-		setforearmTopIdx(idx2);
-		setarmsMapping(mapping);
-
-		const material = new THREE.MeshBasicMaterial({color: 0xeeeeee});
-		var geometry = new THREE.PlaneGeometry(1, 1);
-		var mesh = new THREE.Mesh(geometry, material);
-
-		const quaternion = quaternionFromVectors(
-			new Vector3(0,0,1),
-			new Vector3(1,1,1),
-		);
-
-		mesh.applyQuaternion(quaternion)
-
-		scene.current.add(mesh);
-
-		// scene.current.add(uppderarm);
-		// scene.current.add(forearm);
-
-		forearm.position.y = unit_size * body.eb_y2;
-
-		// uppderarm.rotation.z = -0.2;
-
 		const axesHelper = new THREE.AxesHelper(3);
 		scene.current.add(axesHelper);
 
 		_render();
 
-		interactionManager.current = new InteractionManager(
-			renderer.current,
-			camera.current,
-			renderer.current.domElement
-		);
-
-		// dotsHelper(deltoid_vex, upparmGroup);
-		// dotsHelper(bicep_vex, upparmGroup);
-		// dotsHelper(elbow_vex, elbowGroup);
-		dotsHelper(uppderarm_vex, uppderarm);
-		dotsHelper(forearm_vex, forearm);
-
-		interactionManager.current.update();
-
 		renderer.current.render(scene.current, camera.current);
-
-		/**************************************/
-		const positionAttribute = forearm.geometry.getAttribute("position");
-		const vertex = new THREE.Vector3();
-		vertex.fromBufferAttribute(positionAttribute, 6);
-
-		forearm.updateMatrixWorld();
-
-		forearm.localToWorld(vertex);
-
-		// console.log(vertex);
-		/**************************************/
 
 		containerRef.current.addEventListener("mousedown", rotateStart);
 
 		const containerCurrent = containerRef.current;
+
+		scene1();
+		scene2();
 
 		return () => {
 			renderer.current.dispose();
 			if (containerCurrent) {
 				containerCurrent.removeEventListener("mousedown", rotateStart);
 			}
-			// eslint-disable-next-line
 		};
 		// eslint-disable-next-line
 	}, []);
 
-	function updateVertices() {
-		forearm.rotation.z = 1;
+	function scene1() {
 
-		forearm.updateMatrixWorld();
+		const m1 = new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.1, transparent: true});
+		const g1 = new THREE.PlaneGeometry(8, 16);
+		const p1 = new THREE.Mesh(g1, m1);
+		
+		const m2 = new THREE.MeshBasicMaterial({color: 0xffd700});
+		const g2 = new THREE.PlaneGeometry(1, 16);
+		const p2 = new THREE.Mesh(g2, m2);
+		
+		p2.position.x = -3;
+		
+		const m3 = new THREE.MeshBasicMaterial({color: 0x800080});
+		const g3 = new THREE.PlaneGeometry(7, 1);
+		const p3 = new THREE.Mesh(g3, m3);
+		
+		p3.position.y = -8;
+		
+		const m4 = new THREE.MeshBasicMaterial({color: 0xff0000});
+		const g4 = new THREE.PlaneGeometry(1, 1);
+		const d4 = new THREE.Mesh(g4, m4);
+		
+		d4.position.x = 3;
+		d4.position.y = -8;
+		
+		const m5 = new THREE.MeshBasicMaterial({color: 0x00ff00});
+		const g5 = new THREE.PlaneGeometry(1, 1);
+		const d5 = new THREE.Mesh(g5, m5);
+		
+		d5.position.x = -3;
+		d5.position.y = -8;
+		
+		const m6 = new THREE.MeshBasicMaterial({color: 0x0000ff});
+		const g6 = new THREE.PlaneGeometry(1, 1);
+		const d6 = new THREE.Mesh(g6, m6);
+		
+		d6.position.x = -3;
+		d6.position.y = 8;
+		
+		p1.add(p2);
+		p1.add(p3);
+		p1.add(d4);
+		p1.add(d5);
+		p1.add(d6);
 
-		const positionForearm = forearm.geometry.getAttribute("position");
+		oplane.current = p1;
+		
+		scene.current.add(p1);
+		
+		renderer.current.render(scene.current, camera.current);
 
-		const indexedPositonForearm = {};
+		const d4v = new THREE.Vector3();
+		const d5v = new THREE.Vector3();
+		const d6v = new THREE.Vector3();
 
-		for (let i of forearmTopIdx) {
-			const vertex = new THREE.Vector3();
+		d4.getWorldPosition(d4v);
+		d5.getWorldPosition(d5v);
+		d6.getWorldPosition(d6v);
 
-			vertex.fromBufferAttribute(positionForearm, i);
+		positionBeforeRotation.current.push(d4v);
+		positionBeforeRotation.current.push(d5v);
+		positionBeforeRotation.current.push(d6v);
 
-			forearm.localToWorld(vertex);
+		renderer.current.render(scene.current, camera.current);
+	}
+	  
+	function scene2() {
+	  
+		const m1 = new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.1, transparent: true});
+		const g1 = new THREE.PlaneGeometry(8, 16);
+		const p1 = new THREE.Mesh(g1, m1);
+		
+		const m2 = new THREE.MeshBasicMaterial({color: 0xffd700});
+		const g2 = new THREE.PlaneGeometry(1, 16);
+		const p2 = new THREE.Mesh(g2, m2);
+		
+		p2.position.x = -3;
+		
+		const m3 = new THREE.MeshBasicMaterial({color: 0x800080});
+		const g3 = new THREE.PlaneGeometry(7, 1);
+		const p3 = new THREE.Mesh(g3, m3);
+		
+		p3.position.y = -8;
+		
+		const m4 = new THREE.MeshBasicMaterial({color: 0xff0000});
+		const g4 = new THREE.PlaneGeometry(1, 1);
+		const d4 = new THREE.Mesh(g4, m4);
+		
+		d4.position.x = 3;
+		d4.position.y = -8;
+		
+		const m5 = new THREE.MeshBasicMaterial({color: 0x00ff00});
+		const g5 = new THREE.PlaneGeometry(1, 1);
+		const d5 = new THREE.Mesh(g5, m5);
+		
+		d5.position.x = -3;
+		d5.position.y = -8;
+		
+		const m6 = new THREE.MeshBasicMaterial({color: 0x0000ff});
+		const g6 = new THREE.PlaneGeometry(1, 1);
+		const d6 = new THREE.Mesh(g6, m6);
+		
+		d6.position.x = -3;
+		d6.position.y = 8;
+		
+		p1.add(p2);
+		p1.add(p3);
+		p1.add(d4);
+		p1.add(d5);
+		p1.add(d6);
+		
+		p1.rotation.x = -Math.PI/2;
+		p1.rotation.z = Math.PI/4.5;
+		
+		scene.current.add(p1);
+		
+		renderer.current.render(scene.current, camera.current);
 
-			uppderarm.worldToLocal(vertex);
+		const d4v = new THREE.Vector3();
+		const d5v = new THREE.Vector3();
+		const d6v = new THREE.Vector3();
 
-			indexedPositonForearm[i] = vertex;
-		}
+		d4.getWorldPosition(d4v);
+		d5.getWorldPosition(d5v);
+		d6.getWorldPosition(d6v);
 
-		console.log(indexedPositonForearm);
+		// console.log('d4', d4v);
+		// console.log('d5', d5v);
+		// console.log('d6', d6v);
 
-		const positionUpperarmArray =
-			uppderarm.geometry.getAttribute("position").array;
+		positionAfterRotation.current.push(d4v);
+		positionAfterRotation.current.push(d5v);
+		positionAfterRotation.current.push(d6v);
+	}
 
-		console.log(positionUpperarmArray);
+	function matrixFromPoints(a, b, c) {
+		const axis1 = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z-b.z).normalize()
+		const axis2 = new THREE.Vector3(c.x - b.x, c.y - b.y, c.z-b.z).normalize()
 
-		for (let j of upperarmBottomIdx) {
-			const targetVertex = indexedPositonForearm[armsMapping[j]];
+		const axis3 = new THREE.Vector3().crossVectors(axis1, axis2).normalize();
 
-			// console.log(target)
+		return new THREE.Matrix4().makeBasis(axis1, axis2, axis3);
+	}
 
-			positionUpperarmArray[j * 3] = targetVertex.x;
-			positionUpperarmArray[j * 3 + 1] = targetVertex.y;
-			positionUpperarmArray[j * 3 + 2] = targetVertex.z;
-		}
 
-		// const positionAttribute = forearm.geometry.getAttribute("position");
+	function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
 
-		// for (let i = 0; i < positionAttribute.count; i++) {
-		// 	// get world position of positions
-		// 	const vertex = new THREE.Vector3();
-		// 	vertex.fromBufferAttribute(positionAttribute, i);
+		const matrix1 = matrixFromPoints(a1, b1, c1);
+		const matrix1i = matrix1.invert();
 
-		// 	forearm.localToWorld(vertex);
+		const matrix2 = matrixFromPoints(a2, b2, c2);
 
-		// 	console.log(vertex);
-		// 	// console.log("x", positions[i]);
-		// 	// console.log("y", positions[i + 1]);
-		// 	// console.log("z", positions[i + 2]);
-		// 	uppderarm.worldToLocal(vertex);
+		const B = matrix2.multiply(matrix1i);
 
-		// 	// create a mapping from upperarm bottom to forearm top
+		const Q = new THREE.Quaternion();
 
-		// 	console.log(vertex);
-		// }
+		Q.setFromRotationMatrix(B);
 
-		uppderarm.geometry.attributes.position.needsUpdate = true; // required after the first render
+		const E = new THREE.Euler();
 
-		uppderarm.geometry.computeBoundingBox();
-		uppderarm.geometry.computeBoundingSphere();
+		// E.setFromQuaternion(Q);
+		E.setFromRotationMatrix(B);
 
-		forearm.geometry.attributes.position.needsUpdate = true; // required after the first render
+		console.log(E);
 
-		forearm.geometry.computeBoundingBox();
-		forearm.geometry.computeBoundingSphere();
+		// oplane.current.rotation.set(E.x, E.y, E.z)
+		oplane.current.applyQuaternion(Q);
 
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	function dotsHelper(vertices, group) {
-		if (!showDotsHelper.current) {
-			return;
-		}
-
-		for (const vertex of vertices) {
-			if (addedDots.current[JSON.stringify(vertex.pos)]) {
-				continue;
-			}
-
-			addedDots.current[JSON.stringify(vertex.pos)] = true;
-
-			const geometry = new THREE.BufferGeometry();
-			geometry.setAttribute(
-				"position",
-				new THREE.Float32BufferAttribute(vertex.pos, 3)
-			);
-
-			const material = new THREE.PointsMaterial({
-				size: 0.2,
-				color: 0xff0000,
-			});
-
-			const point = new THREE.Points(geometry, material);
-
-			point.userData.position = vertex.pos;
-
-			point.addEventListener("click", (event) => {
-				event.stopPropagation();
-				console.log(event.target.userData.position, event);
-			});
-
-			group.add(point);
-
-			interactionManager.current.add(point);
-		}
-
-		// points.userData.position =
-	}
-
-	// function onClickObject() {
-	// 	const raycaster = new THREE.Raycaster();
-	// 	const mouse = new THREE.Vector2();
-	// 	raycaster.setFromCamera(mouse, camera.current);
-
-	// 	const intersects = raycaster.intersectObjects(
-	// 		scene.current.children,
-	// 		true
-	// 	); //array
-
-	// 	if (intersects.length > 0) {
-	// 		const selectedObject = intersects[0];
-	// 		console.log(selectedObject.object.userData.position);
-	// 	}
-	// }
 
 	function _scene() {
 		const backgroundColor = 0x000000;
@@ -284,9 +254,9 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = 1;
+		camera.current.position.y = 5;
 		camera.current.position.x = 0;
-		camera.current.position.z = 5;
+		camera.current.position.z = 20;
 	}
 
 	function _light() {
@@ -354,8 +324,6 @@ export default function Playground3D() {
 		scene.current.rotation.y = moveAngle.current[0];
 		scene.current.rotation.x = moveAngle.current[1];
 
-		interactionManager.current.update();
-
 		renderer.current.render(scene.current, camera.current);
 	}
 
@@ -378,7 +346,7 @@ export default function Playground3D() {
 			<div className="btn-box">
 				<button
 					onClick={() => {
-						updateVertices();
+						quaternionFromPositions(...positionBeforeRotation.current, ...positionAfterRotation.current);
 					}}
 				>
 					action1
