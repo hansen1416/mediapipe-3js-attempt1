@@ -306,7 +306,14 @@ export default function GLBModel() {
 
 		const quaternion = quaternionFromPositions(a1, b1, c1, a2, b2, c2);
 
-		BodyParts.current["Hips"].applyQuaternion(quaternion);
+		const e = new THREE.Euler().setFromQuaternion(quaternion);
+
+		console.log(e);
+
+		// BodyParts.current["Hips"].applyQuaternion(quaternion);
+		BodyParts.current["Hips"].rotation.x = e.x;
+		BodyParts.current["Hips"].rotation.y = e.y;
+		BodyParts.current["Hips"].rotation.z = -e.z;
 	}
 
 	function moveArms(data) {
