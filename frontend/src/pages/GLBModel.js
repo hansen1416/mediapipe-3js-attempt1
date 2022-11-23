@@ -5,8 +5,8 @@ import { POSE_LANDMARKS } from "@mediapipe/pose";
 import {
 	loadGLTF,
 	middlePosition,
-	posePositionToVector,
-	quaternionFromVectors,
+	// posePositionToVector,
+	// quaternionFromVectors,
 	// vectorFromPointsMinus,
 	// matrixFromPoints,
 	quaternionFromPositions,
@@ -262,6 +262,8 @@ export default function GLBModel() {
 				moveSpine(data.data[0]);
 
 				moveArms(data.data[0]);
+
+				console.log(data.data[0])
 
 				renderer.current.render(scene.current, camera.current);
 			})

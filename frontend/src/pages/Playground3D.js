@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
+import { MatchManFigure } from "../models/MatchManFigure";
+import { POSE_LANDMARKS } from "@mediapipe/pose";
+import { posePositionToVector } from "../components/ropes";
+import { Euler } from "three";
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -35,8 +39,10 @@ export default function Playground3D() {
 
 		const containerCurrent = containerRef.current;
 
-		scene1();
-		scene2();
+		// scene1();
+		// scene2();
+
+		scene3();
 
 		return () => {
 			renderer.current.dispose();
@@ -46,6 +52,68 @@ export default function Playground3D() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	function scene3() {
+
+		function drawline(a, b) {
+
+			const va = new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+
+			const material = new THREE.LineBasicMaterial({color: 0xff0000});
+			const geometry = new THREE.BufferGeometry().setFromPoints([va, new THREE.Vector3(0,0,0)]);
+
+			geometry.setDrawRange(0, 2);
+
+			const line = new THREE.Line(geometry, material);
+
+			line.position.x = b[0];
+			line.position.y = b[1];
+			line.position.z = b[2];
+
+			return line
+		}
+		
+		const figure = new MatchManFigure(scene.current, [0, 0, 0]);
+
+		figure.init();
+
+		figure.pose_array(pose0);
+
+		// negate all points, that's what we did in the match man
+		for (let i in pose0) {
+			pose0[i][0] *= -figure.unit;
+			pose0[i][1] *= -figure.unit;
+			pose0[i][2] *= -figure.unit;
+		}
+
+		// pointing to the screen, negative z
+		const shoulderVector = posePositionToVector(pose0[POSE_LANDMARKS['LEFT_SHOULDER']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]).normalize();
+		// pointing up, negative y
+		const armVector = posePositionToVector(pose0[POSE_LANDMARKS['RIGHT_ELBOW']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]).normalize();
+
+		console.log('shoulderVector', shoulderVector, 'armVector', armVector);
+
+		const q = new THREE.Quaternion().setFromUnitVectors(shoulderVector, armVector);
+
+		// console.log(q);
+
+		const e =  new THREE.Euler().setFromQuaternion(q);
+
+		console.log(e);
+
+		const sline = drawline(pose0[POSE_LANDMARKS['LEFT_SHOULDER']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]);
+		const aline = drawline(pose0[POSE_LANDMARKS['RIGHT_ELBOW']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]);
+
+		sline.setRotationFromEuler(e);
+		// sline.setRotationFromQuaternion(q);
+
+		// sline.rotation.x = 0.3;
+
+		scene.current.add(sline);
+		scene.current.add(aline);
+
+		renderer.current.render(scene.current, camera.current);
+	}
 
 	function scene1() {
 		const m1 = new THREE.MeshBasicMaterial({
@@ -266,9 +334,9 @@ export default function Playground3D() {
 			1000
 		);
 
-		camera.current.position.y = 5;
+		camera.current.position.y = 0;
 		camera.current.position.x = 0;
-		camera.current.position.z = 20;
+		camera.current.position.z = 5;
 	}
 
 	function _light() {
@@ -370,3 +438,172 @@ export default function Playground3D() {
 		</div>
 	);
 }
+
+
+const pose0=[
+	[
+		-0.422926664352417,
+		-0.2454899698495865,
+		-0.08404576033353806
+	],
+	[
+		-0.4372890889644623,
+		-0.26829513907432556,
+		-0.08597814291715622
+	],
+	[
+		-0.44169163703918457,
+		-0.26922619342803955,
+		-0.0753883421421051
+	],
+	[
+		-0.4415387809276581,
+		-0.26750215888023376,
+		-0.07447941601276398
+	],
+	[
+		-0.4472062289714813,
+		-0.2715107500553131,
+		-0.12883999943733215
+	],
+	[
+		-0.44437190890312195,
+		-0.2728702425956726,
+		-0.14098531007766724
+	],
+	[
+		-0.429772287607193,
+		-0.27602407336235046,
+		-0.1197526678442955
+	],
+	[
+		-0.49715137481689453,
+		-0.21296706795692444,
+		-0.01785006746649742
+	],
+	[
+		-0.4529144763946533,
+		-0.17369212210178375,
+		-0.1677437424659729
+	],
+	[
+		-0.4370090365409851,
+		-0.21483366191387177,
+		-0.04892037436366081
+	],
+	[
+		-0.41412675380706787,
+		-0.20523272454738617,
+		-0.11715158820152283
+	],
+	[
+		-0.4426327645778656,
+		-0.13217781484127045,
+		0.08528824895620346
+	],
+	[
+		-0.4924888014793396,
+		-0.054376643151044846,
+		-0.09159767627716064
+	],
+	[
+		-0.4296969175338745,
+		-0.3371916115283966,
+		0.13946940004825592
+	],
+	[
+		-0.33591675758361816,
+		-0.2578006982803345,
+		-0.1965467929840088
+	],
+	[
+		-0.5671007037162781,
+		-0.27740681171417236,
+		0.2562633454799652
+	],
+	[
+		-0.5661914944648743,
+		-0.20261971652507782,
+		-0.1677282750606537
+	],
+	[
+		-0.6089069247245789,
+		-0.2588896155357361,
+		0.276468425989151
+	],
+	[
+		-0.6360843181610107,
+		-0.21063099801540375,
+		-0.21332024037837982
+	],
+	[
+		-0.6145117282867432,
+		-0.21649891138076782,
+		0.2844347655773163
+	],
+	[
+		-0.6589618921279907,
+		-0.19657352566719055,
+		-0.20501607656478882
+	],
+	[
+		-0.5609238147735596,
+		-0.2645043730735779,
+		0.2567789852619171
+	],
+	[
+		-0.5879640579223633,
+		-0.18410077691078186,
+		-0.16499176621437073
+	],
+	[
+		-0.004519591107964516,
+		-0.03329932689666748,
+		0.10094107687473297
+	],
+	[
+		-0.0002444775018375367,
+		0.029277265071868896,
+		-0.09858701378107071
+	],
+	[
+		0.2551214098930359,
+		-0.31879210472106934,
+		0.08803066611289978
+	],
+	[
+		0.2288740575313568,
+		-0.27649593353271484,
+		-0.11021888256072998
+	],
+	[
+		0.37234002351760864,
+		-0.023143356665968895,
+		0.22094738483428955
+	],
+	[
+		0.3670012354850769,
+		0.07860959321260452,
+		0.02339256927371025
+	],
+	[
+		0.3787204325199127,
+		0.045023124665021896,
+		0.24282822012901306
+	],
+	[
+		0.3730102479457855,
+		0.1328495442867279,
+		0.006673609837889671
+	],
+	[
+		0.4785938560962677,
+		0.12136072665452957,
+		0.2923670709133148
+	],
+	[
+		0.45371899008750916,
+		0.15646111965179443,
+		0.03221692144870758
+	]
+];
