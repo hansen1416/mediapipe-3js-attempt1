@@ -3,14 +3,16 @@ import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import {
+	box, unitline,
 	loadGLTF,
 	middlePosition,
-	// posePositionToVector,
+	posePositionToVector,
 	// quaternionFromVectors,
 	// vectorFromPointsMinus,
 	// matrixFromPoints,
 	quaternionFromPositions,
 } from "../components/ropes";
+import { Euler } from "three";
 
 export default function GLBModel() {
 	const canvasRef = useRef(null);
@@ -263,7 +265,7 @@ export default function GLBModel() {
 
 				moveArms(data.data[0]);
 
-				console.log(data.data[0])
+				// console.log(data.data[0])
 
 				renderer.current.render(scene.current, camera.current);
 			})
@@ -293,6 +295,7 @@ export default function GLBModel() {
 	// }
 
 	function moveSpine(data) {
+
 		const m1 = middlePosition(
 			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
@@ -310,7 +313,7 @@ export default function GLBModel() {
 
 		const e = new THREE.Euler().setFromQuaternion(quaternion);
 
-		console.log(e);
+		// console.log(e);
 
 		// BodyParts.current["Hips"].applyQuaternion(quaternion);
 		BodyParts.current["Hips"].rotation.x = e.x;
@@ -319,6 +322,115 @@ export default function GLBModel() {
 	}
 
 	function moveArms(data) {
+
+		const v1 = new THREE.Vector3();
+		const v2 = new THREE.Vector3();
+		const v3 = new THREE.Vector3();
+		const v4 = new THREE.Vector3();
+
+		BodyParts.current["LeftShoulder"].getWorldPosition(v1);
+		BodyParts.current["LeftArm"].getWorldPosition(v2);
+		BodyParts.current["LeftForeArm"].getWorldPosition(v3);
+		BodyParts.current["LeftHand"].getWorldPosition(v4);
+
+		const gp = new THREE.Group();
+
+		gp.position.x = 1;
+		gp.position.y = 0;
+		gp.position.z = 0;
+
+		const b1 = box(0.01);
+		const b2 = box(0.01);
+		const b3 = box(0.01);
+		const b4 = box(0.01);
+
+		b1.position.set(v1.x, v1.y, v1.z);
+		b2.position.set(v2.x, v2.y, v2.z);
+		b3.position.set(v3.x, v3.y, v3.z);
+		b4.position.set(v4.x, v4.y, v4.z);
+
+		// const l1 = unitline(v2, v3);
+		// const l2 = unitline(v3, v4);
+
+		// console.log(BodyParts.current["LeftShoulder"].rotation)
+
+		// console.log(BodyParts.current["LeftArm"].rotation)
+		
+		// l1.rotation.x = -BodyParts.current["LeftArm"].rotation.y
+		// l1.rotation.y = -BodyParts.current["LeftArm"].rotation.z
+		// l1.rotation.z = -BodyParts.current["LeftArm"].rotation.x
+
+		// l1.add(l2)
+
+		// l2.position.set(0,0,0)
+
+		// l2.rotation.x = -BodyParts.current["LeftForeArm"].rotation.y
+		// l2.rotation.y = -BodyParts.current["LeftForeArm"].rotation.z
+		// l2.rotation.z = -BodyParts.current["LeftForeArm"].rotation.x
+
+		const varm = v3.clone().sub(v2).normalize();
+		const vfarm = v4.clone().sub(v3).normalize();
+
+		const qs = new THREE.Quaternion().setFromEuler(BodyParts.current["LeftShoulder"].rotation);
+
+		// console.log(qs);
+		// console.log(qs.normalize());
+		// console.log(qs.conjugate());
+		
+		const varmt = posePositionToVector(data[POSE_LANDMARKS['LEFT_ELBOW']], data[POSE_LANDMARKS['LEFT_SHOULDER']]).normalize();
+
+		console.log(varmt);
+
+		const qt = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), varmt);
+		// const qt = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1));
+
+		const et = new THREE.Euler().setFromQuaternion(qt);
+
+		// console.log(et);
+
+		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
+		BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
+
+		BodyParts.current["LeftArm"].applyQuaternion(qt);
+
+
+		// const qx = new THREE.Quaternion().multiplyQuaternions(qt, qs.conjugate());
+
+		// console.log(qx);
+		// console.log(qx.normalize());
+
+		// const e = new THREE.Euler().setFromQuaternion(qx);
+
+		// console.log(e)
+
+		// // BodyParts.current["LeftArm"].applyQuaternion(qx)
+		// BodyParts.current["LeftArm"].rotation.set(e.x, e.y, e.z)
+
+		// console.log(varm, vfarm);
+
+		
+		// const vfarmt = posePositionToVector(data[POSE_LANDMARKS['LEFT_WRIST']], data[POSE_LANDMARKS['LEFT_ELBOW']]).normalize();
+		
+		// console.log(varmt, vfarmt);
+
+		// const q1 = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1,0,0), varmt);
+
+		// // l1.applyQuaternion(q1);
+
+		// const e1 = new THREE.Euler().setFromQuaternion(q1);
+
+		// console.log(e1);
+
+		gp.add(b1);
+		gp.add(b2);
+		gp.add(b3);
+		gp.add(b4);
+
+		// gp.add(l1);
+		// gp.add(l2);
+
+		scene.current.add(gp);
+
 		// const p1 = BodyParts.current["LeftArm"].position;
 		// const p2 = BodyParts.current["LeftForeArm"].position;
 		// const p3 = BodyParts.current["LeftHand"].position;
@@ -340,8 +452,8 @@ export default function GLBModel() {
 		// BodyParts.current["LeftArm"].applyQuaternion(quaternion);
 		// BodyParts.current["LeftShoulder"].position.x = 1.2;
 
-		BodyParts.current["LeftArm"].rotation.set(1.29, -0.74, 1.55);
-		BodyParts.current["LeftForeArm"].rotation.set(0, 0, 2.3);
+		// BodyParts.current["LeftArm"].rotation.set(1.29, -0.74, 1.55);
+		// BodyParts.current["LeftForeArm"].rotation.set(0, 0, 2.3);
 
 		// BodyParts.current["RightArm"].rotation.set(-1.29, -0.74, -1.55);
 		// BodyParts.current["RightForeArm"].rotation.set(0, 0, -2.3);

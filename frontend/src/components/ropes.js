@@ -264,6 +264,45 @@ export function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
 	return new THREE.Quaternion().setFromRotationMatrix(matrixFromPoints(a2, b2, c2).multiply(matrixFromPoints(a1, b1, c1).invert()));
 }
 
+export function box(size = 0.1, color = 0xffffff) {
+
+	const material = new THREE.MeshBasicMaterial({color: color})
+	const geo = new THREE.BoxGeometry(size, size, size);
+
+	return new THREE.Mesh(geo, material);
+}
+
+export function line(a, b, color=0xffffff) {
+
+	const c = b.clone().sub(a);
+
+	const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), c]);
+
+	geometry.setDrawRange(0, 2);
+
+	const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: color}));
+
+	line.position.set(a.x,a.y,a.z);
+
+	return line
+}
+
+export function unitline(a, b, color=0xffffff) {
+
+	const c = b.clone().sub(a);
+
+	const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),
+		new THREE.Vector3(c.length(),0,0)]);
+
+	geometry.setDrawRange(0, 2);
+
+	const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: color}));
+
+	line.position.set(a.x,a.y,a.z);
+
+	return line
+}
+
 /**
  * POSE_LANDMARKS
  * 
