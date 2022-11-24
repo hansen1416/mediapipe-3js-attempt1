@@ -3,7 +3,8 @@ import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import {
-	box, unitline,
+	box,
+	unitline,
 	loadGLTF,
 	middlePosition,
 	posePositionToVector,
@@ -261,9 +262,17 @@ export default function GLBModel() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				moveSpine(data.data[0]);
+				const data0 = data.data[0];
 
-				moveArms(data.data[0]);
+				for (let i in data0) {
+					data0[i][0] *= -1;
+					data0[i][1] *= -1;
+					data0[i][2] *= -1;
+				}
+
+				moveSpine(data0);
+
+				moveArms(data0);
 
 				// console.log(data.data[0])
 
@@ -295,7 +304,6 @@ export default function GLBModel() {
 	// }
 
 	function moveSpine(data) {
-
 		const m1 = middlePosition(
 			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
@@ -316,13 +324,35 @@ export default function GLBModel() {
 		// console.log(e);
 
 		// BodyParts.current["Hips"].applyQuaternion(quaternion);
-		BodyParts.current["Hips"].rotation.x = e.x;
-		BodyParts.current["Hips"].rotation.y = e.y;
-		BodyParts.current["Hips"].rotation.z = -e.z;
+		// BodyParts.current["Hips"].rotation.x = e.x;
+		// BodyParts.current["Hips"].rotation.y = e.y;
+		// BodyParts.current["Hips"].rotation.z = -e.z;
+
+		const varmt = posePositionToVector(
+			data[POSE_LANDMARKS["LEFT_ELBOW"]],
+			data[POSE_LANDMARKS["LEFT_SHOULDER"]]
+		).normalize();
+
+		console.log(
+			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
+			data[POSE_LANDMARKS["LEFT_ELBOW"]]
+		);
+
+		console.log(varmt);
+
+		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
+		BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
+
+		const q = new THREE.Quaternion().setFromUnitVectors(
+			new THREE.Vector3(0, 1, 0),
+			varmt
+		);
+
+		BodyParts.current["LeftArm"].applyQuaternion(q);
 	}
 
 	function moveArms(data) {
-
+		return;
 		const v1 = new THREE.Vector3();
 		const v2 = new THREE.Vector3();
 		const v3 = new THREE.Vector3();
@@ -355,7 +385,7 @@ export default function GLBModel() {
 		// console.log(BodyParts.current["LeftShoulder"].rotation)
 
 		// console.log(BodyParts.current["LeftArm"].rotation)
-		
+
 		// l1.rotation.x = -BodyParts.current["LeftArm"].rotation.y
 		// l1.rotation.y = -BodyParts.current["LeftArm"].rotation.z
 		// l1.rotation.z = -BodyParts.current["LeftArm"].rotation.x
@@ -371,17 +401,25 @@ export default function GLBModel() {
 		const varm = v3.clone().sub(v2).normalize();
 		const vfarm = v4.clone().sub(v3).normalize();
 
-		const qs = new THREE.Quaternion().setFromEuler(BodyParts.current["LeftShoulder"].rotation);
+		const qs = new THREE.Quaternion().setFromEuler(
+			BodyParts.current["LeftShoulder"].rotation
+		);
 
 		// console.log(qs);
 		// console.log(qs.normalize());
 		// console.log(qs.conjugate());
-		
-		const varmt = posePositionToVector(data[POSE_LANDMARKS['LEFT_ELBOW']], data[POSE_LANDMARKS['LEFT_SHOULDER']]).normalize();
+
+		const varmt = posePositionToVector(
+			data[POSE_LANDMARKS["LEFT_ELBOW"]],
+			data[POSE_LANDMARKS["LEFT_SHOULDER"]]
+		).normalize();
 
 		// console.log(varmt);
 
-		const qt = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), varmt);
+		const qt = new THREE.Quaternion().setFromUnitVectors(
+			new THREE.Vector3(0, 1, 0),
+			varmt
+		);
 		// const qt = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1));
 
 		const et = new THREE.Euler().setFromQuaternion(qt);
@@ -392,7 +430,6 @@ export default function GLBModel() {
 		BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
 
 		BodyParts.current["LeftArm"].applyQuaternion(qt);
-
 
 		// const qx = new THREE.Quaternion().multiplyQuaternions(qt, qs.conjugate());
 
@@ -408,9 +445,8 @@ export default function GLBModel() {
 
 		// console.log(varm, vfarm);
 
-		
 		// const vfarmt = posePositionToVector(data[POSE_LANDMARKS['LEFT_WRIST']], data[POSE_LANDMARKS['LEFT_ELBOW']]).normalize();
-		
+
 		// console.log(varmt, vfarmt);
 
 		// const q1 = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1,0,0), varmt);
@@ -507,12 +543,11 @@ export default function GLBModel() {
 
 		const c12 = new THREE.Vector3().crossVectors(c1, c2);
 		// const c21 = new THREE.Vector3().crossVectors(c2, c1);
-		console.log(c12)
+		console.log(c12);
 
 		const q1 = new THREE.Quaternion().setFromUnitVectors(c1, c3);
 
-		console.log(q1)
-
+		console.log(q1);
 
 		const c34 = c12.applyQuaternion(q1);
 
@@ -540,9 +575,7 @@ export default function GLBModel() {
 				>
 					action1
 				</button>
-				<button
-					onClick={experiment}
-				>experiment</button>
+				<button onClick={experiment}>experiment</button>
 			</div>
 		</div>
 	);
