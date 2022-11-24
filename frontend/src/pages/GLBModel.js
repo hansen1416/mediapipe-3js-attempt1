@@ -379,7 +379,7 @@ export default function GLBModel() {
 		
 		const varmt = posePositionToVector(data[POSE_LANDMARKS['LEFT_ELBOW']], data[POSE_LANDMARKS['LEFT_SHOULDER']]).normalize();
 
-		console.log(varmt);
+		// console.log(varmt);
 
 		const qt = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), varmt);
 		// const qt = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1));
@@ -496,6 +496,39 @@ export default function GLBModel() {
 		// BodyParts.current["RightForeArm"].applyQuaternion(q4);
 	}
 
+	function experiment() {
+		const c1 = new THREE.Vector3(0, 1, 0);
+		const c2 = new THREE.Vector3(-0.3, 0, 0.8).normalize();
+		const c3 = new THREE.Vector3(-1, 0, 0);
+		const c4 = new THREE.Vector3(0.8, 0.3, 0).normalize();
+
+		const angle = c1.angleTo(c2);
+		console.log(angle);
+
+		const c12 = new THREE.Vector3().crossVectors(c1, c2);
+		// const c21 = new THREE.Vector3().crossVectors(c2, c1);
+		console.log(c12)
+
+		const q1 = new THREE.Quaternion().setFromUnitVectors(c1, c3);
+
+		console.log(q1)
+
+
+		const c34 = c12.applyQuaternion(q1);
+
+		console.log(c34);
+
+		// const q2 = new THREE.Quaternion().setFromAxisAngle(c34, angle);
+
+		// const r = c3.clone().applyQuaternion(q2);
+
+		// console.log(r.normalize())
+
+		// c3.applyQuaternion(cq1);
+
+		// console.log(c3)
+	}
+
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
@@ -507,6 +540,9 @@ export default function GLBModel() {
 				>
 					action1
 				</button>
+				<button
+					onClick={experiment}
+				>experiment</button>
 			</div>
 		</div>
 	);
