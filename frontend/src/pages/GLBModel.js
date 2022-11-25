@@ -242,7 +242,7 @@ export default function GLBModel() {
 	function fetchPose(action_name) {
 		fetch(
 			process.env.REACT_APP_API_URL +
-				"/pose/data2?" +
+				"/pose/data?" +
 				new URLSearchParams({
 					action_name: action_name,
 				}),
@@ -265,7 +265,7 @@ export default function GLBModel() {
 
 				moveArms(data.data[0]);
 
-				// console.log(data.data[0])
+				console.log(data.data[0])
 
 				renderer.current.render(scene.current, camera.current);
 			})
@@ -512,7 +512,6 @@ export default function GLBModel() {
 		const q1 = new THREE.Quaternion().setFromUnitVectors(c1, c3);
 
 		console.log(q1)
-
 
 		const c34 = c12.applyQuaternion(q1);
 

@@ -192,7 +192,7 @@ export default function MatchMan() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
+				console.log(data.data[0]);
 
 				poseidx.current = 0;
 
