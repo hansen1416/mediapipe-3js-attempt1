@@ -304,38 +304,23 @@ export default function GLBModel() {
 	// }
 
 	function moveSpine(data) {
-		const m1 = middlePosition(
-			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
-			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
-		);
 
-		const a1 = new THREE.Vector3(-0.5, 0, 0);
-		const b1 = new THREE.Vector3(0, 1, 0);
-		const c1 = new THREE.Vector3(0.5, 0, 0);
+		const v01 = new THREE.Vector3(-1, 0, 0);
+		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
+		const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
+		const cross02 = new THREE.Vector3().crossVectors(cross01, v01).normalize();
 
-		const a2 = new THREE.Vector3(...data[POSE_LANDMARKS["LEFT_HIP"]]);
-		const b2 = new THREE.Vector3(...m1);
-		const c2 = new THREE.Vector3(...data[POSE_LANDMARKS["RIGHT_HIP"]]);
+		const vt1 = posePositionToVector(data[POSE_LANDMARKS["LEFT_HIP"]], data[POSE_LANDMARKS["RIGHT_HIP"]]).normalize();
+		const vt2 = posePositionToVector(data[POSE_LANDMARKS["LEFT_SHOULDER"]], data[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
 
-		const quaternion = quaternionFromPositions(a1, b1, c1, a2, b2, c2);
+		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
+		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1).normalize();
 
-		// const e = new THREE.Euler().setFromQuaternion(quaternion);
-		// {
-		// 	"isEuler": true,
-		// 	"_x": 1.9337028832400607,
-		// 	"_y": 0.18437028691043733,
-		// 	"_z": -1.5075469173090355,
-		// 	"_order": "XYZ"
-		// }
-		const e = new THREE.Euler(-1.9337028832400607,0.18437028691043733,1.5075469173090355);
-
-		console.log(e);
-
+		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
 		// BodyParts.current["Hips"].applyQuaternion(quaternion);
-		// BodyParts.current["Hips"].rotation.x = e.x;
-		// BodyParts.current["Hips"].rotation.y = e.y;
-		// BodyParts.current["Hips"].rotation.z = -e.z;
+		BodyParts.current["Hips"].applyQuaternion(q_spine);
 
+		return;
 		const varmt = posePositionToVector(
 			data[POSE_LANDMARKS["LEFT_ELBOW"]],
 			data[POSE_LANDMARKS["LEFT_SHOULDER"]]

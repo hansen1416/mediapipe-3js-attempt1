@@ -80,11 +80,8 @@ export default function Playground3D() {
 		 */
 		const v01 = new THREE.Vector3(-1, 0, 0);
 		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
-		const cross01 = new THREE.Vector3().crossVectors(v01, v02);
-		const cross02 = new THREE.Vector3().crossVectors(cross01, v01);
-
-		console.log('cross01', cross01);
-		console.log('cross02', cross02);
+		const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
+		const cross02 = new THREE.Vector3().crossVectors(cross01, v01).normalize();
 
 		const vt1 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_HIP"]], pose0[POSE_LANDMARKS["RIGHT_HIP"]]).normalize();
 		const vt2 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_SHOULDER"]], pose0[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
@@ -94,11 +91,11 @@ export default function Playground3D() {
 		// const vt1 = new THREE.Vector3(0, 0, -1);
 		// const vt2 = new THREE.Vector3(1, 0, 0.2).normalize();
 
-		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2);
-		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1);
+		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
+		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1).normalize();
 
-		console.log('cross11', cross11);
-		console.log('cross12', cross12);
+		console.log('basis0', v01, cross01, cross02);
+		console.log('basis1', vt1, cross11, cross12);
 
 		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
 
