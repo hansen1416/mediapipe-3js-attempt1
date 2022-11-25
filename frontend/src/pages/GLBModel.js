@@ -265,7 +265,7 @@ export default function GLBModel() {
 
 				moveArms(data.data[0]);
 
-				console.log(data.data[0])
+				// console.log(data.data[0])
 
 				renderer.current.render(scene.current, camera.current);
 			})
@@ -311,9 +311,17 @@ export default function GLBModel() {
 
 		const quaternion = quaternionFromPositions(a1, b1, c1, a2, b2, c2);
 
-		const e = new THREE.Euler().setFromQuaternion(quaternion);
+		// const e = new THREE.Euler().setFromQuaternion(quaternion);
+		// {
+		// 	"isEuler": true,
+		// 	"_x": 1.9337028832400607,
+		// 	"_y": 0.18437028691043733,
+		// 	"_z": -1.5075469173090355,
+		// 	"_order": "XYZ"
+		// }
+		const e = new THREE.Euler(-1.9337028832400607,0.18437028691043733,1.5075469173090355);
 
-		// console.log(e);
+		console.log(e);
 
 		// BodyParts.current["Hips"].applyQuaternion(quaternion);
 		BodyParts.current["Hips"].rotation.x = e.x;

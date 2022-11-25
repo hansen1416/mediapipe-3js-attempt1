@@ -366,3 +366,10 @@ export const pose0 = [
         0.05998455113764933
     ]
 ]
+
+// compatible with mediapipe pose basis, they are opposite with the basis in threejs
+for (let i in pose0) {
+    pose0[i][0] *= -1;
+    pose0[i][1] *= -1;
+    pose0[i][2] *= -1;
+}

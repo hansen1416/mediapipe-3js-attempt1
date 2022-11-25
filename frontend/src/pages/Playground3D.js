@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { MatchManFigure } from "../models/MatchManFigure";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { posePositionToVector } from "../components/ropes";
-import { pose0, pose1 } from "../components/mypose";
+import { posePositionToVector, quaternionFromPositions } from "../components/ropes";
+import { pose0 } from "../components/mypose";
 
 export default function Playground3D() {
 	const canvasRef = useRef(null);
@@ -57,19 +57,21 @@ export default function Playground3D() {
 	function scene4() {
 		camera.current.position.y = 1;
 
-		for (let i in pose0) {
-			if (pose0[i][0] != pose1[i][0]) {
-				console.log('not equal', i, 0, pose0[i][0], pose1[i][0])
-			}
+		const v01 = new THREE.Vector3(-1, 0, 0);
+		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
+		const cross0 = new THREE.Vector3().crossVectors(v02, v01);
 
-			if (pose0[i][1] != pose1[i][1]) {
-				console.log('not equal', i,1, pose0[i][1], pose1[i][1])
-			}
+		const vt1 = posePositionToVector(pose0[POSE_LANDMARKS["RIGHT_HIP"]], pose0[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
+		const vt2 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_SHOULDER"]], pose0[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
+		const cross1 = new THREE.Vector3().crossVectors(vt2, vt1);
 
-			if (pose0[i][2] != pose1[i][2]) {
-				console.log('not equal', i,2, pose0[i][2], pose1[i][2])
-			}
-		}
+		const q_spine = quaternionFromPositions(v01, v02, cross0, vt1, vt2, cross1);
+
+		console.log(q_spine);
+
+		const e_spine = new THREE.Euler().setFromQuaternion(q_spine);
+
+		console.log(e_spine);
 
 		renderer.current.render(scene.current, camera.current);
 	}
@@ -277,49 +279,49 @@ export default function Playground3D() {
 		positionAfterRotation.current.push(d6v);
 	}
 
-	function matrixFromPoints(a, b, c) {
-		const axis1 = new THREE.Vector3(
-			a.x - b.x,
-			a.y - b.y,
-			a.z - b.z
-		).normalize();
-		const axis2 = new THREE.Vector3(
-			c.x - b.x,
-			c.y - b.y,
-			c.z - b.z
-		).normalize();
+	// function matrixFromPoints(a, b, c) {
+	// 	const axis1 = new THREE.Vector3(
+	// 		a.x - b.x,
+	// 		a.y - b.y,
+	// 		a.z - b.z
+	// 	).normalize();
+	// 	const axis2 = new THREE.Vector3(
+	// 		c.x - b.x,
+	// 		c.y - b.y,
+	// 		c.z - b.z
+	// 	).normalize();
 
-		const axis3 = new THREE.Vector3()
-			.crossVectors(axis1, axis2)
-			.normalize();
+	// 	const axis3 = new THREE.Vector3()
+	// 		.crossVectors(axis1, axis2)
+	// 		.normalize();
 
-		return new THREE.Matrix4().makeBasis(axis1, axis2, axis3);
-	}
+	// 	return new THREE.Matrix4().makeBasis(axis1, axis2, axis3);
+	// }
 
-	function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
-		const matrix1 = matrixFromPoints(a1, b1, c1);
-		const matrix1i = matrix1.invert();
+	// function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
+	// 	const matrix1 = matrixFromPoints(a1, b1, c1);
+	// 	const matrix1i = matrix1.invert();
 
-		const matrix2 = matrixFromPoints(a2, b2, c2);
+	// 	const matrix2 = matrixFromPoints(a2, b2, c2);
 
-		const B = matrix2.multiply(matrix1i);
+	// 	const B = matrix2.multiply(matrix1i);
 
-		const Q = new THREE.Quaternion();
+	// 	const Q = new THREE.Quaternion();
 
-		Q.setFromRotationMatrix(B);
+	// 	Q.setFromRotationMatrix(B);
 
-		const E = new THREE.Euler();
+	// 	const E = new THREE.Euler();
 
-		// E.setFromQuaternion(Q);
-		E.setFromRotationMatrix(B);
+	// 	// E.setFromQuaternion(Q);
+	// 	E.setFromRotationMatrix(B);
 
-		console.log(E);
+	// 	console.log(E);
 
-		// oplane.current.rotation.set(E.x, E.y, E.z)
-		oplane.current.applyQuaternion(Q);
+	// 	// oplane.current.rotation.set(E.x, E.y, E.z)
+	// 	oplane.current.applyQuaternion(Q);
 
-		renderer.current.render(scene.current, camera.current);
-	}
+	// 	renderer.current.render(scene.current, camera.current);
+	// }
 
 	function _scene() {
 		const backgroundColor = 0x000000;
