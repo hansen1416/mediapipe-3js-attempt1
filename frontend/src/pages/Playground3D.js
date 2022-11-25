@@ -21,6 +21,8 @@ export default function Playground3D() {
 
 	const oplane = useRef(null);
 
+	const cbox = useRef(null);
+
 	useEffect(() => {
 		_scene();
 
@@ -57,21 +59,56 @@ export default function Playground3D() {
 	function scene4() {
 		camera.current.position.y = 1;
 
+		cbox.current = colorfulBox();
+
+		scene.current.add(cbox.current);
+
+		renderer.current.render(scene.current, camera.current);
+	}
+
+	function action2() {
+		/**
+		 * this function find the proper quaternion for the spine
+		 * 
+		 * the source of the pose is from mediapose data, using positions of LEFT_HIP,RIGHT_HIP,LEFT_SHOULDER
+		 * these 3 points form a coords basis
+		 * 
+		 * assume the initial basis of a human figure is -1, 0, 0,for right hip, 0,0,0 for left hip, 0.2,1,0 for left shoulder
+		 * these 3 points also form a coords basis
+		 * 
+		 * loggically, `vt1` should be RIGHT_HIP -> LEFT_HIP, for later investigation
+		 */
 		const v01 = new THREE.Vector3(-1, 0, 0);
 		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
-		const cross0 = new THREE.Vector3().crossVectors(v02, v01);
+		const cross01 = new THREE.Vector3().crossVectors(v01, v02);
+		const cross02 = new THREE.Vector3().crossVectors(cross01, v01);
 
-		const vt1 = posePositionToVector(pose0[POSE_LANDMARKS["RIGHT_HIP"]], pose0[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
+		console.log('cross01', cross01);
+		console.log('cross02', cross02);
+
+		const vt1 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_HIP"]], pose0[POSE_LANDMARKS["RIGHT_HIP"]]).normalize();
 		const vt2 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_SHOULDER"]], pose0[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
-		const cross1 = new THREE.Vector3().crossVectors(vt2, vt1);
 
-		const q_spine = quaternionFromPositions(v01, v02, cross0, vt1, vt2, cross1);
+		// console.log('vt1m', vt1m, 'vt2m', vt2m)
+
+		// const vt1 = new THREE.Vector3(0, 0, -1);
+		// const vt2 = new THREE.Vector3(1, 0, 0.2).normalize();
+
+		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2);
+		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1);
+
+		console.log('cross11', cross11);
+		console.log('cross12', cross12);
+
+		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
 
 		console.log(q_spine);
 
 		const e_spine = new THREE.Euler().setFromQuaternion(q_spine);
 
 		console.log(e_spine);
+
+		cbox.current.applyQuaternion(q_spine);
 
 		renderer.current.render(scene.current, camera.current);
 	}
@@ -279,49 +316,33 @@ export default function Playground3D() {
 		positionAfterRotation.current.push(d6v);
 	}
 
-	// function matrixFromPoints(a, b, c) {
-	// 	const axis1 = new THREE.Vector3(
-	// 		a.x - b.x,
-	// 		a.y - b.y,
-	// 		a.z - b.z
-	// 	).normalize();
-	// 	const axis2 = new THREE.Vector3(
-	// 		c.x - b.x,
-	// 		c.y - b.y,
-	// 		c.z - b.z
-	// 	).normalize();
+	function colorfulBox() {
+		const boxgeo = new THREE.BoxGeometry(2, 3, 1);
 
-	// 	const axis3 = new THREE.Vector3()
-	// 		.crossVectors(axis1, axis2)
-	// 		.normalize();
+		const positionAttribute = boxgeo.getAttribute('position');
+		const colors = [];
 
-	// 	return new THREE.Matrix4().makeBasis(axis1, axis2, axis3);
-	// }
+		const color = new THREE.Color();
 
-	// function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
-	// 	const matrix1 = matrixFromPoints(a1, b1, c1);
-	// 	const matrix1i = matrix1.invert();
+		for (let i = 0; i < positionAttribute.count; i += 6) {
 
-	// 	const matrix2 = matrixFromPoints(a2, b2, c2);
+			color.setHex(0xffffff * (i+1) / (positionAttribute.count + 5));
 
-	// 	const B = matrix2.multiply(matrix1i);
+			colors.push(color.r, color.g, color.b);
+			colors.push(color.r, color.g, color.b);
+			colors.push(color.r, color.g, color.b);
 
-	// 	const Q = new THREE.Quaternion();
+			colors.push(color.r, color.g, color.b);
+			colors.push(color.r, color.g, color.b);
+			colors.push(color.r, color.g, color.b);
+		} // for
 
-	// 	Q.setFromRotationMatrix(B);
+		// define the new attribute
+		boxgeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-	// 	const E = new THREE.Euler();
-
-	// 	// E.setFromQuaternion(Q);
-	// 	E.setFromRotationMatrix(B);
-
-	// 	console.log(E);
-
-	// 	// oplane.current.rotation.set(E.x, E.y, E.z)
-	// 	oplane.current.applyQuaternion(Q);
-
-	// 	renderer.current.render(scene.current, camera.current);
-	// }
+		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true });
+		return new THREE.Mesh(boxgeo, material);
+	}
 
 	function _scene() {
 		const backgroundColor = 0x000000;
@@ -456,6 +477,13 @@ export default function Playground3D() {
 					}}
 				>
 					action1
+				</button>
+				<button
+					onClick={() => {
+						action2();
+					}}
+				>
+					action2
 				</button>
 			</div>
 		</div>
