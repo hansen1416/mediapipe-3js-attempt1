@@ -3,7 +3,10 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { MatchManFigure } from "../models/MatchManFigure";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
-import { posePositionToVector, quaternionFromPositions } from "../components/ropes";
+import {
+	posePositionToVector,
+	quaternionFromPositions,
+} from "../components/ropes";
 import { pose0 } from "../components/mypose";
 
 export default function Playground3D() {
@@ -63,7 +66,7 @@ export default function Playground3D() {
 
 		cbox.current = colorfulBox();
 		armbox.current = colorfulBox(0.5, 2, 0.5);
-		handbox.current = colorfulBox(0.3,0.3,0.3);
+		handbox.current = colorfulBox(0.3, 0.3, 0.3);
 
 		armbox.current.position.x = 1;
 		armbox.current.position.y = 1.5;
@@ -73,7 +76,7 @@ export default function Playground3D() {
 
 		handbox.current.position.y = 1.1;
 
-		cbox.current.add(armbox.current)
+		cbox.current.add(armbox.current);
 
 		scene.current.add(cbox.current);
 
@@ -83,22 +86,30 @@ export default function Playground3D() {
 	function action2() {
 		/**
 		 * this function find the proper quaternion for the spine
-		 * 
+		 *
 		 * the source of the pose is from mediapose data, using positions of LEFT_HIP,RIGHT_HIP,LEFT_SHOULDER
 		 * these 3 points form a coords basis
-		 * 
+		 *
 		 * assume the initial basis of a human figure is -1, 0, 0,for right hip, 0,0,0 for left hip, 0.2,1,0 for left shoulder
 		 * these 3 points also form a coords basis
-		 * 
+		 *
 		 * loggically, `vt1` should be RIGHT_HIP -> LEFT_HIP, for later investigation
 		 */
 		const v01 = new THREE.Vector3(-1, 0, 0);
 		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
 		const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
-		const cross02 = new THREE.Vector3().crossVectors(cross01, v01).normalize();
+		const cross02 = new THREE.Vector3()
+			.crossVectors(cross01, v01)
+			.normalize();
 
-		const vt1 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_HIP"]], pose0[POSE_LANDMARKS["RIGHT_HIP"]]).normalize();
-		const vt2 = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_SHOULDER"]], pose0[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
+		const vt1 = posePositionToVector(
+			pose0[POSE_LANDMARKS["LEFT_HIP"]],
+			pose0[POSE_LANDMARKS["RIGHT_HIP"]]
+		).normalize();
+		const vt2 = posePositionToVector(
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]],
+			pose0[POSE_LANDMARKS["RIGHT_HIP"]]
+		).normalize();
 
 		// console.log('vt1m', vt1m, 'vt2m', vt2m)
 
@@ -106,46 +117,119 @@ export default function Playground3D() {
 		// const vt2 = new THREE.Vector3(1, 0, 0.2).normalize();
 
 		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
-		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1).normalize();
+		const cross12 = new THREE.Vector3()
+			.crossVectors(cross11, vt1)
+			.normalize();
 
-		// console.log('basis0', v01, cross01, cross02);
-		// console.log('basis1', vt1, cross11, cross12);
+		// console.log("basis0", v01, cross01, cross02);
+		// console.log("basis1", vt1, cross11, cross12);
 
-		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
+		const q_spine = quaternionFromPositions(
+			v01,
+			cross01,
+			cross02,
+			vt1,
+			cross11,
+			cross12
+		);
 
 		// console.log(q_spine);
 
 		cbox.current.applyQuaternion(q_spine);
 
 		// move arm
-		const arm_origin_vector = new THREE.Vector3(0,1,0);
+		const arm_origin_vector = new THREE.Vector3(0, 1, 0);
 
 		// arm_origin_vector.applyQuaternion(q_spine);
 
-		console.log('arm_origin_vector', arm_origin_vector);
+		// console.log("arm_origin_vector", arm_origin_vector);
 
-		// const arm_target_vector = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_ELBOW"]], pose0[POSE_LANDMARKS["LEFT_SHOULDER"]]).normalize();
 		const arm_target_vector = new THREE.Vector3(0.2, -0.4, 1).normalize();
 
-		console.log('arm_target_vector', arm_target_vector);
+		// console.log("arm_target_vector", arm_target_vector);
 
-		const q_arm = new THREE.Quaternion().setFromUnitVectors(arm_origin_vector,arm_target_vector);
+		const q_arm = new THREE.Quaternion().setFromUnitVectors(
+			arm_origin_vector,
+			arm_target_vector
+		);
 
-		console.log(q_arm);
+		// console.log(q_arm);
 
-		armbox.current.applyQuaternion(q_arm)
+		// armbox.current.applyQuaternion(q_arm);
+
+		// renderer.current.render(scene.current, camera.current);
+
+		/**
+		 * note that in media pose, left and right are reversed. becasue we multiplied -1 to everything
+		 */
+
+		// testing change of basis
+		const arm_target_vector_transfered_basis = posePositionToVector(
+			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]],
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		).normalize();
+
+		console.log(
+			"arm_target_vector_transfered_basis",
+			arm_target_vector_transfered_basis
+		);
+
+		const origin_frame = new THREE.Matrix4().makeBasis(
+			v01,
+			cross01,
+			cross02
+		);
+
+		const action_frame = new THREE.Matrix4().makeBasis(
+			vt1,
+			cross11,
+			cross12
+		);
+		/**
+		 * this transfer is from the target frame to the initial frame
+		 * because in the arm's local transform, it is same as initial frame
+		 *
+		 * A_origin * A_target^{-1}
+		 *
+		 * after apply this rotation to the observed arm vector, it's back to the origin coords frame
+		 * therefore we can calculate the arm rotation from the initial (0,1,0) vector
+		 */
+		const q_action_to_origin = new THREE.Quaternion().setFromRotationMatrix(
+			origin_frame.multiply(action_frame.invert())
+		);
+
+		console.log(q_action_to_origin);
+
+		arm_target_vector_transfered_basis
+			.applyQuaternion(q_action_to_origin)
+			.normalize();
+
+		console.log(
+			"arm_target_vector_transfered_basis",
+			arm_target_vector_transfered_basis
+		);
+
+		const q_arm_changed_basis = new THREE.Quaternion().setFromUnitVectors(
+			arm_origin_vector,
+			arm_target_vector_transfered_basis
+		);
+
+		console.log(q_arm_changed_basis);
+
+		armbox.current.applyQuaternion(q_arm);
 
 		renderer.current.render(scene.current, camera.current);
 	}
 
 	function scene3() {
-
 		function drawline(a, b) {
-
 			const va = new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
-			const material = new THREE.LineBasicMaterial({color: 0xff0000});
-			const geometry = new THREE.BufferGeometry().setFromPoints([va, new THREE.Vector3(0,0,0)]);
+			const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+			const geometry = new THREE.BufferGeometry().setFromPoints([
+				va,
+				new THREE.Vector3(0, 0, 0),
+			]);
 
 			geometry.setDrawRange(0, 2);
 
@@ -155,9 +239,9 @@ export default function Playground3D() {
 			line.position.y = b[1];
 			line.position.z = b[2];
 
-			return line
+			return line;
 		}
-		
+
 		const figure = new MatchManFigure(scene.current, [0, 0, 0]);
 
 		figure.init();
@@ -172,22 +256,37 @@ export default function Playground3D() {
 		}
 
 		// pointing to the screen, negative z
-		const shoulderVector = posePositionToVector(pose0[POSE_LANDMARKS['LEFT_SHOULDER']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]).normalize();
+		const shoulderVector = posePositionToVector(
+			pose0[POSE_LANDMARKS["LEFT_SHOULDER"]],
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		).normalize();
 		// pointing up, negative y
-		const armVector = posePositionToVector(pose0[POSE_LANDMARKS['RIGHT_ELBOW']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]).normalize();
+		const armVector = posePositionToVector(
+			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]],
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		).normalize();
 
-		console.log('shoulderVector', shoulderVector, 'armVector', armVector);
+		console.log("shoulderVector", shoulderVector, "armVector", armVector);
 
-		const q = new THREE.Quaternion().setFromUnitVectors(shoulderVector, armVector);
+		const q = new THREE.Quaternion().setFromUnitVectors(
+			shoulderVector,
+			armVector
+		);
 
 		// console.log(q);
 
-		const e =  new THREE.Euler().setFromQuaternion(q);
+		const e = new THREE.Euler().setFromQuaternion(q);
 
 		console.log(e);
 
-		const sline = drawline(pose0[POSE_LANDMARKS['LEFT_SHOULDER']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]);
-		const aline = drawline(pose0[POSE_LANDMARKS['RIGHT_ELBOW']], pose0[POSE_LANDMARKS['RIGHT_SHOULDER']]);
+		const sline = drawline(
+			pose0[POSE_LANDMARKS["LEFT_SHOULDER"]],
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		);
+		const aline = drawline(
+			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]],
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		);
 
 		sline.setRotationFromEuler(e);
 		// sline.setRotationFromQuaternion(q);
@@ -341,17 +440,16 @@ export default function Playground3D() {
 		positionAfterRotation.current.push(d6v);
 	}
 
-	function colorfulBox(width=2, height=3, depth=1) {
+	function colorfulBox(width = 2, height = 3, depth = 1) {
 		const boxgeo = new THREE.BoxGeometry(width, height, depth);
 
-		const positionAttribute = boxgeo.getAttribute('position');
+		const positionAttribute = boxgeo.getAttribute("position");
 		const colors = [];
 
 		const color = new THREE.Color();
 
 		for (let i = 0; i < positionAttribute.count; i += 6) {
-
-			color.setHex(0xffffff * (i+1) / (positionAttribute.count + 5));
+			color.setHex((0xffffff * (i + 1)) / (positionAttribute.count + 5));
 
 			colors.push(color.r, color.g, color.b);
 			colors.push(color.r, color.g, color.b);
@@ -363,9 +461,15 @@ export default function Playground3D() {
 		} // for
 
 		// define the new attribute
-		boxgeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+		boxgeo.setAttribute(
+			"color",
+			new THREE.Float32BufferAttribute(colors, 3)
+		);
 
-		const material = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true });
+		const material = new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			vertexColors: true,
+		});
 		return new THREE.Mesh(boxgeo, material);
 	}
 
@@ -514,4 +618,3 @@ export default function Playground3D() {
 		</div>
 	);
 }
-

@@ -77,17 +77,18 @@ export default function MatchMan() {
 		// const axesHelper = new THREE.AxesHelper(5);
 		// scene.current.add(axesHelper);
 
-		figure.current = new MatchManFigure(scene.current, [-3, -1, 0]);
+		// figure.current = new MatchManFigure(scene.current, [-3, -1, 0]);
+		figure.current = new MatchManFigure(scene.current);
 
 		figure.current.init();
 
 		figure.current.pose_dict(tmppose);
 
-		figure2.current = new MatchManFigure(scene.current, [3, -1, 0]);
+		// figure2.current = new MatchManFigure(scene.current, [3, -1, 0]);
 
-		figure2.current.init();
+		// figure2.current.init();
 
-		figure2.current.pose_dict(tmppose);
+		// figure2.current.pose_dict(tmppose);
 
 		camera.current.position.y = 0;
 		camera.current.position.x = 0;
@@ -390,7 +391,7 @@ export default function MatchMan() {
 				<button
 					onClick={() => {
 						fetchPose("800-900");
-						fetchPose2("800-900");
+						// fetchPose2("800-900");
 					}}
 				>
 					action1

@@ -117,11 +117,25 @@ export class MatchManFigure {
 
 		for (let name in POSE_LANDMARKS) {
 			if (landmark[POSE_LANDMARKS[name]]) {
+				// if (name === "RIGHT_ELBOW") {
+				// 	console.log(name, [
+				// 		landmark[POSE_LANDMARKS[name]][0],
+				// 		landmark[POSE_LANDMARKS[name]][1],
+				// 		landmark[POSE_LANDMARKS[name]][2],
+				// 	]);
+
+				// 	this.joints[name].position.set(
+				// 		landmark[POSE_LANDMARKS[name]][0] * -this.unit,
+				// 		landmark[POSE_LANDMARKS[name]][1] * -this.unit,
+				// 		landmark[POSE_LANDMARKS[name]][2] * -this.unit * 2
+				// 	);
+				// } else {
 				this.joints[name].position.set(
 					landmark[POSE_LANDMARKS[name]][0] * -this.unit,
 					landmark[POSE_LANDMARKS[name]][1] * -this.unit,
 					landmark[POSE_LANDMARKS[name]][2] * -this.unit
 				);
+				// }
 			}
 		}
 
