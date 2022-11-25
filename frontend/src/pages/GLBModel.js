@@ -304,7 +304,7 @@ export default function GLBModel() {
 	// }
 
 	function moveSpine(data) {
-
+		// move the spine start
 		const v01 = new THREE.Vector3(-1, 0, 0);
 		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
 		const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
@@ -319,29 +319,27 @@ export default function GLBModel() {
 		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
 		// BodyParts.current["Hips"].applyQuaternion(quaternion);
 		BodyParts.current["Hips"].applyQuaternion(q_spine);
+		// move the spine end
 
-		return;
-		const varmt = posePositionToVector(
-			data[POSE_LANDMARKS["LEFT_ELBOW"]],
-			data[POSE_LANDMARKS["LEFT_SHOULDER"]]
-		).normalize();
-
-		console.log(
-			data[POSE_LANDMARKS["LEFT_SHOULDER"]],
-			data[POSE_LANDMARKS["LEFT_ELBOW"]]
-		);
-
-		console.log(varmt);
-
+		// move the left arm start
 		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
 		BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
 
-		const q = new THREE.Quaternion().setFromUnitVectors(
-			new THREE.Vector3(0, 1, 0),
-			varmt
-		);
+
+		/**
+		{
+			"isQuaternion": true,
+			"_x": -0.09940845909091443,
+			"_y": 0.16007904376804566,
+			"_z": 0.6337582701603749,
+			"_w": 0.7502287071359022
+		}
+		*/
+		const q = new THREE.Quaternion(-0.09940845909091443,0.16007904376804566,0.6337582701603749,0.7502287071359022);
 
 		BodyParts.current["LeftArm"].applyQuaternion(q);
+
+		// move the left arm end
 	}
 
 	function moveArms(data) {

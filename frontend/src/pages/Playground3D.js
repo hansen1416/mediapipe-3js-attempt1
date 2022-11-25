@@ -22,6 +22,8 @@ export default function Playground3D() {
 	const oplane = useRef(null);
 
 	const cbox = useRef(null);
+	const armbox = useRef(null);
+	const handbox = useRef(null);
 
 	useEffect(() => {
 		_scene();
@@ -60,6 +62,18 @@ export default function Playground3D() {
 		camera.current.position.y = 1;
 
 		cbox.current = colorfulBox();
+		armbox.current = colorfulBox(0.5, 2, 0.5);
+		handbox.current = colorfulBox(0.3,0.3,0.3);
+
+		armbox.current.position.x = 1;
+		armbox.current.position.y = 1.5;
+		armbox.current.position.z = 0;
+
+		armbox.current.add(handbox.current);
+
+		handbox.current.position.y = 1.1;
+
+		cbox.current.add(armbox.current)
 
 		scene.current.add(cbox.current);
 
@@ -94,18 +108,32 @@ export default function Playground3D() {
 		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
 		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1).normalize();
 
-		console.log('basis0', v01, cross01, cross02);
-		console.log('basis1', vt1, cross11, cross12);
+		// console.log('basis0', v01, cross01, cross02);
+		// console.log('basis1', vt1, cross11, cross12);
 
 		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
 
-		console.log(q_spine);
-
-		const e_spine = new THREE.Euler().setFromQuaternion(q_spine);
-
-		console.log(e_spine);
+		// console.log(q_spine);
 
 		cbox.current.applyQuaternion(q_spine);
+
+		// move arm
+		const arm_origin_vector = new THREE.Vector3(0,1,0);
+
+		// arm_origin_vector.applyQuaternion(q_spine);
+
+		console.log('arm_origin_vector', arm_origin_vector);
+
+		// const arm_target_vector = posePositionToVector(pose0[POSE_LANDMARKS["LEFT_ELBOW"]], pose0[POSE_LANDMARKS["LEFT_SHOULDER"]]).normalize();
+		const arm_target_vector = new THREE.Vector3(0.2, -0.4, 1).normalize();
+
+		console.log('arm_target_vector', arm_target_vector);
+
+		const q_arm = new THREE.Quaternion().setFromUnitVectors(arm_origin_vector,arm_target_vector);
+
+		console.log(q_arm);
+
+		armbox.current.applyQuaternion(q_arm)
 
 		renderer.current.render(scene.current, camera.current);
 	}
@@ -313,8 +341,8 @@ export default function Playground3D() {
 		positionAfterRotation.current.push(d6v);
 	}
 
-	function colorfulBox() {
-		const boxgeo = new THREE.BoxGeometry(2, 3, 1);
+	function colorfulBox(width=2, height=3, depth=1) {
+		const boxgeo = new THREE.BoxGeometry(width, height, depth);
 
 		const positionAttribute = boxgeo.getAttribute('position');
 		const colors = [];
