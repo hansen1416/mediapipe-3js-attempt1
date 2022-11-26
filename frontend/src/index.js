@@ -18,7 +18,7 @@ import Video from "./pages/Video";
 import WebCamera from "./pages/WebCamera";
 import Playground3D from "./pages/Playground3D";
 import GLBModelStatic from "./pages/GLBModelStatic";
-import GLBModel from "./pages/GLBModel";
+import RotatableScene from "./pages/RotatableScene";
 
 const router = createBrowserRouter([
 	{
@@ -64,7 +64,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/glbmodel",
-				element: <GLBModel />,
+				element: <RotatableScene />,
 			},
 		],
 	},

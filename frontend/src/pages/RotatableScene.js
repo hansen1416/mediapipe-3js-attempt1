@@ -3,8 +3,9 @@ import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import { loadGLTF, posePositionToVector } from "../components/ropes";
+import { useLocation } from "react-router-dom";
 
-export default function GLBModel() {
+export default function RotatableScene() {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
@@ -13,6 +14,10 @@ export default function GLBModel() {
 
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
+
+	// TODO use GLBmodel as child component
+	// apply rotation to all body parts
+	const location = useLocation();
 
 	/**
 	 * `Hips` is the ancestor of all obj, move its position, all the others shall follow
