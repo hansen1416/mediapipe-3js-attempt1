@@ -345,23 +345,24 @@ export default function GLBModel() {
 		BodyParts.current["Hips"].applyQuaternion(q_spine);
 		//= == == == = move the spine end
 
-		//= == == == = move the left arm start
+		// ---------- move the left arm start
 
-		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
-		// BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
+		BodyParts.current["LeftShoulder"].rotation.y = 1;
 
 		const vec_arm_world = posePositionToVector(
 			data[POSE_LANDMARKS["RIGHT_ELBOW"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
 		).normalize();
 
-		const q_arm_world_spine = new THREE.Quaternion()
-			.setFromEuler(BodyParts.current["Hips"].rotation)
-			.conjugate();
+		const q_arm_world_shoulder = new THREE.Quaternion();
+
+		BodyParts.current["LeftShoulder"].getWorldQuaternion(
+			q_arm_world_shoulder
+		);
 
 		const vec_arm_spine = vec_arm_world
 			.clone()
-			.applyQuaternion(q_arm_world_spine);
+			.applyQuaternion(q_arm_world_shoulder);
 
 		const vec_arm_spine_origin = new THREE.Vector3(0, 1, 0);
 
@@ -372,11 +373,42 @@ export default function GLBModel() {
 
 		const q_arm_spine_existing =
 			BodyParts.current["LeftArm"].quaternion.clone();
-
+		// eliminate the existing rotation
 		q_arm_spine.multiply(q_arm_spine_existing.conjugate());
 
 		BodyParts.current["LeftArm"].applyQuaternion(q_arm_spine);
-		//======== move the left arm end
+		// ---------- move the left arm end
+
+		// ------------ rotate left forarm start
+
+		const vec_forearm_world = posePositionToVector(
+			data[POSE_LANDMARKS["RIGHT_WRIST"]],
+			data[POSE_LANDMARKS["RIGHT_ELBOW"]]
+		).normalize();
+
+		const q_arm_world = new THREE.Quaternion();
+
+		BodyParts.current["LeftArm"].getWorldQuaternion(q_arm_world);
+
+		const vec_forearm_arm = vec_forearm_world
+			.clone()
+			.applyQuaternion(q_arm_world.conjugate());
+
+		const vec_forearm_arm_origin = new THREE.Vector3(0, 1, 0);
+
+		const q_forearm_arm = new THREE.Quaternion().setFromUnitVectors(
+			vec_forearm_arm_origin,
+			vec_forearm_arm
+		);
+
+		const q_forearm_spine_existing =
+			BodyParts.current["LeftForeArm"].quaternion.clone();
+		// eliminate the existing rotation
+		q_forearm_arm.multiply(q_forearm_spine_existing.conjugate());
+
+		BodyParts.current["LeftForeArm"].applyQuaternion(q_forearm_arm);
+
+		// ------------ rotate left forarm end
 	}
 
 	function moveArms(data) {
