@@ -26,6 +26,7 @@ export default function Playground3D() {
 
 	const cbox = useRef(null);
 	const armbox = useRef(null);
+	const forearmbox = useRef(null);
 	const handbox = useRef(null);
 
 	useEffect(() => {
@@ -66,15 +67,22 @@ export default function Playground3D() {
 
 		cbox.current = colorfulBox();
 		armbox.current = colorfulBox(0.5, 2, 0.5);
+		forearmbox.current = colorfulBox(0.3, 2.2, 0.3);
 		handbox.current = colorfulBox(0.3, 0.3, 0.3);
 
 		armbox.current.position.x = 1;
 		armbox.current.position.y = 1.5;
 		armbox.current.position.z = 0;
 
-		armbox.current.add(handbox.current);
+		forearmbox.current.position.x = 0;
+		forearmbox.current.position.y = 0.8;
+		forearmbox.current.position.z = 0;
 
-		handbox.current.position.y = 1.1;
+		handbox.current.position.y = 1.3;
+
+		armbox.current.add(forearmbox.current);
+
+		forearmbox.current.add(handbox.current);
 
 		cbox.current.add(armbox.current);
 
@@ -164,15 +172,12 @@ export default function Playground3D() {
 		 */
 
 		// testing change of basis
-		const arm_target_vector_transfered_basis = posePositionToVector(
+		const arm_vector_final = posePositionToVector(
 			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]],
 			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
 		).normalize();
 
-		console.log(
-			"arm_target_vector_transfered_basis",
-			arm_target_vector_transfered_basis
-		);
+		console.log("arm_vector_final", arm_vector_final);
 
 		const origin_frame = new THREE.Matrix4().makeBasis(
 			v01,
@@ -200,23 +205,27 @@ export default function Playground3D() {
 
 		console.log(q_action_to_origin);
 
-		arm_target_vector_transfered_basis
+		const arm_vector_to_spine = arm_vector_final
+			.clone()
 			.applyQuaternion(q_action_to_origin)
 			.normalize();
 
-		console.log(
-			"arm_target_vector_transfered_basis",
-			arm_target_vector_transfered_basis
-		);
+		console.log("arm_vector_to_spine", arm_vector_to_spine);
 
 		const q_arm_changed_basis = new THREE.Quaternion().setFromUnitVectors(
 			arm_origin_vector,
-			arm_target_vector_transfered_basis
+			arm_vector_to_spine
 		);
 
 		console.log(q_arm_changed_basis);
 
 		armbox.current.applyQuaternion(q_arm);
+
+		// start rotate forarm
+
+		const forearm_final = new THREE.Vector3(0.6, 0.5, 0.1);
+
+		// forearmbox.current.rotation.x = -1.3;
 
 		renderer.current.render(scene.current, camera.current);
 	}
