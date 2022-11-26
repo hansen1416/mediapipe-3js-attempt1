@@ -349,37 +349,42 @@ export default function GLBModel() {
 		//======== move the spine end
 
 		//======== move the left arm start
-		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
 
+		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
 		// const q_shoulder_origin = new THREE.Quaternion().setFromEuler(
 		// 	BodyParts.current["LeftShoulder"].rotation
 		// );
 
-		// BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
-
-		const q_arm_rotated = new THREE.Quaternion().setFromEuler(
-			BodyParts.current["LeftArm"].rotation
-		);
-
+		// this quaternion will transfer vector from observed spine frame
+		// to original frame
 		const q_action_to_origin = new THREE.Quaternion().setFromRotationMatrix(
 			SE0.multiply(SE1i)
 		);
 
+		// the initial arm rotation is 0,1,0
 		const arm_origin_vector = new THREE.Vector3(0, 1, 0);
+
+		// this is the final vector in the spine frame
 		const arm_target_vector_transfered_basis = posePositionToVector(
 			data[POSE_LANDMARKS["RIGHT_ELBOW"]],
 			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
 		).normalize();
 
-		arm_target_vector_transfered_basis
-			.applyQuaternion(q_action_to_origin)
-			.normalize();
+		// tranfer final vector from spine frame to local frame
+		arm_target_vector_transfered_basis.applyQuaternion(q_action_to_origin);
 
+		// this is the rotation for arm in the local space
 		const q_arm_changed_basis = new THREE.Quaternion().setFromUnitVectors(
 			arm_origin_vector,
 			arm_target_vector_transfered_basis
 		);
 
+		// this is the existing rotation
+		const q_arm_rotated = new THREE.Quaternion().setFromEuler(
+			BodyParts.current["LeftArm"].rotation
+		);
+
+		// eliminate the existing rotation
 		const q_shoulder_to_arm_changed_basis =
 			new THREE.Quaternion().multiplyQuaternions(
 				q_arm_changed_basis,
