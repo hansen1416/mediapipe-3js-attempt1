@@ -197,7 +197,7 @@ export default function Playground3D() {
 
 		// ------------ rotate forarm start
 
-		const vec_forearm_world = new THREE.Vector3(
+		const vec_forearm_world = posePositionToVector(
 			pose0[POSE_LANDMARKS["RIGHT_WRIST"]],
 			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]]
 		).normalize();
@@ -206,15 +206,15 @@ export default function Playground3D() {
 
 		armbox.current.getWorldQuaternion(q_arm_world);
 
-		const forearm_vec_arm_origin = new THREE.Vector3(0, 1, 0);
+		const vec_forearm_arm_origin = new THREE.Vector3(0, 1, 0);
 
-		const forearm_vec_arm = vec_forearm_world
+		const vec_forearm_arm = vec_forearm_world
 			.clone()
 			.applyQuaternion(q_arm_world.conjugate());
 
 		const q_forearm_arm = new THREE.Quaternion().setFromUnitVectors(
-			forearm_vec_arm_origin,
-			forearm_vec_arm
+			vec_forearm_arm_origin,
+			vec_forearm_arm
 		);
 
 		forearmbox.current.applyQuaternion(q_forearm_arm);
