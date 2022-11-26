@@ -350,7 +350,16 @@ export default function GLBModel() {
 
 		//======== move the left arm start
 		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
-		BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
+
+		// const q_shoulder_origin = new THREE.Quaternion().setFromEuler(
+		// 	BodyParts.current["LeftShoulder"].rotation
+		// );
+
+		// BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
+
+		const q_arm_rotated = new THREE.Quaternion().setFromEuler(
+			BodyParts.current["LeftArm"].rotation
+		);
 
 		const q_action_to_origin = new THREE.Quaternion().setFromRotationMatrix(
 			SE0.multiply(SE1i)
@@ -371,7 +380,15 @@ export default function GLBModel() {
 			arm_target_vector_transfered_basis
 		);
 
-		BodyParts.current["LeftArm"].applyQuaternion(q_arm_changed_basis);
+		const q_shoulder_to_arm_changed_basis =
+			new THREE.Quaternion().multiplyQuaternions(
+				q_arm_changed_basis,
+				q_arm_rotated.conjugate()
+			);
+
+		BodyParts.current["LeftArm"].applyQuaternion(
+			q_shoulder_to_arm_changed_basis
+		);
 		//======== move the left arm end
 	}
 
