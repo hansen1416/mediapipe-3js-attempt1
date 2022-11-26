@@ -253,54 +253,77 @@ export function dumpObject(obj, lines = [], isLast = true, prefix = "") {
 }
 
 export function matrixFromPoints(a, b, c) {
+	const axis1 = new THREE.Vector3(
+		a.x - b.x,
+		a.y - b.y,
+		a.z - b.z
+	).normalize();
+	const axis2 = new THREE.Vector3(
+		c.x - b.x,
+		c.y - b.y,
+		c.z - b.z
+	).normalize();
 
-	const axis1 = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z-b.z).normalize();
-	const axis2 = new THREE.Vector3(c.x - b.x, c.y - b.y, c.z-b.z).normalize();
-
-	return new THREE.Matrix4().makeBasis(axis1, axis2, new THREE.Vector3().crossVectors(axis1, axis2).normalize());
+	return new THREE.Matrix4().makeBasis(
+		axis1,
+		axis2,
+		new THREE.Vector3().crossVectors(axis1, axis2).normalize()
+	);
 }
 
 export function quaternionFromPositions(a1, b1, c1, a2, b2, c2) {
-	return new THREE.Quaternion().setFromRotationMatrix(matrixFromPoints(a2, b2, c2).multiply(matrixFromPoints(a1, b1, c1).invert()));
+	return new THREE.Quaternion().setFromRotationMatrix(
+		matrixFromPoints(a2, b2, c2).multiply(
+			matrixFromPoints(a1, b1, c1).invert()
+		)
+	);
 }
 
 export function box(size = 0.1, color = 0xffffff) {
-
-	const material = new THREE.MeshBasicMaterial({color: color})
+	const material = new THREE.MeshBasicMaterial({ color: color });
 	const geo = new THREE.BoxGeometry(size, size, size);
 
 	return new THREE.Mesh(geo, material);
 }
 
-export function line(a, b, color=0xffffff) {
-
+export function line(a, b, color = 0xffffff) {
 	const c = b.clone().sub(a);
 
-	const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), c]);
+	const geometry = new THREE.BufferGeometry().setFromPoints([
+		new THREE.Vector3(0, 0, 0),
+		c,
+	]);
 
 	geometry.setDrawRange(0, 2);
 
-	const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: color}));
+	const line = new THREE.Line(
+		geometry,
+		new THREE.LineBasicMaterial({ color: color })
+	);
 
-	line.position.set(a.x,a.y,a.z);
+	line.position.set(a.x, a.y, a.z);
 
-	return line
+	return line;
 }
 
-export function unitline(a, b, color=0xffffff) {
-
+export function unitline(a, b, color = 0xffffff) {
 	const c = b.clone().sub(a);
 
-	const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),
-		new THREE.Vector3(c.length(),0,0)]);
+	const geometry = new THREE.BufferGeometry().setFromPoints([
+		new THREE.Vector3(0, 0, 0),
+		new THREE.Vector3(c.length(), 0, 0),
+	]);
 
 	geometry.setDrawRange(0, 2);
 
-	const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: color}));
+	const line = new THREE.Line(
+		geometry,
+		new THREE.LineBasicMaterial({ color: color })
+	);
 
-	line.position.set(a.x,a.y,a.z);
+	line.position.set(a.x, a.y, a.z);
 
-	return line
+	return line;
 }
 
 /**

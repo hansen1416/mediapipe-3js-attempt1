@@ -304,42 +304,75 @@ export default function GLBModel() {
 	// }
 
 	function moveSpine(data) {
-		// move the spine start
+		//======== move the spine start
+		/**
+		 * first find the proper quaternion for the spine
+		 *
+		 * assume the initial basis of a human figure is -1, 0, 0,for right hip, 0,0,0 for left hip, 0.2,1,0 for left shoulder
+		 * these 3 points also form a coords basis
+		 *
+		 * the source of the pose is from mediapose data, using positions of LEFT_HIP,RIGHT_HIP,RIGHT_SHOULDER
+		 * these 3 points form a coords basis, note that, in mediapose, left and right are swapped
+		 *
+		 */
 		const v01 = new THREE.Vector3(-1, 0, 0);
 		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
 		const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
-		const cross02 = new THREE.Vector3().crossVectors(cross01, v01).normalize();
+		const cross02 = new THREE.Vector3()
+			.crossVectors(cross01, v01)
+			.normalize();
 
-		const vt1 = posePositionToVector(data[POSE_LANDMARKS["LEFT_HIP"]], data[POSE_LANDMARKS["RIGHT_HIP"]]).normalize();
-		const vt2 = posePositionToVector(data[POSE_LANDMARKS["LEFT_SHOULDER"]], data[POSE_LANDMARKS["LEFT_HIP"]]).normalize();
-
+		const vt1 = posePositionToVector(
+			data[POSE_LANDMARKS["LEFT_HIP"]],
+			data[POSE_LANDMARKS["RIGHT_HIP"]]
+		).normalize();
+		const vt2 = posePositionToVector(
+			data[POSE_LANDMARKS["RIGHT_SHOULDER"]],
+			data[POSE_LANDMARKS["RIGHT_HIP"]]
+		).normalize();
 		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
-		const cross12 = new THREE.Vector3().crossVectors(cross11, vt1).normalize();
+		const cross12 = new THREE.Vector3()
+			.crossVectors(cross11, vt1)
+			.normalize();
 
-		const q_spine = quaternionFromPositions(v01, cross01, cross02, vt1, cross11, cross12);
+		const SE0 = new THREE.Matrix4().makeBasis(v01, cross01, cross02);
+		const SE0i = SE0.clone().invert();
+
+		const SE1 = new THREE.Matrix4().makeBasis(vt1, cross11, cross12);
+		const SE1i = SE1.clone().invert();
+
+		const q_spine = new THREE.Quaternion().setFromRotationMatrix(
+			SE1.multiply(SE0i)
+		);
 		// BodyParts.current["Hips"].applyQuaternion(quaternion);
 		BodyParts.current["Hips"].applyQuaternion(q_spine);
-		// move the spine end
+		//======== move the spine end
 
-		// move the left arm start
+		//======== move the left arm start
 		BodyParts.current["LeftShoulder"].rotation.set(0, 0, 0);
 		BodyParts.current["LeftArm"].rotation.set(0, 0, 0);
 
+		const q_action_to_origin = new THREE.Quaternion().setFromRotationMatrix(
+			SE0.multiply(SE1i)
+		);
 
-		/**
-		{
-			"isQuaternion": true,
-			"_x": -0.09940845909091443,
-			"_y": 0.16007904376804566,
-			"_z": 0.6337582701603749,
-			"_w": 0.7502287071359022
-		}
-		*/
-		const q = new THREE.Quaternion(-0.09940845909091443,0.16007904376804566,0.6337582701603749,0.7502287071359022);
+		const arm_origin_vector = new THREE.Vector3(0, 1, 0);
+		const arm_target_vector_transfered_basis = posePositionToVector(
+			data[POSE_LANDMARKS["RIGHT_ELBOW"]],
+			data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		).normalize();
 
-		BodyParts.current["LeftArm"].applyQuaternion(q);
+		arm_target_vector_transfered_basis
+			.applyQuaternion(q_action_to_origin)
+			.normalize();
 
-		// move the left arm end
+		const q_arm_changed_basis = new THREE.Quaternion().setFromUnitVectors(
+			arm_origin_vector,
+			arm_target_vector_transfered_basis
+		);
+
+		BodyParts.current["LeftArm"].applyQuaternion(q_arm_changed_basis);
+		//======== move the left arm end
 	}
 
 	function moveArms(data) {
@@ -538,7 +571,7 @@ export default function GLBModel() {
 
 		const q1 = new THREE.Quaternion().setFromUnitVectors(c1, c3);
 
-		console.log(q1)
+		console.log(q1);
 
 		const c34 = c12.applyQuaternion(q1);
 
