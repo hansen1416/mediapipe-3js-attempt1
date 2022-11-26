@@ -92,6 +92,7 @@ export default function Playground3D() {
 	}
 
 	function action2() {
+		//--------- rotate spine start
 		/**
 		 * this function find the proper quaternion for the spine
 		 *
@@ -141,9 +142,9 @@ export default function Playground3D() {
 			cross12
 		);
 
-		// console.log(q_spine);
-
 		cbox.current.applyQuaternion(q_spine);
+
+		// ------------ rotate spine end
 
 		// ------------ rotate arm start
 		const arm_vector_world = posePositionToVector(
@@ -151,17 +152,6 @@ export default function Playground3D() {
 			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
 		).normalize();
 
-		const world_frame = new THREE.Matrix4().makeBasis(
-			v01,
-			cross01,
-			cross02
-		);
-
-		const spine_frame = new THREE.Matrix4().makeBasis(
-			vt1,
-			cross11,
-			cross12
-		);
 		/**
 		 * this transfer is from the target frame to the initial frame
 		 * because in the arm's local transform, it is same as initial frame
@@ -171,9 +161,24 @@ export default function Playground3D() {
 		 * after apply this rotation to the observed arm vector, it's back to the origin coords frame
 		 * therefore we can calculate the arm rotation from the initial (0,1,0) vector
 		 */
-		const q_world_spine = new THREE.Quaternion().setFromRotationMatrix(
-			world_frame.multiply(spine_frame.invert())
-		);
+		//  const world_frame = new THREE.Matrix4().makeBasis(
+		// 	v01,
+		// 	cross01,
+		// 	cross02
+		// );
+
+		// const spine_frame = new THREE.Matrix4().makeBasis(
+		// 	vt1,
+		// 	cross11,
+		// 	cross12
+		// );
+		// const q_world_spine = new THREE.Quaternion().setFromRotationMatrix(
+		// 	world_frame.multiply(spine_frame.invert())
+		// );
+
+		const q_world_spine = new THREE.Quaternion()
+			.setFromEuler(cbox.current.rotation)
+			.conjugate();
 
 		const arm_vec_spine = arm_vector_world
 			.clone()
@@ -190,11 +195,33 @@ export default function Playground3D() {
 		armbox.current.applyQuaternion(q_arm);
 		// ------------ rotate arm end
 
-		// start rotate forarm
+		// ------------ rotate forarm start
 
-		const forearm_vec_world = new THREE.Vector3(0.6, 0.5, 0.1);
+		const forearm_vec_world = new THREE.Vector3(0.6, 0.5, 0.5).normalize();
 
-		// forearmbox.current.rotation.x = -1.3;
+		const q_arm_world = new THREE.Quaternion();
+
+		armbox.current.getWorldQuaternion(q_arm_world);
+
+		console.log("q_arm_local", q_arm);
+		console.log("q_arm_world", q_arm_world);
+
+		const forearm_origin_vec_arm = new THREE.Vector3(0, 1, 0);
+
+		const forearm_vec_arm = forearm_vec_world
+			.clone()
+			.applyQuaternion(q_arm_world.conjugate());
+
+		console.log("forearm_vec_arm", forearm_vec_arm);
+
+		const q_forearm_arm = new THREE.Quaternion().setFromUnitVectors(
+			forearm_origin_vec_arm,
+			forearm_vec_arm
+		);
+
+		forearmbox.current.applyQuaternion(q_forearm_arm);
+
+		// ------------ rotate forarm end
 
 		renderer.current.render(scene.current, camera.current);
 	}
