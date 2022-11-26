@@ -347,7 +347,7 @@ export default function GLBModel() {
 
 		// ---------- move the left arm start
 
-		BodyParts.current["LeftShoulder"].rotation.y = 1;
+		// BodyParts.current["LeftShoulder"].rotation.y = 1;
 
 		const vec_arm_world = posePositionToVector(
 			data[POSE_LANDMARKS["RIGHT_ELBOW"]],
