@@ -147,10 +147,6 @@ export default function Playground3D() {
 		// ------------ rotate spine end
 
 		// ------------ rotate arm start
-		const arm_vector_world = posePositionToVector(
-			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]],
-			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
-		).normalize();
 
 		/**
 		 * this transfer is from the target frame to the initial frame
@@ -176,46 +172,48 @@ export default function Playground3D() {
 		// 	world_frame.multiply(spine_frame.invert())
 		// );
 
-		const q_world_spine = new THREE.Quaternion()
+		const vec_arm_world = posePositionToVector(
+			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]],
+			pose0[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		).normalize();
+
+		const q_arm_world_spine = new THREE.Quaternion()
 			.setFromEuler(cbox.current.rotation)
 			.conjugate();
 
-		const arm_vec_spine = arm_vector_world
+		const vec_arm_spine = vec_arm_world
 			.clone()
-			.applyQuaternion(q_world_spine)
-			.normalize();
+			.applyQuaternion(q_arm_world_spine);
 
-		const arm_origin_vec_spine = new THREE.Vector3(0, 1, 0);
+		const vec_arm_spine_origin = new THREE.Vector3(0, 1, 0);
 
-		const q_arm = new THREE.Quaternion().setFromUnitVectors(
-			arm_origin_vec_spine,
-			arm_vec_spine
+		const q_arm_spine = new THREE.Quaternion().setFromUnitVectors(
+			vec_arm_spine_origin,
+			vec_arm_spine
 		);
 
-		armbox.current.applyQuaternion(q_arm);
+		armbox.current.applyQuaternion(q_arm_spine);
 		// ------------ rotate arm end
 
 		// ------------ rotate forarm start
 
-		const forearm_vec_world = new THREE.Vector3(0.6, 0.5, 0.5).normalize();
+		const vec_forearm_world = new THREE.Vector3(
+			pose0[POSE_LANDMARKS["RIGHT_WRIST"]],
+			pose0[POSE_LANDMARKS["RIGHT_ELBOW"]]
+		).normalize();
 
 		const q_arm_world = new THREE.Quaternion();
 
 		armbox.current.getWorldQuaternion(q_arm_world);
 
-		console.log("q_arm_local", q_arm);
-		console.log("q_arm_world", q_arm_world);
+		const forearm_vec_arm_origin = new THREE.Vector3(0, 1, 0);
 
-		const forearm_origin_vec_arm = new THREE.Vector3(0, 1, 0);
-
-		const forearm_vec_arm = forearm_vec_world
+		const forearm_vec_arm = vec_forearm_world
 			.clone()
 			.applyQuaternion(q_arm_world.conjugate());
 
-		console.log("forearm_vec_arm", forearm_vec_arm);
-
 		const q_forearm_arm = new THREE.Quaternion().setFromUnitVectors(
-			forearm_origin_vec_arm,
+			forearm_vec_arm_origin,
 			forearm_vec_arm
 		);
 
