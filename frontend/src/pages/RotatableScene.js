@@ -39,7 +39,7 @@ export default function RotatableScene() {
 	}, []);
 
 	function _scene() {
-		const backgroundColor = 0x000000;
+		const backgroundColor = 0x222222;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);

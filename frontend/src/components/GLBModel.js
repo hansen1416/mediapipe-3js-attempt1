@@ -80,12 +80,28 @@ export default function GLBModel(props) {
 			["LEFT_WRIST", "LEFT_ELBOW"],
 		],
 		["RightHand"],
-		["LeftUpLeg"],
-		["LeftLeg"],
-		["LeftFoot"],
-		["RightUpLeg"],
-		["RightLeg"],
-		["RightFoot"],
+		[
+			"LeftUpLeg",
+			[new THREE.Vector3(0, 1, 0)],
+			["RIGHT_KNEE", "RIGHT_HIP"],
+		],
+		[
+			"LeftLeg",
+			[new THREE.Vector3(0, 1, 0)],
+			["RIGHT_ANKLE", "RIGHT_KNEE"],
+		],
+		[
+			"LeftFoot",
+			[new THREE.Vector3(0, 1, 0)],
+			["RIGHT_FOOT_INDEX", "RIGHT_ANKLE"],
+		],
+		["RightUpLeg", [new THREE.Vector3(0, 1, 0)], ["LEFT_KNEE", "LEFT_HIP"]],
+		["RightLeg", [new THREE.Vector3(0, 1, 0)], ["LEFT_ANKLE", "LEFT_KNEE"]],
+		[
+			"RightFoot",
+			[new THREE.Vector3(0, 1, 0)],
+			["LEFT_FOOT_INDEX", "LEFT_ANKLE"],
+		],
 	]);
 
 	useEffect(() => {
