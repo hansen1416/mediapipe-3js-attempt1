@@ -329,7 +329,20 @@ export default function GLBModel(props) {
 				>
 					action1
 				</button>
-				<button onClick={() => {}}>experiment</button>
+				<button
+					onClick={() => {
+						fetchPose("1500-1600");
+					}}
+				>
+					action2
+				</button>
+				<button
+					onClick={() => {
+						fetchPose("2300-2400");
+					}}
+				>
+					action3
+				</button>
 			</div>
 		</div>
 	);
