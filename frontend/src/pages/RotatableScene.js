@@ -14,8 +14,6 @@ export default function RotatableScene() {
 	const startAngle = useRef([0, 0]);
 	const moveAngle = useRef([0, 0]);
 
-	// TODO use GLBmodel as child component
-	// apply rotation to all body parts
 	const location = useLocation();
 
 	useEffect(() => {
@@ -77,8 +75,6 @@ export default function RotatableScene() {
 		camera.current.position.y = 1;
 		camera.current.position.x = 0;
 		camera.current.position.z = 2;
-
-		// camera.current.rotation.x = -0.1;
 	}
 
 	function _light() {
