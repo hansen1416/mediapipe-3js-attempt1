@@ -17,6 +17,9 @@ function App() {
 						<Link to={`/camera`}>Camera</Link>
 					</li>
 					<li>
+						<Link to={`/holisticcamera`}>Holistic Camera</Link>
+					</li>
+					<li>
 						<Link to={`/greenman`}>Green man</Link>
 					</li>
 					<li>

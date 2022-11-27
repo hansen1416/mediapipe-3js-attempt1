@@ -16,6 +16,7 @@ import BufferGeoModel from "./pages/BufferGeoModel";
 import Upload from "./pages/Upload";
 import Video from "./pages/Video";
 import WebCamera from "./pages/WebCamera";
+import HolisticCamera from "./pages/HolisticCamera";
 import Playground3D from "./pages/Playground3D";
 import GLBModelStatic from "./pages/GLBModelStatic";
 import RotatableScene from "./pages/RotatableScene";
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
 			{
 				path: "/camera",
 				element: <WebCamera />,
+			},
+			{
+				path: "/holisticcamera",
+				element: <HolisticCamera />,
 			},
 			{
 				path: "/greenman",
