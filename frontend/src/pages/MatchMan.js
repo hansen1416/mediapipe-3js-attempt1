@@ -224,7 +224,7 @@ export default function MatchMan() {
 
 		animationStep.current += 1;
 
-		if (true || poseidx.current >= posedata.current.length) {
+		if (poseidx.current >= posedata.current.length) {
 			poseidx.current = 0;
 			animationStep.current = 0;
 

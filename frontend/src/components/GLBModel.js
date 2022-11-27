@@ -104,14 +104,13 @@ export default function GLBModel(props) {
 		],
 	]);
 
+	const posedata = useRef([]);
+	const poseidx = useRef(0);
+	const animationFramePointer = useRef(0);
+	const animationStep = useRef(0);
+	const speed = useRef(3);
+
 	useEffect(() => {
-		init();
-
-		return () => {};
-		// eslint-disable-next-line
-	}, []);
-
-	function init() {
 		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
 			const avatar = gltf.scene.children[0];
 
@@ -125,7 +124,7 @@ export default function GLBModel(props) {
 
 			renderer.current.render(scene.current, camera.current);
 		});
-	}
+	}, []);
 
 	/**
 	 * save reference for different body parts
@@ -166,17 +165,25 @@ export default function GLBModel(props) {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				const data0 = data.data[0];
-
-				for (let i in data0) {
-					data0[i][0] *= -1;
-					data0[i][1] *= -1;
-					data0[i][2] *= -1;
+				for (let i in data.data) {
+					for (let j in data.data[i]) {
+						data.data[i][j][0] *= -1;
+						data.data[i][j][1] *= -1;
+						data.data[i][j][2] *= -1;
+					}
 				}
 
-				makePose(data0);
+				poseidx.current = 0;
 
-				renderer.current.render(scene.current, camera.current);
+				animationStep.current = 0;
+
+				posedata.current = data.data;
+
+				playPose();
+
+				// makePose(data0);
+
+				// renderer.current.render(scene.current, camera.current);
 			})
 			.catch(function (error) {
 				console.log(
@@ -186,6 +193,29 @@ export default function GLBModel(props) {
 					// error.config
 				);
 			});
+	}
+
+	function playPose() {
+		if (animationStep.current % speed.current === 0) {
+			// figure.current.pose_array(posedata.current[poseidx.current]);
+			makePose(posedata.current[poseidx.current]);
+
+			renderer.current.render(scene.current, camera.current);
+
+			poseidx.current += 1;
+		}
+
+		animationStep.current += 1;
+
+		if (poseidx.current >= posedata.current.length) {
+			poseidx.current = 0;
+			animationStep.current = 0;
+
+			// animationFramePointer.current = requestAnimationFrame(playPose);
+			cancelAnimationFrame(animationFramePointer.current);
+		} else {
+			animationFramePointer.current = requestAnimationFrame(playPose);
+		}
 	}
 
 	function makePose(data) {
@@ -240,11 +270,23 @@ export default function GLBModel(props) {
 		const SE0 = new THREE.Matrix4().makeBasis(v01, cross01, cross02);
 		const SE1 = new THREE.Matrix4().makeBasis(vt1, cross11, cross12);
 
-		const q = new THREE.Quaternion().setFromRotationMatrix(
+		const q_local = new THREE.Quaternion().setFromRotationMatrix(
 			SE1.multiply(SE0.invert())
 		);
 
-		BodyParts.current[bodypart_name].applyQuaternion(q);
+		// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
+		// // eliminate the existing rotation
+		// q_local.multiply(q_existing.conjugate());
+
+		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
+
+		const e_local = new THREE.Euler().setFromQuaternion(q_local);
+
+		BodyParts.current[bodypart_name].rotation.set(
+			e_local.x,
+			e_local.y,
+			e_local.z
+		);
 	}
 
 	function rotateVector(bodypart_name, from_vec_local, to_vec_world) {
@@ -263,118 +305,19 @@ export default function GLBModel(props) {
 			to_vec_local
 		);
 
-		const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
-		// eliminate the existing rotation
-		q_local.multiply(q_existing.conjugate());
+		// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
+		// // eliminate the existing rotation
+		// q_local.multiply(q_existing.conjugate());
 
-		BodyParts.current[bodypart_name].applyQuaternion(q_local);
+		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
+
+		const e_local = new THREE.Euler().setFromQuaternion(q_local);
+		BodyParts.current[bodypart_name].rotation.set(
+			e_local.x,
+			e_local.y,
+			e_local.z
+		);
 	}
-
-	// function makePose11(data) {
-	// 	//======== move the spine start
-	// 	/**
-	// 	 * first find the proper quaternion for the spine
-	// 	 *
-	// 	 * assume the initial basis of a human figure is -1, 0, 0,for right hip, 0,0,0 for left hip, 0.2,1,0 for left shoulder
-	// 	 * these 3 points also form a coords basis
-	// 	 *
-	// 	 * the source of the pose is from mediapose data, using positions of LEFT_HIP,RIGHT_HIP,RIGHT_SHOULDER
-	// 	 * these 3 points form a coords basis, note that, in mediapose, left and right are swapped
-	// 	 *
-	// 	 */
-	// 	const v01 = new THREE.Vector3(-1, 0, 0);
-	// 	const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
-	// 	const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
-	// 	const cross02 = new THREE.Vector3()
-	// 		.crossVectors(cross01, v01)
-	// 		.normalize();
-
-	// 	const vt1 = posePositionToVector(
-	// 		data[POSE_LANDMARKS["LEFT_HIP"]],
-	// 		data[POSE_LANDMARKS["RIGHT_HIP"]]
-	// 	).normalize();
-	// 	const vt2 = posePositionToVector(
-	// 		data[POSE_LANDMARKS["RIGHT_SHOULDER"]],
-	// 		data[POSE_LANDMARKS["RIGHT_HIP"]]
-	// 	).normalize();
-	// 	const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
-	// 	const cross12 = new THREE.Vector3()
-	// 		.crossVectors(cross11, vt1)
-	// 		.normalize();
-
-	// 	const SE0 = new THREE.Matrix4().makeBasis(v01, cross01, cross02);
-	// 	const SE1 = new THREE.Matrix4().makeBasis(vt1, cross11, cross12);
-
-	// 	const q_spine = new THREE.Quaternion().setFromRotationMatrix(
-	// 		SE1.multiply(SE0.invert())
-	// 	);
-	// 	// BodyParts.current["Hips"].applyQuaternion(quaternion)
-	// 	BodyParts.current["Hips"].applyQuaternion(q_spine);
-	// 	//= == == == = move the spine end
-
-	// 	// ---------- move the left arm start
-
-	// 	const vec_arm_world = posePositionToVector(
-	// 		data[POSE_LANDMARKS["RIGHT_ELBOW"]],
-	// 		data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
-	// 	).normalize();
-
-	// 	const q_arm_world_shoulder = new THREE.Quaternion();
-
-	// 	BodyParts.current["LeftShoulder"].getWorldQuaternion(
-	// 		q_arm_world_shoulder
-	// 	);
-
-	// 	const vec_arm_spine = vec_arm_world
-	// 		.clone()
-	// 		.applyQuaternion(q_arm_world_shoulder.conjugate());
-
-	// 	const vec_arm_spine_origin = new THREE.Vector3(0, 1, 0);
-
-	// 	const q_arm_spine = new THREE.Quaternion().setFromUnitVectors(
-	// 		vec_arm_spine_origin,
-	// 		vec_arm_spine
-	// 	);
-
-	// 	const q_arm_spine_existing =
-	// 		BodyParts.current["LeftArm"].quaternion.clone();
-	// 	// eliminate the existing rotation
-	// 	q_arm_spine.multiply(q_arm_spine_existing.conjugate());
-
-	// 	BodyParts.current["LeftArm"].applyQuaternion(q_arm_spine);
-	// 	// ---------- move the left arm end
-
-	// 	// ------------ rotate left forarm start
-
-	// 	const vec_forearm_world = posePositionToVector(
-	// 		data[POSE_LANDMARKS["RIGHT_WRIST"]],
-	// 		data[POSE_LANDMARKS["RIGHT_ELBOW"]]
-	// 	).normalize();
-
-	// 	const q_arm_world = new THREE.Quaternion();
-
-	// 	BodyParts.current["LeftArm"].getWorldQuaternion(q_arm_world);
-
-	// 	const vec_forearm_arm = vec_forearm_world
-	// 		.clone()
-	// 		.applyQuaternion(q_arm_world.conjugate());
-
-	// 	const vec_forearm_arm_origin = new THREE.Vector3(0, 1, 0);
-
-	// 	const q_forearm_arm = new THREE.Quaternion().setFromUnitVectors(
-	// 		vec_forearm_arm_origin,
-	// 		vec_forearm_arm
-	// 	);
-
-	// 	const q_forearm_spine_existing =
-	// 		BodyParts.current["LeftForeArm"].quaternion.clone();
-	// 	// eliminate the existing rotation
-	// 	q_forearm_arm.multiply(q_forearm_spine_existing.conjugate());
-
-	// 	BodyParts.current["LeftForeArm"].applyQuaternion(q_forearm_arm);
-
-	// 	// ------------ rotate left forarm end
-	// }
 
 	return (
 		<div>
