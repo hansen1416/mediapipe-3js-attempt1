@@ -7,12 +7,12 @@ import { getUserMedia } from "../components/ropes";
 export default function HolisticCamera() {
 	const videoRef = useRef(null);
 	const canvasRef = useRef(null);
-	const animationCounter = useRef(1);
+	// const animationCounter = useRef(1);
 	// const animationframe = useRef(0);
 
 	const camera = useRef(null);
 
-	const tmpcounter = useRef(0);
+	// const tmpcounter = useRef(0);
 
 	useEffect(() => {
 		//
@@ -23,89 +23,110 @@ export default function HolisticCamera() {
 	}, []);
 
 	function startCamera() {
-		// if (videoRef.current) {
-		// 	getUserMedia(
-		// 		{ video: true },
-		// 		(stream) => {
-		// 			// Yay, now our webcam input is treated as a normal video and
-		// 			// we can start having fun
-		// 			try {
-		// 				videoRef.current.srcObject = stream;
-		// 				let stream_settings = stream
-		// 					.getVideoTracks()[0]
-		// 					.getSettings();
-		// 				console.log(stream_settings);
-		// 			} catch (error) {
-		// 				videoRef.current.src = URL.createObjectURL(stream);
-		// 			}
-		// 			// Let's start drawing the canvas!
-		// 		},
-		// 		(err) => {
-		// 			throw err;
-		// 		}
-		// 	);
-		// 	const pose = new Pose({
-		// 		locateFile: (file) => {
-		// 			return process.env.PUBLIC_URL + `/mediapipe/${file}`;
-		// 			// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-		// 		},
-		// 	});
-		// 	pose.setOptions({
-		// 		modelComplexity: 1,
-		// 		smoothLandmarks: true,
-		// 		enableSegmentation: false,
-		// 		smoothSegmentation: false,
-		// 		minDetectionConfidence: 0.5,
-		// 		minTrackingConfidence: 0.5,
-		// 	});
-		// 	pose.onResults(onPoseResults);
-		// 	pose.initialize().then(() => {
-		// 		console.info("Loaded pose model");
-		// 	});
-		// 	const ctx = canvasRef.current.getContext("2d");
-		// 	camera.current = new Camera(videoRef.current, {
-		// 		onFrame: async () => {
-		// 			onFrame(videoRef.current, ctx);
-		// 			if (animationCounter.current % 10 === 0) {
-		// 				await pose.send({ image: videoRef.current });
-		// 				animationCounter.current = 0;
-		// 			}
-		// 			animationCounter.current += 1;
-		// 		},
-		// 		width: 640,
-		// 		height: 360,
-		// 	});
-		// 	camera.current.start();
-		// }
+		if (videoRef.current) {
+			getUserMedia(
+				{ video: true },
+				(stream) => {
+					// Yay, now our webcam input is treated as a normal video and
+					// we can start having fun
+					try {
+						videoRef.current.srcObject = stream;
+						let stream_settings = stream
+							.getVideoTracks()[0]
+							.getSettings();
+						console.log(stream_settings);
+					} catch (error) {
+						videoRef.current.src = URL.createObjectURL(stream);
+					}
+					// Let's start drawing the canvas!
+				},
+				(err) => {
+					throw err;
+				}
+			);
+
+			const holistic = new Holistic({locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/holistic/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+			}});
+			
+			holistic.setOptions({
+				// STATIC_IMAGE_MODE
+				staticImageMode: false,
+				// 0, 1 or 2. Landmark accuracy as well as inference latency generally go up with the model complexity. Default to 1.
+				modelComplexity: 1,
+				// If set to true, the solution filters pose landmarks across different input images to reduce jitter.
+				smoothLandmarks: true,
+				// If set to true, in addition to the pose, face and hand landmarks the solution also generates the segmentation mask.
+				enableSegmentation: false,
+				// If set to true, the solution filters segmentation masks across different input images to reduce jitter.
+				// smoothSegmentation: true,
+				// Whether to further refine the landmark coordinates around the eyes and lips, and output additional landmarks around the irises
+				refineFaceLandmarks: true,
+				// Minimum confidence value ([0.0, 1.0]) from the person-detection model for the detection to be considered successful.
+				minDetectionConfidence: 0.5,
+				// Minimum confidence value ([0.0, 1.0]) from the landmark-tracking model for the pose landmarks to be considered tracked successfully, 
+				// or otherwise person detection will be invoked automatically on the next input image. 
+				// Setting it to a higher value can increase robustness of the solution, at the expense of a higher latency.
+				minTrackingConfidence: 0.5
+			});
+			
+			holistic.onHolisticResults(onHolisticResults);
+
+			holistic.initialize().then(() => {
+				console.info("Loaded holistic model");
+			});
+
+			const ctx = canvasRef.current.getContext("2d");
+
+			const camera = new Camera(videoRef.current, {
+				onFrame: async () => {
+
+					onFrame(videoRef.current, ctx);
+
+				  	await holistic.send({image: videoRef.current});
+				},
+				width: 1280,
+				height: 720
+			  });
+			
+			camera.start();
+		}
 	}
 
 	function onFrame(video, ctx) {
 		ctx.drawImage(video, 0, 0);
 	}
 
-	function onPoseResults(results) {
-		const wlm = results.poseWorldLandmarks;
+	function onHolisticResults(results) {
 
-		if (!wlm) {
-			return;
-		}
+		const poselm =  results.poseLandmarks;
+		const facelm = results.faceLandmarks;
+		const lefthandlm = results.leftHandLandmarks;
+		const righthandlm = results.rightHandLandmarks;
 
-		tmpcounter.current += 1;
+		// const wlm = results.poseWorldLandmarks;
 
-		if (tmpcounter.current === 50) {
-			console.log(wlm);
-		}
+		// if (!wlm) {
+		// 	return;
+		// }
 
-		let data = wlm.map((x) => Object.values(x));
+		// tmpcounter.current += 1;
 
-		// flatten the array
-		data = data.reduce((prev, next) => {
-			return prev.concat(next);
-		});
+		// if (tmpcounter.current === 50) {
+		// 	console.log(wlm);
+		// }
 
-		data = new Float32Array(data);
+		// let data = wlm.map((x) => Object.values(x));
 
-		console.log(data);
+		// // flatten the array
+		// data = data.reduce((prev, next) => {
+		// 	return prev.concat(next);
+		// });
+
+		// data = new Float32Array(data);
+
+		// console.log(data);
 
 		// ws.current.send(data);
 	}
