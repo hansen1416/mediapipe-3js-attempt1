@@ -68,9 +68,9 @@ export default function HolisticCamera() {
 				// If set to true, the solution filters pose landmarks across different input images to reduce jitter.
 				smoothLandmarks: true,
 				// If set to true, in addition to the pose, face and hand landmarks the solution also generates the segmentation mask.
-				enableSegmentation: true,
+				enableSegmentation: false,
 				// If set to true, the solution filters segmentation masks across different input images to reduce jitter.
-				smoothSegmentation: true,
+				// smoothSegmentation: true,
 				// Whether to further refine the landmark coordinates around the eyes and lips, and output additional landmarks around the irises
 				refineFaceLandmarks: true,
 				// Minimum confidence value ([0.0, 1.0]) from the person-detection model for the detection to be considered successful.
@@ -121,13 +121,13 @@ export default function HolisticCamera() {
 			canvasRef.current.width,
 			canvasRef.current.height
 		);
-		canvasCtx.drawImage(
-			results.segmentationMask,
-			0,
-			0,
-			canvasRef.current.width,
-			canvasRef.current.height
-		);
+		// canvasCtx.drawImage(
+		// 	results.segmentationMask,
+		// 	0,
+		// 	0,
+		// 	canvasRef.current.width,
+		// 	canvasRef.current.height
+		// );
 		// Only overwrite existing pixels.
 		// canvasCtx.globalCompositeOperation = "source-in";
 		// canvasCtx.fillStyle = "#00FF00";
@@ -138,14 +138,14 @@ export default function HolisticCamera() {
 		// 	canvasRef.current.height
 		// );
 		// Only overwrite missing pixels.
-		canvasCtx.globalCompositeOperation = "destination-atop";
-		canvasCtx.drawImage(
-			results.image,
-			0,
-			0,
-			canvasRef.current.width,
-			canvasRef.current.height
-		);
+		// canvasCtx.globalCompositeOperation = "destination-atop";
+		// canvasCtx.drawImage(
+		// 	results.image,
+		// 	0,
+		// 	0,
+		// 	canvasRef.current.width,
+		// 	canvasRef.current.height
+		// );
 		canvasCtx.globalCompositeOperation = "source-over";
 		drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
 			color: "#00FF00",
