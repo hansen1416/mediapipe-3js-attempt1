@@ -110,6 +110,8 @@ export default function GLBModel(props) {
 	const animationStep = useRef(0);
 	const speed = useRef(3);
 
+	const eulerOrder = 'XZY';
+
 	useEffect(() => {
 		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
 			const avatar = gltf.scene.children[0];
@@ -272,12 +274,13 @@ export default function GLBModel(props) {
 
 		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		const e_local = new THREE.Euler().setFromQuaternion(q_local);
+		const e_local = new THREE.Euler().setFromQuaternion(q_local, eulerOrder);
 
 		BodyParts.current[bodypart_name].rotation.set(
 			e_local.x,
 			e_local.y,
-			e_local.z
+			e_local.z,
+			eulerOrder
 		);
 	}
 
@@ -303,11 +306,14 @@ export default function GLBModel(props) {
 
 		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		const e_local = new THREE.Euler().setFromQuaternion(q_local);
+		const e_local = new THREE.Euler().setFromQuaternion(q_local, eulerOrder);
+
 		BodyParts.current[bodypart_name].rotation.set(
 			e_local.x,
-			e_local.y,
-			e_local.z
+			// e_local.y,
+			0,
+			e_local.z,
+			eulerOrder
 		);
 	}
 
