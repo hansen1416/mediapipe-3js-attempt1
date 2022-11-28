@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
@@ -42,7 +42,7 @@ export default function GLBModel(props) {
 		RightFoot: null,
 	});
 
-	const [BodyPartsRotation, setBodyPartsRotation] = useState([
+	const BodyPartsRotation = useRef([
 		[
 			"Hips",
 			[
@@ -124,6 +124,7 @@ export default function GLBModel(props) {
 
 			renderer.current.render(scene.current, camera.current);
 		});
+		// eslint-disable-next-line
 	}, []);
 
 	/**
@@ -180,18 +181,9 @@ export default function GLBModel(props) {
 				posedata.current = data.data;
 
 				playPose();
-
-				// makePose(data0);
-
-				// renderer.current.render(scene.current, camera.current);
 			})
 			.catch(function (error) {
-				console.log(
-					error.message,
-					error.response
-					// error.request,
-					// error.config
-				);
+				console.warn(error);
 			});
 	}
 
@@ -219,32 +211,32 @@ export default function GLBModel(props) {
 	}
 
 	function makePose(data) {
-		for (let i in BodyPartsRotation) {
-			if (BodyPartsRotation[i][1]) {
-				if (BodyPartsRotation[i][1].length === 2) {
+		for (let i in BodyPartsRotation.current) {
+			if (BodyPartsRotation.current[i][1]) {
+				if (BodyPartsRotation.current[i][1].length === 2) {
 					const vt1 = posePositionToVector(
-						data[POSE_LANDMARKS[BodyPartsRotation[i][2][0]]],
-						data[POSE_LANDMARKS[BodyPartsRotation[i][2][1]]]
+						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][0]]],
+						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][1]]]
 					).normalize();
 					const vt2 = posePositionToVector(
-						data[POSE_LANDMARKS[BodyPartsRotation[i][2][2]]],
-						data[POSE_LANDMARKS[BodyPartsRotation[i][2][1]]]
+						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][2]]],
+						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][1]]]
 					).normalize();
 
 					rotateBasis(
-						BodyPartsRotation[i][0],
-						BodyPartsRotation[i][1],
+						BodyPartsRotation.current[i][0],
+						BodyPartsRotation.current[i][1],
 						[vt1, vt2]
 					);
-				} else if (BodyPartsRotation[i][1].length === 1) {
+				} else if (BodyPartsRotation.current[i][1].length === 1) {
 					const v = posePositionToVector(
-						data[POSE_LANDMARKS[BodyPartsRotation[i][2][0]]],
-						data[POSE_LANDMARKS[BodyPartsRotation[i][2][1]]]
+						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][0]]],
+						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][1]]]
 					).normalize();
 
 					rotateVector(
-						BodyPartsRotation[i][0],
-						BodyPartsRotation[i][1][0],
+						BodyPartsRotation.current[i][0],
+						BodyPartsRotation.current[i][1][0],
 						v
 					);
 				}
