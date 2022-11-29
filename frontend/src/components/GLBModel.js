@@ -110,7 +110,7 @@ export default function GLBModel(props) {
 	const animationStep = useRef(0);
 	const speed = useRef(3);
 
-	const eulerOrder = 'XZY';
+	const eulerOrder = "XZY";
 
 	useEffect(() => {
 		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
@@ -191,10 +191,13 @@ export default function GLBModel(props) {
 
 	function playPose() {
 		if (animationStep.current % speed.current === 0) {
+			moveSpine(posedata.current[poseidx.current]);
 
-			moveSpine(posedata.current[poseidx.current])
+			moveArmHand(posedata.current[poseidx.current], "Left");
+			moveArmHand(posedata.current[poseidx.current], "Right");
 
-			makePose(posedata.current[poseidx.current]);
+			moveLegFoot(posedata.current[poseidx.current], "Left");
+			moveLegFoot(posedata.current[poseidx.current], "Right");
 
 			renderer.current.render(scene.current, camera.current);
 
@@ -215,7 +218,6 @@ export default function GLBModel(props) {
 	}
 
 	function moveSpine(data) {
-
 		const v01 = new THREE.Vector3(-1, 0, 0);
 		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
 
@@ -237,7 +239,7 @@ export default function GLBModel(props) {
 		const cross12 = new THREE.Vector3()
 			.crossVectors(cross11, vt1)
 			.normalize();
-			
+
 		const SE0 = new THREE.Matrix4().makeBasis(v01, cross01, cross02);
 		const SE1 = new THREE.Matrix4().makeBasis(vt1, cross11, cross12);
 
@@ -251,9 +253,12 @@ export default function GLBModel(props) {
 
 		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		const e_local = new THREE.Euler().setFromQuaternion(q_local, eulerOrder);
+		const e_local = new THREE.Euler().setFromQuaternion(
+			q_local,
+			eulerOrder
+		);
 
-		BodyParts.current['Hips'].rotation.set(
+		BodyParts.current["Hips"].rotation.set(
 			e_local.x,
 			e_local.y,
 			e_local.z,
@@ -261,26 +266,27 @@ export default function GLBModel(props) {
 		);
 	}
 
-	function moveArmHand(data, side='Right') {
+	function moveArmHand(data, side = "Right") {
+		let data_side = "LEFT_";
 
-		if (side === 'Left') {
-			data_side='RIGHT_'
-		} else {
-			data_side='LEFT_'
+		if (side === "Left") {
+			data_side = "RIGHT_";
 		}
 
 		const v_arm_world = posePositionToVector(
-			data[POSE_LANDMARKS[data_side + 'ELBOW']],
-			data[POSE_LANDMARKS[data_side + 'SHOULDER']]
+			data[POSE_LANDMARKS[data_side + "ELBOW"]],
+			data[POSE_LANDMARKS[data_side + "SHOULDER"]]
 		).normalize();
 
 		const q_shoulder_world = new THREE.Quaternion();
 
-		BodyParts.current[side + 'Shoulder'].getWorldQuaternion(
+		BodyParts.current[side + "Shoulder"].getWorldQuaternion(
 			q_shoulder_world
 		);
 
-		const v_arm_local = v_arm_world.clone().applyQuaternion(q_shoulder_world.conjugate());
+		const v_arm_local = v_arm_world
+			.clone()
+			.applyQuaternion(q_shoulder_world.conjugate());
 
 		const q_arm_local = new THREE.Quaternion().setFromUnitVectors(
 			new THREE.Vector3(0, 1, 0),
@@ -293,9 +299,12 @@ export default function GLBModel(props) {
 
 		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		const e_arm_local = new THREE.Euler().setFromQuaternion(q_arm_local, eulerOrder);
+		const e_arm_local = new THREE.Euler().setFromQuaternion(
+			q_arm_local,
+			eulerOrder
+		);
 
-		BodyParts.current[side + 'Arm'].rotation.set(
+		BodyParts.current[side + "Arm"].rotation.set(
 			e_arm_local.x,
 			// e_local.y,
 			0,
@@ -305,25 +314,30 @@ export default function GLBModel(props) {
 
 		// start forarm
 		const v_forearm_world = posePositionToVector(
-			data[POSE_LANDMARKS[data_side + 'WRIST']],
-			data[POSE_LANDMARKS[data_side + 'ELBOW']]
+			data[POSE_LANDMARKS[data_side + "WRIST"]],
+			data[POSE_LANDMARKS[data_side + "ELBOW"]]
 		).normalize();
 
 		const q_arm_world = new THREE.Quaternion();
 
 		// Arm is the parent of ForeArm
-		BodyParts.current[side + 'Arm'].getWorldQuaternion(q_arm_world);
+		BodyParts.current[side + "Arm"].getWorldQuaternion(q_arm_world);
 
-		const v_forearm_local = v_forearm_world.clone().applyQuaternion(q_arm_world.conjugate());
+		const v_forearm_local = v_forearm_world
+			.clone()
+			.applyQuaternion(q_arm_world.conjugate());
 
 		const q_forearm_local = new THREE.Quaternion().setFromUnitVectors(
 			new THREE.Vector3(0, 1, 0),
 			v_forearm_local
 		);
 
-		const e_forearm_local = new THREE.Euler().setFromQuaternion(q_forearm_local, eulerOrder);
+		const e_forearm_local = new THREE.Euler().setFromQuaternion(
+			q_forearm_local,
+			eulerOrder
+		);
 
-		BodyParts.current[side + 'ForeArm'].rotation.set(
+		BodyParts.current[side + "ForeArm"].rotation.set(
 			e_forearm_local.x,
 			// e_forearm_local.y,
 			0,
@@ -332,30 +346,138 @@ export default function GLBModel(props) {
 		);
 	}
 
-	function moveLegFoot(data, side='Right') {
+	function moveLegFoot(data, side = "Right") {
+		let data_side = "LEFT_";
 
-	}
-
-	function makePose(data) {
-		for (let i in BodyPartsRotation.current) {
-			if (BodyPartsRotation.current[i][1]) {
-				if (BodyPartsRotation.current[i][1].length === 1) {
-					const v = posePositionToVector(
-						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][0]]],
-						data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][1]]]
-					).normalize();
-
-					rotateVector(
-						BodyPartsRotation.current[i][0],
-						BodyPartsRotation.current[i][1][0],
-						v
-					);
-				}
-			}
+		if (side === "Left") {
+			data_side = "RIGHT_";
 		}
+
+		const v_thigh_world = posePositionToVector(
+			data[POSE_LANDMARKS[data_side + "KNEE"]],
+			data[POSE_LANDMARKS[data_side + "HIP"]]
+		).normalize();
+
+		const q_hips_world = new THREE.Quaternion();
+
+		BodyParts.current["Hips"].getWorldQuaternion(q_hips_world);
+
+		const v_thigh_local = v_thigh_world
+			.clone()
+			.applyQuaternion(q_hips_world.conjugate());
+
+		const q_thigh_local = new THREE.Quaternion().setFromUnitVectors(
+			new THREE.Vector3(0, 1, 0),
+			v_thigh_local
+		);
+
+		// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
+		// // eliminate the existing rotation
+		// q_local.multiply(q_existing.conjugate());
+
+		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
+
+		const e_thigh_local = new THREE.Euler().setFromQuaternion(
+			q_thigh_local,
+			eulerOrder
+		);
+
+		BodyParts.current[side + "UpLeg"].rotation.set(
+			e_thigh_local.x,
+			// e_local.y,
+			0,
+			e_thigh_local.z,
+			eulerOrder
+		);
+
+		// start crus
+
+		const v_crus_world = posePositionToVector(
+			data[POSE_LANDMARKS[data_side + "ANKLE"]],
+			data[POSE_LANDMARKS[data_side + "KNEE"]]
+		).normalize();
+
+		const q_thigh_world = new THREE.Quaternion();
+
+		// UpLeg is the parent of Leg
+		BodyParts.current[side + "UpLeg"].getWorldQuaternion(q_thigh_world);
+
+		const v_crus_local = v_crus_world
+			.clone()
+			.applyQuaternion(q_thigh_world.conjugate());
+
+		const q_crus_local = new THREE.Quaternion().setFromUnitVectors(
+			new THREE.Vector3(0, 1, 0),
+			v_crus_local
+		);
+
+		const e_crus_local = new THREE.Euler().setFromQuaternion(
+			q_crus_local,
+			eulerOrder
+		);
+
+		BodyParts.current[side + "Leg"].rotation.set(
+			e_crus_local.x,
+			// e_crus_local.y,
+			0,
+			e_crus_local.z,
+			eulerOrder
+		);
+
+		// start foot
+
+		const v_foot_world = posePositionToVector(
+			data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]],
+			data[POSE_LANDMARKS[data_side + "ANKLE"]]
+		).normalize();
+
+		const q_crus_world = new THREE.Quaternion();
+
+		BodyParts.current[side + "UpLeg"].getWorldQuaternion(q_crus_world);
+
+		const v_foot_local = v_foot_world
+			.clone()
+			.applyQuaternion(q_crus_world.conjugate());
+
+		const q_foot_local = new THREE.Quaternion().setFromUnitVectors(
+			new THREE.Vector3(0, 1, 0),
+			v_foot_local
+		);
+
+		const e_foot_local = new THREE.Euler().setFromQuaternion(
+			q_foot_local,
+			eulerOrder
+		);
+
+		BodyParts.current[side + "Foot"].rotation.set(
+			e_foot_local.x,
+			// e_foot_local.y,
+			0,
+			e_foot_local.z,
+			eulerOrder
+		);
 	}
 
-	
+	// function makePose(data) {
+	// 	for (let i in BodyPartsRotation.current) {
+	// 		if (BodyPartsRotation.current[i][1]) {
+	// 			if (BodyPartsRotation.current[i][1].length === 1) {
+	// 				const v = posePositionToVector(
+	// 					data[
+	// 						POSE_LANDMARKS[BodyPartsRotation.current[i][2][0]]
+	// 					],
+	// 					data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][1]]]
+	// 				).normalize();
+
+	// 				rotateVector(
+	// 					BodyPartsRotation.current[i][0],
+	// 					BodyPartsRotation.current[i][1][0],
+	// 					v
+	// 				);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	function rotateVector(bodypart_name, from_vec_local, to_vec_world) {
 		const q_parent_world = new THREE.Quaternion();
@@ -379,7 +501,10 @@ export default function GLBModel(props) {
 
 		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		const e_local = new THREE.Euler().setFromQuaternion(q_local, eulerOrder);
+		const e_local = new THREE.Euler().setFromQuaternion(
+			q_local,
+			eulerOrder
+		);
 
 		BodyParts.current[bodypart_name].rotation.set(
 			e_local.x,

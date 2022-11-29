@@ -37,9 +37,9 @@ export default function HolisticCamera() {
 					// we can start having fun
 					try {
 						videoRef.current.srcObject = stream;
-						let stream_settings = stream
-							.getVideoTracks()[0]
-							.getSettings();
+						// let stream_settings = stream
+						// 	.getVideoTracks()[0]
+						// 	.getSettings();
 						// console.log(stream_settings);
 					} catch (error) {
 						videoRef.current.src = URL.createObjectURL(stream);
@@ -98,7 +98,6 @@ export default function HolisticCamera() {
 			camera.start();
 		}
 	}
-
 
 	function onHolisticResults(results) {
 		const poselm = results.poseLandmarks;

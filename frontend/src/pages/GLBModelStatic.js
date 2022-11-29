@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Slider } from "antd";
 
-import { loadGLTF /*, dumpObject*/ } from "../components/ropes";
+import { loadGLTF, dumpObject } from "../components/ropes";
 
 export default function GLBModelStatic() {
 	const canvasRef = useRef(null);
@@ -76,7 +76,7 @@ export default function GLBModelStatic() {
 		loadGLTF(MODEL_PATH).then((gltf) => {
 			const avatar = gltf.scene.children[0];
 
-			// console.log(dumpObject(avatar));
+			console.log(dumpObject(avatar));
 
 			travelModel(avatar);
 
