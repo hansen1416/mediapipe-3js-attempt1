@@ -89,8 +89,6 @@ export default function HolisticCamera() {
 
 			const camera = new Camera(videoRef.current, {
 				onFrame: async () => {
-					// onFrame(videoRef.current, ctx);
-
 					await holistic.send({ image: videoRef.current });
 				},
 				width: 640,
@@ -101,9 +99,6 @@ export default function HolisticCamera() {
 		}
 	}
 
-	// function onFrame(video, ctx) {
-	// 	ctx.drawImage(video, 0, 0);
-	// }
 
 	function onHolisticResults(results) {
 		const poselm = results.poseLandmarks;
