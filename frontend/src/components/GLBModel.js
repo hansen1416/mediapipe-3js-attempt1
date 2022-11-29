@@ -42,68 +42,6 @@ export default function GLBModel(props) {
 		RightFoot: null,
 	});
 
-	const BodyPartsRotation = useRef([
-		[
-			"Hips",
-			[
-				new THREE.Vector3(-1, 0, 0),
-				new THREE.Vector3(0.2, 1, 0).normalize(),
-			],
-			["LEFT_HIP", "RIGHT_HIP", "RIGHT_SHOULDER"],
-		],
-		["Spine"],
-		["Spine1"],
-		["Spine2"],
-		["Neck"],
-		["Head"],
-		["LeftShoulder"],
-		[
-			"LeftArm",
-			[new THREE.Vector3(0, 1, 0)],
-			["RIGHT_ELBOW", "RIGHT_SHOULDER"],
-		],
-		[
-			"LeftForeArm",
-			[new THREE.Vector3(0, 1, 0)],
-			["RIGHT_WRIST", "RIGHT_ELBOW"],
-		],
-		["LeftHand"],
-		["RightShoulder"],
-		[
-			"RightArm",
-			[new THREE.Vector3(0, 1, 0)],
-			["LEFT_ELBOW", "LEFT_SHOULDER"],
-		],
-		[
-			"RightForeArm",
-			[new THREE.Vector3(0, 1, 0)],
-			["LEFT_WRIST", "LEFT_ELBOW"],
-		],
-		["RightHand"],
-		[
-			"LeftUpLeg",
-			[new THREE.Vector3(0, 1, 0)],
-			["RIGHT_KNEE", "RIGHT_HIP"],
-		],
-		[
-			"LeftLeg",
-			[new THREE.Vector3(0, 1, 0)],
-			["RIGHT_ANKLE", "RIGHT_KNEE"],
-		],
-		[
-			"LeftFoot",
-			[new THREE.Vector3(0, 1, 0)],
-			["RIGHT_FOOT_INDEX", "RIGHT_ANKLE"],
-		],
-		["RightUpLeg", [new THREE.Vector3(0, 1, 0)], ["LEFT_KNEE", "LEFT_HIP"]],
-		["RightLeg", [new THREE.Vector3(0, 1, 0)], ["LEFT_ANKLE", "LEFT_KNEE"]],
-		[
-			"RightFoot",
-			[new THREE.Vector3(0, 1, 0)],
-			["LEFT_FOOT_INDEX", "LEFT_ANKLE"],
-		],
-	]);
-
 	const posedata = useRef([]);
 	const poseidx = useRef(0);
 	const animationFramePointer = useRef(0);
@@ -454,63 +392,6 @@ export default function GLBModel(props) {
 			// e_foot_local.y,
 			0,
 			e_foot_local.z,
-			eulerOrder
-		);
-	}
-
-	// function makePose(data) {
-	// 	for (let i in BodyPartsRotation.current) {
-	// 		if (BodyPartsRotation.current[i][1]) {
-	// 			if (BodyPartsRotation.current[i][1].length === 1) {
-	// 				const v = posePositionToVector(
-	// 					data[
-	// 						POSE_LANDMARKS[BodyPartsRotation.current[i][2][0]]
-	// 					],
-	// 					data[POSE_LANDMARKS[BodyPartsRotation.current[i][2][1]]]
-	// 				).normalize();
-
-	// 				rotateVector(
-	// 					BodyPartsRotation.current[i][0],
-	// 					BodyPartsRotation.current[i][1][0],
-	// 					v
-	// 				);
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	function rotateVector(bodypart_name, from_vec_local, to_vec_world) {
-		const q_parent_world = new THREE.Quaternion();
-
-		BodyParts.current[bodypart_name].parent.getWorldQuaternion(
-			q_parent_world
-		);
-
-		const to_vec_local = to_vec_world
-			.clone()
-			.applyQuaternion(q_parent_world.conjugate());
-
-		const q_local = new THREE.Quaternion().setFromUnitVectors(
-			from_vec_local,
-			to_vec_local
-		);
-
-		// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
-		// // eliminate the existing rotation
-		// q_local.multiply(q_existing.conjugate());
-
-		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
-
-		const e_local = new THREE.Euler().setFromQuaternion(
-			q_local,
-			eulerOrder
-		);
-
-		BodyParts.current[bodypart_name].rotation.set(
-			e_local.x,
-			// e_local.y,
-			0,
-			e_local.z,
 			eulerOrder
 		);
 	}
