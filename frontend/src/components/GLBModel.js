@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
-import { loadGLTF, posePositionToVector } from "./ropes";
+import { loadGLTF, posePositionToVector, dumpObject } from "./ropes";
 
 export default function GLBModel(props) {
 	const { scene, renderer, camera } = props;
@@ -53,8 +53,10 @@ export default function GLBModel(props) {
 	useEffect(() => {
 		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
 			const avatar = gltf.scene.children[0];
+			
 
-			// console.log(dumpObject(avatar));
+				// console.log(dumpObject(avatar));
+			
 
 			travelModel(avatar);
 
