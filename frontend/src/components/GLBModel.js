@@ -63,6 +63,8 @@ export default function GLBModel(props) {
 			scene.current.add(avatar);
 
 			renderer.current.render(scene.current, camera.current);
+
+			fetchPose("800-900");
 		});
 		// eslint-disable-next-line
 	}, []);
@@ -144,7 +146,7 @@ export default function GLBModel(props) {
 
 		animationStep.current += 1;
 
-		if (poseidx.current >= posedata.current.length) {
+		if (true || poseidx.current >= posedata.current.length) {
 			poseidx.current = 0;
 			animationStep.current = 0;
 
@@ -364,6 +366,8 @@ export default function GLBModel(props) {
 
 		// start foot
 
+		/** vector approach
+		 * 
 		const v_foot_world = posePositionToVector(
 			data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]],
 			data[POSE_LANDMARKS[data_side + "ANKLE"]]
@@ -394,6 +398,59 @@ export default function GLBModel(props) {
 			e_foot_local.z,
 			eulerOrder
 		);
+		*
+		*/
+
+		// the initial position of a foot,
+		// basis1x is heel -> foot_index
+		// basis1y is heel -> anckle
+		const basis1x = new THREE.Vector3(0, 1, 0);
+		const basis1y = new THREE.Vector3(0, 0, 1).normalize();
+		const basis1z = new THREE.Vector3().crossVectors(basis1x, basis1y).normalize();
+
+		const basis2x = posePositionToVector(
+			data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]],
+			data[POSE_LANDMARKS[data_side + "HEEL"]]
+		).normalize();
+		const basis2_vec = posePositionToVector(
+			data[POSE_LANDMARKS[data_side + "ANKLE"]],
+			data[POSE_LANDMARKS[data_side + "HEEL"]]
+		).normalize();
+
+
+		
+
+		const basis2z = new THREE.Vector3()
+		.crossVectors(basis2x, basis2_vec)
+		.normalize();
+
+		const basis2y = new THREE.Vector3().crossVectors(basis2x, basis2z).normalize();
+
+		const SE0 = new THREE.Matrix4().makeBasis(basis1x, basis1y, basis1z);
+		const SE1 = new THREE.Matrix4().makeBasis(basis2x, basis2y, basis2z);
+
+		const q_foot_local = new THREE.Quaternion().setFromRotationMatrix(
+			SE1.multiply(SE0.invert())
+		);
+
+		const q_crus_world = new THREE.Quaternion();
+
+		BodyParts.current[side + "UpLeg"].getWorldQuaternion(q_crus_world);
+
+		q_foot_local.multiply(q_crus_world.conjugate())
+
+		const e_foot_local = new THREE.Euler().setFromQuaternion(
+			q_foot_local,
+			eulerOrder
+		);
+
+		BodyParts.current[side + "Foot"].rotation.set(
+			e_foot_local.x,
+			e_foot_local.y,
+			e_foot_local.z,
+			eulerOrder
+		);
+
 	}
 
 	return (

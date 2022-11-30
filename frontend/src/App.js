@@ -5,7 +5,7 @@ function App() {
 	return (
 		<div className="App">
 			<Outlet />
-			<nav>
+			<nav style={{display: 'none'}}>
 				<ul>
 					<li>
 						<Link to={`/upload`}>Upload</Link>

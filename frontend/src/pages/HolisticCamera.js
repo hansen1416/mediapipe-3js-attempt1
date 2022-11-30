@@ -105,6 +105,11 @@ export default function HolisticCamera() {
 		const lefthandlm = results.leftHandLandmarks;
 		const righthandlm = results.rightHandLandmarks;
 
+		/**
+		 * todo save these data to file
+		 * consider store in localstorage first
+		 * then save it to .npy file in static storage, such as OSS, S3
+		*/
 		console.log(poselm, facelm, lefthandlm, righthandlm);
 
 		const canvasCtx = canvasRef.current.getContext("2d");
@@ -115,31 +120,7 @@ export default function HolisticCamera() {
 			canvasRef.current.width,
 			canvasRef.current.height
 		);
-		// canvasCtx.drawImage(
-		// 	results.segmentationMask,
-		// 	0,
-		// 	0,
-		// 	canvasRef.current.width,
-		// 	canvasRef.current.height
-		// );
-		// Only overwrite existing pixels.
-		// canvasCtx.globalCompositeOperation = "source-in";
-		// canvasCtx.fillStyle = "#00FF00";
-		// canvasCtx.fillRect(
-		// 	0,
-		// 	0,
-		// 	canvasRef.current.width,
-		// 	canvasRef.current.height
-		// );
-		// Only overwrite missing pixels.
-		// canvasCtx.globalCompositeOperation = "destination-atop";
-		// canvasCtx.drawImage(
-		// 	results.image,
-		// 	0,
-		// 	0,
-		// 	canvasRef.current.width,
-		// 	canvasRef.current.height
-		// );
+
 		canvasCtx.globalCompositeOperation = "source-over";
 		drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
 			color: "#00FF00",
