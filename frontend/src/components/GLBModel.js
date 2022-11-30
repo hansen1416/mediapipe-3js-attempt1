@@ -288,6 +288,10 @@ export default function GLBModel(props) {
 		);
 	}
 
+	function moveFingers(data, side = "Right") {
+
+	}
+
 	function moveLegFoot(data, side = "Right") {
 		let data_side = "LEFT_";
 
