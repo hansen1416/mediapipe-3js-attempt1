@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { useLocation } from "react-router-dom";
 
 import GLBModel from "../components/GLBModel";
+import HolisticCamera from "./HolisticCamera";
 
 export default function RotatableScene() {
 	const canvasRef = useRef(null);
@@ -162,6 +163,13 @@ export default function RotatableScene() {
 			<canvas ref={canvasRef}></canvas>
 			{location.pathname === "/glbmodel" && (
 				<GLBModel scene={scene} renderer={renderer} camera={camera} />
+			)}
+			{location.pathname === "/holisticcamera" && (
+				<HolisticCamera
+					scene={scene}
+					renderer={renderer}
+					camera={camera}
+				/>
 			)}
 		</div>
 	);
