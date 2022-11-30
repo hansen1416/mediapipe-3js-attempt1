@@ -53,10 +53,8 @@ export default function GLBModel(props) {
 	useEffect(() => {
 		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
 			const avatar = gltf.scene.children[0];
-			
 
-				// console.log(dumpObject(avatar));
-			
+			// console.log(dumpObject(avatar));
 
 			travelModel(avatar);
 
@@ -66,7 +64,7 @@ export default function GLBModel(props) {
 
 			renderer.current.render(scene.current, camera.current);
 
-			fetchPose("800-900");
+			// fetchPose("800-900");
 		});
 		// eslint-disable-next-line
 	}, []);
@@ -148,7 +146,7 @@ export default function GLBModel(props) {
 
 		animationStep.current += 1;
 
-		if (true || poseidx.current >= posedata.current.length) {
+		if (poseidx.current >= posedata.current.length) {
 			poseidx.current = 0;
 			animationStep.current = 0;
 
@@ -246,10 +244,17 @@ export default function GLBModel(props) {
 			eulerOrder
 		);
 
+		if (side === "Left") {
+			console.log(v_arm_local);
+			e_arm_local.y = Math.PI;
+		} else {
+			console.log(v_arm_local);
+			e_arm_local.y = Math.PI;
+		}
+
 		BodyParts.current[side + "Arm"].rotation.set(
 			e_arm_local.x,
-			// e_local.y,
-			0,
+			e_arm_local.y,
 			e_arm_local.z,
 			eulerOrder
 		);
@@ -279,18 +284,23 @@ export default function GLBModel(props) {
 			eulerOrder
 		);
 
+		if (side === "Left") {
+			console.log(v_forearm_local);
+			e_forearm_local.y = Math.PI;
+		} else {
+			console.log(v_forearm_local);
+			e_forearm_local.y = Math.PI;
+		}
+
 		BodyParts.current[side + "ForeArm"].rotation.set(
 			e_forearm_local.x,
-			// e_forearm_local.y,
-			0,
+			e_forearm_local.y,
 			e_forearm_local.z,
 			eulerOrder
 		);
 	}
 
-	function moveFingers(data, side = "Right") {
-
-	}
+	function moveFingers(data, side = "Right") {}
 
 	function moveLegFoot(data, side = "Right") {
 		let data_side = "LEFT_";
@@ -328,16 +338,14 @@ export default function GLBModel(props) {
 			eulerOrder
 		);
 
-		// try to adjust the angle of thigh
-		if (side === 'Left') {
-			console.log(e_thigh_local.y);
+		// todo this angle shall follow the angle of foot
+		if (side === "Left") {
 			console.log(v_thigh_local);
-			e_thigh_local.y = -2;
+			e_thigh_local.y = Math.PI;
 		} else {
-			console.log(e_thigh_local.y);
+			console.log(v_thigh_local);
+			e_thigh_local.y = Math.PI;
 		}
-
-		
 
 		BodyParts.current[side + "UpLeg"].rotation.set(
 			e_thigh_local.x,
@@ -372,6 +380,15 @@ export default function GLBModel(props) {
 			eulerOrder
 		);
 
+		// todo this angle shall follow the angle of foot
+		if (side === "Left") {
+			console.log(v_crus_local);
+			e_crus_local.y = Math.PI;
+		} else {
+			console.log(v_crus_local);
+			e_crus_local.y = Math.PI;
+		}
+
 		BodyParts.current[side + "Leg"].rotation.set(
 			e_crus_local.x,
 			// e_crus_local.y,
@@ -383,7 +400,6 @@ export default function GLBModel(props) {
 		// start foot
 
 		if (true) {
-
 			// vector approach
 			const v_foot_world = posePositionToVector(
 				data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]],
@@ -417,9 +433,7 @@ export default function GLBModel(props) {
 				e_foot_local.z,
 				eulerOrder
 			);
-
 		} else {
-
 			// vector basis approach
 
 			// the initial position of a foot,
@@ -438,24 +452,33 @@ export default function GLBModel(props) {
 				data[POSE_LANDMARKS[data_side + "HEEL"]]
 			).normalize();
 			const basis2z = new THREE.Vector3()
-			.crossVectors(basis2x, basis2_vec)
-			.normalize();
-			const basis2y = new THREE.Vector3().crossVectors(basis2x, basis2z).normalize();
+				.crossVectors(basis2x, basis2_vec)
+				.normalize();
+			const basis2y = new THREE.Vector3()
+				.crossVectors(basis2x, basis2z)
+				.normalize();
 
-			const SE0 = new THREE.Matrix4().makeBasis(basis1x, basis1y, basis1z);
-			const SE1 = new THREE.Matrix4().makeBasis(basis2x, basis2y, basis2z);
-
+			const SE0 = new THREE.Matrix4().makeBasis(
+				basis1x,
+				basis1y,
+				basis1z
+			);
+			const SE1 = new THREE.Matrix4().makeBasis(
+				basis2x,
+				basis2y,
+				basis2z
+			);
 
 			// // try to eliminate the rotation of crus for foot
 			const q_crus_world = new THREE.Quaternion();
 
 			BodyParts.current[side + "Leg"].getWorldQuaternion(q_crus_world);
 
-			const SEp = new THREE.Matrix4().makeRotationFromQuaternion(q_crus_world)
-
+			const SEp = new THREE.Matrix4().makeRotationFromQuaternion(
+				q_crus_world
+			);
 
 			// const SEm = SEp.clone().multiply(SE1.clone().invert())
-
 
 			const q_foot_local = new THREE.Quaternion().setFromRotationMatrix(
 				// SE1.multiply(SE0.invert()).multiply(SEp.invert())
@@ -474,8 +497,6 @@ export default function GLBModel(props) {
 				eulerOrder
 			);
 		}
-
-
 	}
 
 	return (
