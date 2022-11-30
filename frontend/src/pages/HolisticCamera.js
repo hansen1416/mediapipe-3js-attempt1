@@ -420,7 +420,7 @@ const righthandlm = [
 
 
 /**
- * LeftHandThumb1 [Bone]"
+"  │ │     │       ├─LeftHandThumb1 [Bone]"
 "  │ │     │       │ └─LeftHandThumb2 [Bone]"
 "  │ │     │       │   └─LeftHandThumb3 [Bone]"
 "  │ │     │       │     └─LeftHandThumb4 [Bone]"
