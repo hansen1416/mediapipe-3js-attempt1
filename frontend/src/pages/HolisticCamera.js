@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
@@ -12,9 +11,11 @@ import {
 } from "@mediapipe/holistic";
 import {
 	loadGLTF,
-	posePointsToVector,
 	getUserMedia,
 } from "../components/ropes";
+
+import { tmppose } from "../components/mypose";
+import Figure from "../models/Figure";
 
 export default function HolisticCamera(props) {
 	const { scene, renderer, camera } = props;
@@ -23,64 +24,73 @@ export default function HolisticCamera(props) {
 	const canvasRef = useRef(null);
 	const webcamera = useRef(null);
 
-	const eulerOrder = "XZY";
+	const figure = useRef(null);
 
-	const BodyParts = useRef({
-		Hips: null,
-		Spine: null,
-		Spine1: null,
-		Spine2: null,
-		Neck: null,
-		Head: null,
-		LeftShoulder: null,
-		LeftArm: null,
-		LeftForeArm: null,
-		LeftHand: null,
-		RightShoulder: null,
-		RightArm: null,
-		RightForeArm: null,
-		RightHand: null,
-		LeftUpLeg: null,
-		LeftLeg: null,
-		LeftFoot: null,
-		RightUpLeg: null,
-		RightLeg: null,
-		RightFoot: null,
-	});
+	// const eulerOrder = "XZY";
+
+	// const BodyParts = useRef({
+	// 	Hips: null,
+	// 	Spine: null,
+	// 	Spine1: null,
+	// 	Spine2: null,
+	// 	Neck: null,
+	// 	Head: null,
+	// 	LeftShoulder: null,
+	// 	LeftArm: null,
+	// 	LeftForeArm: null,
+	// 	LeftHand: null,
+	// 	RightShoulder: null,
+	// 	RightArm: null,
+	// 	RightForeArm: null,
+	// 	RightHand: null,
+	// 	LeftUpLeg: null,
+	// 	LeftLeg: null,
+	// 	LeftFoot: null,
+	// 	RightUpLeg: null,
+	// 	RightLeg: null,
+	// 	RightFoot: null,
+	// });
 
 	useEffect(() => {
 		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
 			const avatar = gltf.scene.children[0];
 
-			travelModel(avatar);
+			// travelModel(avatar);
 
 			avatar.position.set(0, 0, 0);
 
 			scene.current.add(avatar);
 
-			makePose(poselm);
+			// makePose(poselm);
+			figure.current = new Figure(avatar);
+
+			figure.current.makePose(tmppose);
 
 			renderer.current.render(scene.current, camera.current);
 		});
+
+		return (() => {
+			scene.current.clear();
+		})
 		// eslint-disable-next-line
 	}, []);
 
-	/**
-	 * save reference for different body parts
-	 * @param {*} model
-	 */
-	function travelModel(model) {
-		for (let name in BodyParts.current) {
-			if (name === model.name) {
-				BodyParts.current[name] = model;
-			}
-		}
+	// /**
+	//  * save reference for different body parts
+	//  * @param {*} model
+	//  */
+	// function travelModel(model) {
+	// 	for (let name in BodyParts.current) {
+	// 		if (name === model.name) {
+	// 			BodyParts.current[name] = model;
+	// 		}
+	// 	}
 
-		model.children.forEach((child) => {
-			// console.log(child)
-			travelModel(child);
-		});
-	}
+	// 	model.children.forEach((child) => {
+	// 		// console.log(child)
+	// 		travelModel(child);
+	// 	});
+	// }
 
 	function startCamera() {
 		if (videoRef.current) {
@@ -219,165 +229,171 @@ export default function HolisticCamera(props) {
 		canvasCtx.restore();
 	}
 
-	function makePose(data) {
-		console.log(data);
+	// function makePose(data) {
 
-		moveArmHand(data, "Left");
-		moveArmHand(data, "Right");
-	}
+	// 	const elbow = data[POSE_LANDMARKS['LEFT_ELBOW']];
+	// 	const sholder = data[POSE_LANDMARKS['LEFT_SHOULDER']];
 
-	function moveSpine(data) {
-		if (!data) {
-			return;
-		}
+	// 	const v1 = posePointsToVector(elbow, sholder)
 
-		const v01 = new THREE.Vector3(-1, 0, 0);
-		const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
+	// 	console.log(sholder, elbow, v1);
 
-		const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
-		const cross02 = new THREE.Vector3()
-			.crossVectors(cross01, v01)
-			.normalize();
+	// 	// moveArmHand(data, "Left");
+	// 	// moveArmHand(data, "Right");
+	// }
 
-		const vt1 = posePointsToVector(
-			data[POSE_LANDMARKS["LEFT_HIP"]],
-			data[POSE_LANDMARKS["RIGHT_HIP"]]
-		).normalize();
-		const vt2 = posePointsToVector(
-			data[POSE_LANDMARKS["RIGHT_SHOULDER"]],
-			data[POSE_LANDMARKS["RIGHT_HIP"]]
-		).normalize();
+	// function moveSpine(data) {
+	// 	if (!data) {
+	// 		return;
+	// 	}
 
-		const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
-		const cross12 = new THREE.Vector3()
-			.crossVectors(cross11, vt1)
-			.normalize();
+	// 	const v01 = new THREE.Vector3(-1, 0, 0);
+	// 	const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
 
-		const SE0 = new THREE.Matrix4().makeBasis(v01, cross01, cross02);
-		const SE1 = new THREE.Matrix4().makeBasis(vt1, cross11, cross12);
+	// 	const cross01 = new THREE.Vector3().crossVectors(v01, v02).normalize();
+	// 	const cross02 = new THREE.Vector3()
+	// 		.crossVectors(cross01, v01)
+	// 		.normalize();
 
-		const q_local = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
-		);
+	// 	const vt1 = posePointsToVector(
+	// 		data[POSE_LANDMARKS["LEFT_HIP"]],
+	// 		data[POSE_LANDMARKS["RIGHT_HIP"]]
+	// 	).normalize();
+	// 	const vt2 = posePointsToVector(
+	// 		data[POSE_LANDMARKS["RIGHT_SHOULDER"]],
+	// 		data[POSE_LANDMARKS["RIGHT_HIP"]]
+	// 	).normalize();
 
-		// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
-		// // eliminate the existing rotation
-		// q_local.multiply(q_existing.conjugate());
+	// 	const cross11 = new THREE.Vector3().crossVectors(vt1, vt2).normalize();
+	// 	const cross12 = new THREE.Vector3()
+	// 		.crossVectors(cross11, vt1)
+	// 		.normalize();
 
-		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
+	// 	const SE0 = new THREE.Matrix4().makeBasis(v01, cross01, cross02);
+	// 	const SE1 = new THREE.Matrix4().makeBasis(vt1, cross11, cross12);
 
-		const e_local = new THREE.Euler().setFromQuaternion(
-			q_local,
-			eulerOrder
-		);
+	// 	const q_local = new THREE.Quaternion().setFromRotationMatrix(
+	// 		SE1.multiply(SE0.invert())
+	// 	);
 
-		BodyParts.current["Hips"].rotation.set(
-			e_local.x,
-			e_local.y,
-			e_local.z,
-			eulerOrder
-		);
-	}
+	// 	// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
+	// 	// // eliminate the existing rotation
+	// 	// q_local.multiply(q_existing.conjugate());
 
-	function moveArmHand(data, side = "Right") {
-		if (!data) {
-			return;
-		}
+	// 	// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		let data_side = "LEFT_";
+	// 	const e_local = new THREE.Euler().setFromQuaternion(
+	// 		q_local,
+	// 		eulerOrder
+	// 	);
 
-		if (side === "Left") {
-			data_side = "RIGHT_";
-		}
+	// 	BodyParts.current["Hips"].rotation.set(
+	// 		e_local.x,
+	// 		e_local.y,
+	// 		e_local.z,
+	// 		eulerOrder
+	// 	);
+	// }
 
-		const v_arm_world = posePointsToVector(
-			data[POSE_LANDMARKS[data_side + "ELBOW"]],
-			data[POSE_LANDMARKS[data_side + "SHOULDER"]]
-		).normalize();
+	// function moveArmHand(data, side = "Right") {
+	// 	if (!data) {
+	// 		return;
+	// 	}
 
-		const q_shoulder_world = new THREE.Quaternion();
+	// 	let data_side = "LEFT_";
 
-		BodyParts.current[side + "Shoulder"].getWorldQuaternion(
-			q_shoulder_world
-		);
+	// 	if (side === "Left") {
+	// 		data_side = "RIGHT_";
+	// 	}
 
-		const v_arm_local = v_arm_world
-			.clone()
-			.applyQuaternion(q_shoulder_world.conjugate());
+	// 	const v_arm_world = posePointsToVector(
+	// 		data[POSE_LANDMARKS[data_side + "ELBOW"]],
+	// 		data[POSE_LANDMARKS[data_side + "SHOULDER"]]
+	// 	).normalize();
 
-		const q_arm_local = new THREE.Quaternion().setFromUnitVectors(
-			new THREE.Vector3(0, 1, 0),
-			v_arm_local
-		);
+	// 	const q_shoulder_world = new THREE.Quaternion();
 
-		// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
-		// // eliminate the existing rotation
-		// q_local.multiply(q_existing.conjugate());
+	// 	BodyParts.current[side + "Shoulder"].getWorldQuaternion(
+	// 		q_shoulder_world
+	// 	);
 
-		// BodyParts.current[bodypart_name].applyQuaternion(q_local);
+	// 	const v_arm_local = v_arm_world
+	// 		.clone()
+	// 		.applyQuaternion(q_shoulder_world.conjugate());
 
-		const e_arm_local = new THREE.Euler().setFromQuaternion(
-			q_arm_local,
-			eulerOrder
-		);
+	// 	const q_arm_local = new THREE.Quaternion().setFromUnitVectors(
+	// 		new THREE.Vector3(0, 1, 0),
+	// 		v_arm_local
+	// 	);
 
-		if (side === "Left") {
-			// console.log(v_arm_local);
-			e_arm_local.y = Math.PI;
-		} else {
-			// console.log(v_arm_local);
-			e_arm_local.y = Math.PI;
-		}
+	// 	// const q_existing = BodyParts.current[bodypart_name].quaternion.clone();
+	// 	// // eliminate the existing rotation
+	// 	// q_local.multiply(q_existing.conjugate());
 
-		BodyParts.current[side + "Arm"].rotation.set(
-			e_arm_local.x,
-			e_arm_local.y,
-			e_arm_local.z,
-			eulerOrder
-		);
+	// 	// BodyParts.current[bodypart_name].applyQuaternion(q_local);
 
-		// start forarm
-		const v_forearm_world = posePointsToVector(
-			data[POSE_LANDMARKS[data_side + "WRIST"]],
-			data[POSE_LANDMARKS[data_side + "ELBOW"]]
-		).normalize();
+	// 	const e_arm_local = new THREE.Euler().setFromQuaternion(
+	// 		q_arm_local,
+	// 		eulerOrder
+	// 	);
 
-		const q_arm_world = new THREE.Quaternion();
+	// 	if (side === "Left") {
+	// 		// console.log(v_arm_local);
+	// 		e_arm_local.y = Math.PI;
+	// 	} else {
+	// 		// console.log(v_arm_local);
+	// 		e_arm_local.y = Math.PI;
+	// 	}
 
-		// Arm is the parent of ForeArm
-		BodyParts.current[side + "Arm"].getWorldQuaternion(q_arm_world);
+	// 	BodyParts.current[side + "Arm"].rotation.set(
+	// 		e_arm_local.x,
+	// 		e_arm_local.y,
+	// 		e_arm_local.z,
+	// 		eulerOrder
+	// 	);
 
-		const v_forearm_local = v_forearm_world
-			.clone()
-			.applyQuaternion(q_arm_world.conjugate());
+	// 	// start forarm
+	// 	const v_forearm_world = posePointsToVector(
+	// 		data[POSE_LANDMARKS[data_side + "WRIST"]],
+	// 		data[POSE_LANDMARKS[data_side + "ELBOW"]]
+	// 	).normalize();
 
-		const q_forearm_local = new THREE.Quaternion().setFromUnitVectors(
-			new THREE.Vector3(0, 1, 0),
-			v_forearm_local
-		);
+	// 	const q_arm_world = new THREE.Quaternion();
 
-		const e_forearm_local = new THREE.Euler().setFromQuaternion(
-			q_forearm_local,
-			eulerOrder
-		);
+	// 	// Arm is the parent of ForeArm
+	// 	BodyParts.current[side + "Arm"].getWorldQuaternion(q_arm_world);
 
-		if (side === "Left") {
-			// console.log(v_forearm_local);
-			e_forearm_local.y = Math.PI;
-		} else {
-			// console.log(v_forearm_local);
-			e_forearm_local.y = Math.PI;
-		}
+	// 	const v_forearm_local = v_forearm_world
+	// 		.clone()
+	// 		.applyQuaternion(q_arm_world.conjugate());
 
-		BodyParts.current[side + "ForeArm"].rotation.set(
-			e_forearm_local.x,
-			e_forearm_local.y,
-			e_forearm_local.z,
-			eulerOrder
-		);
-	}
+	// 	const q_forearm_local = new THREE.Quaternion().setFromUnitVectors(
+	// 		new THREE.Vector3(0, 1, 0),
+	// 		v_forearm_local
+	// 	);
 
-	function moveFingers(data, side = "Right") {}
+	// 	const e_forearm_local = new THREE.Euler().setFromQuaternion(
+	// 		q_forearm_local,
+	// 		eulerOrder
+	// 	);
+
+	// 	if (side === "Left") {
+	// 		// console.log(v_forearm_local);
+	// 		e_forearm_local.y = Math.PI;
+	// 	} else {
+	// 		// console.log(v_forearm_local);
+	// 		e_forearm_local.y = Math.PI;
+	// 	}
+
+	// 	BodyParts.current[side + "ForeArm"].rotation.set(
+	// 		e_forearm_local.x,
+	// 		e_forearm_local.y,
+	// 		e_forearm_local.z,
+	// 		eulerOrder
+	// 	);
+	// }
+
+	// function moveFingers(data, side = "Right") {}
 
 	function stopCamera() {
 		if (webcamera.current) {

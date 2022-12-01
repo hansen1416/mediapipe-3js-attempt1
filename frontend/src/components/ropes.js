@@ -34,7 +34,7 @@ export function radiansToDegrees(radian) {
 // }
 
 export function posePointsToVector(a, b) {
-	return new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+	return new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z).normalize();
 }
 
 export function posePositionToVector(a, b) {
@@ -102,6 +102,20 @@ export function quaternionFromVectors(a, b) {
 	quaternion.setFromUnitVectors(a.normalize(), b.normalize());
 
 	return quaternion;
+}
+
+export function travelModel(model, bodyparts) {
+
+    for (let name in bodyparts) {
+        if (name === model.name) {
+            bodyparts[name] = model;
+        }
+    }
+
+    model.children.forEach((child) => {
+        // console.log(child)
+        travelModel(child, bodyparts);
+    });
 }
 
 export const limbs = [
