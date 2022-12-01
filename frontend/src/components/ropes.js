@@ -344,6 +344,29 @@ export function unitline(a, b, color = 0xffffff) {
 	return line;
 }
 
+
+// export function worldPointFromScreenPoint(screenPoint, camera) {
+// 	let worldPoint = new THREE.Vector3();
+// 	worldPoint.x = screenPoint.x;
+// 	worldPoint.y = screenPoint.y;
+// 	worldPoint.z = 0;
+// 	worldPoint.unproject(camera);
+// 	return worldPoint;
+// }
+
+// export function onPointerDown(event) {
+// 	// Relative screen position
+// 	// (WebGL is -1 to 1 left to right, 1 to -1 top to bottom)
+// 	const rect = this.dom.getBoundingClientRect();
+// 	let viewportDown = new THREE.Vector2();
+// 	viewportDown.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+// 	viewportDown.y = -(((event.clientY - rect.top) / rect.height) * 2) + 1;
+
+// 	// Get 3d point
+// 	let my3dPosition = worldPointFromScreenPoint(viewportDown, mySceneCamera);
+// }
+
+
 /**
  * POSE_LANDMARKS
  * 
@@ -382,23 +405,28 @@ export function unitline(a, b, color = 0xffffff) {
 32: "RIGHT_FOOT_INDEX"
  */
 
-// export function worldPointFromScreenPoint(screenPoint, camera) {
-// 	let worldPoint = new THREE.Vector3();
-// 	worldPoint.x = screenPoint.x;
-// 	worldPoint.y = screenPoint.y;
-// 	worldPoint.z = 0;
-// 	worldPoint.unproject(camera);
-// 	return worldPoint;
-// }
-
-// export function onPointerDown(event) {
-// 	// Relative screen position
-// 	// (WebGL is -1 to 1 left to right, 1 to -1 top to bottom)
-// 	const rect = this.dom.getBoundingClientRect();
-// 	let viewportDown = new THREE.Vector2();
-// 	viewportDown.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-// 	viewportDown.y = -(((event.clientY - rect.top) / rect.height) * 2) + 1;
-
-// 	// Get 3d point
-// 	let my3dPosition = worldPointFromScreenPoint(viewportDown, mySceneCamera);
-// }
+/**
+ * HAND_LANDMARK
+ * 
+0. WRIST
+1. THUMB_CMC
+2. THUMB_MCP
+3. THUNB_IP
+4. THUNB_TIP
+5. INDEX_FINGER_MCP
+6. INDEX_FINGER_PIP
+7. INDEX_FINGER_DIP
+8. INDEX_FINGER_TIP
+9. MIDDLE_FINGER_MCP
+10. MIDDLE_FINGER_PIP
+11. MIDDLE_FINGER_DIP
+12. MIDDLE_FINGER_TIP
+13. RING_FINGER_MCP
+14. RING_FINGER_PIP
+15. RING_FINGER_DIP
+16. RING_FINGER_TIP
+17. PINKY_MCP
+18. PINKY_PIP
+19. PINKY_DIP
+20. PINKY_TIP
+ */

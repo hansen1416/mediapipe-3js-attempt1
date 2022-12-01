@@ -87,10 +87,10 @@ export default class Figure {
 
         // this.parts[bodypart_name].applyQuaternion(q_local);
 
-        return new THREE.Euler().setFromQuaternion(
+        return [v_local, new THREE.Euler().setFromQuaternion(
             q_local,
             this.eulerOrder
-        );
+        )];
     }
 
 
@@ -195,7 +195,7 @@ export default class Figure {
             q_shoulder_world
         );
 
-        const e_arm_local = this._rotateVectors(v_arm_world, q_shoulder_world, new THREE.Vector3(0, 1, 0));
+        const [v_local, e_arm_local] = this._rotateVectors(v_arm_world, q_shoulder_world, new THREE.Vector3(0, 1, 0));
 
         // if (side === "Left") {
         //     // console.log(v_arm_local);
@@ -235,7 +235,7 @@ export default class Figure {
 		// Arm is the parent of ForeArm
 		this.parts[side + "Arm"].getWorldQuaternion(q_arm_world);
 
-		const e_forearm_local = this._rotateVectors(v_forearm_world, q_arm_world, new THREE.Vector3(0, 1, 0));
+		const [v_local, e_forearm_local] = this._rotateVectors(v_forearm_world, q_arm_world, new THREE.Vector3(0, 1, 0));
 
 		// if (side === "Left") {
 		// 	// console.log(v_forearm_local);
@@ -287,7 +287,7 @@ export default class Figure {
 
 		this.parts["Hips"].getWorldQuaternion(q_hips_world);
 
-		const e_thigh_local = this._rotateVectors(v_thigh_world, q_hips_world, new THREE.Vector3(0, 1, 0));
+		const [v_local, e_thigh_local] = this._rotateVectors(v_thigh_world, q_hips_world, new THREE.Vector3(0, 1, 0));
 
 		// // todo this angle shall follow the angle of foot
 		// if (side === "Left") {
@@ -327,7 +327,7 @@ export default class Figure {
 		// UpLeg is the parent of Leg
 		this.parts[side + "UpLeg"].getWorldQuaternion(q_thigh_world);
 
-		const e_crus_local = this._rotateVectors(v_crus_world, q_thigh_world, new THREE.Vector3(0, 1, 0));
+		const [v_local, e_crus_local] = this._rotateVectors(v_crus_world, q_thigh_world, new THREE.Vector3(0, 1, 0));
 
 		// // todo this angle shall follow the angle of foot
 		// if (side === "Left") {
@@ -370,7 +370,7 @@ export default class Figure {
 
 			this.parts[side + "Leg"].getWorldQuaternion(q_crus_world);
 
-			const e_foot_local = this._rotateVectors(v_foot_world, q_crus_world, new THREE.Vector3(0, 1, 0));
+			const [v_local, e_foot_local] = this._rotateVectors(v_foot_world, q_crus_world, new THREE.Vector3(0, 1, 0));
 
 			this.parts[side + "Foot"].rotation.set(
 				e_foot_local.x,

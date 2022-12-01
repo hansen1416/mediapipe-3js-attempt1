@@ -39,8 +39,8 @@ export default function HolisticCamera(props) {
 			// makePose(poselm);
 			figure.current = new Figure(avatar);
 
-			figure.current.makePose(tmppose);
 			figure.current.makePose(tmppose1);
+			figure.current.makePose(tmppose);
 
 			renderer.current.render(scene.current, camera.current);
 		});
