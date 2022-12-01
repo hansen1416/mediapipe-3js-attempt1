@@ -103,22 +103,22 @@ export default class Figure {
 			pose_landmark[i].z *= -1;
 		}
 
-		// this.moveSpine(pose_landmark);
+		this.moveSpine(pose_landmark);
 
 		this.poseArm(pose_landmark, "Left");
 		this.poseArm(pose_landmark, "Right");
 
-		// this.poseforeArm(pose_landmark, "Left");
-		// this.poseforeArm(pose_landmark, "Right");
+		this.poseforeArm(pose_landmark, "Left");
+		this.poseforeArm(pose_landmark, "Right");
 
-		// this.poseThigh(pose_landmark, "Left");
-		// this.poseThigh(pose_landmark, "Right");
+		this.poseThigh(pose_landmark, "Left");
+		this.poseThigh(pose_landmark, "Right");
 
-		// this.poseCrus(pose_landmark, "Left");
-		// this.poseCrus(pose_landmark, "Right");
+		this.poseCrus(pose_landmark, "Left");
+		this.poseCrus(pose_landmark, "Right");
 
-		// this.poseFoot(pose_landmark, "Left");
-		// this.poseFoot(pose_landmark, "Right");
+		this.poseFoot(pose_landmark, "Left");
+		this.poseFoot(pose_landmark, "Right");
 	}
 
 	moveSpine(data) {
