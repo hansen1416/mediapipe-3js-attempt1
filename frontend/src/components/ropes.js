@@ -104,6 +104,10 @@ export function quaternionFromVectors(a, b) {
 	return quaternion;
 }
 
+/**
+ * save reference for different body parts
+ * @param {*} model
+ */
 export function travelModel(model, bodyparts) {
 
     for (let name in bodyparts) {
