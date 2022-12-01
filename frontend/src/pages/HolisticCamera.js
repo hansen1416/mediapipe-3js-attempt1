@@ -9,13 +9,10 @@ import {
 	FACEMESH_TESSELATION,
 	HAND_CONNECTIONS,
 } from "@mediapipe/holistic";
-import {
-	loadGLTF,
-	getUserMedia,
-} from "../components/ropes";
 
-import { tmppose, tmppose1 } from "../components/mypose";
+import { loadGLTF, getUserMedia } from "../components/ropes";
 import Figure from "../models/Figure";
+// import { tmppose, tmppose1 } from "../components/mypose";
 
 export default function HolisticCamera(props) {
 	const { scene, renderer, camera } = props;
@@ -39,15 +36,15 @@ export default function HolisticCamera(props) {
 			// makePose(poselm);
 			figure.current = new Figure(avatar);
 
-			figure.current.makePose(tmppose1);
-			figure.current.makePose(tmppose);
+			// figure.current.makePose(tmppose1);
+			// figure.current.makePose(tmppose);
 
 			renderer.current.render(scene.current, camera.current);
 		});
 
-		return (() => {
+		return () => {
 			scene.current.clear();
-		})
+		};
 		// eslint-disable-next-line
 	}, []);
 
@@ -124,9 +121,9 @@ export default function HolisticCamera(props) {
 
 	function onHolisticResults(results) {
 		const poselm = results.poseLandmarks;
-		const facelm = results.faceLandmarks;
-		const lefthandlm = results.leftHandLandmarks;
-		const righthandlm = results.rightHandLandmarks;
+		// const facelm = results.faceLandmarks;
+		// const lefthandlm = results.leftHandLandmarks;
+		// const righthandlm = results.rightHandLandmarks;
 
 		/**
 		 * todo save these data to file
@@ -135,8 +132,8 @@ export default function HolisticCamera(props) {
 		 *
 		 * note that, these landmarks are relative to the image size
 		 */
-		console.log(poselm, facelm, lefthandlm, righthandlm);
-		// console.log(poselm);
+		// console.log(poselm, facelm, lefthandlm, righthandlm);
+		figure.current.makePose(poselm);
 
 		renderer.current.render(scene.current, camera.current);
 
@@ -212,4 +209,3 @@ export default function HolisticCamera(props) {
 		</div>
 	);
 }
-

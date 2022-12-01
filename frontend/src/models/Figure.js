@@ -1,127 +1,136 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
-import {posePointsToVector, travelModel} from "../components/ropes";
+import { posePointsToVector, travelModel } from "../components/ropes";
 
 export default class Figure {
+	eulerOrder = "XZY";
 
-    eulerOrder = "XZY";
+	parts = {
+		Hips: null,
+		Spine: null,
+		Spine1: null,
+		Spine2: null,
+		Neck: null,
+		Head: null,
+		LeftShoulder: null,
+		LeftArm: null,
+		LeftForeArm: null,
+		LeftHand: null,
+		LeftHandThumb1: null,
+		LeftHandThumb2: null,
+		LeftHandThumb3: null,
+		LeftHandThumb4: null,
+		LeftHandIndex1: null,
+		LeftHandIndex2: null,
+		LeftHandIndex3: null,
+		LeftHandIndex4: null,
+		LeftHandMiddle1: null,
+		LeftHandMiddle2: null,
+		LeftHandMiddle3: null,
+		LeftHandMiddle4: null,
+		LeftHandRing1: null,
+		LeftHandRing2: null,
+		LeftHandRing3: null,
+		LeftHandRing4: null,
+		LeftHandPinky1: null,
+		LeftHandPinky2: null,
+		LeftHandPinky3: null,
+		LeftHandPinky4: null,
+		RightShoulder: null,
+		RightArm: null,
+		RightForeArm: null,
+		RightHand: null,
+		RightHandThumb1: null,
+		RightHandThumb2: null,
+		RightHandThumb3: null,
+		RightHandThumb4: null,
+		RightHandIndex1: null,
+		RightHandIndex2: null,
+		RightHandIndex3: null,
+		RightHandIndex4: null,
+		RightHandMiddle1: null,
+		RightHandMiddle2: null,
+		RightHandMiddle3: null,
+		RightHandMiddle4: null,
+		RightHandRing1: null,
+		RightHandRing2: null,
+		RightHandRing3: null,
+		RightHandRing4: null,
+		RightHandPinky1: null,
+		RightHandPinky2: null,
+		RightHandPinky3: null,
+		RightHandPinky4: null,
+		LeftUpLeg: null,
+		LeftLeg: null,
+		LeftFoot: null,
+		RightUpLeg: null,
+		RightLeg: null,
+		RightFoot: null,
+	};
 
-    parts = {
-        Hips: null,
-        Spine: null,
-        Spine1: null,
-        Spine2: null,
-        Neck: null,
-        Head: null,
-        LeftShoulder: null,
-        LeftArm: null,
-        LeftForeArm: null,
-        LeftHand: null,
-        LeftHandThumb1: null,
-        LeftHandThumb2: null,
-        LeftHandThumb3: null,
-        LeftHandThumb4: null,
-        LeftHandIndex1: null,
-        LeftHandIndex2: null,
-        LeftHandIndex3: null,
-        LeftHandIndex4: null,
-        LeftHandMiddle1: null,
-        LeftHandMiddle2: null,
-        LeftHandMiddle3: null,
-        LeftHandMiddle4: null,
-        LeftHandRing1: null,
-        LeftHandRing2: null,
-        LeftHandRing3: null,
-        LeftHandRing4: null,
-        LeftHandPinky1: null,
-        LeftHandPinky2: null,
-        LeftHandPinky3: null,
-        LeftHandPinky4: null,
-        RightShoulder: null,
-        RightArm: null,
-        RightForeArm: null,
-        RightHand: null,
-        RightHandThumb1: null,
-        RightHandThumb2: null,
-        RightHandThumb3: null,
-        RightHandThumb4: null,
-        RightHandIndex1: null,
-        RightHandIndex2: null,
-        RightHandIndex3: null,
-        RightHandIndex4: null,
-        RightHandMiddle1: null,
-        RightHandMiddle2: null,
-        RightHandMiddle3: null,
-        RightHandMiddle4: null,
-        RightHandRing1: null,
-        RightHandRing2: null,
-        RightHandRing3: null,
-        RightHandRing4: null,
-        RightHandPinky1: null,
-        RightHandPinky2: null,
-        RightHandPinky3: null,
-        RightHandPinky4: null,
-        LeftUpLeg: null,
-        LeftLeg: null,
-        LeftFoot: null,
-        RightUpLeg: null,
-        RightLeg: null,
-        RightFoot: null,
-    }
-
-    constructor(obj3d) {
-
-        travelModel(obj3d, this.parts);
-    }
-
-    _rotateVectors(v_world, q_parent_world, v_local_origin) {
-
-        const v_local = v_world.clone().applyQuaternion(q_parent_world.conjugate());
-
-        const q_local = new THREE.Quaternion().setFromUnitVectors(v_local_origin, v_local);
-
-        // const q_existing = this.parts[bodypart_name].quaternion.clone();
-        // // eliminate the existing rotation
-        // q_local.multiply(q_existing.conjugate());
-
-        // this.parts[bodypart_name].applyQuaternion(q_local);
-
-        return [v_local, new THREE.Euler().setFromQuaternion(
-            q_local,
-            this.eulerOrder
-        )];
-    }
-
-
-    makePose(pose_landmark) {
-        // compatible with mediapipe pose basis, they are opposite with the basis in threejs
-        for (let i in pose_landmark) {
-            pose_landmark[i].x *= -1;
-            pose_landmark[i].y *= -1;
-            pose_landmark[i].z *= -1;
-        }
-
-        this.moveSpine(pose_landmark);
-
-        this.poseArm(pose_landmark, 'Left');
-        this.poseArm(pose_landmark, 'Right');
-
-        this.poseforeArm(pose_landmark, 'Left');
-        this.poseforeArm(pose_landmark, 'Right');
-
-        this.poseThigh(pose_landmark, 'Left');
-        this.poseThigh(pose_landmark, 'Right');
-
-        this.poseCrus(pose_landmark, 'Left');
-        this.poseCrus(pose_landmark, 'Right');
-
-        this.poseFoot(pose_landmark, 'Left');
-        this.poseFoot(pose_landmark, 'Right');
+	constructor(obj3d) {
+		travelModel(obj3d, this.parts);
 	}
 
-    moveSpine(data) {
+	_rotateVectors(v_world, q_parent_world, v_local_origin) {
+		const v_local = v_world
+			.clone()
+			.applyQuaternion(q_parent_world.conjugate());
+
+		const q_local = new THREE.Quaternion().setFromUnitVectors(
+			v_local_origin,
+			v_local
+		);
+
+		// const q_existing = this.parts[bodypart_name].quaternion.clone();
+		// // eliminate the existing rotation
+		// q_local.multiply(q_existing.conjugate());
+
+		// this.parts[bodypart_name].applyQuaternion(q_local);
+
+		return [
+			v_local,
+			new THREE.Euler().setFromQuaternion(q_local, this.eulerOrder),
+		];
+	}
+
+	makePose(pose_landmark) {
+		// compatible with mediapipe pose basis, they are opposite with the basis in threejs
+		for (let i in pose_landmark) {
+			pose_landmark[i].x *= -1;
+			pose_landmark[i].y *= -1;
+			pose_landmark[i].z *= -1;
+		}
+
+		this.moveSpine(pose_landmark);
+
+		this.poseArm(pose_landmark, "Left");
+		this.poseArm(pose_landmark, "Right");
+
+		// this.poseforeArm(pose_landmark, "Left");
+		// this.poseforeArm(pose_landmark, "Right");
+
+		// this.poseThigh(pose_landmark, "Left");
+		// this.poseThigh(pose_landmark, "Right");
+
+		// this.poseCrus(pose_landmark, "Left");
+		// this.poseCrus(pose_landmark, "Right");
+
+		// this.poseFoot(pose_landmark, "Left");
+		// this.poseFoot(pose_landmark, "Right");
+	}
+
+	moveSpine(data) {
 		if (!data) {
+			return;
+		}
+
+		if (
+			data[POSE_LANDMARKS["LEFT_HIP"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS["RIGHT_HIP"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS["RIGHT_SHOULDER"]].visibility < 0.5
+		) {
 			return;
 		}
 
@@ -173,58 +182,66 @@ export default class Figure {
 		);
 	}
 
-	poseArm(data, side='Right') {
+	poseArm(data, side = "Right") {
 		if (!data) {
 			return;
 		}
 
-        let data_side = "LEFT_";
+		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
 
-        if (side === "Left") {
-            data_side = "RIGHT_";
-        }
-
-        const v_arm_world = posePointsToVector(
-            data[POSE_LANDMARKS[data_side + "ELBOW"]],
-            data[POSE_LANDMARKS[data_side + "SHOULDER"]]
-        ).normalize();
-
-        const q_shoulder_world = new THREE.Quaternion();
-
-        this.parts[side + "Shoulder"].getWorldQuaternion(
-            q_shoulder_world
-        );
-
-        const [v_local, e_arm_local] = this._rotateVectors(v_arm_world, q_shoulder_world, new THREE.Vector3(0, 1, 0));
-
-        // if (side === "Left") {
-        //     // console.log(v_arm_local);
-        //     e_arm_local.y = Math.PI;
-        // } else {
-        //     // console.log(v_arm_local);
-        //     e_arm_local.y = Math.PI;
-        // }
-
-        this.parts[side + "Arm"].rotation.set(
-            e_arm_local.x,
-            e_arm_local.y,
-            e_arm_local.z,
-            this.eulerOrder
-        );
-	}
-
-    poseforeArm(data, side = 'Left') {
-        if (!data) {
+		if (
+			data[POSE_LANDMARKS[data_side + "ELBOW"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS[data_side + "SHOULDER"]].visibility < 0.5
+		) {
 			return;
 		}
 
-        let data_side = "LEFT_";
+		const v_arm_world = posePointsToVector(
+			data[POSE_LANDMARKS[data_side + "ELBOW"]],
+			data[POSE_LANDMARKS[data_side + "SHOULDER"]]
+		).normalize();
 
-		if (side === "Left") {
-			data_side = "RIGHT_";
+		const q_shoulder_world = new THREE.Quaternion();
+
+		this.parts[side + "Shoulder"].getWorldQuaternion(q_shoulder_world);
+
+		const [v_local, e_arm_local] = this._rotateVectors(
+			v_arm_world,
+			q_shoulder_world,
+			new THREE.Vector3(0, 1, 0)
+		);
+
+		// if (side === "Left") {
+		//     // console.log(v_arm_local);
+		//     e_arm_local.y = Math.PI;
+		// } else {
+		//     // console.log(v_arm_local);
+		//     e_arm_local.y = Math.PI;
+		// }
+
+		this.parts[side + "Arm"].rotation.set(
+			e_arm_local.x,
+			e_arm_local.y,
+			e_arm_local.z,
+			this.eulerOrder
+		);
+	}
+
+	poseforeArm(data, side = "Left") {
+		if (!data) {
+			return;
 		}
 
-        // start forarm
+		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+
+		if (
+			data[POSE_LANDMARKS[data_side + "WRIST"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS[data_side + "ELBOW"]].visibility < 0.5
+		) {
+			return;
+		}
+
+		// start forarm
 		const v_forearm_world = posePointsToVector(
 			data[POSE_LANDMARKS[data_side + "WRIST"]],
 			data[POSE_LANDMARKS[data_side + "ELBOW"]]
@@ -235,7 +252,11 @@ export default class Figure {
 		// Arm is the parent of ForeArm
 		this.parts[side + "Arm"].getWorldQuaternion(q_arm_world);
 
-		const [v_local, e_forearm_local] = this._rotateVectors(v_forearm_world, q_arm_world, new THREE.Vector3(0, 1, 0));
+		const [v_local, e_forearm_local] = this._rotateVectors(
+			v_forearm_world,
+			q_arm_world,
+			new THREE.Vector3(0, 1, 0)
+		);
 
 		// if (side === "Left") {
 		// 	// console.log(v_forearm_local);
@@ -251,34 +272,35 @@ export default class Figure {
 			e_forearm_local.z,
 			this.eulerOrder
 		);
-    }
+	}
 
 	poseHand(data, side = "Right") {
-        if (!data) {
+		if (!data) {
 			return;
 		}
-        
-        let data_side = "LEFT_";
+
+		let data_side = "LEFT_";
 
 		if (side === "Left") {
 			data_side = "RIGHT_";
 		}
+	}
 
-    }
-
-    poseThigh(data, side = "Right") {
-        if (!data) {
+	poseThigh(data, side = "Right") {
+		if (!data) {
 			return;
 		}
-        
 
-        let data_side = "LEFT_";
+		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
 
-		if (side === "Left") {
-			data_side = "RIGHT_";
+		if (
+			data[POSE_LANDMARKS[data_side + "KNEE"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS[data_side + "HIP"]].visibility < 0.5
+		) {
+			return;
 		}
 
-        const v_thigh_world = posePointsToVector(
+		const v_thigh_world = posePointsToVector(
 			data[POSE_LANDMARKS[data_side + "KNEE"]],
 			data[POSE_LANDMARKS[data_side + "HIP"]]
 		).normalize();
@@ -287,7 +309,11 @@ export default class Figure {
 
 		this.parts["Hips"].getWorldQuaternion(q_hips_world);
 
-		const [v_local, e_thigh_local] = this._rotateVectors(v_thigh_world, q_hips_world, new THREE.Vector3(0, 1, 0));
+		const [v_local, e_thigh_local] = this._rotateVectors(
+			v_thigh_world,
+			q_hips_world,
+			new THREE.Vector3(0, 1, 0)
+		);
 
 		// // todo this angle shall follow the angle of foot
 		// if (side === "Left") {
@@ -304,17 +330,20 @@ export default class Figure {
 			e_thigh_local.z,
 			this.eulerOrder
 		);
-    }
+	}
 
-    poseCrus(data, side = "Right") {
-        if (!data) {
+	poseCrus(data, side = "Right") {
+		if (!data) {
 			return;
 		}
-        
-		let data_side = "LEFT_";
 
-		if (side === "Left") {
-			data_side = "RIGHT_";
+		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+
+		if (
+			data[POSE_LANDMARKS[data_side + "KNEE"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS[data_side + "ANKLE"]].visibility < 0.5
+		) {
+			return;
 		}
 
 		const v_crus_world = posePointsToVector(
@@ -327,7 +356,11 @@ export default class Figure {
 		// UpLeg is the parent of Leg
 		this.parts[side + "UpLeg"].getWorldQuaternion(q_thigh_world);
 
-		const [v_local, e_crus_local] = this._rotateVectors(v_crus_world, q_thigh_world, new THREE.Vector3(0, 1, 0));
+		const [v_local, e_crus_local] = this._rotateVectors(
+			v_crus_world,
+			q_thigh_world,
+			new THREE.Vector3(0, 1, 0)
+		);
 
 		// // todo this angle shall follow the angle of foot
 		// if (side === "Left") {
@@ -346,18 +379,21 @@ export default class Figure {
 		);
 	}
 
-    poseFoot(data, side = "Right") {
-        if (!data) {
+	poseFoot(data, side = "Right") {
+		if (!data) {
 			return;
 		}
-        
-		let data_side = "LEFT_";
 
-		if (side === "Left") {
-			data_side = "RIGHT_";
+		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+
+		if (
+			data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]].visibility < 0.5 ||
+			data[POSE_LANDMARKS[data_side + "HEEL"]].visibility < 0.5
+		) {
+			return;
 		}
 
-        // start foot
+		// start foot
 
 		if (true) {
 			// vector approach
@@ -370,7 +406,11 @@ export default class Figure {
 
 			this.parts[side + "Leg"].getWorldQuaternion(q_crus_world);
 
-			const [v_local, e_foot_local] = this._rotateVectors(v_foot_world, q_crus_world, new THREE.Vector3(0, 1, 0));
+			const [v_local, e_foot_local] = this._rotateVectors(
+				v_foot_world,
+				q_crus_world,
+				new THREE.Vector3(0, 1, 0)
+			);
 
 			this.parts[side + "Foot"].rotation.set(
 				e_foot_local.x,
@@ -443,6 +483,5 @@ export default class Figure {
 				this.eulerOrder
 			);
 		}
-    }
-
+	}
 }
