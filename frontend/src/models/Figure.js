@@ -103,7 +103,7 @@ export default class Figure {
 			pose_landmark[i].z *= -1;
 		}
 
-		this.moveSpine(pose_landmark);
+		// this.moveSpine(pose_landmark);
 
 		this.poseArm(pose_landmark, "Left");
 		this.poseArm(pose_landmark, "Right");
