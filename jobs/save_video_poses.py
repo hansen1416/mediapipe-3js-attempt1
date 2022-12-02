@@ -184,12 +184,15 @@ class VideoProcesser():
 
         for j in self.joints:
 
-            data.append([landmarks[PoseLandmark[j]].x, landmarks[PoseLandmark[j]].y,
-                         landmarks[PoseLandmark[j]].z, landmarks[PoseLandmark[j]].visibility])
+            # data.append([landmarks[PoseLandmark[j]].x, landmarks[PoseLandmark[j]].y,
+            #              landmarks[PoseLandmark[j]].z, landmarks[PoseLandmark[j]].visibility])
+            data.append(landmarks[PoseLandmark[j]])
 
         return data
 
     def save_video_poses(self):
+
+        logger.info('Saving pose from frame {} to {}'.format(self.start_frame, self.end_frame))
 
         count = self.start_frame
 
@@ -216,9 +219,8 @@ class VideoProcesser():
 
                     else:
 
-                        # pose_world_landmarks.append(
-                            # self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
-                        pose_world_landmarks.append(results.pose_world_landmarks.landmark)
+                        pose_world_landmarks.append(
+                            self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
 
                     if count > self.end_frame and len(pose_world_landmarks):
 
@@ -235,7 +237,8 @@ class VideoProcesser():
 
                         break
 
-                    elif count and (count % 300) == 0:
+                    elif count and (count % 300) == 0 and len(pose_world_landmarks):
+
                         frame_start_end = str(count-300) + '-' + str(count)
 
                         self._save_data_file(pose_world_landmarks, frame_start_end)
@@ -271,12 +274,18 @@ class VideoProcesser():
 
         if self.oss_svc is None:
 
-            with open(os.path.join('pose_data', 'wlm{}.npy'.format(frame_start_end))) as f:
+            dirname = os.path.dirname(os.path.abspath(__file__))
+            data_dir = os.path.join(dirname, 'pose_data')
+
+            if not os.path.isdir(data_dir):
+                os.makedirs(data_dir)
+
+            with open(os.path.join(data_dir, 'wlm{}.npy'.format(frame_start_end)), 'wb') as f:
                 pickle.dump(pose_world_landmarks, f)
         else:
             with NamedTemporaryFile() as tf:
                 pickle.dump(pose_world_landmarks, tf)
-                
+
                 self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
 
 
