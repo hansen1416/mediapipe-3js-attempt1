@@ -113,10 +113,12 @@ def pose_landmarks():
 
     action_name = request.args.get('action_name')
 
-    with open(os.path.join('tmp', 'wlm{}.pkl'.format(action_name)), 'rb') as f:
+    # with open(os.path.join('tmp', 'wlm{}.npy'.format(action_name)), 'rb') as f:
 
-        data = pickle.load(f)
+    #     data = pickle.load(f)
 
-        logger.info(data)
+    #     logger.info(data)
 
-    return {}
+    data = np.load(os.path.join('tmp', 'wlm{}.npy'.format(action_name)), allow_pickle=True)
+
+    return {'data': data.tolist()}

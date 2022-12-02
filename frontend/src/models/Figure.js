@@ -95,13 +95,30 @@ export default class Figure {
 		];
 	}
 
+	_checkVisibility(data) {
+		if (data[0]) {
+			return data[3] < 0.5;
+		} else {
+			return data.visibility < 0.5;
+		}
+	}
+
 	makePose(pose_landmark) {
 		// compatible with mediapipe pose basis, they are opposite with the basis in threejs
-		for (let i in pose_landmark) {
-			pose_landmark[i].x *= -1;
-			pose_landmark[i].y *= -1;
-			pose_landmark[i].z *= -1;
-		}
+		// if (pose_landmark[0][0]) {
+
+		// 	for (let i in pose_landmark) {
+		// 		pose_landmark[i][0] *= -1;
+		// 		pose_landmark[i][1] *= -1;
+		// 		pose_landmark[i][2] *= -1;
+		// 	}
+		// } else {
+		// 	for (let i in pose_landmark) {
+		// 		pose_landmark[i].x *= -1;
+		// 		pose_landmark[i].y *= -1;
+		// 		pose_landmark[i].z *= -1;
+		// 	}
+		// }
 
 		this.moveSpine(pose_landmark);
 
@@ -126,10 +143,9 @@ export default class Figure {
 			return;
 		}
 
-		if (
-			data[POSE_LANDMARKS["LEFT_HIP"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS["RIGHT_HIP"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS["RIGHT_SHOULDER"]].visibility < 0.5
+		if (this._checkVisibility(data[POSE_LANDMARKS["LEFT_HIP"]]) || 
+		this._checkVisibility(data[POSE_LANDMARKS["RIGHT_HIP"]]) ||
+		this._checkVisibility(data[POSE_LANDMARKS["RIGHT_SHOULDER"]])
 		) {
 			return;
 		}
@@ -187,11 +203,10 @@ export default class Figure {
 			return;
 		}
 
-		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (
-			data[POSE_LANDMARKS[data_side + "ELBOW"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS[data_side + "SHOULDER"]].visibility < 0.5
+		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "ELBOW"]]) || 
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "SHOULDER"]])
 		) {
 			return;
 		}
@@ -232,11 +247,10 @@ export default class Figure {
 			return;
 		}
 
-		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (
-			data[POSE_LANDMARKS[data_side + "WRIST"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS[data_side + "ELBOW"]].visibility < 0.5
+		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "WRIST"]]) || 
+		this._checkVisibility(data[POSE_LANDMARKS[data_side + "ELBOW"]])
 		) {
 			return;
 		}
@@ -279,11 +293,7 @@ export default class Figure {
 			return;
 		}
 
-		let data_side = "LEFT_";
-
-		if (side === "Left") {
-			data_side = "RIGHT_";
-		}
+		// let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 	}
 
 	poseThigh(data, side = "Right") {
@@ -291,11 +301,10 @@ export default class Figure {
 			return;
 		}
 
-		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (
-			data[POSE_LANDMARKS[data_side + "KNEE"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS[data_side + "HIP"]].visibility < 0.5
+		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "KNEE"]]) || 
+		this._checkVisibility(data[POSE_LANDMARKS[data_side + "HIP"]])
 		) {
 			return;
 		}
@@ -316,13 +325,13 @@ export default class Figure {
 		);
 
 		// // todo this angle shall follow the angle of foot
-		// if (side === "Left") {
-		// 	console.log(v_thigh_local);
-		// 	e_thigh_local.y = Math.PI;
-		// } else {
-		// 	console.log(v_thigh_local);
-		// 	e_thigh_local.y = Math.PI;
-		// }
+		if (side === "Left") {
+			// console.log(v_thigh_local);
+			e_thigh_local.y = Math.PI;
+		} else {
+			// console.log(v_thigh_local);
+			e_thigh_local.y = Math.PI;
+		}
 
 		this.parts[side + "UpLeg"].rotation.set(
 			e_thigh_local.x,
@@ -337,11 +346,10 @@ export default class Figure {
 			return;
 		}
 
-		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (
-			data[POSE_LANDMARKS[data_side + "KNEE"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS[data_side + "ANKLE"]].visibility < 0.5
+		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "KNEE"]]) || 
+		this._checkVisibility(data[POSE_LANDMARKS[data_side + "ANKLE"]])
 		) {
 			return;
 		}
@@ -363,17 +371,15 @@ export default class Figure {
 		);
 
 		// // todo this angle shall follow the angle of foot
-		// if (side === "Left") {
-		// 	console.log(v_crus_local);
-		// 	e_crus_local.y = Math.PI;
-		// } else {
-		// 	console.log(v_crus_local);
-		// 	e_crus_local.y = Math.PI;
-		// }
+		if (side === "Left") {
+			e_crus_local.y = Math.PI;
+		} else {
+			e_crus_local.y = Math.PI;
+		}
 
 		this.parts[side + "Leg"].rotation.set(
 			e_crus_local.x,
-			e_crus_local.y,
+			0,
 			e_crus_local.z,
 			this.eulerOrder
 		);
@@ -384,11 +390,10 @@ export default class Figure {
 			return;
 		}
 
-		let data_side = side === "Left" ? "LEFT_" : "RIGHT_";
+		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (
-			data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]].visibility < 0.5 ||
-			data[POSE_LANDMARKS[data_side + "HEEL"]].visibility < 0.5
+		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]]) || 
+		this._checkVisibility(data[POSE_LANDMARKS[data_side + "HEEL"]])
 		) {
 			return;
 		}
