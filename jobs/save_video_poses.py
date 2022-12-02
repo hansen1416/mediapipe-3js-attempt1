@@ -12,6 +12,7 @@ import mediapipe as mp
 from mediapipe.python.solutions import pose
 from mediapipe.python.solutions.pose import PoseLandmark
 import numpy as np
+import pickle
 
 from ropes import logger, redis_client
 from oss_service import OSSService
@@ -95,26 +96,33 @@ Extremities = namedtuple('Extremities', ['LEFT_FOREARM', 'LEFT_UPPERARM', 'RIGHT
 
 class VideoProcesser():
 
-    def __init__(self, oss_key) -> None:
+    def __init__(self, file_key, start_time, end_time) -> None:
 
-        self.oss_key = oss_key
-        self.oss_svc = OSSService()
+        self.oss_key = file_key
+        self.oss_svc = None
 
         if os.getenv('FLASK_DEBUG'):
-            self.video_path = "/tmp/tmppesudo"
+            self.video_path = file_key
         else:
-            self.video_path = self.oss_svc.remote_to_stream(oss_key)
-
-        logger.info("tmp file {}".format(self.video_path))
+            self.oss_svc = OSSService()
+            self.video_path = self.oss_svc.remote_to_stream(file_key)
 
         self.cap = cv2.VideoCapture(self.video_path)
 
         total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
-
         fps = self.cap.get(cv2.CAP_PROP_FPS)
 
-        logger.info('video filename {}, frames {}, fps {}'.format(
-            self.video_path, total_frames, fps))
+        logger.info('video filename {}, frames {}, fps {}, total time {}'.format(
+            self.video_path, total_frames, fps, round(total_frames/fps, 2)))
+
+        if end_time < 0:
+            self.end_frame = total_frames
+        else:
+            self.end_frame = min(round(end_time * fps), total_frames)
+
+        self.start_frame = round(start_time * fps)
+        
+        assert self.start_frame < self.end_frame, "End time must be bigger than start time"
 
         self.joints = ['NOSE',
                        'LEFT_EYE_INNER',
@@ -166,7 +174,7 @@ class VideoProcesser():
         self.cap.release()
 
         # this was a tmp file
-        os.unlink(self.video_path)
+        # os.unlink(self.video_path)
 
         logger.info("Release video")
 
@@ -183,7 +191,9 @@ class VideoProcesser():
 
     def save_video_poses(self):
 
-        count = 1
+        count = self.start_frame
+
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_frame)
 
         pose_world_landmarks = []
 
@@ -202,21 +212,33 @@ class VideoProcesser():
 
                     if not results.pose_landmarks:
 
-                        pose_world_landmarks.append([])
+                        pose_world_landmarks.append(None)
 
                     else:
 
-                        pose_world_landmarks.append(
-                            self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
+                        # pose_world_landmarks.append(
+                            # self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
+                        pose_world_landmarks.append(results.pose_world_landmarks.landmark)
 
-                    if count and (count % 3000) == 0:
-                        frame_start_end = str(count-3000) + '-' + str(count)
+                    if count > self.end_frame and len(pose_world_landmarks):
 
-                        with NamedTemporaryFile() as tf:
-                            np.save(tf, pose_world_landmarks)
+                        frame_start_end = str(count - count % 300) + '-' + str(count)
 
-                            self.oss_svc.simple_upload(
-                                tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
+                        self._save_data_file(pose_world_landmarks, frame_start_end)
+
+                        pose_world_landmarks = []
+
+                        logger.info(
+                            "Save pose world landmark for {}".format(frame_start_end))
+
+                        self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+                        break
+
+                    elif count and (count % 300) == 0:
+                        frame_start_end = str(count-300) + '-' + str(count)
+
+                        self._save_data_file(pose_world_landmarks, frame_start_end)
 
                         pose_world_landmarks = []
 
@@ -225,57 +247,81 @@ class VideoProcesser():
 
                     count += 1
 
-                    if count % 100 == 0:
-                        logger.info(count)
+                    # if count % 100 == 0:
+                        # logger.info(count)
 
-                else:
-                    # when video finished
+                # else:
+                #     # when video finished
 
-                    # set to video start
-                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                #     # set to video start
+                #     self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
-                    if len(pose_world_landmarks):
+                #     if len(pose_world_landmarks):
 
-                        frame_start_end = str(
-                            count - count % 3000) + '-' + str(count)
+                #         frame_start_end = str(
+                #             count - count % 300) + '-' + str(count)
 
-                        with NamedTemporaryFile() as tf:
-                            np.save(tf, pose_world_landmarks)
+                #         self._save_data_file(pose_world_landmarks, frame_start_end)
 
-                            self.oss_svc.simple_upload(
-                                tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
+                #         logger.info(
+                #             "Save pose world landmark for {}".format(frame_start_end))
+                #     break
 
-                        pose_world_landmarks
+    def _save_data_file(self, pose_world_landmarks, frame_start_end):
 
-                        logger.info(
-                            "Save pose world landmark masks for {}".format(frame_start_end))
-                    break
+        if self.oss_svc is None:
+
+            with open(os.path.join('pose_data', 'wlm{}.npy'.format(frame_start_end))) as f:
+                pickle.dump(pose_world_landmarks, f)
+        else:
+            with NamedTemporaryFile() as tf:
+                pickle.dump(pose_world_landmarks, tf)
+                
+                self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
 
 
 if __name__ == "__main__":
 
-    redis_key = os.getenv('VIDEO_TO_PROCESS_REDIS_KEY',
-                          default='video_to_process')
+    import argparse
 
-    redis_client.rpush(
-        redis_key, '8860f21aee324f9babf5bb1c771486c8/1665831900.1388848.mp4')
+    parser = argparse.ArgumentParser(
+                    prog = 'Save Video Pose',
+                    description = 'Extract face/pose/hand data from video',
+                    epilog = 'end===================')
 
-    while True:
+    parser.add_argument('filename', type=str, help="Path of a video file, could be an oss file key or local file path")
+    parser.add_argument("-s", "--start", default="1", type=int, metavar="start time", help="Start time when extract poses from video, in seconds")
+    parser.add_argument("-e", "--end", default="-1", type=int, metavar="end time", help="End time when extract poses from video, in seconds")
 
-        if redis_client.llen(redis_key):
+    args = parser.parse_args()
 
-            try:
+    vp = VideoProcesser(args.filename, args.start, args.end)
 
-                vp = VideoProcesser(redis_client.lpop(
-                    redis_key).decode('utf-8'))
+    vp.save_video_poses()
 
-                vp.save_video_poses()
 
-            except Exception as e:
+    # redis_key = os.getenv('VIDEO_TO_PROCESS_REDIS_KEY',
+    #                       default='video_to_process')
 
-                logger.error("Video process error, {}".format(str(e)))
+    # redis_client.rpush(
+    #     redis_key, '8860f21aee324f9babf5bb1c771486c8/1665831900.1388848.mp4')
 
-        else:
-            pass
+    # while True:
 
-        time.sleep(1)
+    #     if redis_client.llen(redis_key):
+
+    #         try:
+
+    #             vp = VideoProcesser(redis_client.lpop(
+    #                 redis_key).decode('utf-8'))
+
+    #             vp.save_video_poses()
+
+    #         except Exception as e:
+
+    #             logger.error("Video process error, {}".format(str(e)))
+
+    #     else:
+    #         pass
+
+    #     time.sleep(1)
