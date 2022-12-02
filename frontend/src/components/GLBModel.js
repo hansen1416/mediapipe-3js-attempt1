@@ -129,6 +129,53 @@ export default function GLBModel(props) {
 			});
 	}
 
+
+	function fetchLandmarks(action_name) {
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/pose/landmarks?" +
+				new URLSearchParams({
+					action_name: action_name,
+				}),
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
+			.then((response) => response.json())
+			.then((data) => {
+
+				console.log(data);
+
+				// for (let i in data.data) {
+				// 	for (let j in data.data[i]) {
+				// 		data.data[i][j][0] *= -1;
+				// 		data.data[i][j][1] *= -1;
+				// 		data.data[i][j][2] *= -1;
+				// 	}
+				// }
+
+				// poseidx.current = 0;
+
+				// animationStep.current = 0;
+
+				// posedata.current = data.data;
+
+				// playPose();
+			})
+			.catch(function (error) {
+				console.warn(error);
+			});
+	}
+
 	function playPose() {
 		if (animationStep.current % speed.current === 0) {
 			moveSpine(posedata.current[poseidx.current]);
@@ -522,6 +569,13 @@ export default function GLBModel(props) {
 					}}
 				>
 					action3
+				</button>
+				<button
+					onClick={() => {
+						fetchLandmarks("1500-1575");
+					}}
+				>
+					action4
 				</button>
 			</div>
 		</div>

@@ -5,6 +5,7 @@ from tempfile import NamedTemporaryFile
 from flask import Flask, request, Response
 from flask_cors import CORS
 import numpy as np
+import pickle
 
 from ropes import logger, redis_client, pack_file_key, VIDEO_MIME_EXT, oss_bucket
 # from oss_service import OSSService
@@ -112,7 +113,10 @@ def pose_landmarks():
 
     action_name = request.args.get('action_name')
 
-    data = np.load(os.path.join(
-        'tmp', 'wlmc{}.npy'.format(action_name)), allow_pickle=True)
+    with open(os.path.join('tmp', 'wlm{}.pkl'.format(action_name)), 'rb') as f:
 
-    return {'data': data.tolist()}
+        data = pickle.load(f)
+
+        logger.info(data)
+
+    return {}

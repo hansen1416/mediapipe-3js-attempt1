@@ -73,7 +73,11 @@ class VideoProcesser():
         for v in PoseLandmark:
             # print(v.name)
             # print(v.value)
-            data.append(landmarks[v.value])
+            # data.append(landmarks[v.value])
+            data.append([landmarks[v.value].x, landmarks[v.value].y, landmarks[v.value].z, landmarks[v.value].visibility])
+
+        # print(np.array(data).shape)
+        # exit()
 
         # for j in landmarks:
 
@@ -107,16 +111,17 @@ class VideoProcesser():
 
                     if not results.pose_landmarks:
 
-                        pose_world_landmarks.append(None)
+                        pose_world_landmarks.append(np.zeros((33, 4)))
 
                     else:
 
                         pose_world_landmarks.append(
                             self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
 
-                    if count > self.end_frame and len(pose_world_landmarks):
+                    if count >= self.end_frame and len(pose_world_landmarks):
 
-                        frame_start_end = str(count - count % 300) + '-' + str(count)
+                        # frame_start_end = str(count - count % 300) + '-' + str(count)
+                        frame_start_end = str(self.start_frame) + '-' + str(self.end_frame)
 
                         self._save_data_file(pose_world_landmarks, frame_start_end)
 
@@ -129,16 +134,16 @@ class VideoProcesser():
 
                         break
 
-                    elif count and (count % 300) == 0 and len(pose_world_landmarks):
+                    # elif count and (count % 300) == 0 and len(pose_world_landmarks):
 
-                        frame_start_end = str(count-300) + '-' + str(count)
+                    #     frame_start_end = str(count-300) + '-' + str(count)
 
-                        self._save_data_file(pose_world_landmarks, frame_start_end)
+                    #     self._save_data_file(pose_world_landmarks, frame_start_end)
 
-                        pose_world_landmarks = []
+                    #     pose_world_landmarks = []
 
-                        logger.info(
-                            "Save pose world landmark for {}".format(frame_start_end))
+                    #     logger.info(
+                    #         "Save pose world landmark for {}".format(frame_start_end))
 
                     count += 1
 
@@ -172,13 +177,16 @@ class VideoProcesser():
             if not os.path.isdir(data_dir):
                 os.makedirs(data_dir)
 
-            with open(os.path.join(data_dir, 'wlm{}.pkl'.format(frame_start_end)), 'wb') as f:
-                pickle.dump(pose_world_landmarks, f)
+            # with open(os.path.join(data_dir, 'wlm{}.pkl'.format(frame_start_end)), 'wb') as f:
+            #     pickle.dump(pose_world_landmarks, f)
+
+            np.save(os.path.join(data_dir, 'wlm{}.npy'.format(frame_start_end)), pose_world_landmarks)
         else:
             with NamedTemporaryFile() as tf:
-                pickle.dump(pose_world_landmarks, tf)
+                # pickle.dump(pose_world_landmarks, tf)
+                np.save(tf, pose_world_landmarks)
 
-                self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.pkl'.format(frame_start_end))
+                self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
 
 
 if __name__ == "__main__":
