@@ -27,73 +27,6 @@ mp_pose: pose = mp.solutions.pose
 # from gist https://gist.github.com/WetHat/1d6cd0f7309535311a539b42cccca89c
 
 
-class Annotation3D(Annotation):
-
-    def __init__(self, text, xyz, *args, **kwargs):
-        super().__init__(text, xy=(0, 0), *args, **kwargs)
-        self._xyz = xyz
-
-    def draw(self, renderer):
-        x2, y2, z2 = proj_transform(*self._xyz, self.axes.M)
-        self.xy = (x2, y2)
-        super().draw(renderer)
-
-# For seamless integration we add the annotate3D method to the Axes3D class.
-
-
-def _annotate3D(ax, text, xyz, *args, **kwargs):
-    '''Add anotation `text` to an `Axes3d` instance.'''
-
-    annotation = Annotation3D(text, xyz, *args, **kwargs)
-    ax.add_artist(annotation)
-
-
-setattr(Axes3D, 'annotate3D', _annotate3D)
-
-
-class Arrow3D(FancyArrowPatch):
-
-    def __init__(self, x, y, z, dx, dy, dz, *args, **kwargs):
-        super().__init__((0, 0), (0, 0), *args, **kwargs)
-        self._xyz = (x, y, z)
-        self._dxdydz = (dx, dy, dz)
-
-    def draw(self, renderer):
-        x1, y1, z1 = self._xyz
-        dx, dy, dz = self._dxdydz
-        x2, y2, z2 = (x1 + dx, y1 + dy, z1 + dz)
-
-        xs, ys, zs = proj_transform((x1, x2), (y1, y2), (z1, z2), self.axes.M)
-        self.set_positions((xs[0], ys[0]), (xs[1], ys[1]))
-        super().draw(renderer)
-
-    def do_3d_projection(self):
-        x1, y1, z1 = self._xyz
-        dx, dy, dz = self._dxdydz
-        x2, y2, z2 = (x1 + dx, y1 + dy, z1 + dz)
-
-        xs, ys, zs = proj_transform((x1, x2), (y1, y2), (z1, z2), self.axes.M)
-        self.set_positions((xs[0], ys[0]), (xs[1], ys[1]))
-
-        return np.min(zs)
-
-# For seamless integration we add the arrow3D method to the Axes3D class.
-
-
-def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
-    '''Add an 3d arrow to an `Axes3D` instance.'''
-
-    arrow = Arrow3D(x, y, z, dx, dy, dz, *args, **kwargs)
-    ax.add_artist(arrow)
-
-
-setattr(Axes3D, 'arrow3D', _arrow3D)
-
-
-Extremities = namedtuple('Extremities', ['LEFT_FOREARM', 'LEFT_UPPERARM', 'RIGHT_FOREARM', 'RIGHT_UPPERARM',
-                                         'LEFT_THIGH', 'LEFT_SHANK', 'RIGHT_THIGH', 'RIGHT_SHANK'])
-
-
 class VideoProcesser():
 
     def __init__(self, file_key, start_time, end_time) -> None:
@@ -124,51 +57,6 @@ class VideoProcesser():
         
         assert self.start_frame < self.end_frame, "End time must be bigger than start time"
 
-        self.joints = ['NOSE',
-                       'LEFT_EYE_INNER',
-                       'LEFT_EYE',
-                       'LEFT_EYE_OUTER',
-                       'RIGHT_EYE_INNER',
-                       'RIGHT_EYE',
-                       'RIGHT_EYE_OUTER',
-                       'LEFT_EAR',
-                       'RIGHT_EAR',
-                       'MOUTH_LEFT',
-                       'MOUTH_RIGHT',
-                       'LEFT_SHOULDER',
-                       'RIGHT_SHOULDER',
-                       'LEFT_ELBOW',
-                       'RIGHT_ELBOW',
-                       'LEFT_WRIST',
-                       'RIGHT_WRIST',
-                       'LEFT_PINKY',
-                       'RIGHT_PINKY',
-                       'LEFT_INDEX',
-                       'RIGHT_INDEX',
-                       'LEFT_THUMB',
-                       'RIGHT_THUMB',
-                       'LEFT_HIP',
-                       'RIGHT_HIP',
-                       'LEFT_KNEE',
-                       'RIGHT_KNEE',
-                       'LEFT_ANKLE',
-                       'RIGHT_ANKLE',
-                       'LEFT_HEEL',
-                       'RIGHT_HEEL',
-                       'LEFT_FOOT_INDEX',
-                       'RIGHT_FOOT_INDEX', ]
-
-        self.limbs = {
-            'LEFT_SHOULDER': 'LEFT_ELBOW',
-            'LEFT_ELBOW': 'LEFT_WRIST',
-            'RIGHT_ELBOW': 'RIGHT_WRIST',
-            'RIGHT_SHOULDER': 'RIGHT_ELBOW',
-            'LEFT_HIP': 'LEFT_KNEE',
-            'LEFT_KNEE': 'LEFT_ANKLE',
-            'RIGHT_HIP': 'RIGHT_KNEE',
-            'RIGHT_KNEE': 'RIGHT_ANKLE'
-        }
-
     def __del__(self):
 
         self.cap.release()
@@ -182,11 +70,15 @@ class VideoProcesser():
 
         data = []
 
-        for j in self.joints:
+        for v in PoseLandmark:
+            # print(v.name)
+            # print(v.value)
+            data.append(landmarks[v.value])
 
-            # data.append([landmarks[PoseLandmark[j]].x, landmarks[PoseLandmark[j]].y,
-            #              landmarks[PoseLandmark[j]].z, landmarks[PoseLandmark[j]].visibility])
-            data.append(landmarks[PoseLandmark[j]])
+        # for j in landmarks:
+
+        #     # data.append([landmarks[PoseLandmark[j]].x, landmarks[PoseLandmark[j]].y,
+        #     #              landmarks[PoseLandmark[j]].z, landmarks[PoseLandmark[j]].visibility])
 
         return data
 
