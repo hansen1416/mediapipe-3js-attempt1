@@ -105,3 +105,14 @@ def pose_data2():
     # data = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
     return {'data': data.tolist()}
+
+
+@app.route("/pose/landmarks", methods=['GET'])
+def pose_landmarks():
+
+    action_name = request.args.get('action_name')
+
+    data = np.load(os.path.join(
+        'tmp', 'wlmc{}.npy'.format(action_name)), allow_pickle=True)
+
+    return {'data': data.tolist()}

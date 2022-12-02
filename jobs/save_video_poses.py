@@ -172,13 +172,13 @@ class VideoProcesser():
             if not os.path.isdir(data_dir):
                 os.makedirs(data_dir)
 
-            with open(os.path.join(data_dir, 'wlm{}.npy'.format(frame_start_end)), 'wb') as f:
+            with open(os.path.join(data_dir, 'wlm{}.pkl'.format(frame_start_end)), 'wb') as f:
                 pickle.dump(pose_world_landmarks, f)
         else:
             with NamedTemporaryFile() as tf:
                 pickle.dump(pose_world_landmarks, tf)
 
-                self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
+                self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.pkl'.format(frame_start_end))
 
 
 if __name__ == "__main__":
