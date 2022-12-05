@@ -210,6 +210,47 @@ export default function GLBModel(props) {
 		}
 	}
 
+	function fetchPoseRotations() {
+
+		fetch(
+			process.env.REACT_APP_API_URL + "/pose/rotations",
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
+			.then((response) => response.json())
+			.then((data) => {
+
+				for (let i in data.data) {
+					for (let j in data.data[i]) {
+						data.data[i][j][0] *= -1;
+						data.data[i][j][1] *= -1;
+						data.data[i][j][2] *= -1;
+					}
+				}
+
+				poseidx.current = 0;
+
+				animationStep.current = 0;
+
+				posedata.current = data.data;
+
+				playPose();
+			})
+			.catch(function (error) {
+				console.warn(error);
+			});
+	}
+
 	// function moveSpine(data) {
 	// 	const v01 = new THREE.Vector3(-1, 0, 0);
 	// 	const v02 = new THREE.Vector3(0.2, 1, 0).normalize();
@@ -582,6 +623,13 @@ export default function GLBModel(props) {
 					}}
 				>
 					action4
+				</button>
+				<button
+					onClick={() => {
+						fetchPoseRotations();
+					}}
+				>
+					action5
 				</button>
 			</div>
 		</div>
