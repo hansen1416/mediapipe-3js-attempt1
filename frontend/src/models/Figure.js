@@ -143,9 +143,10 @@ export default class Figure {
 			return;
 		}
 
-		if (this._checkVisibility(data[POSE_LANDMARKS["LEFT_HIP"]]) || 
-		this._checkVisibility(data[POSE_LANDMARKS["RIGHT_HIP"]]) ||
-		this._checkVisibility(data[POSE_LANDMARKS["RIGHT_SHOULDER"]])
+		if (
+			this._checkVisibility(data[POSE_LANDMARKS["LEFT_HIP"]]) ||
+			this._checkVisibility(data[POSE_LANDMARKS["RIGHT_HIP"]]) ||
+			this._checkVisibility(data[POSE_LANDMARKS["RIGHT_SHOULDER"]])
 		) {
 			return;
 		}
@@ -205,7 +206,8 @@ export default class Figure {
 
 		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "ELBOW"]]) || 
+		if (
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "ELBOW"]]) ||
 			this._checkVisibility(data[POSE_LANDMARKS[data_side + "SHOULDER"]])
 		) {
 			return;
@@ -249,8 +251,9 @@ export default class Figure {
 
 		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "WRIST"]]) || 
-		this._checkVisibility(data[POSE_LANDMARKS[data_side + "ELBOW"]])
+		if (
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "WRIST"]]) ||
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "ELBOW"]])
 		) {
 			return;
 		}
@@ -303,8 +306,9 @@ export default class Figure {
 
 		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "KNEE"]]) || 
-		this._checkVisibility(data[POSE_LANDMARKS[data_side + "HIP"]])
+		if (
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "KNEE"]]) ||
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "HIP"]])
 		) {
 			return;
 		}
@@ -348,8 +352,9 @@ export default class Figure {
 
 		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "KNEE"]]) || 
-		this._checkVisibility(data[POSE_LANDMARKS[data_side + "ANKLE"]])
+		if (
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "KNEE"]]) ||
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "ANKLE"]])
 		) {
 			return;
 		}
@@ -392,8 +397,11 @@ export default class Figure {
 
 		let data_side = side === "Left" ? "RIGHT_" : "LEFT_";
 
-		if (this._checkVisibility(data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]]) || 
-		this._checkVisibility(data[POSE_LANDMARKS[data_side + "HEEL"]])
+		if (
+			this._checkVisibility(
+				data[POSE_LANDMARKS[data_side + "FOOT_INDEX"]]
+			) ||
+			this._checkVisibility(data[POSE_LANDMARKS[data_side + "HEEL"]])
 		) {
 			return;
 		}
@@ -488,5 +496,110 @@ export default class Figure {
 				this.eulerOrder
 			);
 		}
+	}
+
+	makePoseFromRotation(rotations) {
+		/**
+		 * lCollar.X
+			lCollar.Y
+			lCollar.Z
+			lForeArm.X
+			lForeArm.Y
+			lForeArm.Z
+			lHand.X
+			lHand.Y
+			lHand.Z
+			lShldr.X
+			lShldr.Y
+			lShldr.Z
+		 */
+
+		const order = "ZXY";
+
+		this.parts["LeftArm"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["lShldr.X"][0]),
+			THREE.MathUtils.degToRad(rotations["lShldr.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["lShldr.Z"][0]),
+			order
+		);
+
+		this.parts["LeftForeArm"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["lForeArm.X"][0]),
+			THREE.MathUtils.degToRad(rotations["lForeArm.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["lForeArm.Z"][0]),
+			order
+		);
+
+		this.parts["LeftHand"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["lHand.X"][0]),
+			THREE.MathUtils.degToRad(rotations["lHand.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["lHand.Z"][0]),
+			order
+		);
+
+		this.parts["RightArm"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["rShldr.X"][0]),
+			THREE.MathUtils.degToRad(rotations["rShldr.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["rShldr.Z"][0]),
+			order
+		);
+
+		this.parts["RightForeArm"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["rForeArm.X"][0]),
+			THREE.MathUtils.degToRad(rotations["rForeArm.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["rForeArm.Z"][0]),
+			order
+		);
+
+		this.parts["RightHand"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["rHand.X"][0]),
+			THREE.MathUtils.degToRad(rotations["rHand.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["rHand.Z"][0]),
+			order
+		);
+
+		// lower body
+
+		this.parts["LeftUpLeg"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["lThigh.X"][0]),
+			THREE.MathUtils.degToRad(rotations["lThigh.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["lThigh.Z"][0]),
+			order
+		);
+
+		this.parts["LeftLeg"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["lShin.X"][0]),
+			THREE.MathUtils.degToRad(rotations["lShin.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["lShin.Z"][0]),
+			order
+		);
+
+		this.parts["LeftFoot"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["lFoot.X"][0]),
+			THREE.MathUtils.degToRad(rotations["lFoot.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["lFoot.Z"][0]),
+			order
+		);
+
+		this.parts["RightUpLeg"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["rThigh.X"][0]),
+			THREE.MathUtils.degToRad(rotations["rThigh.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["rThigh.Z"][0]),
+			order
+		);
+
+		this.parts["RightLeg"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["rShin.X"][0]),
+			THREE.MathUtils.degToRad(rotations["rShin.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["rShin.Z"][0]),
+			order
+		);
+
+		this.parts["RightFoot"].rotation.set(
+			THREE.MathUtils.degToRad(rotations["rFoot.X"][0]),
+			THREE.MathUtils.degToRad(rotations["rFoot.Y"][0]),
+			THREE.MathUtils.degToRad(rotations["rFoot.Z"][0]),
+			order
+		);
 	}
 }
