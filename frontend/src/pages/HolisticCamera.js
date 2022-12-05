@@ -31,7 +31,7 @@ export default function HolisticCamera(props) {
 
 			avatar.position.set(0, 0, 0);
 
-			scene.current.add(avatar);
+			// scene.current.add(avatar);
 
 			// makePose(poselm);
 			figure.current = new Figure(avatar);
@@ -120,7 +120,7 @@ export default function HolisticCamera(props) {
 	}
 
 	function onHolisticResults(results) {
-		const poselm = results.poseLandmarks;
+		// const poselm = results.poseLandmarks;
 		// const facelm = results.faceLandmarks;
 		// const lefthandlm = results.leftHandLandmarks;
 		// const righthandlm = results.rightHandLandmarks;
@@ -133,9 +133,9 @@ export default function HolisticCamera(props) {
 		 * note that, these landmarks are relative to the image size
 		 */
 		// console.log(poselm, facelm, lefthandlm, righthandlm);
-		figure.current.makePose(poselm);
+		// figure.current.makePose(poselm);
 
-		renderer.current.render(scene.current, camera.current);
+		// renderer.current.render(scene.current, camera.current);
 
 		const canvasCtx = canvasRef.current.getContext("2d");
 		canvasCtx.save();
@@ -200,7 +200,8 @@ export default function HolisticCamera(props) {
 					autoPlay={true}
 					style={{ display: "none" }}
 				></video>
-				<canvas ref={canvasRef} width="640px" height="360px"></canvas>
+				{/* <canvas ref={canvasRef} width="640px" height="360px"></canvas> */}
+				<canvas ref={canvasRef} width="1280px" height="640px"></canvas>
 			</div>
 			<div className="btn-box">
 				<button onClick={startCamera}>Start camera</button>
