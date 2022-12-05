@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 from flask import Flask, request, Response
 from flask_cors import CORS
 import numpy as np
-import pickle
+import pandas as pd
 
 from ropes import logger, redis_client, pack_file_key, VIDEO_MIME_EXT, oss_bucket
 # from oss_service import OSSService
@@ -122,3 +122,24 @@ def pose_landmarks():
     data = np.load(os.path.join('tmp', 'wlm{}.npy'.format(action_name)), allow_pickle=True)
 
     return {'data': data.tolist()}
+
+
+@app.route("/pose/rotations", methods=['GET'])
+def pose_rotations():
+
+    data = pd.read_csv('./out_rotations.csv')
+
+    for c in data.columns:
+        # print(c)
+        pass
+
+    cols = ['lCollar.X','lCollar.Y','lCollar.Z','lShldr.X','lShldr.Y','lShldr.Z','lForeArm.X',
+    'lForeArm.Y','lForeArm.Z','lHand.X','lHand.Y','lHand.Z',]
+
+    for c in cols:
+        # logger.info(data[c])
+        pass
+
+    # logger.info(data[cols].to_dict())
+
+    return data[cols].to_dict()
