@@ -71,6 +71,12 @@ export default class Figure {
 
 	constructor(obj3d) {
 		travelModel(obj3d, this.parts);
+
+		// for (let i in this.parts) {
+		// 	console.log(i, this.parts[i].rotation);
+		// }
+
+		// this.parts["LeftUpLeg"].rotation.set(0, 0, -3.14);
 	}
 
 	_rotateVectors(v_world, q_parent_world, v_local_origin) {
@@ -499,94 +505,118 @@ export default class Figure {
 	}
 
 	makePoseFromRotation(rotations) {
-		/**
-		 * lCollar.X
-			lCollar.Y
-			lCollar.Z
-			lForeArm.X
-			lForeArm.Y
-			lForeArm.Z
-			lHand.X
-			lHand.Y
-			lHand.Z
-			lShldr.X
-			lShldr.Y
-			lShldr.Z
-		 */
-
 		const order = "ZXY";
 
-		this.parts["LeftArm"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["lShldr.X"][0]),
-			THREE.MathUtils.degToRad(rotations["lShldr.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["lShldr.Z"][0]),
-			order
+		const q_LeftArm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lShldr.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lShldr.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lShldr.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["LeftForeArm"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["lForeArm.X"][0]),
-			THREE.MathUtils.degToRad(rotations["lForeArm.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["lForeArm.Z"][0]),
-			order
+		this.parts["LeftArm"].applyQuaternion(q_LeftArm);
+
+		const q_LeftForeArm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lForeArm.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lForeArm.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lForeArm.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["LeftHand"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["lHand.X"][0]),
-			THREE.MathUtils.degToRad(rotations["lHand.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["lHand.Z"][0]),
-			order
+		this.parts["LeftForeArm"].applyQuaternion(q_LeftForeArm);
+
+		const q_LeftHand = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lForeArm.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lForeArm.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lForeArm.Z"][0]),
+				order
+			)
+		);
+		this.parts["LeftHand"].applyQuaternion(q_LeftHand);
+
+		const q_RightArm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lForeArm.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lForeArm.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lForeArm.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["RightArm"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["rShldr.X"][0]),
-			THREE.MathUtils.degToRad(rotations["rShldr.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["rShldr.Z"][0]),
-			order
+		this.parts["RightArm"].applyQuaternion(q_RightArm);
+
+		const q_RightForeArm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["rForeArm.X"][0]),
+				THREE.MathUtils.degToRad(rotations["rForeArm.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["rForeArm.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["RightForeArm"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["rForeArm.X"][0]),
-			THREE.MathUtils.degToRad(rotations["rForeArm.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["rForeArm.Z"][0]),
-			order
+		this.parts["RightForeArm"].applyQuaternion(q_RightForeArm);
+
+		const q_RightHand = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["rHand.X"][0]),
+				THREE.MathUtils.degToRad(rotations["rHand.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["rHand.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["RightHand"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["rHand.X"][0]),
-			THREE.MathUtils.degToRad(rotations["rHand.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["rHand.Z"][0]),
-			order
-		);
+		this.parts["RightHand"].applyQuaternion(q_RightHand);
 
 		// lower body
 
-		this.parts["LeftUpLeg"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["lThigh.X"][0]),
-			THREE.MathUtils.degToRad(rotations["lThigh.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["lThigh.Z"][0]),
-			order
+		const q_LeftUpLeg = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lThigh.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lThigh.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lThigh.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["LeftLeg"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["lShin.X"][0]),
-			THREE.MathUtils.degToRad(rotations["lShin.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["lShin.Z"][0]),
-			order
+		this.parts["LeftUpLeg"].applyQuaternion(q_LeftUpLeg);
+
+		const q_LeftLeg = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lShin.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lShin.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lShin.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["LeftFoot"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["lFoot.X"][0]),
-			THREE.MathUtils.degToRad(rotations["lFoot.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["lFoot.Z"][0]),
-			order
+		this.parts["LeftLeg"].applyQuaternion(q_LeftLeg);
+
+		const q_LeftFoot = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lFoot.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lFoot.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lFoot.Z"][0]),
+				order
+			)
 		);
 
-		this.parts["RightUpLeg"].rotation.set(
-			THREE.MathUtils.degToRad(rotations["rThigh.X"][0]),
-			THREE.MathUtils.degToRad(rotations["rThigh.Y"][0]),
-			THREE.MathUtils.degToRad(rotations["rThigh.Z"][0]),
-			order
+		this.parts["LeftFoot"].applyQuaternion(q_LeftFoot);
+
+		const q_RightUpLeg = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(
+				THREE.MathUtils.degToRad(rotations["lShin.X"][0]),
+				THREE.MathUtils.degToRad(rotations["lShin.Y"][0]),
+				THREE.MathUtils.degToRad(rotations["lShin.Z"][0]),
+				order
+			)
 		);
+
+		this.parts["RightUpLeg"].applyQuaternion(q_RightUpLeg);
 
 		this.parts["RightLeg"].rotation.set(
 			THREE.MathUtils.degToRad(rotations["rShin.X"][0]),
