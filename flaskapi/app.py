@@ -134,27 +134,24 @@ def pose_rotations():
         # print(c)
         pass
 
-    cols = ['lCollar.X', 'lCollar.Y', 'lCollar.Z', 'lShldr.X', 'lShldr.Y', 'lShldr.Z', 'lForeArm.X',
-            'lForeArm.Y', 'lForeArm.Z', 'lHand.X', 'lHand.Y', 'lHand.Z', 'rShldr.X', 'rShldr.Y',
-            'rShldr.Z', 'rForeArm.X', 'rForeArm.Y', 'rForeArm.Z', 'rHand.X', 'rHand.Y', 'rHand.Z',
-            "rThigh.X",
-            "rThigh.Y",
-            "rThigh.Z",
-            "rShin.X",
-            "rShin.Y",
-            "rShin.Z",
-            "rFoot.X",
-            "rFoot.Y",
-            "rFoot.Z",
-            "lThigh.X",
-            "lThigh.Y",
-            "lThigh.Z",
-            "lShin.X",
-            "lShin.Y",
-            "lShin.Z",
-            "lFoot.X",
-            "lFoot.Y",
-            "lFoot.Z",
+    cols = [
+'neck.X','neck.Y','neck.Z',
+# 'neck1.X','neck1.Y','neck1.Z',
+'head.X','head.Y','head.Z',
+
+# 'lCollar.X', 'lCollar.Y', 'lCollar.Z', 
+'lShldr.X', 'lShldr.Y', 'lShldr.Z', 'lForeArm.X', 'lForeArm.Y', 'lForeArm.Z', 'lHand.X', 'lHand.Y', 'lHand.Z', 
+
+# 'rCollar.X', 'rCollar.Y', 'rCollar.Z', 
+'rShldr.X', 'rShldr.Y', 'rShldr.Z', 'rForeArm.X', 'rForeArm.Y', 'rForeArm.Z', 'rHand.X', 'rHand.Y', 'rHand.Z',
+
+# 'chest.X','chest.Y','chest.Z', 'abdomen.X','abdomen.Y','abdomen.Z',
+'hip.X', 'hip.Y', 'hip.Z',
+
+# 'lButtock.X', 'lButtock.Y', 'lButtock.Z',
+"lThigh.X","lThigh.Y","lThigh.Z","lShin.X","lShin.Y","lShin.Z","lFoot.X","lFoot.Y","lFoot.Z",
+# 'rButtock.X', 'rButtock.Y', 'rButtock.Z',
+"rThigh.X", "rThigh.Y","rThigh.Z", "rShin.X","rShin.Y","rShin.Z","rFoot.X","rFoot.Y","rFoot.Z",
             ]
 
     for c in cols:
