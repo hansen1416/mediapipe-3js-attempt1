@@ -128,7 +128,9 @@ def pose_landmarks():
 @app.route("/pose/rotations", methods=['GET'])
 def pose_rotations():
 
-    data = pd.read_csv('./out_rotations.csv')
+    rotation_name = request.args.get('rotation_name')
+
+    data = pd.read_csv('./{}_rotations.csv'.format(rotation_name))
 
     for c in data.columns:
         # print(c)

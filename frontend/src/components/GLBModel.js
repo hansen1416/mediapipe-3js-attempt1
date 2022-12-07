@@ -154,8 +154,11 @@ export default function GLBModel(props) {
 		}
 	}
 
-	function fetchPoseRotation() {
-		fetch(process.env.REACT_APP_API_URL + "/pose/rotations", {
+	function fetchPoseRotation(rotation_name) {
+		fetch(process.env.REACT_APP_API_URL + "/pose/rotations?" +
+		new URLSearchParams({
+			rotation_name: rotation_name,
+		}), {
 			method: "GET", // *GET, POST, PUT, DELETE, etc.
 			// mode: 'cors', // no-cors, *cors, same-origin
 			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -211,10 +214,17 @@ export default function GLBModel(props) {
 				</button>
 				<button
 					onClick={() => {
-						fetchPoseRotation();
+						fetchPoseRotation('out');
 					}}
 				>
 					action5
+				</button>				
+				<button
+					onClick={() => {
+						fetchPoseRotation('out1');
+					}}
+				>
+					action6
 				</button>
 			</div>
 		</div>

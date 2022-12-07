@@ -348,6 +348,31 @@ export function unitline(a, b, color = 0xffffff) {
 	return line;
 }
 
+/**
+ * blender uses right hand coordinate system with the 
+ * Z axis pointing upwards.
+ * Y axis pointing backwards.
+ * X axis pointing to the right
+ * 
+ * it means we have to negate the X and Y angle,
+ * and swap Y and Z angles
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} z 
+ */
+export function bvhToQuaternion(x,y,z) {
+
+	const order = "ZXY";
+
+	return new THREE.Quaternion().setFromEuler(
+		new THREE.Euler(
+			THREE.MathUtils.degToRad(x),
+			THREE.MathUtils.degToRad(z),
+			THREE.MathUtils.degToRad(y),
+			order
+		)
+	);
+}
 
 // export function worldPointFromScreenPoint(screenPoint, camera) {
 // 	let worldPoint = new THREE.Vector3();
