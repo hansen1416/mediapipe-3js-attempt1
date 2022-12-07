@@ -1,7 +1,11 @@
 import * as THREE from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
-import { posePointsToVector, travelModel, bvhToQuaternion } from "../components/ropes";
+import {
+	posePointsToVector,
+	travelModel,
+	bvhToQuaternion,
+} from "../components/ropes";
 
 export default class Figure {
 	eulerOrder = "XZY";
@@ -77,6 +81,17 @@ export default class Figure {
 		// }
 
 		// this.parts["LeftUpLeg"].rotation.set(0, 0, -3.14);
+
+		this.parts["LeftFoot"].children[0].rotation.set(1.2, 0, 0);
+
+		// this.parts["LeftFoot"].children[0].children[0].rotation.set(0, 0, 0);
+
+		this.parts["Head"].children[0].position.set(20, 20, 20);
+		// this.parts["Head"].children[1].rotation.set(1.2, 1, 1);
+		// this.parts["Head"].children[2].rotation.set(1, 1, 1);
+
+		console.log(this.parts["Head"]);
+		console.log(this.parts["LeftFoot"]);
 	}
 
 	_rotateVectors(v_world, q_parent_world, v_local_origin) {
@@ -505,28 +520,46 @@ export default class Figure {
 	}
 
 	makePoseFromRotation(rotations) {
-
-		const q_Hips = bvhToQuaternion(rotations["hip.X"][0], rotations["hip.Y"][0], rotations["hip.Z"][0]);
+		const q_Hips = bvhToQuaternion(
+			rotations["hip.X"][0],
+			rotations["hip.Y"][0],
+			rotations["hip.Z"][0]
+		);
 
 		this.parts["Hips"].applyQuaternion(q_Hips);
 
-		const q_LeftShoulderExisting = this.parts["LeftShoulder"].quaternion.clone();
+		const q_LeftShoulderExisting =
+			this.parts["LeftShoulder"].quaternion.clone();
 
-		const e_LeftArmOrigin = new THREE.Euler(0,0,-Math.PI/2,'XYZ')
+		const e_LeftArmOrigin = new THREE.Euler(0, 0, -Math.PI / 2, "XYZ");
 
-		const q_LeftArmOrigin = new THREE.Quaternion().setFromEuler(e_LeftArmOrigin);
-		
-		const q_LeftArm = bvhToQuaternion(rotations["lShldr.X"][0], rotations["lShldr.Y"][0], rotations["lShldr.Z"][0]);
+		const q_LeftArmOrigin = new THREE.Quaternion().setFromEuler(
+			e_LeftArmOrigin
+		);
+
+		const q_LeftArm = bvhToQuaternion(
+			rotations["lShldr.X"][0],
+			rotations["lShldr.Y"][0],
+			rotations["lShldr.Z"][0]
+		);
 
 		// q_LeftArm.multiply(q_LeftArmOrigin)
 
 		// q_LeftArm.multiply(q_LeftShoulderExisting.conjugate())
 
 		const e_LeftArm = new THREE.Euler().setFromQuaternion(q_LeftArm);
-		
-		console.log(e_LeftArm)
-		console.log(rotations["lShldr.X"][0], rotations["lShldr.Y"][0], rotations["lShldr.Z"][0])
-		console.log(rotations["rShldr.X"][0], rotations["rShldr.Y"][0], rotations["rShldr.Z"][0])
+
+		console.log(e_LeftArm);
+		console.log(
+			rotations["lShldr.X"][0],
+			rotations["lShldr.Y"][0],
+			rotations["lShldr.Z"][0]
+		);
+		console.log(
+			rotations["rShldr.X"][0],
+			rotations["rShldr.Y"][0],
+			rotations["rShldr.Z"][0]
+		);
 		/**
 6.3282 1.6877 -70.7025
 28.6274 43.8972 28.8282
@@ -534,54 +567,100 @@ export default class Figure {
 
 		// this.parts["LeftArm"].applyQuaternion(q_LeftArmOrigin);
 		// this.parts["LeftArm"].rotation.set(rotations["lShldr.X"][0]*-1,rotations["lShldr.Z"][0],rotations["lShldr.Y"][0]*-1);
-		this.parts["LeftArm"].rotation.set(e_LeftArm.x, e_LeftArm.y, e_LeftArm.z, e_LeftArm.order);
+		this.parts["LeftArm"].rotation.set(
+			e_LeftArm.x,
+			e_LeftArm.y,
+			e_LeftArm.z,
+			e_LeftArm.order
+		);
 
+		const q_LeftForeArm = bvhToQuaternion(
+			rotations["lForeArm.X"][0],
+			rotations["lForeArm.Y"][0],
+			rotations["lForeArm.Z"][0]
+		);
 
-
-
-		const q_LeftForeArm = bvhToQuaternion(rotations["lForeArm.X"][0], rotations["lForeArm.Y"][0], rotations["lForeArm.Z"][0]);
-		
 		// this.parts["LeftForeArm"].applyQuaternion(q_LeftForeArm);
 
-		const q_LeftHand = bvhToQuaternion(rotations["lHand.X"][0], rotations["lHand.Y"][0], rotations["lHand.Z"][0]);
+		const q_LeftHand = bvhToQuaternion(
+			rotations["lHand.X"][0],
+			rotations["lHand.Y"][0],
+			rotations["lHand.Z"][0]
+		);
 
 		// this.parts["LeftHand"].applyQuaternion(q_LeftHand);
 
-		const q_RightArm = bvhToQuaternion(rotations["rShldr.X"][0], rotations["rShldr.Y"][0], rotations["rShldr.Z"][0]);
+		const q_RightArm = bvhToQuaternion(
+			rotations["rShldr.X"][0],
+			rotations["rShldr.Y"][0],
+			rotations["rShldr.Z"][0]
+		);
 
 		this.parts["RightArm"].applyQuaternion(q_RightArm);
 
-		const q_RightForeArm = bvhToQuaternion(rotations["rForeArm.X"][0], rotations["rForeArm.Y"][0], rotations["rForeArm.Z"][0]);
+		const q_RightForeArm = bvhToQuaternion(
+			rotations["rForeArm.X"][0],
+			rotations["rForeArm.Y"][0],
+			rotations["rForeArm.Z"][0]
+		);
 
 		this.parts["RightForeArm"].applyQuaternion(q_RightForeArm);
 
-		const q_RightHand = bvhToQuaternion(rotations["rHand.X"][0], rotations["rHand.Y"][0], rotations["rHand.Z"][0]);
+		const q_RightHand = bvhToQuaternion(
+			rotations["rHand.X"][0],
+			rotations["rHand.Y"][0],
+			rotations["rHand.Z"][0]
+		);
 
 		this.parts["RightHand"].applyQuaternion(q_RightHand);
 
 		// lower body
 
-		const q_LeftUpLeg = bvhToQuaternion(rotations["lThigh.X"][0], rotations["lThigh.Y"][0], rotations["lThigh.Z"][0]);
+		const q_LeftUpLeg = bvhToQuaternion(
+			rotations["lThigh.X"][0],
+			rotations["lThigh.Y"][0],
+			rotations["lThigh.Z"][0]
+		);
 
 		this.parts["LeftUpLeg"].applyQuaternion(q_LeftUpLeg);
 
-		const q_LeftLeg = bvhToQuaternion(rotations["lShin.X"][0], rotations["lShin.Y"][0], rotations["lShin.Z"][0]);
+		const q_LeftLeg = bvhToQuaternion(
+			rotations["lShin.X"][0],
+			rotations["lShin.Y"][0],
+			rotations["lShin.Z"][0]
+		);
 
 		this.parts["LeftLeg"].applyQuaternion(q_LeftLeg);
 
-		const q_LeftFoot = bvhToQuaternion(rotations["lFoot.X"][0], rotations["lFoot.Y"][0], rotations["lFoot.Z"][0]);
+		const q_LeftFoot = bvhToQuaternion(
+			rotations["lFoot.X"][0],
+			rotations["lFoot.Y"][0],
+			rotations["lFoot.Z"][0]
+		);
 
 		this.parts["LeftFoot"].applyQuaternion(q_LeftFoot);
 
-		const q_RightUpLeg = bvhToQuaternion(rotations["rThigh.X"][0], rotations["rThigh.Y"][0], rotations["rThigh.Z"][0]);
+		const q_RightUpLeg = bvhToQuaternion(
+			rotations["rThigh.X"][0],
+			rotations["rThigh.Y"][0],
+			rotations["rThigh.Z"][0]
+		);
 
 		this.parts["RightUpLeg"].applyQuaternion(q_RightUpLeg);
 
-		const q_RightLeg = bvhToQuaternion(rotations["rShin.X"][0], rotations["rShin.Y"][0], rotations["rShin.Z"][0]);
+		const q_RightLeg = bvhToQuaternion(
+			rotations["rShin.X"][0],
+			rotations["rShin.Y"][0],
+			rotations["rShin.Z"][0]
+		);
 
 		this.parts["RightLeg"].applyQuaternion(q_RightLeg);
 
-		const q_RightFoot = bvhToQuaternion(rotations["rFoot.X"][0], rotations["rFoot.Y"][0], rotations["rFoot.Z"][0]);
+		const q_RightFoot = bvhToQuaternion(
+			rotations["rFoot.X"][0],
+			rotations["rFoot.Y"][0],
+			rotations["rFoot.Z"][0]
+		);
 
 		this.parts["RightFoot"].applyQuaternion(q_RightFoot);
 	}

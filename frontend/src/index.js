@@ -20,6 +20,7 @@ import Playground3D from "./pages/Playground3D";
 import GLBModelStatic from "./pages/GLBModelStatic";
 import RotatableScene from "./pages/RotatableScene";
 import BVHPlayer from "./pages/BVHPlayer";
+import ThreeJsScene from "./pages/ThreeJsScene";
 
 const router = createBrowserRouter([
 	{
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
 			{
 				path: "/bvhplayer",
 				element: <BVHPlayer />,
+			},
+			{
+				path: "/motionmaker",
+				element: <ThreeJsScene />,
 			},
 		],
 	},

@@ -42,6 +42,9 @@ function App() {
 					<li>
 						<Link to={`/bvhplayer`}>BCH player</Link>
 					</li>
+					<li>
+						<Link to={`/motionmaker`}>Motion Maker</Link>
+					</li>
 				</ul>
 			</nav>
 		</div>
