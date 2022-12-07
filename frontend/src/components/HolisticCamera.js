@@ -10,7 +10,7 @@ import {
 	HAND_CONNECTIONS,
 } from "@mediapipe/holistic";
 
-import { loadGLTF, getUserMedia } from "../components/ropes";
+import { loadGLTF, getUserMedia } from "./ropes";
 import Figure from "../models/Figure";
 // import { tmppose, tmppose1 } from "../components/mypose";
 

@@ -70,6 +70,10 @@ const router = createBrowserRouter([
 				path: "/glbmodel",
 				element: <RotatableScene />,
 			},
+			{
+				path: "/bvhplayer",
+				element: <RotatableScene />,
+			},
 		],
 	},
 ]);

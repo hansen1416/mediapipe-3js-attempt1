@@ -39,6 +39,9 @@ function App() {
 					<li>
 						<Link to={`/glbmodel`}>GLBModel</Link>
 					</li>
+					<li>
+						<Link to={`/bvhplayer`}>BCH player</Link>
+					</li>
 				</ul>
 			</nav>
 		</div>

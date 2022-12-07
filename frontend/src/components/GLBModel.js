@@ -155,21 +155,25 @@ export default function GLBModel(props) {
 	}
 
 	function fetchPoseRotation(rotation_name) {
-		fetch(process.env.REACT_APP_API_URL + "/pose/rotations?" +
-		new URLSearchParams({
-			rotation_name: rotation_name,
-		}), {
-			method: "GET", // *GET, POST, PUT, DELETE, etc.
-			// mode: 'cors', // no-cors, *cors, same-origin
-			// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-			// credentials: 'same-origin', // include, *same-origin, omit
-			// headers: {
-			// 	"Content-Type": "multipart/form-data",
-			// },
-			// redirect: 'follow', // manual, *follow, error
-			// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-			// body: formData, // body data type must match "Content-Type" header
-		})
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/pose/rotations?" +
+				new URLSearchParams({
+					rotation_name: rotation_name,
+				}),
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				figure.current.makePoseFromRotation(data);
@@ -214,14 +218,14 @@ export default function GLBModel(props) {
 				</button>
 				<button
 					onClick={() => {
-						fetchPoseRotation('out');
+						fetchPoseRotation("out");
 					}}
 				>
 					action5
-				</button>				
+				</button>
 				<button
 					onClick={() => {
-						fetchPoseRotation('out1');
+						fetchPoseRotation("out1");
 					}}
 				>
 					action6
