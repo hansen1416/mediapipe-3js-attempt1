@@ -19,6 +19,7 @@ import WebCamera from "./pages/WebCamera";
 import Playground3D from "./pages/Playground3D";
 import GLBModelStatic from "./pages/GLBModelStatic";
 import RotatableScene from "./pages/RotatableScene";
+import BVHPlayer from "./pages/BVHPlayer";
 
 const router = createBrowserRouter([
 	{
@@ -72,7 +73,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/bvhplayer",
-				element: <RotatableScene />,
+				element: <BVHPlayer />,
 			},
 		],
 	},

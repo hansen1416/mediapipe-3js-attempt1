@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 
 import GLBModel from "../components/GLBModel";
 import HolisticCamera from "../components/HolisticCamera";
-import BVHPlayer from "../components/BVHPlayer";
 
 export default function RotatableScene() {
 	const canvasRef = useRef(null);
@@ -171,9 +170,6 @@ export default function RotatableScene() {
 					renderer={renderer}
 					camera={camera}
 				/>
-			)}
-			{location.pathname === "/bvhplayer" && (
-				<BVHPlayer scene={scene} renderer={renderer} camera={camera} />
 			)}
 		</div>
 	);
