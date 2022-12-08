@@ -664,4 +664,10 @@ export default class Figure {
 
 		this.parts["RightFoot"].applyQuaternion(q_RightFoot);
 	}
+
+	makePoseFromQuaternion(quaternions) {
+		for (let name in quaternions) {
+			this.parts[name].setRotationFromQuaternion(quaternions[name])
+		}
+	}
 }

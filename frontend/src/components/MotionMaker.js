@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 // import { loadGLTF, posePositionToVector } from "./ropes";
 import { loadGLTF } from "./ropes";
 import Figure from "../models/Figure";
+import Abdomen1 from "../models/Abdomen1";
 
 export default function MotionMaker(props) {
 	const { scene, renderer, camera } = props;
@@ -30,6 +31,10 @@ export default function MotionMaker(props) {
 			scene.current.add(avatar);
 
 			figure.current = new Figure(avatar);
+
+			const motion = new Abdomen1().initPose();
+
+			figure.current.makePoseFromQuaternion(motion)
 
 			renderer.current.render(scene.current, camera.current);
 
