@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { Euler } from "three";
 import BaseMotion from "./BaseMotion";
 
 export default class Abdomen1 extends BaseMotion {
@@ -154,33 +155,41 @@ export default class Abdomen1 extends BaseMotion {
 		SE0 = new THREE.Matrix4().makeBasis(
 			new THREE.Vector3(1, 0, 0),
 			new THREE.Vector3(0, 1, 0),
-			new THREE.Vector3(0, 0, -1)
+			new THREE.Vector3(0, 0, 1)
 		);
 
 		SE1 = new THREE.Matrix4().makeBasis(
-			new THREE.Vector3(1, 0, 0),
-			new THREE.Vector3(0, -0.5, 0.5),
-			new THREE.Vector3(0, 0.5, 0.5)
+			new THREE.Vector3(-1, 0, 0),
+			new THREE.Vector3(0, -1, 0),
+			new THREE.Vector3(0, 0, 1)
 		);
 
-		const q_lthigh = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
+		// const q_lthigh = new THREE.Quaternion().setFromRotationMatrix(
+		// 	SE1.multiply(SE0.invert())
+		// );
+
+		const q_lthigh = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI - Math.PI / 4, Math.PI, 0)
 		);
 
 		SE0 = new THREE.Matrix4().makeBasis(
 			new THREE.Vector3(1, 0, 0),
 			new THREE.Vector3(0, 1, 0),
-			new THREE.Vector3(0, 0, -1)
+			new THREE.Vector3(0, 0, 1)
 		);
 
 		SE1 = new THREE.Matrix4().makeBasis(
-			new THREE.Vector3(1, 0, 0),
-			new THREE.Vector3(0, -0.5, 0.5),
-			new THREE.Vector3(0, 0.5, 0.5)
+			new THREE.Vector3(-1, 0, 0).normalize(),
+			new THREE.Vector3(0, -1, 0).normalize(),
+			new THREE.Vector3(0, 0, 1)
 		);
 
-		const q_rthigh = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
+		// const q_rthigh = new THREE.Quaternion().setFromRotationMatrix(
+		// 	SE1.multiply(SE0.invert())
+		// );
+
+		const q_rthigh = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI - Math.PI / 4, Math.PI, 0)
 		);
 
 		SE0 = new THREE.Matrix4().makeBasis(
