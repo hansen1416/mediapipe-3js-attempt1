@@ -31,18 +31,23 @@ export default function MotionMaker(props) {
 			const axesHelper1 = new THREE.AxesHelper(1);
 			// figure.current.parts["LeftUpLeg"].add(axesHelper1);
 			// scene.current.add(axesHelper)
-
-			const motion = new Abdomen1().initPose();
-
-			figure.current.makePoseFromQuaternion(motion);
 		});
 		// eslint-disable-next-line
 	}, []);
 
+	function playAction() {
+
+		const motion = new Abdomen1();
+
+		figure.current.makePoseFromQuaternion(motion.initPose());
+
+		motion.spineSlerp()
+	}
+
 	return (
 		<div>
 			<div className="btn-box">
-				<button onClick={() => {}}>action1</button>
+				<button onClick={() => {playAction()}}>action1</button>
 			</div>
 		</div>
 	);

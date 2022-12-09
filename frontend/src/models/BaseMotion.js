@@ -3,7 +3,7 @@ import { Euler } from "three";
 
 export default class BaseMotion {
 
-    parts = {
+    q_init = {
 		Hips: null,
 		Spine: null,
 		Spine1: null,
@@ -82,9 +82,9 @@ export default class BaseMotion {
 			new THREE.Vector3(0, 1, 0)
 		);
 
-		return {Hips: new THREE.Quaternion().setFromRotationMatrix(
+		this.q_init['Hips'] = new THREE.Quaternion().setFromRotationMatrix(
 			SE1.multiply(SE0.invert())
-		)};
+		);
 	}
 
 	handsHoldHeadBack() {
@@ -120,16 +120,14 @@ export default class BaseMotion {
 			new THREE.Euler(0,0,0)
 		);
 
-		return {
-			LeftShoulder: q_lshoulder,
-			LeftArm: q_larm,
-			LeftForeArm: q_lforearm,
-			LeftHand: q_lhand,
-			RightShoulder: q_rshoulder,
-			RightArm: q_rarm,
-			RightForeArm: q_rforearm,
-			RightHand: q_rhand,
-		}
+		this.q_init['LeftShoulder'] = q_lshoulder;
+		this.q_init['LeftArm'] =q_larm;
+		this.q_init['LeftForeArm']= q_lforearm;
+		this.q_init['LeftHand'] =q_lhand;
+		this.q_init['RightShoulder']= q_rshoulder;
+		this.q_init['RightArm'] =q_rarm;
+		this.q_init['RightForeArm']= q_rforearm;
+		this.q_init['RightHand'] =q_rhand;
 	}
 
 	legsCurveHorizontal() {
@@ -157,13 +155,11 @@ export default class BaseMotion {
 			new Euler(0.2536740961386427,0,0)
 		);
 
-		return {
-			LeftUpLeg: q_lthigh,
-			LeftLeg: q_lcrus,
-			LeftFoot: q_lfoot,
-			RightUpLeg: q_rthigh,
-			RightLeg: q_rcrus,
-			RightFoot: q_rfoot,
-		}
+		this.q_init['LeftUpLeg']= q_lthigh;
+		this.q_init['LeftLeg']= q_lcrus;
+		this.q_init['LeftFoot']= q_lfoot;
+		this.q_init['RightUpLeg']= q_rthigh;
+		this.q_init['RightLeg']= q_rcrus;
+		this.q_init['RightFoot']= q_rfoot;
 	}
 }

@@ -667,7 +667,9 @@ export default class Figure {
 
 	makePoseFromQuaternion(quaternions) {
 		for (let name in quaternions) {
-			this.parts[name].setRotationFromQuaternion(quaternions[name])
+			if (quaternions[name]) {
+				this.parts[name].setRotationFromQuaternion(quaternions[name]);
+			}
 		}
 	}
 }
