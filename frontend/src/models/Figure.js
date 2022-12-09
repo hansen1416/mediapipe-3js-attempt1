@@ -82,11 +82,11 @@ export default class Figure {
 
 		// this.parts["LeftUpLeg"].rotation.set(0, 0, -3.14);
 
-		this.parts["LeftFoot"].children[0].rotation.set(1.2, 0, 0);
+		// this.parts["LeftFoot"].children[0].rotation.set(1.2, 0, 0);
 
 		// this.parts["LeftFoot"].children[0].children[0].rotation.set(0, 0, 0);
 
-		this.parts["Head"].children[0].position.set(20, 20, 20);
+		// this.parts["Head"].children[0].position.set(20, 20, 20);
 		// this.parts["Head"].children[1].rotation.set(1.2, 1, 1);
 		// this.parts["Head"].children[2].rotation.set(1, 1, 1);
 

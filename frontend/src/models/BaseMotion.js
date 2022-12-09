@@ -1,3 +1,6 @@
+import * as THREE from "three";
+import { Euler } from "three";
+
 export default class BaseMotion {
 
     parts = {
@@ -65,4 +68,102 @@ export default class BaseMotion {
     
     constructor() {
     }
+
+	spineFlatFaceUp() {
+		let SE0 = new THREE.Matrix4().makeBasis(
+			new THREE.Vector3(1, 0, 0),
+			new THREE.Vector3(0, 1, 0),
+			new THREE.Vector3(0, 0, 1)
+		);
+
+		let SE1 = new THREE.Matrix4().makeBasis(
+			new THREE.Vector3(0, 0, 1),
+			new THREE.Vector3(1, 0, 0),
+			new THREE.Vector3(0, 1, 0)
+		);
+
+		return {Hips: new THREE.Quaternion().setFromRotationMatrix(
+			SE1.multiply(SE0.invert())
+		)};
+	}
+
+	handsHoldHeadBack() {
+		const q_lshoulder = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI/6, 0, -Math.PI/3)
+		);
+
+		const q_larm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0, 0, Math.PI/10)
+		);
+
+		const q_lforearm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI/10, -Math.PI/10, Math.PI * 0.8)
+		);
+
+		const q_lhand = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0,0,0)
+		);
+
+		const q_rshoulder = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI/6, 0, Math.PI/3)
+		);
+
+		const q_rarm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0, 0, -Math.PI/10)
+		);
+
+		const q_rforearm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI/10, Math.PI/10, -Math.PI * 0.8)
+		);
+
+		const q_rhand = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0,0,0)
+		);
+
+		return {
+			LeftShoulder: q_lshoulder,
+			LeftArm: q_larm,
+			LeftForeArm: q_lforearm,
+			LeftHand: q_lhand,
+			RightShoulder: q_rshoulder,
+			RightArm: q_rarm,
+			RightForeArm: q_rforearm,
+			RightHand: q_rhand,
+		}
+	}
+
+	legsCurveHorizontal() {
+		const q_lthigh = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI - Math.PI / 4, Math.PI + 0.1, 0.12)
+		);
+
+		const q_lcrus = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(- Math.PI / 2, 0, 0)
+		);
+
+		const q_lfoot = new THREE.Quaternion().setFromEuler(
+			new Euler(0.2536740961386427,0,0)
+		);
+
+		const q_rthigh = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(Math.PI - Math.PI / 4, Math.PI - 0.1, -0.12)
+		);
+
+		const q_rcrus = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(- Math.PI / 2, 0, 0)
+		);
+
+		const q_rfoot = new THREE.Quaternion().setFromEuler(
+			new Euler(0.2536740961386427,0,0)
+		);
+
+		return {
+			LeftUpLeg: q_lthigh,
+			LeftLeg: q_lcrus,
+			LeftFoot: q_lfoot,
+			RightUpLeg: q_rthigh,
+			RightLeg: q_rcrus,
+			RightFoot: q_rfoot,
+		}
+	}
 }

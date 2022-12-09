@@ -26,8 +26,11 @@ export default function MotionMaker(props) {
 
 			// x-axis: red, y-axis: green, z-axis:blue
 			const axesHelper = new THREE.AxesHelper(1);
-			// figure.current.parts["LeftShoulder"].add(axesHelper)
-			scene.current.add(axesHelper)
+			figure.current.parts["Hips"].add(axesHelper);
+
+			const axesHelper1 = new THREE.AxesHelper(1);
+			// figure.current.parts["LeftUpLeg"].add(axesHelper1);
+			// scene.current.add(axesHelper)
 
 			const motion = new Abdomen1().initPose();
 
