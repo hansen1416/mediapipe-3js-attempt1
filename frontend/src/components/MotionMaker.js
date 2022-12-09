@@ -26,7 +26,7 @@ export default function MotionMaker(props) {
 
 			// travelModel(avatar);
 
-			avatar.position.set(0, 0, 0);
+			avatar.position.set(0, -1.5, 0);
 
 			scene.current.add(avatar);
 
