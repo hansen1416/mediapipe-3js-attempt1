@@ -24,36 +24,12 @@ export default class Abdomen1 extends BaseMotion {
 			SE1.multiply(SE0.invert())
 		);
 
-		SE0 = new THREE.Matrix4().makeBasis(
-			new THREE.Vector3(1, 0, 0),
-			new THREE.Vector3(0, 1, 0),
-			new THREE.Vector3(0, 0, 1)
+        const q_lshoulder = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0, 0, -Math.PI/3)
 		);
 
-		SE1 = new THREE.Matrix4().makeBasis(
-			new THREE.Vector3(0, -1, 0),
-			new THREE.Vector3(1, 0, 0),
-			new THREE.Vector3(0, 1, 0)
-		);
-
-		const q_lshoulder = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
-		);
-
-		SE0 = new THREE.Matrix4().makeBasis(
-			new THREE.Vector3(1, 0, 0),
-			new THREE.Vector3(0, 1, 0),
-			new THREE.Vector3(0, 0, 1)
-		);
-
-		SE1 = new THREE.Matrix4().makeBasis(
-			new THREE.Vector3(0, 1, 0),
-			new THREE.Vector3(-1, 0, 0),
-			new THREE.Vector3(0, 1, 0)
-		);
-
-		const q_rshoulder = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
+		const q_rshoulder = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0, 0, Math.PI/3)
 		);
 
 		SE0 = new THREE.Matrix4().makeBasis(
@@ -68,8 +44,8 @@ export default class Abdomen1 extends BaseMotion {
 			new THREE.Vector3(0, -0.5, 0.5)
 		);
 
-		const q_larm = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
+		const q_larm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0, 0, -Math.PI/8)
 		);
 
 		SE0 = new THREE.Matrix4().makeBasis(
@@ -100,8 +76,8 @@ export default class Abdomen1 extends BaseMotion {
 			new THREE.Vector3(0, 0, 1)
 		);
 
-		const q_lforearm = new THREE.Quaternion().setFromRotationMatrix(
-			SE1.multiply(SE0.invert())
+		const q_lforearm = new THREE.Quaternion().setFromEuler(
+			new THREE.Euler(0, 0, 0)
 		);
 
 		SE0 = new THREE.Matrix4().makeBasis(

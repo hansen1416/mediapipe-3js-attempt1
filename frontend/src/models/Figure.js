@@ -90,8 +90,8 @@ export default class Figure {
 		// this.parts["Head"].children[1].rotation.set(1.2, 1, 1);
 		// this.parts["Head"].children[2].rotation.set(1, 1, 1);
 
-		console.log(this.parts["Head"]);
-		console.log(this.parts["LeftFoot"]);
+		// console.log(this.parts["Head"]);
+		// console.log(this.parts["LeftFoot"]);
 	}
 
 	_rotateVectors(v_world, q_parent_world, v_local_origin) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// import * as THREE from "three";
+import * as THREE from "three";
 // import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 // import { loadGLTF, posePositionToVector } from "./ropes";
@@ -23,6 +23,11 @@ export default function MotionMaker(props) {
 			scene.current.add(avatar);
 
 			figure.current = new Figure(avatar);
+
+			// x-axis: red, y-axis: green, z-axis:blue
+			const axesHelper = new THREE.AxesHelper(1);
+			// figure.current.parts["LeftShoulder"].add(axesHelper)
+			scene.current.add(axesHelper)
 
 			const motion = new Abdomen1().initPose();
 
