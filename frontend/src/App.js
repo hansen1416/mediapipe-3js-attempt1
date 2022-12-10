@@ -40,7 +40,7 @@ function App() {
 						<Link to={`/glbmodel`}>GLBModel</Link>
 					</li>
 					<li>
-						<Link to={`/bvhplayer`}>BCH player</Link>
+						<Link to={`/bvhplayer`}>BVH player</Link>
 					</li>
 					<li>
 						<Link to={`/motionmaker`}>Motion Maker</Link>

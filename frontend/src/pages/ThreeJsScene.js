@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 // import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useLocation } from "react-router-dom";
 
 import MotionMaker from "../components/MotionMaker";
@@ -13,7 +13,7 @@ export default function ThreeJsScene() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const controls = useRef(null);
-	
+
 	const location = useLocation();
 
 	useEffect(() => {
@@ -21,10 +21,7 @@ export default function ThreeJsScene() {
 
 		_light();
 
-		animate();
-
 		return () => {
-
 			controls.current.dispose();
 			renderer.current.dispose();
 		};
@@ -63,7 +60,7 @@ export default function ThreeJsScene() {
 			1000
 		);
 
-		camera.current.position.set(0,0,5);
+		camera.current.position.set(0, 0, 5);
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -84,20 +81,16 @@ export default function ThreeJsScene() {
 		scene.current.add(plight);
 	}
 
-	function animate() {
-		requestAnimationFrame(animate);
-	
-		// trackball controls needs to be updated in the animation loop before it will work
-		controls.current.update();
-	
-		renderer.current.render(scene.current, camera.current);
-	}
-
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
 			{location.pathname === "/motionmaker" && (
-				<MotionMaker scene={scene}/>
+				<MotionMaker
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
 			)}
 		</div>
 	);
