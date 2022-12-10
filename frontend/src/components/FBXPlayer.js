@@ -13,31 +13,30 @@ export default function FBXPlayer(props) {
 	const clock = new THREE.Clock();
 
 	useEffect(() => {
-		loadFBX(process.env.PUBLIC_URL + "/models/KettlebellSwing.fbx").then(
-			(model) => {
-				console.log(model);
+		// const modelpath =
+		// 	process.env.PUBLIC_URL + "/models/fbx/KettlebellSwing.fbx";
+		const modelpath =
+			process.env.PUBLIC_URL + "/models/fbx/BicycleCrunch.fbx";
 
-				// const avatar = model.scene.children[0];
+		loadFBX(modelpath).then((model) => {
+			model.position.set(0, -150, 0);
+			model.rotation.set(0, -1.2, 0);
 
-				// console.log(dumpObject(model));
+			mixer.current = new THREE.AnimationMixer(model);
 
-				model.position.set(0, -200, 0);
+			const clipAction = mixer.current.clipAction(model.animations[1]);
+			clipAction.setLoop(THREE.LoopOnce);
+			clipAction.clampWhenFinished = true;
+			clipAction.enable = true;
 
-				mixer.current = new THREE.AnimationMixer(model);
+			console.log(model.animations[1]);
 
-				const clipAction = mixer.current.clipAction(
-					model.animations[1]
-				);
+			clipAction.play();
 
-				console.log(model.animations[1]);
+			scene.current.add(model);
 
-				clipAction.play();
-
-				scene.current.add(model);
-
-				animate();
-			}
-		);
+			animate();
+		});
 
 		// const fbxLoader = new FBXLoader();
 		// fbxLoader.load(
