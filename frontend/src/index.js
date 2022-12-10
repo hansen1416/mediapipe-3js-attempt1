@@ -77,6 +77,10 @@ const router = createBrowserRouter([
 				element: <BVHPlayer />,
 			},
 			{
+				path: "/fbxloader",
+				element: <ThreeJsScene />,
+			},
+			{
 				path: "/motionmaker",
 				element: <ThreeJsScene />,
 			},

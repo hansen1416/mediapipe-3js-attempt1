@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
@@ -113,17 +114,16 @@ export function quaternionFromVectors(a, b) {
  * @param {*} model
  */
 export function travelModel(model, bodyparts) {
+	for (let name in bodyparts) {
+		if (name === model.name) {
+			bodyparts[name] = model;
+		}
+	}
 
-    for (let name in bodyparts) {
-        if (name === model.name) {
-            bodyparts[name] = model;
-        }
-    }
-
-    model.children.forEach((child) => {
-        // console.log(child)
-        travelModel(child, bodyparts);
-    });
+	model.children.forEach((child) => {
+		// console.log(child)
+		travelModel(child, bodyparts);
+	});
 }
 
 export const limbs = [
@@ -258,6 +258,13 @@ export function loadGLTF(url) {
 	});
 }
 
+export function loadFBX(url) {
+	return new Promise((resolve) => {
+		const loader = new FBXLoader();
+		loader.load(url, (fbx) => resolve(fbx));
+	});
+}
+
 export function dumpObject(obj, lines = [], isLast = true, prefix = "") {
 	const localPrefix = isLast ? "└─" : "├─";
 	lines.push(
@@ -349,19 +356,18 @@ export function unitline(a, b, color = 0xffffff) {
 }
 
 /**
- * blender uses right hand coordinate system with the 
+ * blender uses right hand coordinate system with the
  * Z axis pointing upwards.
  * Y axis pointing backwards.
  * X axis pointing to the right
- * 
+ *
  * it means we have to negate the X and Y angle,
  * and swap Y and Z angles
- * @param {*} x 
- * @param {*} y 
- * @param {*} z 
+ * @param {*} x
+ * @param {*} y
+ * @param {*} z
  */
-export function bvhToQuaternion(x,y,z) {
-
+export function bvhToQuaternion(x, y, z) {
 	const order = "ZXY";
 
 	return new THREE.Quaternion().setFromEuler(
@@ -394,7 +400,6 @@ export function bvhToQuaternion(x,y,z) {
 // 	// Get 3d point
 // 	let my3dPosition = worldPointFromScreenPoint(viewportDown, mySceneCamera);
 // }
-
 
 /**
  * POSE_LANDMARKS

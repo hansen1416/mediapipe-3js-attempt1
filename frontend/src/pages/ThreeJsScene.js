@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useLocation } from "react-router-dom";
 
+import FBXPlayer from "../components/FBXPlayer";
 import MotionMaker from "../components/MotionMaker";
 
 export default function ThreeJsScene() {
@@ -54,13 +55,13 @@ export default function ThreeJsScene() {
 		 * but you may want to use other values in your apps to get better performance.
 		 */
 		camera.current = new THREE.PerspectiveCamera(
-			30,
+			75,
 			viewWidth / viewHeight,
 			0.1,
 			1000
 		);
 
-		camera.current.position.set(0, 0, 5);
+		camera.current.position.set(0, 0, 500);
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -86,6 +87,14 @@ export default function ThreeJsScene() {
 			<canvas ref={canvasRef}></canvas>
 			{location.pathname === "/motionmaker" && (
 				<MotionMaker
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
+			{location.pathname === "/fbxloader" && (
+				<FBXPlayer
 					scene={scene}
 					camera={camera}
 					renderer={renderer}

@@ -41,6 +41,9 @@ function App() {
 					</li>
 					<li>
 						<Link to={`/bvhplayer`}>BVH player</Link>
+					</li>{" "}
+					<li>
+						<Link to={`/fbxloader`}>FBX player</Link>
 					</li>
 					<li>
 						<Link to={`/motionmaker`}>Motion Maker</Link>
