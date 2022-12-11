@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-import { loadFBX } from "./ropes";
+import { loadFBX, loadObj } from "./ropes";
 // import { dumpObject } from "./ropes";
 
 export default function FBXPlayer(props) {
@@ -10,58 +10,48 @@ export default function FBXPlayer(props) {
 	const figure = useRef(null);
 	const mixer = useRef(null);
 
+	const [animationJsons, setanimationJsons] = useState([]);
+
 	const clock = new THREE.Clock();
 
 	useEffect(() => {
-		// const modelpath =
-		// 	process.env.PUBLIC_URL + "/models/fbx/KettlebellSwing.fbx";
 		const modelpath =
-			process.env.PUBLIC_URL + "/models/fbx/BicycleCrunch.fbx";
+			// process.env.PUBLIC_URL + "/models/fbx/KettlebellSwing.fbx";
+			// process.env.PUBLIC_URL + "/models/fbx/BicycleCrunch.fbx";
+			process.env.PUBLIC_URL + "/models/fbx/JumpingJacks.fbx";
 
-		loadFBX(modelpath).then((model) => {
-			model.position.set(0, -150, 0);
-			model.rotation.set(0, -1.2, 0);
+		const modelPromise = loadFBX(modelpath);
 
-			mixer.current = new THREE.AnimationMixer(model);
+		const aminationPath =
+			process.env.PUBLIC_URL + "/json/JumpingJacks.json";
 
-			const clipAction = mixer.current.clipAction(model.animations[1]);
-			clipAction.setLoop(THREE.LoopOnce);
-			clipAction.clampWhenFinished = true;
-			clipAction.enable = true;
+		const promiseJumpingJacks = loadObj(aminationPath);
 
-			console.log(model.animations[1]);
+		Promise.all([modelPromise, promiseJumpingJacks]).then((values) => {
+			const [model, jsonJumpingJacks] = values;
 
-			clipAction.play();
+			figure.current = model;
 
-			scene.current.add(model);
+			figure.current.position.set(0, -150, 0);
+
+			mixer.current = new THREE.AnimationMixer(figure.current);
+
+			scene.current.add(figure.current);
+
+			setanimationJsons([jsonJumpingJacks]);
 
 			animate();
 		});
 
-		// const fbxLoader = new FBXLoader();
-		// fbxLoader.load(
-		// 	process.env.PUBLIC_URL + "/models/KettlebellSwing.fbx",
-		// 	(object) => {
-		// 		// object.traverse(function (child) {
-		// 		//     if ((child as THREE.Mesh).isMesh) {
-		// 		//         // (child as THREE.Mesh).material = material
-		// 		//         if ((child as THREE.Mesh).material) {
-		// 		//             ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).transparent = false
-		// 		//         }
-		// 		//     }
-		// 		// })
-		// 		// object.scale.set(.01, .01, .01)
-		// 		scene.current.add(object);
-		// 	},
-		// 	(xhr) => {
-		// 		console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+		// .then((jsonObj) => {
 
-		// 		// animate();
-		// 	},
-		// 	(error) => {
-		// 		console.log(error);
-		// 	}
-		// );
+		// });
+
+		// .then((model) => {
+
+		// });
+
+		// eslint-disable-next-line
 	}, []);
 
 	function animate() {
@@ -77,5 +67,33 @@ export default function FBXPlayer(props) {
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	return <div></div>;
+	function playAnimation(jsonObj) {
+		const actionJumpingJacks = mixer.current.clipAction(
+			THREE.AnimationClip.parse(jsonObj)
+		);
+		actionJumpingJacks.setLoop(THREE.LoopOnce);
+		actionJumpingJacks.clampWhenFinished = true;
+		actionJumpingJacks.enable = true;
+
+		actionJumpingJacks.play();
+	}
+
+	return (
+		<div>
+			<div className="btn-box">
+				{animationJsons.map((jsonObj) => {
+					return (
+						<button
+							key={jsonObj.name}
+							onClick={() => {
+								playAnimation(jsonObj);
+							}}
+						>
+							{jsonObj.name}
+						</button>
+					);
+				})}
+			</div>
+		</div>
+	);
 }

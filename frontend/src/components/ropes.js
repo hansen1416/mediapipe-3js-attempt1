@@ -265,6 +265,12 @@ export function loadFBX(url) {
 	});
 }
 
+export function loadObj(url) {
+	return new Promise((resolve) => {
+		fetch(url).then((response) => resolve(response.json()));
+	});
+}
+
 export function dumpObject(obj, lines = [], isLast = true, prefix = "") {
 	const localPrefix = isLast ? "└─" : "├─";
 	lines.push(
