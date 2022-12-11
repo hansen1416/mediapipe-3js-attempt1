@@ -61,7 +61,7 @@ export default function ThreeJsScene() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 500);
+		camera.current.position.set(0, 0, 240);
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,

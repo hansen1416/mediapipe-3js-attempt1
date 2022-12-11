@@ -57,7 +57,7 @@ export default function FBXPlayer(props) {
 
 				figure.current = model;
 
-				figure.current.position.set(0, -150, 0);
+				figure.current.position.set(0, -100, 0);
 
 				mixer.current = new THREE.AnimationMixer(figure.current);
 
