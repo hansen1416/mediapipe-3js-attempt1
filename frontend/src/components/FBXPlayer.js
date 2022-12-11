@@ -16,40 +16,47 @@ export default function FBXPlayer(props) {
 
 	useEffect(() => {
 		const modelpath =
-			// process.env.PUBLIC_URL + "/models/fbx/KettlebellSwing.fbx";
-			// process.env.PUBLIC_URL + "/models/fbx/BicycleCrunch.fbx";
+			// process.env.PUBLIC_URL + "/models/fbx/StandingUp.fbx";
 			process.env.PUBLIC_URL + "/models/fbx/JumpingJacks.fbx";
 
 		const modelPromise = loadFBX(modelpath);
 
-		const aminationPath =
-			process.env.PUBLIC_URL + "/json/JumpingJacks.json";
+		const animations = [
+			"BicycleCrunch",
+			"Capoeira",
+			"HipHopDancing",
+			"JumpingJacks",
+			"KettlebellSwing",
+			"Situps",
+			"SitupToIdle",
+			"Snatch",
+			"StandingUp",
+		];
+		const animationsPromises = [];
 
-		const promiseJumpingJacks = loadObj(aminationPath);
+		for (let name of animations) {
+			animationsPromises.push(
+				loadObj(process.env.PUBLIC_URL + "/json/" + name + ".json")
+			);
+		}
 
-		Promise.all([modelPromise, promiseJumpingJacks]).then((values) => {
-			const [model, jsonJumpingJacks] = values;
+		Promise.all([modelPromise].concat(animationsPromises)).then(
+			(values) => {
+				const [model] = values;
 
-			figure.current = model;
+				figure.current = model;
 
-			figure.current.position.set(0, -150, 0);
+				figure.current.position.set(0, -150, 0);
 
-			mixer.current = new THREE.AnimationMixer(figure.current);
+				mixer.current = new THREE.AnimationMixer(figure.current);
 
-			scene.current.add(figure.current);
+				scene.current.add(figure.current);
 
-			setanimationJsons([jsonJumpingJacks]);
+				setanimationJsons(values.slice(1));
 
-			animate();
-		});
-
-		// .then((jsonObj) => {
-
-		// });
-
-		// .then((model) => {
-
-		// });
+				animate();
+			}
+		);
 
 		// eslint-disable-next-line
 	}, []);
