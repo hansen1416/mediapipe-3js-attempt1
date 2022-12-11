@@ -30,7 +30,7 @@ export default function ThreeJsScene() {
 	}, []);
 
 	function _scene() {
-		const backgroundColor = 0x222222;
+		const backgroundColor = 0x22244;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
