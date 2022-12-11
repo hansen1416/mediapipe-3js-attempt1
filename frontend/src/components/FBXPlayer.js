@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-import { loadFBX, loadObj } from "./ropes";
+import { loadFBX, loadObj, traverseModel } from "./ropes";
 // import { dumpObject } from "./ropes";
 
 export default function FBXPlayer(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const figure = useRef(null);
+
 	const mixer = useRef(null);
+
+	// const initMatrix = useRef({});
 
 	const [animationJsons, setanimationJsons] = useState([]);
 
@@ -40,9 +43,17 @@ export default function FBXPlayer(props) {
 			);
 		}
 
+		// first promise is loading the model figure,
+		// thre reset of em is the animation json
 		Promise.all([modelPromise].concat(animationsPromises)).then(
 			(values) => {
 				const [model] = values;
+
+				// console.log(initMatrix.current);
+
+				// traverseModel(model, initMatrix.current);
+
+				// console.log(initMatrix);
 
 				figure.current = model;
 
@@ -75,14 +86,31 @@ export default function FBXPlayer(props) {
 	}
 
 	function playAnimation(jsonObj) {
-		const actionJumpingJacks = mixer.current.clipAction(
+		// restorePose(figure.current);
+
+		mixer.current.stopAllAction();
+
+		const action = mixer.current.clipAction(
 			THREE.AnimationClip.parse(jsonObj)
 		);
-		actionJumpingJacks.setLoop(THREE.LoopOnce);
-		actionJumpingJacks.clampWhenFinished = true;
-		actionJumpingJacks.enable = true;
 
-		actionJumpingJacks.play();
+		action.reset();
+		action.setLoop(THREE.LoopOnce);
+
+		// action.halt(1);
+
+		// will restore the origin position of model during `time`
+		// action.fadeOut(4);
+
+		// controls how long the animation plays
+		// action.setDuration(1);
+
+		// keep model at the position where it stops
+		action.clampWhenFinished = true;
+
+		action.enable = true;
+
+		action.play();
 	}
 
 	return (

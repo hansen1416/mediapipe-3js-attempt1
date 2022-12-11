@@ -126,6 +126,17 @@ export function travelModel(model, bodyparts) {
 	});
 }
 
+export function traverseModel(model, initMatrix) {
+	if (model && model.isBone) {
+		initMatrix[model.name] = model.quaternion;
+	}
+	// console.log(model, model.name, model.matrix);
+
+	model.children.forEach((child) => {
+		traverseModel(child, initMatrix);
+	});
+}
+
 export const limbs = [
 	"LEFT_SHOULDER",
 	"RIGHT_SHOULDER",
