@@ -3,7 +3,9 @@ import os
 
 import numpy as np
 
-animation_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'animations')
+animation_dir = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), 'animations')
+
 
 def analyse_motion(data):
     # print(data.keys()) # dict_keys(['name', 'duration', 'tracks', 'uuid', 'blendMode'])
@@ -11,13 +13,16 @@ def analyse_motion(data):
     # print(len(data['tracks']))
 
     for i in data['tracks']:
-        
+
         if i['type'] != 'quaternion':
             continue
 
-        print(i['Vectors'])
+        print(i['name'])
 
-        break
+        print(len(i['Vectors']))
+
+        # break
+
 
 if __name__ == "__main__":
 
@@ -32,5 +37,3 @@ if __name__ == "__main__":
         break
 
     # anim = json.load()
-
-    
