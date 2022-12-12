@@ -84,10 +84,11 @@ export default function MotionMaker(props) {
 			q_hips_init.z,
 			q_hips_init.w,
 
-			q_hips_init.w,
+			
 			q_hips_init.x,
 			q_hips_init.y,
 			q_hips_init.z,
+			q_hips_init.w,
 		];
 
 		// for (let i = 10; i > 0; i--) {

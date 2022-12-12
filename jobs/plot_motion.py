@@ -239,12 +239,12 @@ def scatter_motion(pose_timeseries, joint_name, filename='tmp-pose-motion.png'):
 if __name__ == "__main__":
 
     # ---------- save a segment to fitted and origin motion
-    data3000 = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
+    # data3000 = np.load(os.path.join('tmp', 'wlm0-3000.npy'), allow_pickle=True)
 
-    data_seg = np.array(list(map(np.array, data3000[2300:2400])))
+    # data_seg = np.array(list(map(np.array, data3000[2300:2400])))
 
-    save_fitted_motion(data_seg, os.path.join(
-        'tmp', 'wlm2300-2400.npy'), os.path.join('tmp', 'wlmc2300-2400.npy'))
+    # save_fitted_motion(data_seg, os.path.join(
+    #     'tmp', 'wlm2300-2400.npy'), os.path.join('tmp', 'wlmc2300-2400.npy'))
     # ---------- save a segment to fitted and origin motion
 
     pose_results = np.load(os.path.join(

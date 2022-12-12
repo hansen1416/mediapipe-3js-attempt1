@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-import { loadFBX, loadObj, traverseModel } from "./ropes";
-// import { dumpObject } from "./ropes";
+import { loadFBX, loadObj } from "./ropes";
+// import { dumpObject, traverseModel } from "./ropes";
 
 export default function FBXPlayer(props) {
 	const { scene, camera, renderer, controls } = props;
@@ -20,7 +20,7 @@ export default function FBXPlayer(props) {
 	useEffect(() => {
 		const modelpath =
 			// process.env.PUBLIC_URL + "/models/fbx/StandingUp.fbx";
-			process.env.PUBLIC_URL + "/models/fbx/JumpingJacks.fbx";
+			process.env.PUBLIC_URL + "/models/fbx/XBot.fbx";
 
 		const modelPromise = loadFBX(modelpath);
 
