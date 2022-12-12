@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 
 import FBXPlayer from "../components/FBXPlayer";
 import MotionMaker from "../components/MotionMaker";
+import FBXTunning from "../components/FBXTunning";
 
 export default function ThreeJsScene() {
 	const canvasRef = useRef(null);
@@ -95,6 +96,14 @@ export default function ThreeJsScene() {
 			)}
 			{location.pathname === "/fbxloader" && (
 				<FBXPlayer
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
+			{location.pathname === "/fbxtunning" && (
+				<FBXTunning
 					scene={scene}
 					camera={camera}
 					renderer={renderer}

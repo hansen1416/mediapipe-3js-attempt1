@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 import { loadFBX, loadObj } from "./ropes";
-// import { dumpObject, traverseModel } from "./ropes";
+// import { dumpObject } from "./ropes";
 
 export default function FBXPlayer(props) {
 	const { scene, camera, renderer, controls } = props;
@@ -11,16 +11,14 @@ export default function FBXPlayer(props) {
 
 	const mixer = useRef(null);
 
-	// const initMatrix = useRef({});
-
 	const [animationJsons, setanimationJsons] = useState([]);
 
 	const clock = new THREE.Clock();
 
 	useEffect(() => {
 		const modelpath =
-			// process.env.PUBLIC_URL + "/models/fbx/XBot.fbx";
-			process.env.PUBLIC_URL + "/models/fbx/YBot.fbx";
+			// process.env.PUBLIC_URL + "/fbx/XBot.fbx";
+			process.env.PUBLIC_URL + "/fbx/YBot.fbx";
 
 		const modelPromise = loadFBX(modelpath);
 
@@ -50,8 +48,6 @@ export default function FBXPlayer(props) {
 				const [model] = values;
 
 				// console.log(initMatrix.current);
-
-				// traverseModel(model, initMatrix.current);
 
 				// console.log(initMatrix);
 

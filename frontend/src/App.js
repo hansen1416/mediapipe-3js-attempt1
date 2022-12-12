@@ -46,6 +46,9 @@ function App() {
 						<Link to={`/fbxloader`}>FBX player</Link>
 					</li>
 					<li>
+						<Link to={`/fbxtunning`}>FBX Tunning</Link>
+					</li>
+					<li>
 						<Link to={`/motionmaker`}>Motion Maker</Link>
 					</li>
 				</ul>

@@ -81,6 +81,10 @@ const router = createBrowserRouter([
 				element: <ThreeJsScene />,
 			},
 			{
+				path: "/fbxtunning",
+				element: <ThreeJsScene />,
+			},
+			{
 				path: "/motionmaker",
 				element: <ThreeJsScene />,
 			},

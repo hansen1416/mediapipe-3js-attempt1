@@ -126,14 +126,14 @@ export function travelModel(model, bodyparts) {
 	});
 }
 
-export function traverseModel(model, initMatrix) {
+export function traverseModel(model, bodyParts) {
 	if (model && model.isBone) {
-		initMatrix[model.name] = model.quaternion;
+		bodyParts[model.name] = model;
 	}
 	// console.log(model, model.name, model.matrix);
 
 	model.children.forEach((child) => {
-		traverseModel(child, initMatrix);
+		traverseModel(child, bodyParts);
 	});
 }
 
