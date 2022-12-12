@@ -19,8 +19,8 @@ export default function FBXPlayer(props) {
 
 	useEffect(() => {
 		const modelpath =
-			// process.env.PUBLIC_URL + "/models/fbx/StandingUp.fbx";
-			process.env.PUBLIC_URL + "/models/fbx/XBot.fbx";
+			// process.env.PUBLIC_URL + "/models/fbx/XBot.fbx";
+			process.env.PUBLIC_URL + "/models/fbx/YBot.fbx";
 
 		const modelPromise = loadFBX(modelpath);
 
@@ -54,6 +54,10 @@ export default function FBXPlayer(props) {
 				// traverseModel(model, initMatrix.current);
 
 				// console.log(initMatrix);
+
+				const tmp = model.animations[1];
+
+				console.log(tmp.toJSON());
 
 				figure.current = model;
 
