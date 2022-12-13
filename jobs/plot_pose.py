@@ -95,7 +95,7 @@ setattr(Axes3D, 'arrow3D', _arrow3D)
 
 class PosePlot():
 
-    def __init__(self) -> None:
+    def __init__(self, isarray=True) -> None:
         # self.cap = cv2.VideoCapture(video_path)
 
         # self.filename = os.path.split(video_path)[-1]
@@ -107,6 +107,8 @@ class PosePlot():
         # logger.info('video filename {}, frames {}, fps {}'.format(self.filename, total_frames, fps))
 
         # self.frames_steps = 1
+
+        self.isarray = isarray
 
         self.joints = ['LEFT_WRIST',
                        'LEFT_ELBOW',
@@ -136,9 +138,12 @@ class PosePlot():
 
         # self.redis_db = redis.Redis(host="localhost", port="6379", charset="utf-8")
 
-    @staticmethod
-    def landmark_to_point(landmark):
-        return [landmark.x, landmark.y, landmark.z]
+
+    def landmark_to_point(self, landmark):
+        if self.isarray:
+            return [landmark[0], landmark[1], landmark[2]]
+        else:
+            return [landmark.x, landmark.y, landmark.z]
 
     def read_points_from_landmarks(self, landmarks):
 
@@ -147,10 +152,14 @@ class PosePlot():
         zdata = []
 
         for j in self.joints:
-
-            xdata.append(landmarks[PoseLandmark[j]].x)
-            ydata.append(landmarks[PoseLandmark[j]].y)
-            zdata.append(landmarks[PoseLandmark[j]].z)
+            if self.isarray:
+                xdata.append(landmarks[PoseLandmark[j]][0])
+                ydata.append(landmarks[PoseLandmark[j]][1])
+                zdata.append(landmarks[PoseLandmark[j]][2])
+            else:
+                xdata.append(landmarks[PoseLandmark[j]].x)
+                ydata.append(landmarks[PoseLandmark[j]].y)
+                zdata.append(landmarks[PoseLandmark[j]].z)
 
         return xdata, ydata, zdata
 
