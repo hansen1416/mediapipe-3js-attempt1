@@ -51,10 +51,6 @@ export default function FBXPlayer(props) {
 
 				// console.log(initMatrix);
 
-				const tmp = model.animations[1];
-
-				console.log(tmp.toJSON());
-
 				figure.current = model;
 
 				figure.current.position.set(0, -100, 0);
@@ -81,6 +77,8 @@ export default function FBXPlayer(props) {
 
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
+
+		// console.log(figure.current)
 
 		renderer.current.render(scene.current, camera.current);
 	}
