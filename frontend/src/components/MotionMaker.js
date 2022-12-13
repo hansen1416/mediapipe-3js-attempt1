@@ -8,8 +8,8 @@ import * as THREE from "three";
 // } from "three";
 
 // import { loadGLTF, posePositionToVector } from "./ropes";
-import { loadFBX } from "./ropes";
-import Figure from "../models/Figure";
+import { loadFBX, loadObj } from "./ropes";
+// import Figure from "../models/Figure";
 // import Abdomen1 from "../models/Abdomen1";
 import { MatchManModel } from "../models/MatchManModel";
 
@@ -17,17 +17,29 @@ export default function MotionMaker(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const figure = useRef(null);
+
+	const animationAction = useRef(null);
+
 	const matchman = new MatchManModel();
+
+	const mixer = useRef(null);
+
+	const clock = new THREE.Clock();
 
 	useEffect(() => {
 		const modelpath =
 			// process.env.PUBLIC_URL + "/fbx/XBot.fbx";
 			process.env.PUBLIC_URL + "/fbx/YBot.fbx";
 
-		loadFBX(modelpath).then((model) => {
+		Promise.all([
+			loadFBX(modelpath),
+			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
+		]).then(([model, jsonObj]) => {
 			figure.current = model;
 
 			figure.current.position.set(0, -50, 0);
+
+			figure.current.rotation.set(0, -Math.PI / 2, 0);
 
 			matchman.get_3dmodel().position.set(0, -120, 0);
 
@@ -39,6 +51,28 @@ export default function MotionMaker(props) {
 
 			scene.current.add(matchman.get_3dmodel());
 
+			mixer.current = new THREE.AnimationMixer(figure.current);
+
+			animationAction.current = mixer.current.clipAction(
+				THREE.AnimationClip.parse(jsonObj)
+			);
+
+			animationAction.current.reset();
+			animationAction.current.setLoop(THREE.LoopOnce);
+
+			// action.halt(1);
+
+			// will restore the origin position of model during `time`
+			// action.fadeOut(4);
+
+			// controls how long the animation plays
+			// action.setDuration(1);
+
+			// keep model at the position where it stops
+			animationAction.current.clampWhenFinished = true;
+
+			animationAction.current.enable = true;
+
 			animate();
 		});
 		// eslint-disable-next-line
@@ -46,6 +80,10 @@ export default function MotionMaker(props) {
 
 	function animate() {
 		requestAnimationFrame(animate);
+
+		const delta = clock.getDelta();
+
+		if (mixer.current) mixer.current.update(delta);
 
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
@@ -92,6 +130,10 @@ export default function MotionMaker(props) {
 			});
 	}
 
+	function playAnimation() {
+		animationAction.current.play();
+	}
+
 	return (
 		<div>
 			<div className="btn-box">
@@ -108,6 +150,13 @@ export default function MotionMaker(props) {
 					}}
 				>
 					action2
+				</button>
+				<button
+					onClick={() => {
+						playAnimation();
+					}}
+				>
+					BicycleCrunch
 				</button>
 			</div>
 		</div>
