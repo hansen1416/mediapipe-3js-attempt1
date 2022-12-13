@@ -86,7 +86,7 @@ export default function ThreeJsScene() {
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-			{location.pathname === "/motionmaker" && (
+			{location.pathname === "/motionsync" && (
 				<MotionMaker
 					scene={scene}
 					camera={camera}

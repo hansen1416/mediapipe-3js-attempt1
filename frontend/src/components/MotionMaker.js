@@ -1,44 +1,43 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import {
-	AnimationClip,
-	AnimationMixer,
-	QuaternionKeyframeTrack,
-	Quaternion,
-} from "three";
+// import {
+// 	AnimationClip,
+// 	AnimationMixer,
+// 	QuaternionKeyframeTrack,
+// 	Quaternion,
+// } from "three";
 
 // import { loadGLTF, posePositionToVector } from "./ropes";
-import { loadGLTF } from "./ropes";
+import { loadFBX } from "./ropes";
 import Figure from "../models/Figure";
-import Abdomen1 from "../models/Abdomen1";
+// import Abdomen1 from "../models/Abdomen1";
+import { MatchManModel } from "../models/MatchManModel";
 
 export default function MotionMaker(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const figure = useRef(null);
-	const mixer = useRef(null);
-
-	const clock = new THREE.Clock();
+	const matchman = new MatchManModel();
 
 	useEffect(() => {
-		loadGLTF(process.env.PUBLIC_URL + "/models/my.glb").then((gltf) => {
-			const avatar = gltf.scene.children[0];
+		const modelpath =
+			// process.env.PUBLIC_URL + "/fbx/XBot.fbx";
+			process.env.PUBLIC_URL + "/fbx/YBot.fbx";
 
-			// console.log(dumpObject(avatar));
+		loadFBX(modelpath).then((model) => {
+			figure.current = model;
 
-			avatar.position.set(0, -1.5, 0);
+			figure.current.position.set(0, -50, 0);
 
-			scene.current.add(avatar);
+			matchman.get_3dmodel().position.set(0, -120, 0);
 
-			figure.current = new Figure(avatar);
+			matchman.get_3dmodel().scale.set(20, 20, 20);
 
-			// x-axis: red, y-axis: green, z-axis:blue
-			const axesHelper = new THREE.AxesHelper(1);
-			figure.current.parts["Hips"].add(axesHelper);
+			// camera.current.position.set(0, 0, 5);
 
-			const axesHelper1 = new THREE.AxesHelper(1);
-			// figure.current.parts["LeftUpLeg"].add(axesHelper1);
-			// scene.current.add(axesHelper)
+			scene.current.add(figure.current);
+
+			scene.current.add(matchman.get_3dmodel());
 
 			animate();
 		});
@@ -48,87 +47,49 @@ export default function MotionMaker(props) {
 	function animate() {
 		requestAnimationFrame(animate);
 
-		const delta = clock.getDelta();
-
-		if (mixer.current) mixer.current.update(delta);
-
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	function playAction() {
-		const motion = new Abdomen1();
+	function playAction() {}
 
-		figure.current.makePoseFromQuaternion(motion.initPose());
+	function fetchPose(action_name) {
+		fetch(
+			process.env.REACT_APP_API_URL +
+				"/pose/data?" +
+				new URLSearchParams({
+					action_name: action_name,
+				}),
+			{
+				method: "GET", // *GET, POST, PUT, DELETE, etc.
+				// mode: 'cors', // no-cors, *cors, same-origin
+				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				// credentials: 'same-origin', // include, *same-origin, omit
+				// headers: {
+				// 	"Content-Type": "multipart/form-data",
+				// },
+				// redirect: 'follow', // manual, *follow, error
+				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				// body: formData, // body data type must match "Content-Type" header
+			}
+		)
+			.then((response) => response.json())
+			.then((data) => {
+				// poseidx.current = 0;
+				// animationStep.current = 0;
+				// posedata.current = data.data;
+				// console.log(data.data);
 
-		// const q = motion.spineSlerp();
+				const pose_data = data.data[0];
 
-		// spine animation
-		let q_hips_init = motion.q_init["Hips"];
-
-		const q_hips_target = new Quaternion().setFromEuler(
-			new THREE.Euler(-Math.PI / 4, -Math.PI / 2, 0, "YXZ")
-		);
-
-		// figure.current.parts["Hips"].setRotationFromQuaternion(q_hips_target);
-
-		// console.log("q_hips_init", q_hips_init);
-		// console.log("q_hips_target", q_hips_target);
-
-		const times = [0, 1];
-		const values = [
-			q_hips_init.x,
-			q_hips_init.y,
-			q_hips_init.z,
-			q_hips_init.w,
-
-			
-			q_hips_init.x,
-			q_hips_init.y,
-			q_hips_init.z,
-			q_hips_init.w,
-		];
-
-		// for (let i = 10; i > 0; i--) {
-		// 	const q = new Quaternion().slerpQuaternions(
-		// 		q_hips_init,
-		// 		q_hips_target,
-		// 		i
-		// 	);
-
-		// 	// console.log(q);
-
-		// 	q_hips_init = q;
-
-		// 	values.push(q.w, q.x, q.y, q.z);
-		// 	times.push(10 - i);
-		// }
-
-		// console.log(values);
-
-		const spine_anim_q = new QuaternionKeyframeTrack(
-			".quaternion",
-			times,
-			values
-		);
-
-		const tracks = [spine_anim_q];
-
-		// console.log(tracks);
-
-		const spine_anim_clip = new AnimationClip("spine", -1, tracks);
-
-		mixer.current = new AnimationMixer(figure.current.parts["Hips"]);
-
-		// create a ClipAction and set it to play
-		const clipAction = mixer.current.clipAction(spine_anim_clip);
-		clipAction.play();
-
-		// figure.current.parts["Hips"].applyQuaternion(q);
-
-		// console.log()
+				matchman.pose_array(pose_data);
+				// playPose();
+			})
+			.catch(function (error) {
+				console.warn(error);
+			});
 	}
 
 	return (
@@ -140,6 +101,13 @@ export default function MotionMaker(props) {
 					}}
 				>
 					action1
+				</button>
+				<button
+					onClick={() => {
+						fetchPose("1500-1600");
+					}}
+				>
+					action2
 				</button>
 			</div>
 		</div>

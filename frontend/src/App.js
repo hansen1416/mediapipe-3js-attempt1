@@ -49,7 +49,7 @@ function App() {
 						<Link to={`/fbxtunning`}>FBX Tunning</Link>
 					</li>
 					<li>
-						<Link to={`/motionmaker`}>Motion Maker</Link>
+						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
 				</ul>
 			</nav>
