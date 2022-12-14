@@ -51,6 +51,9 @@ function App() {
 					<li>
 						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
+					<li>
+						<Link to={`/motioncompare`}>Motion Compare</Link>
+					</li>
 				</ul>
 			</nav>
 		</div>

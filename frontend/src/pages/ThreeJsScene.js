@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import FBXPlayer from "../components/FBXPlayer";
 import MotionMaker from "../components/MotionMaker";
 import FBXTunning from "../components/FBXTunning";
+import MotionCompare from "../components/MotionCompare";
 
 export default function ThreeJsScene() {
 	const canvasRef = useRef(null);
@@ -104,6 +105,14 @@ export default function ThreeJsScene() {
 			)}
 			{location.pathname === "/fbxtunning" && (
 				<FBXTunning
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
+			{location.pathname === "/motioncompare" && (
+				<MotionCompare
 					scene={scene}
 					camera={camera}
 					renderer={renderer}

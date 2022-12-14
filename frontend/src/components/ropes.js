@@ -36,7 +36,7 @@ export function radiansToDegrees(radian) {
 
 export function posePointsToVector(a, b) {
 	if (a[0]) {
-		return new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+		return new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]).normalize();
 	} else {
 		return new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z).normalize();
 	}
