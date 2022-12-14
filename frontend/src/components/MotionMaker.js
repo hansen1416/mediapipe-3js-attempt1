@@ -1,30 +1,15 @@
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
-// import {
-// 	AnimationClip,
-// 	AnimationMixer,
-// 	QuaternionKeyframeTrack,
-// 	Quaternion,
-// } from "three";
+import { Quaternion, Vector3 } from "three";
 
-// import { loadGLTF, posePositionToVector } from "./ropes";
 import { loadFBX, loadObj } from "./ropes";
-// import Figure from "../models/Figure";
-// import Abdomen1 from "../models/Abdomen1";
-import { MatchManModel } from "../models/MatchManModel";
 
 export default function MotionMaker(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const figure = useRef(null);
 
-	const animationAction = useRef(null);
-
-	const matchman = new MatchManModel();
-
-	const mixer = useRef(null);
-
-	const clock = new THREE.Clock();
+	const BicycleCrunchTracks = useRef(null);
+	const BicycleCrunchIndex = useRef(-1);
 
 	useEffect(() => {
 		const modelpath =
@@ -37,41 +22,43 @@ export default function MotionMaker(props) {
 		]).then(([model, jsonObj]) => {
 			figure.current = model;
 
-			figure.current.position.set(0, -50, 0);
-
-			figure.current.rotation.set(0, -Math.PI / 2, 0);
-
-			matchman.get_3dmodel().position.set(0, -120, 0);
-
-			matchman.get_3dmodel().scale.set(20, 20, 20);
-
-			// camera.current.position.set(0, 0, 5);
+			figure.current.position.set(0, -100, 0);
 
 			scene.current.add(figure.current);
 
-			scene.current.add(matchman.get_3dmodel());
+			for (let item of jsonObj["tracks"]) {
+				if (item["type"] === "quaternion") {
+					const quaternions = [];
+					for (let i = 0; i < item["values"].length; i += 4) {
+						const q = new Quaternion(
+							item["values"][i],
+							item["values"][i + 1],
+							item["values"][i + 2],
+							item["values"][i + 3]
+						);
 
-			mixer.current = new THREE.AnimationMixer(figure.current);
+						quaternions.push(q);
+					}
 
-			animationAction.current = mixer.current.clipAction(
-				THREE.AnimationClip.parse(jsonObj)
-			);
+					item["quaternions"] = quaternions;
+				}
 
-			animationAction.current.reset();
-			animationAction.current.setLoop(THREE.LoopOnce);
+				if (item["type"] === "vector") {
+					const vectors = [];
+					for (let i = 0; i < item["values"].length; i += 3) {
+						const q = new Vector3(
+							item["values"][i],
+							item["values"][i + 1],
+							item["values"][i + 2]
+						);
 
-			// action.halt(1);
+						vectors.push(q);
+					}
 
-			// will restore the origin position of model during `time`
-			// action.fadeOut(4);
-
-			// controls how long the animation plays
-			// action.setDuration(1);
-
-			// keep model at the position where it stops
-			animationAction.current.clampWhenFinished = true;
-
-			animationAction.current.enable = true;
+					item["vectors"] = vectors;
+				}
+			}
+			BicycleCrunchTracks.current = jsonObj["tracks"];
 
 			animate();
 		});
@@ -81,57 +68,63 @@ export default function MotionMaker(props) {
 	function animate() {
 		requestAnimationFrame(animate);
 
-		const delta = clock.getDelta();
-
-		if (mixer.current) mixer.current.update(delta);
-
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
+
+		if (BicycleCrunchIndex.current >= 0) {
+			BicycleCrunchIndex.current += 1;
+
+			if (
+				BicycleCrunchIndex.current >=
+				BicycleCrunchTracks.current[0]["values"].length
+			) {
+				BicycleCrunchIndex.current = -1;
+			}
+		}
 
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	function playAction() {}
+	function playAnimation() {
+		console.log(BicycleCrunchTracks.current, figure.current);
 
-	function fetchPose(action_name) {
-		fetch(
-			process.env.REACT_APP_API_URL +
-				"/pose/data?" +
-				new URLSearchParams({
-					action_name: action_name,
-				}),
-			{
-				method: "GET", // *GET, POST, PUT, DELETE, etc.
-				// mode: 'cors', // no-cors, *cors, same-origin
-				// cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-				// credentials: 'same-origin', // include, *same-origin, omit
-				// headers: {
-				// 	"Content-Type": "multipart/form-data",
-				// },
-				// redirect: 'follow', // manual, *follow, error
-				// referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-				// body: formData, // body data type must match "Content-Type" header
-			}
-		)
-			.then((response) => response.json())
-			.then((data) => {
-				// poseidx.current = 0;
-				// animationStep.current = 0;
-				// posedata.current = data.data;
-				// console.log(data.data);
+		BicycleCrunchIndex.current = 0;
 
-				const pose_data = data.data[0];
-
-				matchman.pose_array(pose_data);
-				// playPose();
-			})
-			.catch(function (error) {
-				console.warn(error);
-			});
+		applyTransfer(figure.current);
 	}
 
-	function playAnimation() {
-		animationAction.current.play();
+	function applyTransfer(model) {
+		if (model && model.isBone) {
+			for (let item of BicycleCrunchTracks.current) {
+				const item_name = item["name"].split(".")[0];
+
+				// console.log(model.name, item_name);
+
+				if (model.name === item_name) {
+					console.log(item_name);
+					if (item["type"] === "vector") {
+						model.position.set(
+							item["vectors"][BicycleCrunchIndex.current].x,
+							item["vectors"][BicycleCrunchIndex.current].y,
+							item["vectors"][BicycleCrunchIndex.current].z
+						);
+					}
+
+					if (item["type"] === "quaternion") {
+						model.setRotationFromQuaternion(
+							item["quaternions"][BicycleCrunchIndex.current]
+						);
+					}
+
+					break;
+				}
+			}
+		}
+		// console.log(model, model.name, model.matrix);
+
+		model.children.forEach((child) => {
+			applyTransfer(child);
+		});
 	}
 
 	return (
@@ -139,25 +132,13 @@ export default function MotionMaker(props) {
 			<div className="btn-box">
 				<button
 					onClick={() => {
-						playAction();
+						playAnimation();
 					}}
 				>
 					action1
 				</button>
-				<button
-					onClick={() => {
-						fetchPose("1500-1600");
-					}}
-				>
-					action2
-				</button>
-				<button
-					onClick={() => {
-						playAnimation();
-					}}
-				>
-					BicycleCrunch
-				</button>
+				<button onClick={() => {}}>action2</button>
+				<button onClick={() => {}}>BicycleCrunch</button>
 			</div>
 		</div>
 	);
