@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 
-import { loadFBX, loadObj, traverseModel, traverseModelNoChild } from "./ropes";
+import { loadFBX, loadObj, traverseModel } from "./ropes";
+// import { TraverseModelNoChild } from "./ropes";
+
+import { poseArr } from "./BicycleCrunchPose";
 
 export default function MotionMaker(props) {
 	const { scene, camera, renderer, controls } = props;
@@ -9,7 +12,7 @@ export default function MotionMaker(props) {
 	const figure = useRef(null);
 
 	const bodyParts = useRef({});
-	const bodyPartsNoChild = useRef({});
+	// const bodyPartsNoChild = useRef({});
 
 	const BicycleCrunchTracks = useRef(null);
 	const BicycleCrunchIndex = useRef(0);
@@ -28,7 +31,7 @@ export default function MotionMaker(props) {
 			figure.current.position.set(0, -100, 0);
 
 			traverseModel(figure.current, bodyParts.current);
-			traverseModelNoChild(figure.current, bodyPartsNoChild.current);
+			// traverseModelNoChild(figure.current, bodyPartsNoChild.current);
 
 			// console.log(figure.current)
 
