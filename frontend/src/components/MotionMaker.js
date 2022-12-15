@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 
-import { loadFBX, loadObj, traverseModel } from "./ropes";
+import { loadFBX, loadObj, traverseModel, modelInheritGraph } from "./ropes";
 // import { TraverseModelNoChild } from "./ropes";
 
 import { poseArr } from "./BicycleCrunchPose";
@@ -12,9 +12,10 @@ export default function MotionMaker(props) {
 	const figure = useRef(null);
 
 	const bodyParts = useRef({});
+	const bodyPartsGraph = useRef({});
 	// const bodyPartsNoChild = useRef({});
 
-	const BicycleCrunchTracks = useRef(null);
+	const BicycleCrunchTracks = useRef({});
 	const BicycleCrunchIndex = useRef(0);
 
 	useEffect(() => {
@@ -31,9 +32,9 @@ export default function MotionMaker(props) {
 			figure.current.position.set(0, -100, 0);
 
 			traverseModel(figure.current, bodyParts.current);
-			// traverseModelNoChild(figure.current, bodyPartsNoChild.current);
+			modelInheritGraph(figure.current, bodyPartsGraph.current);
 
-			// console.log(figure.current)
+			// console.log(bodyPartsGraph.current)
 
 			scene.current.add(figure.current);
 
@@ -71,8 +72,12 @@ export default function MotionMaker(props) {
 					item["vectors"] = vectors;
 				}
 			}
-			// BicycleCrunchTracks.current = jsonObj["tracks"].slice(0,24);
-			BicycleCrunchTracks.current = jsonObj["tracks"];
+
+			for (let v of jsonObj["tracks"]) {
+				const name = v['name'].split('.')[0];
+
+				BicycleCrunchTracks.current[name] = v;
+			}
 
 			// console.log(BicycleCrunchTracks.current)
 
@@ -87,17 +92,6 @@ export default function MotionMaker(props) {
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
 
-		// if (BicycleCrunchIndex.current >= 0) {
-		// 	BicycleCrunchIndex.current += 1;
-
-		// 	if (
-		// 		BicycleCrunchIndex.current >=
-		// 		BicycleCrunchTracks.current[0]["values"].length
-		// 	) {
-		// 		BicycleCrunchIndex.current = -1;
-		// 	}
-		// }
-
 		renderer.current.render(scene.current, camera.current);
 	}
 
@@ -109,7 +103,9 @@ export default function MotionMaker(props) {
 	}
 
 	function applyTransfer() {
-		for (let item of BicycleCrunchTracks.current) {
+
+		for (let item of Object.values(BicycleCrunchTracks.current)) {
+
 			const item_name = item["name"].split(".")[0];
 
 			// console.log(item_name, bodyParts.current[item_name]);

@@ -138,15 +138,37 @@ export function traverseModel(model, bodyParts) {
 	});
 }
 
-export function traverseModelNoChild(model, bodyParts) {
-	if (model && model.isBone && model.children.length === 0) {
-		// console.log(model.name, model.children.length)
-		bodyParts[model.name] = model;
+/**
+ * a grpah of all parent objects
+ * @param {*} model 
+ * @param {*} bodyParts 
+ */
+export function modelInheritGraph(model, bodyParts) {
+	if (model && model.isBone) {
+
+		if (model.parent) {
+
+			const raw = [model.parent.name].concat(bodyParts[model.parent.name]);
+
+			const tree = [];
+
+			for (let v of raw) {
+				if (!v || tree.indexOf(v) !== -1 || v === model.name) {
+					continue;
+				}
+
+				tree.push(v);
+			}
+
+			bodyParts[model.name] = tree;
+		} else {
+			bodyParts[model.name] = []
+		}
 	}
 	// console.log(model, model.name, model.matrix);
 
 	model.children.forEach((child) => {
-		traverseModel(child, bodyParts);
+		modelInheritGraph(child, bodyParts);
 	});
 }
 
