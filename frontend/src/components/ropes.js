@@ -127,7 +127,20 @@ export function travelModel(model, bodyparts) {
 }
 
 export function traverseModel(model, bodyParts) {
-	if (model && model.isBone) {
+	if (model && model.isBone && model.children.length) {
+		// console.log(model.name, model.children.length)
+		bodyParts[model.name] = model;
+	}
+	// console.log(model, model.name, model.matrix);
+
+	model.children.forEach((child) => {
+		traverseModel(child, bodyParts);
+	});
+}
+
+export function traverseModelNoChild(model, bodyParts) {
+	if (model && model.isBone && model.children.length === 0) {
+		// console.log(model.name, model.children.length)
 		bodyParts[model.name] = model;
 	}
 	// console.log(model, model.name, model.matrix);

@@ -1,15 +1,18 @@
 import { useEffect, useRef } from "react";
 import { Quaternion, Vector3 } from "three";
 
-import { loadFBX, loadObj } from "./ropes";
+import { loadFBX, loadObj, traverseModel, traverseModelNoChild } from "./ropes";
 
 export default function MotionMaker(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const figure = useRef(null);
 
+	const bodyParts = useRef({});
+	const bodyPartsNoChild = useRef({});
+
 	const BicycleCrunchTracks = useRef(null);
-	const BicycleCrunchIndex = useRef(-1);
+	const BicycleCrunchIndex = useRef(0);
 
 	useEffect(() => {
 		const modelpath =
@@ -24,9 +27,16 @@ export default function MotionMaker(props) {
 
 			figure.current.position.set(0, -100, 0);
 
+			traverseModel(figure.current, bodyParts.current);
+			traverseModelNoChild(figure.current, bodyPartsNoChild.current);
+
+			// console.log(figure.current)
+
 			scene.current.add(figure.current);
 
+			// calculate quaternions and vectors for animation tracks
 			for (let item of jsonObj["tracks"]) {
+
 				if (item["type"] === "quaternion") {
 					const quaternions = [];
 					for (let i = 0; i < item["values"].length; i += 4) {
@@ -58,7 +68,10 @@ export default function MotionMaker(props) {
 					item["vectors"] = vectors;
 				}
 			}
+			// BicycleCrunchTracks.current = jsonObj["tracks"].slice(0,24);
 			BicycleCrunchTracks.current = jsonObj["tracks"];
+
+			// console.log(BicycleCrunchTracks.current)
 
 			animate();
 		});
@@ -71,60 +84,77 @@ export default function MotionMaker(props) {
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
 
-		if (BicycleCrunchIndex.current >= 0) {
-			BicycleCrunchIndex.current += 1;
+		// if (BicycleCrunchIndex.current >= 0) {
+		// 	BicycleCrunchIndex.current += 1;
 
-			if (
-				BicycleCrunchIndex.current >=
-				BicycleCrunchTracks.current[0]["values"].length
-			) {
-				BicycleCrunchIndex.current = -1;
-			}
-		}
+		// 	if (
+		// 		BicycleCrunchIndex.current >=
+		// 		BicycleCrunchTracks.current[0]["values"].length
+		// 	) {
+		// 		BicycleCrunchIndex.current = -1;
+		// 	}
+		// }
 
 		renderer.current.render(scene.current, camera.current);
 	}
 
 	function playAnimation() {
-		console.log(BicycleCrunchTracks.current, figure.current);
 
-		BicycleCrunchIndex.current = 0;
+		applyTransfer();
 
-		applyTransfer(figure.current);
+		BicycleCrunchIndex.current += 1;
 	}
 
-	function applyTransfer(model) {
-		if (model && model.isBone) {
-			for (let item of BicycleCrunchTracks.current) {
-				const item_name = item["name"].split(".")[0];
+	function applyTransfer() {
+		for (let item of BicycleCrunchTracks.current) {
+			const item_name = item["name"].split(".")[0];
 
-				// console.log(model.name, item_name);
+			// console.log(item_name, bodyParts.current[item_name]);
 
-				if (model.name === item_name) {
-					console.log(item_name);
-					if (item["type"] === "vector") {
-						model.position.set(
-							item["vectors"][BicycleCrunchIndex.current].x,
-							item["vectors"][BicycleCrunchIndex.current].y,
-							item["vectors"][BicycleCrunchIndex.current].z
-						);
-					}
+			if (item["type"] === "vector") {
 
-					if (item["type"] === "quaternion") {
-						model.setRotationFromQuaternion(
-							item["quaternions"][BicycleCrunchIndex.current]
-						);
-					}
+				if (BicycleCrunchIndex.current < item["vectors"].length) {
 
-					break;
+					bodyParts.current[item_name].position.set(
+						item["vectors"][BicycleCrunchIndex.current].x,
+						item["vectors"][BicycleCrunchIndex.current].y,
+						item["vectors"][BicycleCrunchIndex.current].z
+					);
+				} else {
+					bodyParts.current[item_name].position.set(
+						item["vectors"][item["vectors"].length - 1].x,
+						item["vectors"][item["vectors"].length - 1].y,
+						item["vectors"][item["vectors"].length - 1].z
+					);
 				}
+
+				// bodyPartsNoChild.current[item_name].position.set(
+				// 	item["vectors"][BicycleCrunchIndex.current].x,
+				// 	item["vectors"][BicycleCrunchIndex.current].y,
+				// 	item["vectors"][BicycleCrunchIndex.current].z
+				// );
+			}
+
+			if (item["type"] === "quaternion") {
+
+				if (BicycleCrunchIndex.current < item["quaternions"].length) {
+
+					bodyParts.current[item_name].setRotationFromQuaternion(
+					// bodyParts.current[item_name].applyQuaternion(
+						item["quaternions"][BicycleCrunchIndex.current]
+					);
+				} else {
+					bodyParts.current[item_name].setRotationFromQuaternion(
+						// bodyParts.current[item_name].applyQuaternion(
+							item["quaternions"][item["quaternions"].length-1]
+						);
+				}
+
+				// bodyPartsNoChild.current[item_name].applyQuaternion(
+				// 	item["quaternions"][0]
+				// );
 			}
 		}
-		// console.log(model, model.name, model.matrix);
-
-		model.children.forEach((child) => {
-			applyTransfer(child);
-		});
 	}
 
 	return (
