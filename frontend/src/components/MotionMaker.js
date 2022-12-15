@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Quaternion, Vector3 } from "three";
+import { Object3D, Quaternion, Vector3 } from "three";
 
-import { loadFBX, loadObj, traverseModel, modelInheritGraph } from "./ropes";
+import { loadFBX, loadObj, traverseModel, modelInheritGraph, getUpVectors } from "./ropes";
 // import { TraverseModelNoChild } from "./ropes";
 
 import { poseArr } from "./BicycleCrunchPose";
@@ -13,10 +13,11 @@ export default function MotionMaker(props) {
 
 	const bodyParts = useRef({});
 	const bodyPartsGraph = useRef({});
-	// const bodyPartsNoChild = useRef({});
+	const bodyPartsUpVectors = useRef({});
 
 	const BicycleCrunchTracks = useRef({});
 	const BicycleCrunchIndex = useRef(0);
+
 
 	useEffect(() => {
 		const modelpath =
@@ -32,6 +33,7 @@ export default function MotionMaker(props) {
 			figure.current.position.set(0, -100, 0);
 
 			traverseModel(figure.current, bodyParts.current);
+			getUpVectors(figure.current, bodyPartsUpVectors.current);
 			modelInheritGraph(figure.current, bodyPartsGraph.current);
 
 			// console.log(bodyPartsGraph.current)
@@ -79,7 +81,9 @@ export default function MotionMaker(props) {
 				BicycleCrunchTracks.current[name] = v;
 			}
 
-			// console.log(BicycleCrunchTracks.current)
+			getAnimationState(BicycleCrunchTracks.current, bodyPartsGraph.current, bodyPartsUpVectors.current);
+
+			console.log(BicycleCrunchTracks.current['mixamorigLeftArm']);
 
 			animate();
 		});
@@ -107,6 +111,10 @@ export default function MotionMaker(props) {
 		for (let item of Object.values(BicycleCrunchTracks.current)) {
 
 			const item_name = item["name"].split(".")[0];
+
+			// if (item_name === 'mixamorigLeftArm') {
+			// 	continue;
+			// }
 
 			// console.log(item_name, bodyParts.current[item_name]);
 
@@ -149,10 +157,52 @@ export default function MotionMaker(props) {
 						);
 				}
 
-				// bodyPartsNoChild.current[item_name].applyQuaternion(
-				// 	item["quaternions"][0]
-				// );
+				if (item_name === 'mixamorigLeftArm' || item_name === 'mixamorigLeftForeArm') {
+					
+					const q = new Quaternion();
+
+					bodyParts.current[item_name].getWorldQuaternion(q);
+
+					const v = new Vector3(0,1,0);
+
+					v.applyQuaternion(q);
+
+					console.log(v);
+				}
 			}
+		}
+	}
+
+
+	function getAnimationState(animationTracks, inheritGraph, upVectors) {
+		for (let [name, tracks] of Object.entries(animationTracks)) {
+
+			if (tracks['type'] !== 'quaternion') {
+				continue;
+			}
+
+			const states = []
+
+			for (let i in tracks['quaternions']) {
+
+				const v = upVectors[name].clone();
+
+				for (let p = inheritGraph[name].length-1; p >= 0; p--) {
+					const parent_name = inheritGraph[name][p];
+
+					v.applyQuaternion(animationTracks[parent_name]['quaternions'][i]);
+				}
+
+				v.applyQuaternion(tracks['quaternions'][i]);
+
+				states.push(v);
+			}
+
+			// console.log(name, tracks);
+
+			// console.log(states);
+
+			tracks['states'] = states
 		}
 	}
 

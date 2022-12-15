@@ -138,6 +138,18 @@ export function traverseModel(model, bodyParts) {
 	});
 }
 
+export function getUpVectors(model, bodyParts) {
+	if (model && model.isBone && model.children.length) {
+		// console.log(model.name, model.children.length)
+		bodyParts[model.name] = model.up;
+	}
+	// console.log(model, model.name, model.matrix);
+
+	model.children.forEach((child) => {
+		getUpVectors(child, bodyParts);
+	});
+}
+
 /**
  * a grpah of all parent objects
  * @param {*} model 
