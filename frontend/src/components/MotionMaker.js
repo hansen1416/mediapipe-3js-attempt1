@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Quaternion, Vector3, Matrix4 } from "three";
+import { Quaternion, Vector3, Matrix4, MathUtils } from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import { sleep, loadFBX, loadObj, traverseModel, modelInheritGraph, getUpVectors, middlePosition, posePointsToVector } from "./ropes";
@@ -16,6 +16,8 @@ export default function MotionMaker(props) {
 
 	// const BicycleCrunchTracks = useRef({});
 	// const BicycleCrunchIndex = useRef(0);
+
+	const threshold = MathUtils.degToRad(30);
 
 
 	useEffect(() => {
@@ -69,18 +71,13 @@ export default function MotionMaker(props) {
 
 			if (item["type"] === "quaternion") {
 
-				if (indx < item["quaternions"].length) {
+				let q = indx < item["quaternions"].length ? item["quaternions"][indx] : item["quaternions"][item["quaternions"].length-1]
 
-					model[item_name].setRotationFromQuaternion(
-					// bodyParts.current[item_name].applyQuaternion(
-						item["quaternions"][indx]
-					);
-				} else {
-					model[item_name].setRotationFromQuaternion(
-						// bodyParts.current[item_name].applyQuaternion(
-							item["quaternions"][item["quaternions"].length-1]
-						);
+				if (!(q instanceof Quaternion)) {
+					q = new Quaternion(q._x, q._y, q._z, q._w);
 				}
+
+				model[item_name].setRotationFromQuaternion(q);
 			}
 		}
 	}
@@ -248,27 +245,71 @@ export default function MotionMaker(props) {
 			}
 		}
 
-		const leftThighTrack = [];
-		const rightThighTrack = [];
+		// const leftThighTrack = [];
+		// const rightThighTrack = [];
 
-		for (let indx in poseData) {
-			const data = poseData[indx];
+		Promise.all([
+			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
+			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json")
+		]).then(
+			([model, jsonObj]) => {
+
+				model.position.set(0, -100, 0);
+
+				const parts = {};
+	
+				// read attributes from the model
+				traverseModel(model, parts);
+	
+				scene.current.add(model);
+
+				// return;
+
+				let animationIndx = 0;
+
+				(async () => {
+					for (let indx in poseData) {
+						const data = poseData[indx];
+					
+						// apply this matrix to restore vector to original basis
+						const matrix = getBasisFromPose(data);
+			
+						const leftThighOrientation = posePointsToVector(data[POSE_LANDMARKS['RIGHT_KNEE']], data[POSE_LANDMARKS['RIGHT_HIP']]);
+						const rightThighOrientation = posePointsToVector(data[POSE_LANDMARKS['LEFT_KNEE']], data[POSE_LANDMARKS['LEFT_HIP']]);
+			
+						leftThighOrientation.applyMatrix4(matrix);
+						rightThighOrientation.applyMatrix4(matrix);
+			
+						// leftThighTrack.push(leftThighOrientation);
+						// rightThighTrack.push(rightThighOrientation);
+
+						if (animationIndx >= jsonObj["mixamorigLeftUpLeg.quaternion"]['states'].length) {
+							
+							alert('motion finished');
+							break;
+						}
+
+						const leftAnimStates = jsonObj["mixamorigLeftUpLeg.quaternion"]['states'][animationIndx];
+						const rightAnimStates = jsonObj["mixamorigRightUpLeg.quaternion"]['states'][animationIndx];
+
+						const leftDeviation = leftThighOrientation.angleTo(new Vector3(leftAnimStates.x, leftAnimStates.y, leftAnimStates.z));
+						const rightDeviation = rightThighOrientation.angleTo(new Vector3(rightAnimStates.x, rightAnimStates.y, rightAnimStates.z));
+
+						if (leftDeviation < threshold && rightDeviation < threshold) {
+
+							applyTransfer(parts, jsonObj, animationIndx);
+
+							animationIndx += 1;
+						}
+
+						await sleep(30);
+					}
+				})();
 		
-			// apply this matrix to restore vector to original basis
-			const matrix = getBasisFromPose(data);
-
-			const leftThighOrientation = posePointsToVector(data[POSE_LANDMARKS['RIGHT_KNEE']], data[POSE_LANDMARKS['RIGHT_HIP']]);
-			const rightThighOrientation = posePointsToVector(data[POSE_LANDMARKS['LEFT_KNEE']], data[POSE_LANDMARKS['LEFT_HIP']]);
-
-			leftThighOrientation.applyMatrix4(matrix);
-			rightThighOrientation.applyMatrix4(matrix);
-
-			leftThighTrack.push(leftThighOrientation);
-			rightThighTrack.push(rightThighOrientation);
-		}
-
-		console.log(leftThighTrack);
-		console.log(rightThighTrack);
+				// console.log(leftThighTrack);
+				// console.log(rightThighTrack);
+			}
+		);
 	}
 
 	function getBasisFromPose(poseDataFrame) {
