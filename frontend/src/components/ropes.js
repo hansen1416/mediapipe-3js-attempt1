@@ -3,6 +3,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
+export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
 	if (!constraints || !successCallback || !errorCallback) {
@@ -34,12 +36,28 @@ export function radiansToDegrees(radian) {
 // 	];
 // }
 
-export function posePointsToVector(a, b) {
+export function posePointsToVector(a, b, norm=true) {
+	let v;
+	
 	if (a[0]) {
-		return new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]).normalize();
+		v = new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 	} else {
-		return new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z).normalize();
+		v = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
+
+	return norm ? v.normalize() : v;
+}
+
+export function middlePosition(a, b, norm=true) {
+	let v;
+
+	if (a[0]) {
+		v = new THREE.Vector3((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+	} else {
+		v = new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+	}
+
+	return norm ? v.normalize() : v;
 }
 
 export function posePositionToVector(a, b) {
@@ -67,13 +85,6 @@ export function crossProduct(a, b) {
 	];
 }
 
-export function middlePosition(a, b) {
-	return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
-}
-
-export function vectorFromPointsMinus(a, b) {
-	return new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-}
 
 export function rotationMatrix(a, b) {
 	const c = normalizeVector(crossProduct(a, b));
