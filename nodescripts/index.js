@@ -1,6 +1,12 @@
-const THREE = require('three')
+const THREE = require('three');
 const fs = require('fs');
-const { exit } = require('process');
+const path = require("path");
+
+const frontend_public = path.join('../frontend/public')
+
+console.log(frontend_public)
+
+
 
 
 fs.readdirSync('./animations').map((filename) => {
