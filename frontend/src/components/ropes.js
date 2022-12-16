@@ -455,6 +455,39 @@ export function bvhToQuaternion(x, y, z) {
 	);
 }
 
+// function getAnimationState(animationTracks, inheritGraph, upVectors) {
+// 	for (let [name, tracks] of Object.entries(animationTracks)) {
+
+// 		if (tracks['type'] !== 'quaternion') {
+// 			continue;
+// 		}
+
+// 		const states = []
+
+// 		for (let i in tracks['quaternions']) {
+
+// 			const v = upVectors[name].clone();
+
+// 			for (let p = inheritGraph[name].length-1; p >= 0; p--) {
+// 				const parent_name = inheritGraph[name][p];
+
+// 				v.applyQuaternion(animationTracks[parent_name]['quaternions'][i]);
+// 			}
+
+// 			v.applyQuaternion(tracks['quaternions'][i]);
+
+// 			states.push(v);
+// 		}
+
+// 		// console.log(name, tracks);
+
+// 		// console.log(states);
+
+// 		tracks['states'] = states
+// 	}
+// }
+
+
 // export function worldPointFromScreenPoint(screenPoint, camera) {
 // 	let worldPoint = new THREE.Vector3();
 // 	worldPoint.x = screenPoint.x;

@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { Quaternion, Vector3, Matrix4 } from "three";
+import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import { sleep, loadFBX, loadObj, traverseModel, modelInheritGraph, getUpVectors, middlePosition, posePointsToVector } from "./ropes";
-// import { TraverseModelNoChild } from "./ropes";
-
 import { poseArr } from "./BicycleCrunchPose";
 
 export default function MotionMaker(props) {
@@ -190,10 +189,8 @@ export default function MotionMaker(props) {
 						// break;
 					}
 
-					// todo, save this animation to json file
-					// console.log(animation, tracks);
-
-					break;
+					// todo, use API to save this animation to json file
+					console.log(tracks);
 				}
 			})();
 
@@ -241,38 +238,58 @@ export default function MotionMaker(props) {
 		// return new Quaternion().setFromRotationMatrix(matrix);
 	}
 
+	function syncAnimation(poseData) {
 
-	// function getAnimationState(animationTracks, inheritGraph, upVectors) {
-	// 	for (let [name, tracks] of Object.entries(animationTracks)) {
+		for (let i in poseData) {
+			for (let j in poseData[i]) {
+				poseData[i][j][0] *= -1;
+				poseData[i][j][1] *= -1;
+				poseData[i][j][2] *= -1;
+			}
+		}
 
-	// 		if (tracks['type'] !== 'quaternion') {
-	// 			continue;
-	// 		}
+		const leftThighTrack = [];
+		const rightThighTrack = [];
 
-	// 		const states = []
+		for (let indx in poseData) {
+			const data = poseData[indx];
+		
+			// apply this matrix to restore vector to original basis
+			const matrix = getBasisFromPose(data);
 
-	// 		for (let i in tracks['quaternions']) {
+			const leftThighOrientation = posePointsToVector(data[POSE_LANDMARKS['RIGHT_KNEE']], data[POSE_LANDMARKS['RIGHT_HIP']]);
+			const rightThighOrientation = posePointsToVector(data[POSE_LANDMARKS['LEFT_KNEE']], data[POSE_LANDMARKS['LEFT_HIP']]);
 
-	// 			const v = upVectors[name].clone();
+			leftThighOrientation.applyMatrix4(matrix);
+			rightThighOrientation.applyMatrix4(matrix);
 
-	// 			for (let p = inheritGraph[name].length-1; p >= 0; p--) {
-	// 				const parent_name = inheritGraph[name][p];
+			leftThighTrack.push(leftThighOrientation);
+			rightThighTrack.push(rightThighOrientation);
+		}
 
-	// 				v.applyQuaternion(animationTracks[parent_name]['quaternions'][i]);
-	// 			}
+		console.log(leftThighTrack);
+		console.log(rightThighTrack);
+	}
 
-	// 			v.applyQuaternion(tracks['quaternions'][i]);
+	function getBasisFromPose(poseDataFrame) {
+		const rightshoulder = new Vector3(...poseDataFrame[POSE_LANDMARKS['LEFT_SHOULDER']]).normalize();
+		const leftshoulder = new Vector3(...poseDataFrame[POSE_LANDMARKS['RIGHT_SHOULDER']]).normalize();
 
-	// 			states.push(v);
-	// 		}
+		const righthip = new Vector3(...poseDataFrame[POSE_LANDMARKS['LEFT_HIP']]).normalize();
+		const lefthip = new Vector3(...poseDataFrame[POSE_LANDMARKS['RIGHT_HIP']]).normalize();
 
-	// 		// console.log(name, tracks);
+		const a = middlePosition(leftshoulder, rightshoulder, false);
+		const b = middlePosition(lefthip, righthip, false);
 
-	// 		// console.log(states);
+		const y_basis = posePointsToVector(a, b, false).normalize();
+		const x_basis = posePointsToVector(lefthip, b, false).normalize();
+		const z_basis = new Vector3().crossVectors(x_basis, y_basis).normalize();
 
-	// 		tracks['states'] = states
-	// 	}
-	// }
+		// console.log(x_basis, y_basis, z_basis);
+
+		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+	}
+
 
 	return (
 		<div>
@@ -284,7 +301,9 @@ export default function MotionMaker(props) {
 				>
 					action1
 				</button>
-				<button onClick={() => {}}>action2</button>
+				<button onClick={() => {
+					syncAnimation(poseArr);
+				}}>action2</button>
 				<button onClick={() => {}}>BicycleCrunch</button>
 			</div>
 		</div>
