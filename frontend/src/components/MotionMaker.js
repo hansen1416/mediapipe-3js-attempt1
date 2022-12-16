@@ -186,8 +186,11 @@ export default function MotionMaker(props) {
 						}
 
 						await sleep(30);
+
+						// break;
 					}
 
+					// todo, save this animation to json file
 					// console.log(animation, tracks);
 
 					break;
