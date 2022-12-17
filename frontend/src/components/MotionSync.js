@@ -120,21 +120,46 @@ export default function MotionSync(props) {
 		// draw(data);
 
 		draw1(results);
+
+		if (results.poseWorldLandmarks) {
+			const data = results.poseWorldLandmarks;
+
+			const basisMatrix = getBasisFromPose(data);
+
+			const leftArmOrientation = posePointsToVector(
+				data[POSE_LANDMARKS["RIGHT_ELBOW"]],
+				data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+			);
+			const rightArmOrientation = posePointsToVector(
+				data[POSE_LANDMARKS["LEFT_ELBOW"]],
+				data[POSE_LANDMARKS["LEFT_SHOULDER"]]
+			);
+
+			console.log(leftArmOrientation, rightArmOrientation);
+		}
 	}
 
 	function getBasisFromPose(poseDataFrame) {
 		const rightshoulder = new Vector3(
-			...poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]]
+			poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]].x,
+			poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]].y,
+			poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]].z
 		).normalize();
 		const leftshoulder = new Vector3(
-			...poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+			poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]].x,
+			poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]].y,
+			poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]].z
 		).normalize();
 
 		const righthip = new Vector3(
-			...poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]]
+			poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]].x,
+			poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]].y,
+			poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]].z
 		).normalize();
 		const lefthip = new Vector3(
-			...poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]]
+			poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]].x,
+			poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]].y,
+			poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]].x
 		).normalize();
 
 		const a = middlePosition(leftshoulder, rightshoulder, false);
@@ -146,7 +171,7 @@ export default function MotionSync(props) {
 			.crossVectors(x_basis, y_basis)
 			.normalize();
 
-		// console.log(x_basis, y_basis, z_basis);
+		console.log(x_basis, y_basis, z_basis);
 
 		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
 	}
