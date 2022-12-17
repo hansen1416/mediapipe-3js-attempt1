@@ -23,15 +23,19 @@ export default function FBXPlayer(props) {
 		const modelPromise = loadFBX(modelpath);
 
 		const animations = [
+			"AirSquat",
 			"BicycleCrunch",
 			"Capoeira",
+			"Clapping",
 			"HipHopDancing",
 			"JumpingJacks",
 			"KettlebellSwing",
+			"PushUp",
 			"Situps",
 			"SitupToIdle",
 			"Snatch",
 			"StandingUp",
+			"Waving",
 		];
 		const animationsPromises = [];
 
@@ -47,9 +51,11 @@ export default function FBXPlayer(props) {
 			(values) => {
 				const [model] = values;
 
-				// console.log(initMatrix.current);
-
-				// console.log(initMatrix);
+				// for (let i in model.animations) {
+				// 	if (model.animations[i]["tracks"].length) {
+				// 		console.log(model.animations[i].toJSON());
+				// 	}
+				// }
 
 				figure.current = model;
 
