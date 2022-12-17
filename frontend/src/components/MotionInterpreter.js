@@ -11,10 +11,11 @@ import {
 	getUpVectors,
 	middlePosition,
 	posePointsToVector,
+	applyTransfer,
 } from "./ropes";
 import { poseArr } from "./BicycleCrunchPose";
 
-export default function MotionMaker(props) {
+export default function MotionInterpreter(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const threshold = MathUtils.degToRad(30);
@@ -34,41 +35,6 @@ export default function MotionMaker(props) {
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
-	}
-
-	function applyTransfer(model, animation, indx) {
-		for (let item of Object.values(animation)) {
-			const item_name = item["name"].split(".")[0];
-
-			if (item["type"] === "vector") {
-				if (indx < item["vectors"].length) {
-					model[item_name].position.set(
-						item["vectors"][indx].x,
-						item["vectors"][indx].y,
-						item["vectors"][indx].z
-					);
-				} else {
-					model[item_name].position.set(
-						item["vectors"][item["vectors"].length - 1].x,
-						item["vectors"][item["vectors"].length - 1].y,
-						item["vectors"][item["vectors"].length - 1].z
-					);
-				}
-			}
-
-			if (item["type"] === "quaternion") {
-				let q =
-					indx < item["quaternions"].length
-						? item["quaternions"][indx]
-						: item["quaternions"][item["quaternions"].length - 1];
-
-				if (!(q instanceof Quaternion)) {
-					q = new Quaternion(q._x, q._y, q._z, q._w);
-				}
-
-				model[item_name].setRotationFromQuaternion(q);
-			}
-		}
 	}
 
 	/**
@@ -367,7 +333,6 @@ export default function MotionMaker(props) {
 				>
 					action2
 				</button>
-				<button onClick={() => {}}>BicycleCrunch</button>
 			</div>
 		</div>
 	);

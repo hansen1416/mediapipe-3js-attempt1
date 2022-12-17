@@ -2,8 +2,9 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
+import { Quaternion } from "three";
 
-export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
@@ -36,9 +37,9 @@ export function radiansToDegrees(radian) {
 // 	];
 // }
 
-export function posePointsToVector(a, b, norm=true) {
+export function posePointsToVector(a, b, norm = true) {
 	let v;
-	
+
 	if (a[0]) {
 		v = new THREE.Vector3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 	} else {
@@ -48,13 +49,21 @@ export function posePointsToVector(a, b, norm=true) {
 	return norm ? v.normalize() : v;
 }
 
-export function middlePosition(a, b, norm=true) {
+export function middlePosition(a, b, norm = true) {
 	let v;
 
 	if (a[0]) {
-		v = new THREE.Vector3((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+		v = new THREE.Vector3(
+			(a[0] + b[0]) / 2,
+			(a[1] + b[1]) / 2,
+			(a[2] + b[2]) / 2
+		);
 	} else {
-		v = new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+		v = new THREE.Vector3(
+			(a.x + b.x) / 2,
+			(a.y + b.y) / 2,
+			(a.z + b.z) / 2
+		);
 	}
 
 	return norm ? v.normalize() : v;
@@ -84,7 +93,6 @@ export function crossProduct(a, b) {
 		a[0] * b[1] - a[1] * b[0],
 	];
 }
-
 
 export function rotationMatrix(a, b) {
 	const c = normalizeVector(crossProduct(a, b));
@@ -163,15 +171,15 @@ export function getUpVectors(model, bodyParts) {
 
 /**
  * a grpah of all parent objects
- * @param {*} model 
- * @param {*} bodyParts 
+ * @param {*} model
+ * @param {*} bodyParts
  */
 export function modelInheritGraph(model, bodyParts) {
 	if (model && model.isBone) {
-
 		if (model.parent) {
-
-			const raw = [model.parent.name].concat(bodyParts[model.parent.name]);
+			const raw = [model.parent.name].concat(
+				bodyParts[model.parent.name]
+			);
 
 			const tree = [];
 
@@ -185,7 +193,7 @@ export function modelInheritGraph(model, bodyParts) {
 
 			bodyParts[model.name] = tree;
 		} else {
-			bodyParts[model.name] = []
+			bodyParts[model.name] = [];
 		}
 	}
 	// console.log(model, model.name, model.matrix);
@@ -431,6 +439,48 @@ export function unitline(a, b, color = 0xffffff) {
 }
 
 /**
+ * read data from animations
+ * munnually assign translation and rotation to model
+ * @param {*} model
+ * @param {*} animation
+ * @param {*} indx
+ */
+export function applyTransfer(model, animation, indx) {
+	for (let item of Object.values(animation)) {
+		const item_name = item["name"].split(".")[0];
+
+		if (item["type"] === "vector") {
+			if (indx < item["vectors"].length) {
+				model[item_name].position.set(
+					item["vectors"][indx].x,
+					item["vectors"][indx].y,
+					item["vectors"][indx].z
+				);
+			} else {
+				model[item_name].position.set(
+					item["vectors"][item["vectors"].length - 1].x,
+					item["vectors"][item["vectors"].length - 1].y,
+					item["vectors"][item["vectors"].length - 1].z
+				);
+			}
+		}
+
+		if (item["type"] === "quaternion") {
+			let q =
+				indx < item["quaternions"].length
+					? item["quaternions"][indx]
+					: item["quaternions"][item["quaternions"].length - 1];
+
+			if (!(q instanceof Quaternion)) {
+				q = new Quaternion(q._x, q._y, q._z, q._w);
+			}
+
+			model[item_name].setRotationFromQuaternion(q);
+		}
+	}
+}
+
+/**
  * blender uses right hand coordinate system with the
  * Z axis pointing upwards.
  * Y axis pointing backwards.
@@ -486,7 +536,6 @@ export function bvhToQuaternion(x, y, z) {
 // 		tracks['states'] = states
 // 	}
 // }
-
 
 // export function worldPointFromScreenPoint(screenPoint, camera) {
 // 	let worldPoint = new THREE.Vector3();

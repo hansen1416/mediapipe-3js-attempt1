@@ -5,9 +5,10 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useLocation } from "react-router-dom";
 
 import FBXPlayer from "../components/FBXPlayer";
-import MotionMaker from "../components/MotionMaker";
 import FBXTunning from "../components/FBXTunning";
 import MotionCompare from "../components/MotionCompare";
+import MotionInterpreter from "../components/MotionInterpreter";
+import MotionSync from "../components/MotionSync";
 
 export default function ThreeJsScene() {
 	const canvasRef = useRef(null);
@@ -87,8 +88,8 @@ export default function ThreeJsScene() {
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-			{location.pathname === "/motionsync" && (
-				<MotionMaker
+			{location.pathname === "/motioninterpreter" && (
+				<MotionInterpreter
 					scene={scene}
 					camera={camera}
 					renderer={renderer}
@@ -113,6 +114,14 @@ export default function ThreeJsScene() {
 			)}
 			{location.pathname === "/motioncompare" && (
 				<MotionCompare
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
+			{location.pathname === "/motionsync" && (
+				<MotionSync
 					scene={scene}
 					camera={camera}
 					renderer={renderer}

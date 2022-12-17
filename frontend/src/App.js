@@ -49,10 +49,15 @@ function App() {
 						<Link to={`/fbxtunning`}>FBX Tunning</Link>
 					</li>
 					<li>
-						<Link to={`/motionsync`}>Motion Sync</Link>
+						<Link to={`/motioncompare`}>Motion Compare</Link>
 					</li>
 					<li>
-						<Link to={`/motioncompare`}>Motion Compare</Link>
+						<Link to={`/motioninterpreter`}>
+							Motion interpreter
+						</Link>
+					</li>
+					<li>
+						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
 				</ul>
 			</nav>
