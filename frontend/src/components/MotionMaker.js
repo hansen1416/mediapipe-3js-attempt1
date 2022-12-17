@@ -2,7 +2,16 @@ import { useEffect } from "react";
 import { Quaternion, Vector3, Matrix4, MathUtils } from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
-import { sleep, loadFBX, loadObj, traverseModel, modelInheritGraph, getUpVectors, middlePosition, posePointsToVector } from "./ropes";
+import {
+	sleep,
+	loadFBX,
+	loadObj,
+	traverseModel,
+	modelInheritGraph,
+	getUpVectors,
+	middlePosition,
+	posePointsToVector,
+} from "./ropes";
 import { poseArr } from "./BicycleCrunchPose";
 
 export default function MotionMaker(props) {
@@ -19,13 +28,11 @@ export default function MotionMaker(props) {
 
 	const threshold = MathUtils.degToRad(30);
 
-
 	useEffect(() => {
-		
 		setTimeout(() => {
 			animate();
 		}, 0);
-		
+
 		// eslint-disable-next-line
 	}, []);
 
@@ -46,15 +53,11 @@ export default function MotionMaker(props) {
 	// }
 
 	function applyTransfer(model, animation, indx) {
-
 		for (let item of Object.values(animation)) {
-
 			const item_name = item["name"].split(".")[0];
 
 			if (item["type"] === "vector") {
-
 				if (indx < item["vectors"].length) {
-
 					model[item_name].position.set(
 						item["vectors"][indx].x,
 						item["vectors"][indx].y,
@@ -70,8 +73,10 @@ export default function MotionMaker(props) {
 			}
 
 			if (item["type"] === "quaternion") {
-
-				let q = indx < item["quaternions"].length ? item["quaternions"][indx] : item["quaternions"][item["quaternions"].length-1]
+				let q =
+					indx < item["quaternions"].length
+						? item["quaternions"][indx]
+						: item["quaternions"][item["quaternions"].length - 1];
 
 				if (!(q instanceof Quaternion)) {
 					q = new Quaternion(q._x, q._y, q._z, q._w);
@@ -83,13 +88,11 @@ export default function MotionMaker(props) {
 	}
 
 	function interpretAnimation() {
-
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
 			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
 			loadObj(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
 		]).then((results) => {
-
 			const [model] = results;
 
 			const animations = results.slice(1);
@@ -109,13 +112,11 @@ export default function MotionMaker(props) {
 
 			(async () => {
 				for (let animation of animations) {
-
 					let longestTrack = 0;
 					let tracks = {};
-					
+
 					// calculate quaternions and vectors for animation tracks
 					for (let item of animation["tracks"]) {
-
 						if (item["type"] === "quaternion") {
 							const quaternions = [];
 							for (let i = 0; i < item["values"].length; i += 4) {
@@ -152,21 +153,22 @@ export default function MotionMaker(props) {
 							item["vectors"] = vectors;
 						}
 
-						tracks[item['name']] = item;
+						tracks[item["name"]] = item;
 					}
 
 					// play the animation, observe the vectors of differnt parts
-					
+
 					for (let i = 0; i < longestTrack; i++) {
-						
 						applyTransfer(parts, tracks, i);
 
 						const matrix = getBasisFromModel(parts);
 
 						for (let name in parts) {
-
-							if (tracks[name + '.quaternion'] === undefined 
-							&& tracks[name + '.quaternion']['states'] === undefined) {
+							if (
+								tracks[name + ".quaternion"] === undefined &&
+								tracks[name + ".quaternion"]["states"] ===
+									undefined
+							) {
 								continue;
 							}
 
@@ -178,7 +180,7 @@ export default function MotionMaker(props) {
 							v.applyQuaternion(q);
 							v.applyMatrix4(matrix);
 
-							tracks[name + '.quaternion']['states'].push(v);
+							tracks[name + ".quaternion"]["states"].push(v);
 						}
 
 						await sleep(30);
@@ -200,25 +202,22 @@ export default function MotionMaker(props) {
 			// getAnimationState(BicycleCrunchTracks.current, bodyPartsGraph.current, bodyPartsUpVectors.current);
 
 			// console.log(BicycleCrunchTracks.current['mixamorigLeftArm']);
-
-			
 		});
 	}
 
 	function getBasisFromModel(modelParts) {
-
 		const leftshoulder = new Vector3();
 		const rightshoulder = new Vector3();
 
 		const lefthip = new Vector3();
 		const righthip = new Vector3();
 
-		modelParts['mixamorigLeftShoulder'].getWorldPosition(leftshoulder);
-		modelParts['mixamorigRightShoulder'].getWorldPosition(rightshoulder);
+		modelParts["mixamorigLeftShoulder"].getWorldPosition(leftshoulder);
+		modelParts["mixamorigRightShoulder"].getWorldPosition(rightshoulder);
 
-		modelParts['mixamorigLeftUpLeg'].getWorldPosition(lefthip);
-		modelParts['mixamorigRightUpLeg'].getWorldPosition(righthip);
-		
+		modelParts["mixamorigLeftUpLeg"].getWorldPosition(lefthip);
+		modelParts["mixamorigRightUpLeg"].getWorldPosition(righthip);
+
 		// console.log(leftshoulder, rightshoulder, lefthip, righthip);
 
 		const a = middlePosition(leftshoulder, rightshoulder, false);
@@ -228,7 +227,9 @@ export default function MotionMaker(props) {
 
 		const y_basis = posePointsToVector(a, b, false).normalize();
 		const x_basis = posePointsToVector(lefthip, b, false).normalize();
-		const z_basis = new Vector3().crossVectors(x_basis, y_basis).normalize();
+		const z_basis = new Vector3()
+			.crossVectors(x_basis, y_basis)
+			.normalize();
 
 		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
 
@@ -236,7 +237,6 @@ export default function MotionMaker(props) {
 	}
 
 	function syncAnimation(poseData) {
-
 		for (let i in poseData) {
 			for (let j in poseData[i]) {
 				poseData[i][j][0] *= -1;
@@ -250,87 +250,122 @@ export default function MotionMaker(props) {
 
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
-			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json")
-		]).then(
-			([model, jsonObj]) => {
+			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
+		]).then(([model, jsonObj]) => {
+			model.position.set(0, -100, 0);
 
-				model.position.set(0, -100, 0);
+			const parts = {};
 
-				const parts = {};
-	
-				// read attributes from the model
-				traverseModel(model, parts);
-	
-				scene.current.add(model);
+			// read attributes from the model
+			traverseModel(model, parts);
 
-				// return;
+			scene.current.add(model);
 
-				let animationIndx = 0;
+			// return;
 
-				(async () => {
-					for (let indx in poseData) {
-						const data = poseData[indx];
-					
-						// apply this matrix to restore vector to original basis
-						const matrix = getBasisFromPose(data);
-			
-						const leftThighOrientation = posePointsToVector(data[POSE_LANDMARKS['RIGHT_KNEE']], data[POSE_LANDMARKS['RIGHT_HIP']]);
-						const rightThighOrientation = posePointsToVector(data[POSE_LANDMARKS['LEFT_KNEE']], data[POSE_LANDMARKS['LEFT_HIP']]);
-			
-						leftThighOrientation.applyMatrix4(matrix);
-						rightThighOrientation.applyMatrix4(matrix);
-			
-						// leftThighTrack.push(leftThighOrientation);
-						// rightThighTrack.push(rightThighOrientation);
+			let animationIndx = 0;
 
-						if (animationIndx >= jsonObj["mixamorigLeftUpLeg.quaternion"]['states'].length) {
-							
-							alert('motion finished');
-							break;
-						}
+			(async () => {
+				for (let indx in poseData) {
+					const data = poseData[indx];
 
-						const leftAnimStates = jsonObj["mixamorigLeftUpLeg.quaternion"]['states'][animationIndx];
-						const rightAnimStates = jsonObj["mixamorigRightUpLeg.quaternion"]['states'][animationIndx];
+					// apply this matrix to restore vector to original basis
+					const matrix = getBasisFromPose(data);
 
-						const leftDeviation = leftThighOrientation.angleTo(new Vector3(leftAnimStates.x, leftAnimStates.y, leftAnimStates.z));
-						const rightDeviation = rightThighOrientation.angleTo(new Vector3(rightAnimStates.x, rightAnimStates.y, rightAnimStates.z));
+					const leftThighOrientation = posePointsToVector(
+						data[POSE_LANDMARKS["RIGHT_KNEE"]],
+						data[POSE_LANDMARKS["RIGHT_HIP"]]
+					);
+					const rightThighOrientation = posePointsToVector(
+						data[POSE_LANDMARKS["LEFT_KNEE"]],
+						data[POSE_LANDMARKS["LEFT_HIP"]]
+					);
 
-						if (leftDeviation < threshold && rightDeviation < threshold) {
+					leftThighOrientation.applyMatrix4(matrix);
+					rightThighOrientation.applyMatrix4(matrix);
 
-							applyTransfer(parts, jsonObj, animationIndx);
+					// leftThighTrack.push(leftThighOrientation);
+					// rightThighTrack.push(rightThighOrientation);
 
-							animationIndx += 1;
-						}
-
-						await sleep(30);
+					if (
+						animationIndx >=
+						jsonObj["mixamorigLeftUpLeg.quaternion"]["states"]
+							.length
+					) {
+						alert("motion finished");
+						break;
 					}
-				})();
-		
-				// console.log(leftThighTrack);
-				// console.log(rightThighTrack);
-			}
-		);
+
+					const leftAnimStates =
+						jsonObj["mixamorigLeftUpLeg.quaternion"]["states"][
+							animationIndx
+						];
+					const rightAnimStates =
+						jsonObj["mixamorigRightUpLeg.quaternion"]["states"][
+							animationIndx
+						];
+
+					const leftDeviation = leftThighOrientation.angleTo(
+						new Vector3(
+							leftAnimStates.x,
+							leftAnimStates.y,
+							leftAnimStates.z
+						)
+					);
+					const rightDeviation = rightThighOrientation.angleTo(
+						new Vector3(
+							rightAnimStates.x,
+							rightAnimStates.y,
+							rightAnimStates.z
+						)
+					);
+
+					if (
+						leftDeviation < threshold &&
+						rightDeviation < threshold
+					) {
+						applyTransfer(parts, jsonObj, animationIndx);
+
+						animationIndx += 1;
+					}
+
+					await sleep(30);
+				}
+			})();
+
+			// console.log(leftThighTrack);
+			// console.log(rightThighTrack);
+		});
 	}
 
 	function getBasisFromPose(poseDataFrame) {
-		const rightshoulder = new Vector3(...poseDataFrame[POSE_LANDMARKS['LEFT_SHOULDER']]).normalize();
-		const leftshoulder = new Vector3(...poseDataFrame[POSE_LANDMARKS['RIGHT_SHOULDER']]).normalize();
+		const rightshoulder = new Vector3(
+			...poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]]
+		).normalize();
+		const leftshoulder = new Vector3(
+			...poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+		).normalize();
 
-		const righthip = new Vector3(...poseDataFrame[POSE_LANDMARKS['LEFT_HIP']]).normalize();
-		const lefthip = new Vector3(...poseDataFrame[POSE_LANDMARKS['RIGHT_HIP']]).normalize();
+		const righthip = new Vector3(
+			...poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]]
+		).normalize();
+		const lefthip = new Vector3(
+			...poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]]
+		).normalize();
 
 		const a = middlePosition(leftshoulder, rightshoulder, false);
 		const b = middlePosition(lefthip, righthip, false);
 
 		const y_basis = posePointsToVector(a, b, false).normalize();
 		const x_basis = posePointsToVector(lefthip, b, false).normalize();
-		const z_basis = new Vector3().crossVectors(x_basis, y_basis).normalize();
+		const z_basis = new Vector3()
+			.crossVectors(x_basis, y_basis)
+			.normalize();
 
 		// console.log(x_basis, y_basis, z_basis);
 
 		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
 	}
-
 
 	return (
 		<div>
@@ -342,9 +377,13 @@ export default function MotionMaker(props) {
 				>
 					action1
 				</button>
-				<button onClick={() => {
-					syncAnimation(poseArr);
-				}}>action2</button>
+				<button
+					onClick={() => {
+						syncAnimation(poseArr);
+					}}
+				>
+					action2
+				</button>
 				<button onClick={() => {}}>BicycleCrunch</button>
 			</div>
 		</div>

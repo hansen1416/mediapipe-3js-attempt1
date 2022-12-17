@@ -16,13 +16,12 @@ export default function MotionCompare(props) {
 		loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json").then(
 			(jsonObj) => {
 				for (let name in jsonObj) {
-
 					if (name === "mixamorigLeftUpLeg.quaternion") {
-						plotAnimation(jsonObj[name]['states'], 0xff0000);
+						plotAnimation(jsonObj[name]["states"], 0xff0000);
 					}
 
 					if (name === "mixamorigRightUpLeg.quaternion") {
-						plotAnimation(jsonObj[name]['states'], 0x00ff00);
+						plotAnimation(jsonObj[name]["states"], 0x00ff00);
 					}
 				}
 			}
@@ -74,7 +73,6 @@ export default function MotionCompare(props) {
 
 	function plotAnimation(values, color) {
 		for (let v of values) {
-
 			// console.log(v);
 			const d = dots(color);
 
@@ -84,15 +82,13 @@ export default function MotionCompare(props) {
 		}
 	}
 
-
 	function plotPose() {
 		for (let i in leftThighTrack) {
-
 			const leftpos = leftThighTrack[i];
 			const rightpos = rightThighTrack[i];
 
 			console.log(leftpos);
-			
+
 			const dl = dots(0xff0000);
 
 			dl.position.set(leftpos.x, leftpos.y, leftpos.z);

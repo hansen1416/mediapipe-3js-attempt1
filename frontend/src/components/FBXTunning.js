@@ -11,18 +11,16 @@ export default function FBXTunning(props) {
 
 	const bodyParts = useRef({});
 
-	const [bodyPartsList, setBodyPartsList] = useState([])
+	const [bodyPartsList, setBodyPartsList] = useState([]);
 
 	useEffect(() => {
-		const modelpath =
-			process.env.PUBLIC_URL + "/fbx/XBot.fbx";
-			// process.env.PUBLIC_URL + "/fbx/YBot.fbx";
+		const modelpath = process.env.PUBLIC_URL + "/fbx/XBot.fbx";
+		// process.env.PUBLIC_URL + "/fbx/YBot.fbx";
 
 		loadFBX(modelpath).then((model) => {
-
 			figure.current = model;
 
-			console.log(model)
+			console.log(model);
 
 			figure.current.position.set(0, -100, 0);
 
@@ -34,7 +32,7 @@ export default function FBXTunning(props) {
 				tmplist.push(name);
 			}
 
-			setBodyPartsList(tmplist)
+			setBodyPartsList(tmplist);
 
 			scene.current.add(figure.current);
 
@@ -53,46 +51,48 @@ export default function FBXTunning(props) {
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	return <div>
-		<div className="right-sider">
-			{bodyPartsList.map((name, i1) => {
-				return (
-					<div key={i1}>
-						<span>{name}</span>
-						{["x", "y", "z"].map((axis, i2) => {
-							return (
-								<div key={i2} style={{ display: "flex" }}>
-									<div>{axis}</div>
-									<div style={{ flexGrow: 1 }}>
-										<Slider
-											defaultValue={0}
-											min={-3.14}
-											max={3.14}
-											step={0.01}
-											onChange={(v) => {
-												bodyParts.current[
-													name
-												].rotation[axis] = v;
-											}}
-										/>
+	return (
+		<div>
+			<div className="right-sider">
+				{bodyPartsList.map((name, i1) => {
+					return (
+						<div key={i1}>
+							<span>{name}</span>
+							{["x", "y", "z"].map((axis, i2) => {
+								return (
+									<div key={i2} style={{ display: "flex" }}>
+										<div>{axis}</div>
+										<div style={{ flexGrow: 1 }}>
+											<Slider
+												defaultValue={0}
+												min={-3.14}
+												max={3.14}
+												step={0.01}
+												onChange={(v) => {
+													bodyParts.current[
+														name
+													].rotation[axis] = v;
+												}}
+											/>
+										</div>
+										<div>
+											<button
+												onClick={() => {
+													bodyParts.current[
+														name
+													].rotation[axis] = 0;
+												}}
+											>
+												reset
+											</button>
+										</div>
 									</div>
-									<div>
-										<button
-											onClick={() => {
-												bodyParts.current[
-													name
-												].rotation[axis] = 0;
-											}}
-										>
-											reset
-										</button>
-									</div>
-								</div>
-							);
-						})}
-					</div>
-				);
-			})}
+								);
+							})}
+						</div>
+					);
+				})}
+			</div>
 		</div>
-	</div>;
+	);
 }
