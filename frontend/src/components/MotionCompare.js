@@ -53,6 +53,8 @@ export default function MotionCompare(props) {
 
 			animate();
 		}, 0);
+
+		// eslint-disable-next-line
 	}, []);
 
 	function animate() {

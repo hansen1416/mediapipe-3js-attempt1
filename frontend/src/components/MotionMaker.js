@@ -17,15 +17,6 @@ import { poseArr } from "./BicycleCrunchPose";
 export default function MotionMaker(props) {
 	const { scene, camera, renderer, controls } = props;
 
-	// const figure = useRef(null);
-
-	// const bodyParts = useRef({});
-	// const bodyPartsGraph = useRef({});
-	// const bodyPartsUpVectors = useRef({});
-
-	// const BicycleCrunchTracks = useRef({});
-	// const BicycleCrunchIndex = useRef(0);
-
 	const threshold = MathUtils.degToRad(30);
 
 	useEffect(() => {
@@ -44,13 +35,6 @@ export default function MotionMaker(props) {
 
 		renderer.current.render(scene.current, camera.current);
 	}
-
-	// function playAnimation() {
-
-	// 	applyTransfer(bodyParts.current, BicycleCrunchTracks.current, BicycleCrunchIndex.current);
-
-	// 	BicycleCrunchIndex.current += 1;
-	// }
 
 	function applyTransfer(model, animation, indx) {
 		for (let item of Object.values(animation)) {
@@ -87,11 +71,20 @@ export default function MotionMaker(props) {
 		}
 	}
 
+	/**
+	 * read the animation data
+	 * add `states` for each body part
+	 * `states` is the orientation of a body part at a time
+	 */
 	function interpretAnimation() {
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
-			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
+			// loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
+			// loadObj(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
+			// loadObj(process.env.PUBLIC_URL + "/json/AirSquat.json"),
+			// loadObj(process.env.PUBLIC_URL + "/json/Clapping.json"),
+			// loadObj(process.env.PUBLIC_URL + "/json/JumpingJacks.json"),
+			loadObj(process.env.PUBLIC_URL + "/json/Waving.json"),
 		]).then((results) => {
 			const [model] = results;
 
@@ -189,19 +182,9 @@ export default function MotionMaker(props) {
 					}
 
 					// todo, use API to save this animation to json file
-					console.log(tracks);
+					console.log(animation["name"], tracks);
 				}
 			})();
-
-			// for (let v of jsonObj["tracks"]) {
-			// 	const name = v['name'].split('.')[0];
-
-			// 	BicycleCrunchTracks.current[name] = v;
-			// }
-
-			// getAnimationState(BicycleCrunchTracks.current, bodyPartsGraph.current, bodyPartsUpVectors.current);
-
-			// console.log(BicycleCrunchTracks.current['mixamorigLeftArm']);
 		});
 	}
 
