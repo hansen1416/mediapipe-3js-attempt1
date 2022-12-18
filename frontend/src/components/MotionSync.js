@@ -15,6 +15,7 @@ import {
 	middlePosition,
 	posePointsToVector,
 	loadFBX,
+	loadObj,
 } from "./ropes";
 
 export default function MotionSync(props) {
@@ -28,6 +29,8 @@ export default function MotionSync(props) {
 
 	const figure = useRef(null);
 
+	const [animationTracks, setanimationTracks] = useState([]);
+
 	function animate() {
 		requestAnimationFrame(animate);
 
@@ -38,12 +41,26 @@ export default function MotionSync(props) {
 	}
 
 	useEffect(() => {
-		loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx").then((model) => {
+		Promise.all([
+			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
+			loadObj(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
+			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
+			loadObj(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
+			loadObj(process.env.PUBLIC_URL + "/json/JumpingJacksTracks.json"),
+			loadObj(
+				process.env.PUBLIC_URL + "/json/KettlebellSwingTracks.json"
+			),
+			loadObj(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
+		]).then((results) => {
+			const [model] = results;
+
 			figure.current = model;
 
 			figure.current.position.set(0, -100, 0);
 
 			scene.current.add(figure.current);
+
+			setanimationTracks(results.slice(1));
 		});
 
 		setTimeout(() => {
@@ -52,6 +69,10 @@ export default function MotionSync(props) {
 
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		console.log(animationTracks);
+	}, [animationTracks]);
 
 	function startCamera() {
 		setmediaCameraStatus(true);
@@ -115,11 +136,7 @@ export default function MotionSync(props) {
 	}
 
 	function onPoseResults(results) {
-		// const data = results.poseWorldLandmarks;
-		// const data = results.poseLandmarks;
-		// draw(data);
-
-		draw1(results);
+		draw(results);
 
 		if (results.poseWorldLandmarks) {
 			const data = results.poseWorldLandmarks;
@@ -135,7 +152,7 @@ export default function MotionSync(props) {
 				data[POSE_LANDMARKS["LEFT_SHOULDER"]]
 			);
 
-			console.log(leftArmOrientation, rightArmOrientation);
+			// console.log(leftArmOrientation, rightArmOrientation);
 		}
 	}
 
@@ -171,35 +188,12 @@ export default function MotionSync(props) {
 			.crossVectors(x_basis, y_basis)
 			.normalize();
 
-		console.log(x_basis, y_basis, z_basis);
+		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
 
 		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
 	}
 
-	function draw(landmarks) {
-		const canvasCtx = canvasRef.current.getContext("2d");
-		canvasCtx.save();
-		canvasCtx.clearRect(
-			0,
-			0,
-			canvasRef.current.width,
-			canvasRef.current.height
-		);
-
-		canvasCtx.globalCompositeOperation = "source-over";
-		drawConnectors(canvasCtx, landmarks, POSE_CONNECTIONS, {
-			color: "#00FF00",
-			lineWidth: 4,
-		});
-		drawLandmarks(canvasCtx, landmarks, {
-			color: "#FF0000",
-			lineWidth: 2,
-		});
-		//
-		canvasCtx.restore();
-	}
-
-	function draw1(results) {
+	function draw(results) {
 		const canvasCtx = canvasRef.current.getContext("2d");
 		// Draw the overlays.
 		canvasCtx.save();
