@@ -34,7 +34,7 @@ export default function MotionSync(props) {
 	const [animationTracks, setanimationTracks] = useState({});
 
 	const animationIndx = useRef(0);
-	const threshold = MathUtils.degToRad(30);
+	const threshold = MathUtils.degToRad(40);
 
 	function animate() {
 		requestAnimationFrame(animate);
@@ -66,7 +66,7 @@ export default function MotionSync(props) {
 				KettlebellSwing,
 				Waving,
 			]) => {
-				model.position.set(0, -100, 0);
+				model.position.set(0, -150, 0);
 
 				scene.current.add(model);
 
@@ -158,30 +158,29 @@ export default function MotionSync(props) {
 	function onPoseResults(results) {
 		draw(results);
 
-		const jsonObj = animationTracks["Waving"];
+		// const jsonObj = animationTracks["Waving"];
+		const jsonObj = animationTracks["KettlebellSwing"];
 
-		if (results.poseWorldLandmarks) {
-			const data = results.poseWorldLandmarks;
+		const data = results.poseWorldLandmarks;
+		// const data = results.poseLandmarks;
 
+		if (data) {
 			for (let i in data) {
 				data[i].x *= -1;
 				data[i].y *= -1;
 				data[i].z *= -1;
 			}
 
-			const basisMatrix = getBasisFromPose(data);
+			if (compareJumpJacks(data, jsonObj, animationIndx.current)) {
+				// if (compareWaving(data, jsonObj, animationIndx.current)) {
+				applyTransfer(
+					figureParts.current,
+					jsonObj,
+					animationIndx.current
+				);
 
-			const leftArmOrientation = posePointsToVector(
-				data[POSE_LANDMARKS["LEFT_ELBOW"]],
-				data[POSE_LANDMARKS["LEFT_SHOULDER"]]
-			);
-			const leftForeArmOrientation = posePointsToVector(
-				data[POSE_LANDMARKS["LEFT_WRIST"]],
-				data[POSE_LANDMARKS["LEFT_ELBOW"]]
-			);
-
-			leftArmOrientation.applyMatrix4(basisMatrix);
-			leftForeArmOrientation.applyMatrix4(basisMatrix);
+				animationIndx.current += 1;
+			}
 
 			if (
 				animationIndx.current >=
@@ -194,51 +193,91 @@ export default function MotionSync(props) {
 				return;
 			}
 
-			const rightArmStates =
-				jsonObj["mixamorigRightArm.quaternion"]["states"][
-					animationIndx.current
-				];
-			const rightForeArmStates =
-				jsonObj["mixamorigRightForeArm.quaternion"]["states"][
-					animationIndx.current
-				];
-
-			// console.log(rightArmStates, rightForeArmStates);
-
-			const leftArmDeviation = leftArmOrientation.angleTo(
-				new Vector3(
-					rightArmStates.x,
-					rightArmStates.y,
-					rightArmStates.z
-				)
-			);
-			const leftForeArmDeviation = leftForeArmOrientation.angleTo(
-				new Vector3(
-					rightForeArmStates.x,
-					rightForeArmStates.y,
-					rightForeArmStates.z
-				)
-			);
-
-			if (
-				leftArmDeviation < threshold &&
-				leftForeArmDeviation < threshold
-			) {
-				// console.log(jsonObj);
-
-				applyTransfer(
-					figureParts.current,
-					jsonObj,
-					animationIndx.current
-				);
-
-				animationIndx.current += 1;
-
-				console.log(animationIndx.current);
-			}
-
 			// console.log(leftArmDeviation, leftForeArmDeviation);
 		}
+	}
+
+	function compareJumpJacks(poseData, animationObj, animationIndex) {
+		const basisMatrix = getBasisFromPose(poseData);
+
+		const leftArmOrientation = posePointsToVector(
+			poseData[POSE_LANDMARKS["LEFT_ELBOW"]],
+			poseData[POSE_LANDMARKS["LEFT_SHOULDER"]]
+		);
+		// const leftForeArmOrientation = posePointsToVector(
+		// 	poseData[POSE_LANDMARKS["LEFT_WRIST"]],
+		// 	poseData[POSE_LANDMARKS["LEFT_ELBOW"]]
+		// );
+
+		leftArmOrientation.applyMatrix4(basisMatrix);
+		// leftForeArmOrientation.applyMatrix4(basisMatrix);
+
+		const rightArmStates =
+			animationObj["mixamorigRightArm.quaternion"]["states"][
+				animationIndex
+			];
+		// const rightForeArmStates =
+		// 	animationObj["mixamorigRightForeArm.quaternion"]["states"][
+		// 		animationIndex
+		// 	];
+
+		// console.log(rightArmStates, rightForeArmStates);
+
+		const leftArmDeviation = leftArmOrientation.angleTo(
+			new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
+		);
+		// const leftForeArmDeviation = leftForeArmOrientation.angleTo(
+		// 	new Vector3(
+		// 		rightForeArmStates.x,
+		// 		rightForeArmStates.y,
+		// 		rightForeArmStates.z
+		// 	)
+		// );
+
+		console.log(leftArmDeviation);
+
+		// return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
+		return leftArmDeviation < threshold;
+	}
+
+	function compareWaving(poseData, animationObj, animationIndex) {
+		const basisMatrix = getBasisFromPose(poseData);
+
+		const leftArmOrientation = posePointsToVector(
+			poseData[POSE_LANDMARKS["LEFT_ELBOW"]],
+			poseData[POSE_LANDMARKS["LEFT_SHOULDER"]]
+		);
+		const leftForeArmOrientation = posePointsToVector(
+			poseData[POSE_LANDMARKS["LEFT_WRIST"]],
+			poseData[POSE_LANDMARKS["LEFT_ELBOW"]]
+		);
+
+		leftArmOrientation.applyMatrix4(basisMatrix);
+		leftForeArmOrientation.applyMatrix4(basisMatrix);
+
+		const rightArmStates =
+			animationObj["mixamorigRightArm.quaternion"]["states"][
+				animationIndex
+			];
+		const rightForeArmStates =
+			animationObj["mixamorigRightForeArm.quaternion"]["states"][
+				animationIndex
+			];
+
+		// console.log(rightArmStates, rightForeArmStates);
+
+		const leftArmDeviation = leftArmOrientation.angleTo(
+			new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
+		);
+		const leftForeArmDeviation = leftForeArmOrientation.angleTo(
+			new Vector3(
+				rightForeArmStates.x,
+				rightForeArmStates.y,
+				rightForeArmStates.z
+			)
+		);
+
+		return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
 	}
 
 	function getBasisFromPose(poseDataFrame) {
