@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Vector3, Matrix4 } from "three";
+import { Vector3, Matrix4, MathUtils } from "three";
 import {
 	Pose,
 	POSE_LANDMARKS,
@@ -16,6 +16,8 @@ import {
 	posePointsToVector,
 	loadFBX,
 	loadObj,
+	traverseModel,
+	applyTransfer,
 } from "./ropes";
 
 export default function MotionSync(props) {
@@ -27,9 +29,12 @@ export default function MotionSync(props) {
 	const mediaCamera = useRef(null);
 	const [mediaCameraStatus, setmediaCameraStatus] = useState(false);
 
-	const figure = useRef(null);
+	const figureParts = useRef({});
 
-	const [animationTracks, setanimationTracks] = useState([]);
+	const [animationTracks, setanimationTracks] = useState({});
+
+	const animationIndx = useRef(0);
+	const threshold = MathUtils.degToRad(30);
 
 	function animate() {
 		requestAnimationFrame(animate);
@@ -51,17 +56,32 @@ export default function MotionSync(props) {
 				process.env.PUBLIC_URL + "/json/KettlebellSwingTracks.json"
 			),
 			loadObj(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
-		]).then((results) => {
-			const [model] = results;
+		]).then(
+			([
+				model,
+				AirSquat,
+				BicycleCrunch,
+				Clapping,
+				JumpingJacks,
+				KettlebellSwing,
+				Waving,
+			]) => {
+				model.position.set(0, -100, 0);
 
-			figure.current = model;
+				scene.current.add(model);
 
-			figure.current.position.set(0, -100, 0);
+				traverseModel(model, figureParts.current);
 
-			scene.current.add(figure.current);
-
-			setanimationTracks(results.slice(1));
-		});
+				setanimationTracks({
+					AirSquat,
+					BicycleCrunch,
+					Clapping,
+					JumpingJacks,
+					KettlebellSwing,
+					Waving,
+				});
+			}
+		);
 
 		setTimeout(() => {
 			animate();
@@ -70,9 +90,9 @@ export default function MotionSync(props) {
 		// eslint-disable-next-line
 	}, []);
 
-	useEffect(() => {
-		console.log(animationTracks);
-	}, [animationTracks]);
+	// useEffect(() => {
+	// 	console.log(animationTracks);
+	// }, [animationTracks]);
 
 	function startCamera() {
 		setmediaCameraStatus(true);
@@ -138,21 +158,86 @@ export default function MotionSync(props) {
 	function onPoseResults(results) {
 		draw(results);
 
+		const jsonObj = animationTracks["Waving"];
+
 		if (results.poseWorldLandmarks) {
 			const data = results.poseWorldLandmarks;
+
+			for (let i in data) {
+				data[i].x *= -1;
+				data[i].y *= -1;
+				data[i].z *= -1;
+			}
 
 			const basisMatrix = getBasisFromPose(data);
 
 			const leftArmOrientation = posePointsToVector(
-				data[POSE_LANDMARKS["RIGHT_ELBOW"]],
-				data[POSE_LANDMARKS["RIGHT_SHOULDER"]]
-			);
-			const rightArmOrientation = posePointsToVector(
 				data[POSE_LANDMARKS["LEFT_ELBOW"]],
 				data[POSE_LANDMARKS["LEFT_SHOULDER"]]
 			);
+			const leftForeArmOrientation = posePointsToVector(
+				data[POSE_LANDMARKS["LEFT_WRIST"]],
+				data[POSE_LANDMARKS["LEFT_ELBOW"]]
+			);
 
-			// console.log(leftArmOrientation, rightArmOrientation);
+			leftArmOrientation.applyMatrix4(basisMatrix);
+			leftForeArmOrientation.applyMatrix4(basisMatrix);
+
+			if (
+				animationIndx.current >=
+				jsonObj["mixamorigLeftArm.quaternion"]["states"].length
+			) {
+				stopCamera();
+
+				alert("motion finished");
+
+				return;
+			}
+
+			const rightArmStates =
+				jsonObj["mixamorigRightArm.quaternion"]["states"][
+					animationIndx.current
+				];
+			const rightForeArmStates =
+				jsonObj["mixamorigRightForeArm.quaternion"]["states"][
+					animationIndx.current
+				];
+
+			// console.log(rightArmStates, rightForeArmStates);
+
+			const leftArmDeviation = leftArmOrientation.angleTo(
+				new Vector3(
+					rightArmStates.x,
+					rightArmStates.y,
+					rightArmStates.z
+				)
+			);
+			const leftForeArmDeviation = leftForeArmOrientation.angleTo(
+				new Vector3(
+					rightForeArmStates.x,
+					rightForeArmStates.y,
+					rightForeArmStates.z
+				)
+			);
+
+			if (
+				leftArmDeviation < threshold &&
+				leftForeArmDeviation < threshold
+			) {
+				// console.log(jsonObj);
+
+				applyTransfer(
+					figureParts.current,
+					jsonObj,
+					animationIndx.current
+				);
+
+				animationIndx.current += 1;
+
+				console.log(animationIndx.current);
+			}
+
+			// console.log(leftArmDeviation, leftForeArmDeviation);
 		}
 	}
 
@@ -182,8 +267,8 @@ export default function MotionSync(props) {
 		const a = middlePosition(leftshoulder, rightshoulder, false);
 		const b = middlePosition(lefthip, righthip, false);
 
-		const y_basis = posePointsToVector(a, b, false).normalize();
-		const x_basis = posePointsToVector(lefthip, b, false).normalize();
+		const y_basis = posePointsToVector(a, b);
+		const x_basis = posePointsToVector(lefthip, b);
 		const z_basis = new Vector3()
 			.crossVectors(x_basis, y_basis)
 			.normalize();
