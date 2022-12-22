@@ -11,7 +11,11 @@ import {
 	applyTransfer,
 	startCamera,
 	drawPoseKeypoints,
+	getBasisFromPose,
+	BlazePoseKeypointsValues,
 } from "./ropes";
+
+// import { Pose } from "kalidokit";
 
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
@@ -29,12 +33,14 @@ export default function MotionSync(props) {
 
 	const figureParts = useRef({});
 
-	const [animationTracks, setanimationTracks] = useState({});
+	const animationTracks = useRef({});
 
 	const counter = useRef(-1);
 
-	// const animationIndx = useRef(0);
-	// const threshold = MathUtils.degToRad(40);
+	const animationIndx = useRef(0);
+	const threshold = MathUtils.degToRad(40);
+
+	const [motionRound, setmotionRound] = useState(0);
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -94,14 +100,16 @@ export default function MotionSync(props) {
 
 				traverseModel(model, figureParts.current);
 
-				setanimationTracks({
+				// console.log(figureParts.current);
+
+				animationTracks.current = {
 					AirSquat,
 					BicycleCrunch,
 					Clapping,
 					JumpingJacks,
 					KettlebellSwing,
 					Waving,
-				});
+				};
 			}
 		);
 
@@ -127,8 +135,42 @@ export default function MotionSync(props) {
 					// { flipHorizontal: false }
 					// timestamp
 				);
+
+				if (!poses || !poses[0] || !poses[0]["keypoints3D"]) {
+					return;
+				}
+
 				// console.log(poses);
-				drawPoseKeypoints(poses, canvasRef.current);
+
+				drawPoseKeypoints(poses[0]["keypoints3D"], canvasRef.current);
+
+				if (
+					compareWaving(
+						poses[0]["keypoints3D"],
+						animationTracks.current["Waving"],
+						animationIndx.current
+					)
+				) {
+					// if (compareWaving(data, jsonObj, animationIndx.current)) {
+					applyTransfer(
+						figureParts.current,
+						animationTracks.current["Waving"],
+						animationIndx.current
+					);
+
+					animationIndx.current += 1;
+				}
+
+				if (
+					animationIndx.current >=
+					animationTracks.current["Waving"][
+						"mixamorigLeftArm.quaternion"
+					]["states"].length
+				) {
+					setmotionRound(motionRound + 1);
+
+					animationIndx.current = 0;
+				}
 			})();
 		}
 
@@ -139,48 +181,6 @@ export default function MotionSync(props) {
 
 		renderer.current.render(scene.current, camera.current);
 	}
-
-	// function onPoseResults(results) {
-	// 	draw(results);
-
-	// 	// const jsonObj = animationTracks["Waving"];
-	// 	const jsonObj = animationTracks["KettlebellSwing"];
-
-	// 	const data = results.poseWorldLandmarks;
-	// 	// const data = results.poseLandmarks;
-
-	// 	if (data) {
-	// 		for (let i in data) {
-	// 			data[i].x *= -1;
-	// 			data[i].y *= -1;
-	// 			data[i].z *= -1;
-	// 		}
-
-	// 		if (compareJumpJacks(data, jsonObj, animationIndx.current)) {
-	// 			// if (compareWaving(data, jsonObj, animationIndx.current)) {
-	// 			applyTransfer(
-	// 				figureParts.current,
-	// 				jsonObj,
-	// 				animationIndx.current
-	// 			);
-
-	// 			animationIndx.current += 1;
-	// 		}
-
-	// 		if (
-	// 			animationIndx.current >=
-	// 			jsonObj["mixamorigLeftArm.quaternion"]["states"].length
-	// 		) {
-	// 			stopCamera();
-
-	// 			alert("motion finished");
-
-	// 			return;
-	// 		}
-
-	// 		// console.log(leftArmDeviation, leftForeArmDeviation);
-	// 	}
-	// }
 
 	// function compareJumpJacks(poseData, animationObj, animationIndex) {
 	// 	const basisMatrix = getBasisFromPose(poseData);
@@ -225,82 +225,45 @@ export default function MotionSync(props) {
 	// 	return leftArmDeviation < threshold;
 	// }
 
-	// function compareWaving(poseData, animationObj, animationIndex) {
-	// 	const basisMatrix = getBasisFromPose(poseData);
+	function compareWaving(poseData, animationObj, animationIndex) {
+		const basisMatrix = getBasisFromPose(poseData);
 
-	// 	const leftArmOrientation = posePointsToVector(
-	// 		poseData[POSE_LANDMARKS["LEFT_ELBOW"]],
-	// 		poseData[POSE_LANDMARKS["LEFT_SHOULDER"]]
-	// 	);
-	// 	const leftForeArmOrientation = posePointsToVector(
-	// 		poseData[POSE_LANDMARKS["LEFT_WRIST"]],
-	// 		poseData[POSE_LANDMARKS["LEFT_ELBOW"]]
-	// 	);
+		const leftArmOrientation = posePointsToVector(
+			poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]],
+			poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+		);
+		const leftForeArmOrientation = posePointsToVector(
+			poseData[BlazePoseKeypointsValues["LEFT_WRIST"]],
+			poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+		);
 
-	// 	leftArmOrientation.applyMatrix4(basisMatrix);
-	// 	leftForeArmOrientation.applyMatrix4(basisMatrix);
+		leftArmOrientation.applyMatrix4(basisMatrix);
+		leftForeArmOrientation.applyMatrix4(basisMatrix);
 
-	// 	const rightArmStates =
-	// 		animationObj["mixamorigRightArm.quaternion"]["states"][
-	// 			animationIndex
-	// 		];
-	// 	const rightForeArmStates =
-	// 		animationObj["mixamorigRightForeArm.quaternion"]["states"][
-	// 			animationIndex
-	// 		];
+		const rightArmStates =
+			animationObj["mixamorigRightArm.quaternion"]["states"][
+				animationIndex
+			];
+		const rightForeArmStates =
+			animationObj["mixamorigRightForeArm.quaternion"]["states"][
+				animationIndex
+			];
 
-	// 	// console.log(rightArmStates, rightForeArmStates);
+		// console.log(rightArmStates, rightForeArmStates);
 
-	// 	const leftArmDeviation = leftArmOrientation.angleTo(
-	// 		new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
-	// 	);
-	// 	const leftForeArmDeviation = leftForeArmOrientation.angleTo(
-	// 		new Vector3(
-	// 			rightForeArmStates.x,
-	// 			rightForeArmStates.y,
-	// 			rightForeArmStates.z
-	// 		)
-	// 	);
+		const leftArmDeviation = leftArmOrientation.angleTo(
+			new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
+		);
+		const leftForeArmDeviation = leftForeArmOrientation.angleTo(
+			new Vector3(
+				rightForeArmStates.x,
+				rightForeArmStates.y,
+				rightForeArmStates.z
+			)
+		);
 
-	// 	return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
-	// }
-
-	// function getBasisFromPose(poseDataFrame) {
-	// 	const rightshoulder = new Vector3(
-	// 		poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]].x,
-	// 		poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]].y,
-	// 		poseDataFrame[POSE_LANDMARKS["LEFT_SHOULDER"]].z
-	// 	).normalize();
-	// 	const leftshoulder = new Vector3(
-	// 		poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]].x,
-	// 		poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]].y,
-	// 		poseDataFrame[POSE_LANDMARKS["RIGHT_SHOULDER"]].z
-	// 	).normalize();
-
-	// 	const righthip = new Vector3(
-	// 		poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]].x,
-	// 		poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]].y,
-	// 		poseDataFrame[POSE_LANDMARKS["LEFT_HIP"]].z
-	// 	).normalize();
-	// 	const lefthip = new Vector3(
-	// 		poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]].x,
-	// 		poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]].y,
-	// 		poseDataFrame[POSE_LANDMARKS["RIGHT_HIP"]].x
-	// 	).normalize();
-
-	// 	const a = middlePosition(leftshoulder, rightshoulder, false);
-	// 	const b = middlePosition(lefthip, righthip, false);
-
-	// 	const y_basis = posePointsToVector(a, b);
-	// 	const x_basis = posePointsToVector(lefthip, b);
-	// 	const z_basis = new Vector3()
-	// 		.crossVectors(x_basis, y_basis)
-	// 		.normalize();
-
-	// 	// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
-
-	// 	return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
-	// }
+		return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
+	}
 
 	return (
 		<div>
@@ -323,6 +286,8 @@ export default function MotionSync(props) {
 					width="640px"
 					height="320px"
 				></video>
+
+				<div>{motionRound}</div>
 
 				<button
 					onClick={() => {

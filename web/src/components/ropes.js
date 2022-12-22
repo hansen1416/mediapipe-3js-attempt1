@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { Vector3, Matrix4 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
@@ -530,11 +531,7 @@ export function startCamera(videoElement) {
 	);
 }
 
-export function drawPoseKeypoints(poses, canvas) {
-	if (!poses || !poses[0] || !poses[0]["keypoints3D"]) {
-		return;
-	}
-
+export function drawPoseKeypoints(keypoints, canvas) {
 	const canvasCtx = canvas.getContext("2d");
 	// Draw the overlays.
 	// canvasCtx.save();
@@ -545,7 +542,7 @@ export function drawPoseKeypoints(poses, canvas) {
 	canvasCtx.lineWidth = 2;
 	canvasCtx.strokeStyle = "#ffffff";
 
-	const keypoints = poses[0]["keypoints3D"];
+	// const keypoints = poses[0]["keypoints3D"];
 
 	const visibleparts = {};
 
@@ -713,6 +710,122 @@ export function drawPoseKeypoints(poses, canvas) {
 	canvasCtx.stroke(); // Render the path
 }
 
+export const BlazePoseKeypoints = {
+	0: "NOSE",
+	1: "LEFT_EYE_INNER",
+	2: "LEFT_EYE",
+	3: "LEFT_EYE_OUTER",
+	4: "RIGHT_EYE_INNER",
+	5: "RIGHT_EYE",
+	6: "RIGHT_EYE_OUTER",
+	7: "LEFT_EAR",
+	8: "RIGHT_EAR",
+	9: "LEFT_RIGHT",
+	10: "RIGHT_LEFT",
+	11: "LEFT_SHOULDER",
+	12: "RIGHT_SHOULDER",
+	13: "LEFT_ELBOW",
+	14: "RIGHT_ELBOW",
+	15: "LEFT_WRIST",
+	16: "RIGHT_WRIST",
+	17: "LEFT_PINKY",
+	18: "RIGHT_PINKY",
+	19: "LEFT_INDEX",
+	20: "RIGHT_INDEX",
+	21: "LEFT_THUMB",
+	22: "RIGHT_THUMB",
+	23: "LEFT_HIP",
+	24: "RIGHT_HIP",
+	25: "LEFT_KNEE",
+	26: "RIGHT_KNEE",
+	27: "LEFT_ANKLE",
+	28: "RIGHT_ANKLE",
+	29: "LEFT_HEEL",
+	30: "RIGHT_HEEL",
+	31: "LEFT_FOOT_INDEX",
+	32: "RIGHT_FOOT_INDEX",
+};
+
+export const BlazePoseKeypointsValues = {
+	NOSE: 0,
+	LEFT_EYE_INNER: 1,
+	LEFT_EYE: 2,
+	LEFT_EYE_OUTER: 3,
+	RIGHT_EYE_INNER: 4,
+	RIGHT_EYE: 5,
+	RIGHT_EYE_OUTER: 6,
+	LEFT_EAR: 7,
+	RIGHT_EAR: 8,
+	LEFT_RIGHT: 9,
+	RIGHT_LEFT: 10,
+	LEFT_SHOULDER: 11,
+	RIGHT_SHOULDER: 12,
+	LEFT_ELBOW: 13,
+	RIGHT_ELBOW: 14,
+	LEFT_WRIST: 15,
+	RIGHT_WRIST: 16,
+	LEFT_PINKY: 17,
+	RIGHT_PINKY: 18,
+	LEFT_INDEX: 19,
+	RIGHT_INDEX: 20,
+	LEFT_THUMB: 21,
+	RIGHT_THUMB: 22,
+	LEFT_HIP: 23,
+	RIGHT_HIP: 24,
+	LEFT_KNEE: 25,
+	RIGHT_KNEE: 26,
+	LEFT_ANKLE: 27,
+	RIGHT_ANKLE: 28,
+	LEFT_HEEL: 29,
+	RIGHT_HEEL: 30,
+	LEFT_FOOT_INDEX: 31,
+	RIGHT_FOOT_INDEX: 32,
+};
+
+export function getBasisFromPose(poseData) {
+	if (
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].score < 0.5 ||
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].score < 0.5 ||
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].score < 0.5 ||
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].score < 0.5
+	) {
+		return new Matrix4();
+	}
+
+	const rightshoulder = new Vector3(
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].x,
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].y,
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].z
+	).normalize();
+	const leftshoulder = new Vector3(
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].x,
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].y,
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].z
+	).normalize();
+
+	const righthip = new Vector3(
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].x,
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].y,
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].z
+	).normalize();
+	const lefthip = new Vector3(
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].x,
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].y,
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].x
+	).normalize();
+
+	const a = middlePosition(leftshoulder, rightshoulder, false);
+	const b = middlePosition(lefthip, righthip, false);
+
+	const y_basis = posePointsToVector(a, b);
+	const x_basis = posePointsToVector(lefthip, b);
+	const z_basis = new Vector3().crossVectors(x_basis, y_basis).normalize();
+
+	// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
+
+	return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+}
+
 // function getAnimationState(animationTracks, inheritGraph, upVectors) {
 // 	for (let [name, tracks] of Object.entries(animationTracks)) {
 
@@ -765,44 +878,6 @@ export function drawPoseKeypoints(poses, canvas) {
 // 	// Get 3d point
 // 	let my3dPosition = worldPointFromScreenPoint(viewportDown, mySceneCamera);
 // }
-
-/**
- * POSE_LANDMARKS
- * 
-0: "NOSE",
-1: "LEFT_EYE_INNER",
-2: "LEFT_EYE",
-3: "LEFT_EYE_OUTER",
-4: "RIGHT_EYE_INNER",
-5: "RIGHT_EYE",
-6: "RIGHT_EYE_OUTER",
-7: "LEFT_EAR",
-8: "RIGHT_EAR",
-9: "LEFT_RIGHT",
-10: "RIGHT_LEFT",
-11: "LEFT_SHOULDER",
-12: "RIGHT_SHOULDER",
-13: "LEFT_ELBOW",
-14: "RIGHT_ELBOW",
-15: "LEFT_WRIST",
-16: "RIGHT_WRIST",
-17: "LEFT_PINKY",
-18: "RIGHT_PINKY",
-19: "LEFT_INDEX",
-20: "RIGHT_INDEX",
-21: "LEFT_THUMB",
-22: "RIGHT_THUMB",
-23: "LEFT_HIP",
-24: "RIGHT_HIP",
-25: "LEFT_KNEE",
-26: "RIGHT_KNEE",
-27: "LEFT_ANKLE",
-28: "RIGHT_ANKLE",
-29: "LEFT_HEEL",
-30: "RIGHT_HEEL",
-31: "LEFT_FOOT_INDEX",
-32: "RIGHT_FOOT_INDEX"
- */
 
 /**
  * HAND_LANDMARK
