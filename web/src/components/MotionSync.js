@@ -41,6 +41,7 @@ export default function MotionSync(props) {
 	const threshold = MathUtils.degToRad(40);
 
 	const [motionRound, setmotionRound] = useState(0);
+	const motionRoundRef = useRef(motionRound);
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -167,7 +168,7 @@ export default function MotionSync(props) {
 						"mixamorigLeftArm.quaternion"
 					]["states"].length
 				) {
-					setmotionRound(motionRound + 1);
+					setmotionRound(motionRoundRef.current + 1);
 
 					animationIndx.current = 0;
 				}
@@ -181,6 +182,10 @@ export default function MotionSync(props) {
 
 		renderer.current.render(scene.current, camera.current);
 	}
+
+	useEffect(() => {
+		motionRoundRef.current = motionRound;
+	}, [motionRound]);
 
 	// function compareJumpJacks(poseData, animationObj, animationIndex) {
 	// 	const basisMatrix = getBasisFromPose(poseData);
@@ -226,6 +231,12 @@ export default function MotionSync(props) {
 	// }
 
 	function compareWaving(poseData, animationObj, animationIndex) {
+		for (let i in poseData) {
+			poseData[i].x *= -1;
+			poseData[i].y *= -1;
+			poseData[i].z *= -1;
+		}
+
 		const basisMatrix = getBasisFromPose(poseData);
 
 		const leftArmOrientation = posePointsToVector(
@@ -261,6 +272,8 @@ export default function MotionSync(props) {
 				rightForeArmStates.z
 			)
 		);
+
+		// console.log(leftArmDeviation, leftForeArmDeviation);
 
 		return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
 	}
