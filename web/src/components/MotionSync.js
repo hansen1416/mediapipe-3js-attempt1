@@ -23,7 +23,7 @@ import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
 
 import SubThreeJsScene from "./SubThreeJsScene";
-import { Group } from "three";
+import { Group, Vector3 } from "three";
 
 export default function MotionSync(props) {
 	const { scene, camera, renderer, controls } = props;
@@ -157,6 +157,18 @@ export default function MotionSync(props) {
 					v["z"] *= -1;
 				}
 
+				const basisMatrix = getBasisFromPose(keypoints3D);
+
+				for (let k of keypoints3D) {
+					const t = new Vector3(k.x, k.y, k.z);
+
+					t.applyMatrix4(basisMatrix);
+
+					k.x = t.x;
+					k.y = t.y;
+					k.z = t.z;
+				}
+
 				const g = drawPoseKeypoints(keypoints3D);
 
 				g.scale.set(8, 8, 8);
@@ -164,7 +176,7 @@ export default function MotionSync(props) {
 				setcapturedPose(g);
 
 				// draw motion tracks
-				if (choosedAnimation.current) {
+				if (choosedAnimation.current && false) {
 					const g = new Group();
 
 					const parts = [
@@ -187,17 +199,40 @@ export default function MotionSync(props) {
 
 					const basisMatrix = getBasisFromPose(keypoints3D);
 
-					const leftArmOrientation = posePointsToVector(
-						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]],
-						keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-					);
-					const leftForeArmOrientation = posePointsToVector(
-						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]],
-						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+					const left_elbow = new Vector3(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].x,
+						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].y,
+						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].z
 					);
 
-					leftArmOrientation.applyMatrix4(basisMatrix);
-					leftForeArmOrientation.applyMatrix4(basisMatrix);
+					const left_shoulder = new Vector3(
+						keypoints3D[
+							BlazePoseKeypointsValues["LEFT_SHOULDER"]
+						].x,
+						keypoints3D[
+							BlazePoseKeypointsValues["LEFT_SHOULDER"]
+						].y,
+						keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]].z
+					);
+
+					const left_wrist = new Vector3(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].x,
+						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].y,
+						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].z
+					);
+
+					left_elbow.applyMatrix4(basisMatrix);
+					left_shoulder.applyMatrix4(basisMatrix);
+					left_wrist.applyMatrix4(basisMatrix);
+
+					const leftArmOrientation = posePointsToVector(
+						left_elbow,
+						left_shoulder
+					);
+					const leftForeArmOrientation = posePointsToVector(
+						left_wrist,
+						left_elbow
+					);
 
 					const d1 = box(0.04, 0xffffff);
 					d1.position.set(
