@@ -1,11 +1,13 @@
 import * as THREE from "three";
-import { Vector3, Matrix4 } from "three";
+import { Group, Vector3, Matrix4, MathUtils } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 import { Quaternion } from "three";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const threshold = MathUtils.degToRad(30);
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
@@ -531,183 +533,105 @@ export function startCamera(videoElement) {
 	);
 }
 
-export function drawPoseKeypoints(keypoints, canvas) {
-	const canvasCtx = canvas.getContext("2d");
-	// Draw the overlays.
-	// canvasCtx.save();
-	canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+export function compareWaving(poseData, animationObj, animationIndex) {
+	for (let i in poseData) {
+		poseData[i].x *= -1;
+		poseData[i].y *= -1;
+		poseData[i].z *= -1;
+	}
 
-	canvasCtx.fillStyle = "#ffffff";
-	canvasCtx.font = "18px serif";
-	canvasCtx.lineWidth = 2;
-	canvasCtx.strokeStyle = "#ffffff";
+	const basisMatrix = getBasisFromPose(poseData);
 
-	// const keypoints = poses[0]["keypoints3D"];
+	const leftArmOrientation = posePointsToVector(
+		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]],
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+	);
+	const leftForeArmOrientation = posePointsToVector(
+		poseData[BlazePoseKeypointsValues["LEFT_WRIST"]],
+		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+	);
+	// const leftArmOrientation = posePointsToVector(
+	// 	poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]],
+	// 	poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+	// );
+	// const leftForeArmOrientation = posePointsToVector(
+	// 	poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]],
+	// 	poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
+	// );
+
+	console.log("leftArmOrientation", leftArmOrientation);
+	console.log("leftForeArmOrientation", leftForeArmOrientation);
+
+	leftArmOrientation.applyMatrix4(basisMatrix);
+	leftForeArmOrientation.applyMatrix4(basisMatrix);
+
+	const rightArmStates =
+		animationObj["mixamorigRightArm.quaternion"]["states"][animationIndex];
+	const rightForeArmStates =
+		animationObj["mixamorigRightForeArm.quaternion"]["states"][
+			animationIndex
+		];
+
+	// console.log(rightArmStates, rightForeArmStates);
+
+	const leftArmDeviation = leftArmOrientation.angleTo(
+		new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
+	);
+	const leftForeArmDeviation = leftForeArmOrientation.angleTo(
+		new Vector3(
+			rightForeArmStates.x,
+			rightForeArmStates.y,
+			rightForeArmStates.z
+		)
+	);
+
+	// console.log(leftArmDeviation, leftForeArmDeviation);
+
+	return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
+}
+
+export function drawPoseKeypoints(keypoints) {
+	const g = new Group();
 
 	const visibleparts = {};
 
 	for (let point of keypoints) {
 		if (point.score > 0.5) {
-			const px = 320 + point.x * 240;
-			const py = 160 + point.y * 240;
+			const d = box(0.01);
+			d.position.set(point.x, point.y, point.z);
 
-			canvasCtx.fillRect(px - 4, py - 4, 8, 8);
+			g.add(d);
 
-			visibleparts[point.name] = { x: px, y: py };
-
-			// canvasCtx.fillText(point.name, px, py);
+			visibleparts[point.name] = new Vector3(point.x, point.y, point.z);
 		}
 	}
-	canvasCtx.beginPath(); // Start a new path
 
-	if (visibleparts["left_eye"] && visibleparts["nose"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_eye"].x,
-			visibleparts["left_eye"].y
-		);
-		canvasCtx.lineTo(visibleparts["nose"].x, visibleparts["nose"].y);
+	const pairs = [
+		["left_eye", "nose"],
+		["right_eye", "nose"],
+		["left_shoulder", "right_shoulder"],
+		["left_shoulder", "left_elbow"],
+		["left_elbow", "left_wrist"],
+		["right_shoulder", "right_elbow"],
+		["right_elbow", "right_wrist"],
+		["left_shoulder", "left_hip"],
+		["right_shoulder", "right_hip"],
+		["left_hip", "right_hip"],
+		["left_hip", "left_knee"],
+		["left_ankle", "left_knee"],
+		["right_hip", "right_knee"],
+		["right_ankle", "right_knee"],
+	];
+
+	for (let p of pairs) {
+		if (visibleparts[p[0]] && visibleparts[p[1]]) {
+			const l = line(visibleparts[p[0]], visibleparts[p[1]]);
+
+			g.add(l);
+		}
 	}
 
-	if (visibleparts["right_eye"] && visibleparts["nose"]) {
-		canvasCtx.moveTo(
-			visibleparts["right_eye"].x,
-			visibleparts["right_eye"].y
-		);
-		canvasCtx.lineTo(visibleparts["nose"].x, visibleparts["nose"].y);
-	}
-
-	if (visibleparts["left_shoulder"] && visibleparts["right_shoulder"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_shoulder"].x,
-			visibleparts["left_shoulder"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_shoulder"].x,
-			visibleparts["right_shoulder"].y
-		);
-	}
-
-	if (visibleparts["left_shoulder"] && visibleparts["left_elbow"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_shoulder"].x,
-			visibleparts["left_shoulder"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["left_elbow"].x,
-			visibleparts["left_elbow"].y
-		);
-	}
-
-	if (visibleparts["left_wrist"] && visibleparts["left_elbow"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_wrist"].x,
-			visibleparts["left_wrist"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["left_elbow"].x,
-			visibleparts["left_elbow"].y
-		);
-	}
-
-	if (visibleparts["right_shoulder"] && visibleparts["right_elbow"]) {
-		canvasCtx.moveTo(
-			visibleparts["right_shoulder"].x,
-			visibleparts["right_shoulder"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_elbow"].x,
-			visibleparts["right_elbow"].y
-		);
-	}
-
-	if (visibleparts["right_wrist"] && visibleparts["right_elbow"]) {
-		canvasCtx.moveTo(
-			visibleparts["right_wrist"].x,
-			visibleparts["right_wrist"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_elbow"].x,
-			visibleparts["right_elbow"].y
-		);
-	}
-
-	if (visibleparts["left_shoulder"] && visibleparts["left_hip"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_shoulder"].x,
-			visibleparts["left_shoulder"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["left_hip"].x,
-			visibleparts["left_hip"].y
-		);
-	}
-
-	if (visibleparts["right_shoulder"] && visibleparts["right_hip"]) {
-		canvasCtx.moveTo(
-			visibleparts["right_shoulder"].x,
-			visibleparts["right_shoulder"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_hip"].x,
-			visibleparts["right_hip"].y
-		);
-	}
-
-	if (visibleparts["left_hip"] && visibleparts["right_hip"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_hip"].x,
-			visibleparts["left_hip"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_hip"].x,
-			visibleparts["right_hip"].y
-		);
-	}
-
-	if (visibleparts["left_hip"] && visibleparts["left_knee"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_hip"].x,
-			visibleparts["left_hip"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["left_knee"].x,
-			visibleparts["left_knee"].y
-		);
-	}
-
-	if (visibleparts["left_ankle"] && visibleparts["left_knee"]) {
-		canvasCtx.moveTo(
-			visibleparts["left_ankle"].x,
-			visibleparts["left_ankle"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["left_knee"].x,
-			visibleparts["left_knee"].y
-		);
-	}
-
-	if (visibleparts["right_hip"] && visibleparts["right_knee"]) {
-		canvasCtx.moveTo(
-			visibleparts["right_hip"].x,
-			visibleparts["right_hip"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_knee"].x,
-			visibleparts["right_knee"].y
-		);
-	}
-
-	if (visibleparts["right_ankle"] && visibleparts["right_knee"]) {
-		canvasCtx.moveTo(
-			visibleparts["right_ankle"].x,
-			visibleparts["right_ankle"].y
-		);
-		canvasCtx.lineTo(
-			visibleparts["right_knee"].x,
-			visibleparts["right_knee"].y
-		);
-	}
-	canvasCtx.stroke(); // Render the path
+	return g;
 }
 
 export const BlazePoseKeypoints = {

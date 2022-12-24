@@ -1,18 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Vector3, Matrix4, MathUtils } from "three";
 
 import {
-	getUserMedia,
-	middlePosition,
-	posePointsToVector,
 	loadFBX,
 	loadObj,
 	traverseModel,
 	applyTransfer,
 	startCamera,
 	drawPoseKeypoints,
-	getBasisFromPose,
-	BlazePoseKeypointsValues,
+	compareWaving,
 } from "./ropes";
 
 // import { Pose } from "kalidokit";
@@ -23,11 +18,12 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
 
+import SubThreeJsScene from "./SubThreeJsScene";
+
 export default function MotionSync(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const videoRef = useRef(null);
-	const canvasRef = useRef(null);
 
 	const poseDetector = useRef(null);
 
@@ -38,10 +34,11 @@ export default function MotionSync(props) {
 	const counter = useRef(-1);
 
 	const animationIndx = useRef(0);
-	const threshold = MathUtils.degToRad(40);
 
 	const [motionRound, setmotionRound] = useState(0);
 	const motionRoundRef = useRef(motionRound);
+
+	const [capturedPose, setcapturedPose] = useState(null);
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -95,7 +92,8 @@ export default function MotionSync(props) {
 			]) => {
 				poseDetector.current = detector;
 
-				model.position.set(0, -150, 0);
+				model.position.set(-100, -100, 0);
+				camera.current.position.set(0, 0, 240);
 
 				scene.current.add(model);
 
@@ -143,7 +141,11 @@ export default function MotionSync(props) {
 
 				// console.log(poses);
 
-				drawPoseKeypoints(poses[0]["keypoints3D"], canvasRef.current);
+				const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
+
+				setcapturedPose(g);
+
+				return;
 
 				if (
 					compareWaving(
@@ -187,111 +189,24 @@ export default function MotionSync(props) {
 		motionRoundRef.current = motionRound;
 	}, [motionRound]);
 
-	// function compareJumpJacks(poseData, animationObj, animationIndex) {
-	// 	const basisMatrix = getBasisFromPose(poseData);
-
-	// 	const leftArmOrientation = posePointsToVector(
-	// 		poseData[POSE_LANDMARKS["LEFT_ELBOW"]],
-	// 		poseData[POSE_LANDMARKS["LEFT_SHOULDER"]]
-	// 	);
-	// 	// const leftForeArmOrientation = posePointsToVector(
-	// 	// 	poseData[POSE_LANDMARKS["LEFT_WRIST"]],
-	// 	// 	poseData[POSE_LANDMARKS["LEFT_ELBOW"]]
-	// 	// );
-
-	// 	leftArmOrientation.applyMatrix4(basisMatrix);
-	// 	// leftForeArmOrientation.applyMatrix4(basisMatrix);
-
-	// 	const rightArmStates =
-	// 		animationObj["mixamorigRightArm.quaternion"]["states"][
-	// 			animationIndex
-	// 		];
-	// 	// const rightForeArmStates =
-	// 	// 	animationObj["mixamorigRightForeArm.quaternion"]["states"][
-	// 	// 		animationIndex
-	// 	// 	];
-
-	// 	// console.log(rightArmStates, rightForeArmStates);
-
-	// 	const leftArmDeviation = leftArmOrientation.angleTo(
-	// 		new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
-	// 	);
-	// 	// const leftForeArmDeviation = leftForeArmOrientation.angleTo(
-	// 	// 	new Vector3(
-	// 	// 		rightForeArmStates.x,
-	// 	// 		rightForeArmStates.y,
-	// 	// 		rightForeArmStates.z
-	// 	// 	)
-	// 	// );
-
-	// 	console.log(leftArmDeviation);
-
-	// 	// return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
-	// 	return leftArmDeviation < threshold;
-	// }
-
-	function compareWaving(poseData, animationObj, animationIndex) {
-		for (let i in poseData) {
-			poseData[i].x *= -1;
-			poseData[i].y *= -1;
-			poseData[i].z *= -1;
-		}
-
-		const basisMatrix = getBasisFromPose(poseData);
-
-		const leftArmOrientation = posePointsToVector(
-			poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]],
-			poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-		);
-		const leftForeArmOrientation = posePointsToVector(
-			poseData[BlazePoseKeypointsValues["LEFT_WRIST"]],
-			poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]]
-		);
-
-		leftArmOrientation.applyMatrix4(basisMatrix);
-		leftForeArmOrientation.applyMatrix4(basisMatrix);
-
-		const rightArmStates =
-			animationObj["mixamorigRightArm.quaternion"]["states"][
-				animationIndex
-			];
-		const rightForeArmStates =
-			animationObj["mixamorigRightForeArm.quaternion"]["states"][
-				animationIndex
-			];
-
-		// console.log(rightArmStates, rightForeArmStates);
-
-		const leftArmDeviation = leftArmOrientation.angleTo(
-			new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
-		);
-		const leftForeArmDeviation = leftForeArmOrientation.angleTo(
-			new Vector3(
-				rightForeArmStates.x,
-				rightForeArmStates.y,
-				rightForeArmStates.z
-			)
-		);
-
-		// console.log(leftArmDeviation, leftForeArmDeviation);
-
-		return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
-	}
-
 	return (
 		<div>
-			<canvas
-				ref={canvasRef}
+			<div
 				style={{
+					width: "500px",
+					height: "400px",
 					position: "absolute",
-					left: "50%",
 					top: 0,
-					marginLeft: "-320px",
+					right: 0,
 					border: "1px solid #fff",
 				}}
-				width="640px"
-				height="320px"
-			></canvas>
+			>
+				<SubThreeJsScene
+					width={500}
+					height={400}
+					objects={capturedPose}
+				/>
+			</div>
 			<div className="btn-box">
 				<video
 					ref={videoRef}
