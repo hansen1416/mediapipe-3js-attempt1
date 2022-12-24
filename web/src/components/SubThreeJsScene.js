@@ -26,7 +26,7 @@ export default function SubThreeJsScene({ width, height, objects }) {
 
 	useEffect(() => {
 		if (objects) {
-			objects.scale.set(10, 10, 10);
+			scene.current.remove(scene.current.children[2]);
 
 			scene.current.add(objects);
 		}

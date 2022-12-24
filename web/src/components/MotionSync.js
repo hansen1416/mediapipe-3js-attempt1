@@ -139,9 +139,17 @@ export default function MotionSync(props) {
 					return;
 				}
 
-				// console.log(poses);
+				const keypoints3D = poses[0]["keypoints3D"];
 
-				const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
+				for (let v of keypoints3D) {
+					v["x"] *= -1;
+					v["y"] *= -1;
+					v["z"] *= -1;
+				}
+
+				const g = drawPoseKeypoints(keypoints3D);
+
+				g.scale.set(8, 8, 8);
 
 				setcapturedPose(g);
 
