@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Quaternion, Vector3, Matrix4, MathUtils } from "three";
+import { Quaternion, Vector3, Matrix4, MathUtils, Euler } from "three";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 
 import {
@@ -158,31 +158,34 @@ export default function MotionInterpreter(props) {
 		const leftshoulder = new Vector3();
 		const rightshoulder = new Vector3();
 
-		const lefthip = new Vector3();
-		const righthip = new Vector3();
+		const hips = new Vector3();
 
 		modelParts["mixamorigLeftShoulder"].getWorldPosition(leftshoulder);
 		modelParts["mixamorigRightShoulder"].getWorldPosition(rightshoulder);
 
-		modelParts["mixamorigLeftUpLeg"].getWorldPosition(lefthip);
-		modelParts["mixamorigRightUpLeg"].getWorldPosition(righthip);
+		modelParts["mixamorigHips"].getWorldPosition(hips);
 
 		// console.log(leftshoulder, rightshoulder, lefthip, righthip);
 
 		const a = middlePosition(leftshoulder, rightshoulder, false);
-		const b = middlePosition(lefthip, righthip, false);
 
 		// console.log('a,b', a, b);
 
-		const y_basis = posePointsToVector(a, b, false).normalize();
-		const x_basis = posePointsToVector(lefthip, b, false).normalize();
+		const y_basis = posePointsToVector(hips, a, false).normalize();
+		const x_basis = posePointsToVector(leftshoulder, a, false).normalize();
 		const z_basis = new Vector3()
-			.crossVectors(x_basis, y_basis)
+			.crossVectors(y_basis, x_basis)
 			.normalize();
 
-		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+		const originBasis = new Matrix4().makeBasis(
+			new Vector3(1, 0, 0),
+			new Vector3(0, -1, 0),
+			new Vector3(0, 0, 1)
+		);
 
-		// return new Quaternion().setFromRotationMatrix(matrix);
+		return originBasis.multiply(
+			new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert()
+		);
 	}
 
 	function syncAnimation(poseData) {

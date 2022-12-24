@@ -705,7 +705,7 @@ export function getBasisFromPose(poseData) {
 
 	// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
 
-	return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+	return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
 }
 
 /**
