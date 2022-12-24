@@ -559,8 +559,8 @@ export function compareWaving(poseData, animationObj, animationIndex) {
 	// 	poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
 	// );
 
-	console.log("leftArmOrientation", leftArmOrientation);
-	console.log("leftForeArmOrientation", leftForeArmOrientation);
+	// console.log("leftArmOrientation", leftArmOrientation);
+	// console.log("leftForeArmOrientation", leftForeArmOrientation);
 
 	leftArmOrientation.applyMatrix4(basisMatrix);
 	leftForeArmOrientation.applyMatrix4(basisMatrix);

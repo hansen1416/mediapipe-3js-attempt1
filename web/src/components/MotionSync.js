@@ -8,6 +8,10 @@ import {
 	startCamera,
 	drawPoseKeypoints,
 	compareWaving,
+	box,
+	BlazePoseKeypointsValues,
+	posePointsToVector,
+	getBasisFromPose,
 } from "./ropes";
 
 // import { Pose } from "kalidokit";
@@ -19,6 +23,7 @@ import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
 
 import SubThreeJsScene from "./SubThreeJsScene";
+import { Group } from "three";
 
 export default function MotionSync(props) {
 	const { scene, camera, renderer, controls } = props;
@@ -29,16 +34,17 @@ export default function MotionSync(props) {
 
 	const figureParts = useRef({});
 
-	const animationTracks = useRef({});
-
 	const counter = useRef(-1);
 
+	const animationTracks = useRef({});
+	const choosedAnimation = useRef("Waving");
 	const animationIndx = useRef(0);
 
 	const [motionRound, setmotionRound] = useState(0);
 	const motionRoundRef = useRef(motionRound);
 
 	const [capturedPose, setcapturedPose] = useState(null);
+	const [motionTrack, setmotionTrack] = useState(null);
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -119,6 +125,10 @@ export default function MotionSync(props) {
 		// eslint-disable-next-line
 	}, []);
 
+	useEffect(() => {
+		motionRoundRef.current = motionRound;
+	}, [motionRound]);
+
 	function animate() {
 		requestAnimationFrame(animate);
 
@@ -152,6 +162,65 @@ export default function MotionSync(props) {
 				g.scale.set(8, 8, 8);
 
 				setcapturedPose(g);
+
+				// draw motion tracks
+				if (choosedAnimation.current) {
+					const g = new Group();
+
+					const parts = [
+						["mixamorigLeftArm.quaternion", 0xff0000],
+						["mixamorigLeftForeArm.quaternion", 0x00ff00],
+						["mixamorigRightArm.quaternion", 0x0000ff],
+						["mixamorigRightForeArm.quaternion", 0xffff00],
+					];
+
+					for (const p of parts) {
+						for (const v of animationTracks.current[
+							choosedAnimation.current
+						][p[0]]["states"]) {
+							const d = box(0.04, p[1]);
+							d.position.set(v.x, v.y, v.z);
+
+							g.add(d);
+						}
+					}
+
+					const basisMatrix = getBasisFromPose(keypoints3D);
+
+					const leftArmOrientation = posePointsToVector(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]],
+						keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+					);
+					const leftForeArmOrientation = posePointsToVector(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]],
+						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+					);
+
+					leftArmOrientation.applyMatrix4(basisMatrix);
+					leftForeArmOrientation.applyMatrix4(basisMatrix);
+
+					const d1 = box(0.04, 0xffffff);
+					d1.position.set(
+						leftArmOrientation.x,
+						leftArmOrientation.y,
+						leftArmOrientation.z
+					);
+
+					g.add(d1);
+
+					const d2 = box(0.04, 0xffffff);
+					d2.position.set(
+						leftForeArmOrientation.x,
+						leftForeArmOrientation.y,
+						leftForeArmOrientation.z
+					);
+
+					g.add(d2);
+
+					g.scale.set(3, 3, 3);
+
+					setmotionTrack(g);
+				}
 
 				return;
 
@@ -193,10 +262,6 @@ export default function MotionSync(props) {
 		renderer.current.render(scene.current, camera.current);
 	}
 
-	useEffect(() => {
-		motionRoundRef.current = motionRound;
-	}, [motionRound]);
-
 	return (
 		<div>
 			<div
@@ -213,6 +278,22 @@ export default function MotionSync(props) {
 					width={500}
 					height={400}
 					objects={capturedPose}
+				/>
+			</div>
+			<div
+				style={{
+					width: "500px",
+					height: "400px",
+					position: "absolute",
+					bottom: 0,
+					right: 0,
+					border: "1px solid #fff",
+				}}
+			>
+				<SubThreeJsScene
+					width={500}
+					height={400}
+					objects={motionTrack}
 				/>
 			</div>
 			<div className="btn-box">
