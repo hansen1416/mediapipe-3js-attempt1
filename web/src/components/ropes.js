@@ -593,18 +593,22 @@ export function compareArms(poseData, animationObj, animationIndex) {
 
 	if (true) {
 		const thre = 0.5;
+		let score = 0;
 
 		if (projectedDistance(leftArmOrientation, leftArmStates) < thre) {
 			res.push("leftArm");
+			score += 1;
 		}
 
 		if (
 			projectedDistance(leftForeArmOrientation, leftForeArmStates) < thre
 		) {
+			score += 1;
 			res.push("leftForeArm");
 		}
 
 		if (projectedDistance(rightArmOrientation, rightArmStates) < thre) {
+			score += 1;
 			res.push("rightArm");
 		}
 
@@ -612,10 +616,15 @@ export function compareArms(poseData, animationObj, animationIndex) {
 			projectedDistance(rightForeArmOrientation, rightForeArmStates) <
 			thre
 		) {
+			score += 1;
 			res.push("rightForeArm");
 		}
 
-		return res;
+		if (true) {
+			return score;
+		} else {
+			return res;
+		}
 	}
 
 	const leftArmDeviation = leftArmOrientation.angleTo(

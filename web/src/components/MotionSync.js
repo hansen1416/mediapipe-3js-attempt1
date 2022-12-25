@@ -49,6 +49,8 @@ export default function MotionSync(props) {
 	const [poseTrack, setposeTrack] = useState(null);
 	const poseTrackRef = useRef({});
 
+	const animname = "Clapping";
+
 	useEffect(() => {
 		// const detectorConfig = {
 		// 	modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
@@ -130,9 +132,9 @@ export default function MotionSync(props) {
 					];
 
 					for (const p of parts) {
-						for (const v of animationTracks.current["JumpingJacks"][
-							p[0]
-						]["states"]) {
+						for (const v of animationTracks.current[animname][p[0]][
+							"states"
+						]) {
 							const d = box(0.04, p[1]);
 							d.position.set(v.x, v.y, v.z);
 
@@ -299,21 +301,17 @@ export default function MotionSync(props) {
 					);
 				}
 
-				const dev = compareArms(
-					keypoints3D,
-					animationTracks.current["JumpingJacks"],
-					0
-				);
-
-				console.log(dev);
-
-				return;
-
-				if (false) {
+				if (
+					compareArms(
+						keypoints3D,
+						animationTracks.current[animname],
+						animationIndx.current
+					) >= 3
+				) {
 					// if (compareWaving(data, jsonObj, animationIndx.current)) {
 					applyTransfer(
 						figureParts.current,
-						animationTracks.current["Waving"],
+						animationTracks.current[animname],
 						animationIndx.current
 					);
 
@@ -322,7 +320,7 @@ export default function MotionSync(props) {
 
 				if (
 					animationIndx.current >=
-					animationTracks.current["Waving"][
+					animationTracks.current[animname][
 						"mixamorigLeftArm.quaternion"
 					]["states"].length
 				) {
