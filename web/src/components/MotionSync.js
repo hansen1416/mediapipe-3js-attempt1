@@ -12,6 +12,7 @@ import {
 	BlazePoseKeypointsValues,
 	posePointsToVector,
 	getBasisFromPose,
+	poseToVector,
 } from "./ropes";
 
 // import { Pose } from "kalidokit";
@@ -37,14 +38,16 @@ export default function MotionSync(props) {
 	const counter = useRef(-1);
 
 	const animationTracks = useRef({});
-	const choosedAnimation = useRef("Waving");
 	const animationIndx = useRef(0);
 
 	const [motionRound, setmotionRound] = useState(0);
 	const motionRoundRef = useRef(motionRound);
 
 	const [capturedPose, setcapturedPose] = useState(null);
+
 	const [motionTrack, setmotionTrack] = useState(null);
+	const [poseTrack, setposeTrack] = useState(null);
+	const poseTrackRef = useRef({});
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -115,6 +118,47 @@ export default function MotionSync(props) {
 					KettlebellSwing,
 					Waving,
 				};
+
+				{
+					const g = new Group();
+
+					const parts = [
+						["mixamorigLeftArm.quaternion", 0xff0000],
+						["mixamorigLeftForeArm.quaternion", 0x00ff00],
+						["mixamorigRightArm.quaternion", 0x0000ff],
+						["mixamorigRightForeArm.quaternion", 0xffff00],
+					];
+
+					for (const p of parts) {
+						for (const v of animationTracks.current["Clapping"][
+							p[0]
+						]["states"]) {
+							const d = box(0.04, p[1]);
+							d.position.set(v.x, v.y, v.z);
+
+							g.add(d);
+						}
+					}
+
+					g.scale.set(3, 3, 3);
+
+					setmotionTrack(g);
+				}
+
+				{
+					const g = new Group();
+
+					for (let i in [0, 1, 2, 3]) {
+						const d = box(0.1, 0xffffff);
+						g.add(d);
+					}
+
+					g.scale.set(3, 3, 3);
+
+					poseTrackRef.current = g;
+
+					setposeTrack(g);
+				}
 			}
 		);
 
@@ -156,7 +200,7 @@ export default function MotionSync(props) {
 					v["y"] *= -1;
 					v["z"] *= -1;
 				}
-
+				// transfer basis, so that the pose is always stabd up and face to camera
 				const basisMatrix = getBasisFromPose(keypoints3D);
 
 				for (let k of keypoints3D) {
@@ -169,61 +213,46 @@ export default function MotionSync(props) {
 					k.z = t.z;
 				}
 
-				const g = drawPoseKeypoints(keypoints3D);
+				// draw pose keypoints
+				{
+					const g = drawPoseKeypoints(keypoints3D);
 
-				g.scale.set(8, 8, 8);
+					g.scale.set(8, 8, 8);
 
-				setcapturedPose(g);
+					setcapturedPose(g);
+				}
 
-				// draw motion tracks
-				if (choosedAnimation.current && false) {
-					const g = new Group();
-
-					const parts = [
-						["mixamorigLeftArm.quaternion", 0xff0000],
-						["mixamorigLeftForeArm.quaternion", 0x00ff00],
-						["mixamorigRightArm.quaternion", 0x0000ff],
-						["mixamorigRightForeArm.quaternion", 0xffff00],
-					];
-
-					for (const p of parts) {
-						for (const v of animationTracks.current[
-							choosedAnimation.current
-						][p[0]]["states"]) {
-							const d = box(0.04, p[1]);
-							d.position.set(v.x, v.y, v.z);
-
-							g.add(d);
-						}
-					}
-
-					const basisMatrix = getBasisFromPose(keypoints3D);
-
-					const left_elbow = new Vector3(
-						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].x,
-						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].y,
-						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].z
+				// draw pose tracks
+				{
+					const left_shoulder = poseToVector(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+					);
+					const left_elbow = poseToVector(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+					);
+					const left_wrist = poseToVector(
+						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]]
 					);
 
-					const left_shoulder = new Vector3(
-						keypoints3D[
-							BlazePoseKeypointsValues["LEFT_SHOULDER"]
-						].x,
-						keypoints3D[
-							BlazePoseKeypointsValues["LEFT_SHOULDER"]
-						].y,
-						keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]].z
+					const right_shoulder = poseToVector(
+						keypoints3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+					);
+					const right_elbow = poseToVector(
+						keypoints3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
+					);
+					const right_wrist = poseToVector(
+						keypoints3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
 					);
 
-					const left_wrist = new Vector3(
-						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].x,
-						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].y,
-						keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].z
-					);
+					// const basisMatrix = getBasisFromPose(keypoints3D);
 
-					left_elbow.applyMatrix4(basisMatrix);
-					left_shoulder.applyMatrix4(basisMatrix);
-					left_wrist.applyMatrix4(basisMatrix);
+					// left_elbow.applyMatrix4(basisMatrix);
+					// left_shoulder.applyMatrix4(basisMatrix);
+					// left_wrist.applyMatrix4(basisMatrix);
+
+					// right_elbow.applyMatrix4(basisMatrix);
+					// right_shoulder.applyMatrix4(basisMatrix);
+					// right_wrist.applyMatrix4(basisMatrix);
 
 					const leftArmOrientation = posePointsToVector(
 						left_elbow,
@@ -234,27 +263,38 @@ export default function MotionSync(props) {
 						left_elbow
 					);
 
-					const d1 = box(0.04, 0xffffff);
-					d1.position.set(
+					const rightArmOrientation = posePointsToVector(
+						right_elbow,
+						right_shoulder
+					);
+					const rightForeArmOrientation = posePointsToVector(
+						right_wrist,
+						right_elbow
+					);
+
+					poseTrackRef.current.children[0].position.set(
 						leftArmOrientation.x,
 						leftArmOrientation.y,
 						leftArmOrientation.z
 					);
 
-					g.add(d1);
-
-					const d2 = box(0.04, 0xffffff);
-					d2.position.set(
+					poseTrackRef.current.children[1].position.set(
 						leftForeArmOrientation.x,
 						leftForeArmOrientation.y,
 						leftForeArmOrientation.z
 					);
 
-					g.add(d2);
+					poseTrackRef.current.children[2].position.set(
+						rightArmOrientation.x,
+						rightArmOrientation.y,
+						rightArmOrientation.z
+					);
 
-					g.scale.set(3, 3, 3);
-
-					setmotionTrack(g);
+					poseTrackRef.current.children[3].position.set(
+						rightForeArmOrientation.x,
+						rightForeArmOrientation.y,
+						rightForeArmOrientation.z
+					);
 				}
 
 				return;
@@ -329,6 +369,7 @@ export default function MotionSync(props) {
 					width={500}
 					height={400}
 					objects={motionTrack}
+					objects1={poseTrack}
 				/>
 			</div>
 			<div className="btn-box">

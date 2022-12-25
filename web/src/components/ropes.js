@@ -590,6 +590,10 @@ export function compareWaving(poseData, animationObj, animationIndex) {
 	return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
 }
 
+export function poseToVector(p) {
+	return new Vector3(p.x, p.y, p.z);
+}
+
 export function drawPoseKeypoints(keypoints) {
 	const g = new Group();
 
@@ -741,13 +745,56 @@ export function getBasisFromPose(poseData) {
 	const a = middlePosition(leftshoulder, rightshoulder, false);
 	const b = middlePosition(lefthip, righthip, false);
 
-	const y_basis = posePointsToVector(a, b);
-	const x_basis = posePointsToVector(lefthip, b);
+	/**
+	 * here we use shoulder and the middle of hip as base
+	 * also right shoulder as the direction of x, since left and right are flipped in blazepose
+	 * note that the `originBasis` must use (0,-1,0) as y direction,
+	 * otherwise the pose will be upside down
+	 */
+	const y_basis = posePointsToVector(b, a);
+	const x_basis = posePointsToVector(rightshoulder, a);
+	// const x_basis = posePointsToVector(leftshoulder, a);
 	const z_basis = new Vector3().crossVectors(x_basis, y_basis).normalize();
 
 	// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
 
-	return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+	const originBasis = new Matrix4().makeBasis(
+		new Vector3(1, 0, 0),
+		new Vector3(0, -1, 0),
+		new Vector3(0, 0, 1)
+	);
+	return originBasis.multiply(
+		new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert()
+	);
+}
+
+export function removeObject3D(object) {
+	if (!(object instanceof THREE.Object3D)) return false;
+
+	if (object.children && object.children.length) {
+		for (let i in object.children) {
+			removeObject3D(object.children[i]);
+		}
+	}
+
+	// for better memory management and performance
+	if (object.geometry) {
+		object.geometry.dispose();
+	}
+	if (object.material) {
+		if (object.material instanceof Array) {
+			// for better memory management and performance
+			object.material.forEach((material) => material.dispose());
+		} else {
+			// for better memory management and performance
+			object.material.dispose();
+		}
+	}
+	if (object.parent) {
+		object.parent.remove(object);
+	}
+	// the parent might be the scene or another Object3D, but it is sure to be removed this way
+	return true;
 }
 
 // function getAnimationState(animationTracks, inheritGraph, upVectors) {

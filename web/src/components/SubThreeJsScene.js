@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { removeObject3D } from "./ropes";
 
-export default function SubThreeJsScene({ width, height, objects }) {
+export default function SubThreeJsScene({ width, height, objects, objects1 }) {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
@@ -26,11 +27,18 @@ export default function SubThreeJsScene({ width, height, objects }) {
 
 	useEffect(() => {
 		if (objects) {
-			scene.current.remove(scene.current.children[2]);
+			// scene.current.remove(scene.current.children[2]);
+			removeObject3D(scene.current.children[2]);
 
 			scene.current.add(objects);
 		}
 	}, [objects]);
+
+	useEffect(() => {
+		if (objects1) {
+			scene.current.add(objects1);
+		}
+	}, [objects1]);
 
 	function _scene() {
 		const backgroundColor = 0x22244;
