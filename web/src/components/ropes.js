@@ -1,13 +1,11 @@
 import * as THREE from "three";
-import { Group, Vector3, Matrix4, MathUtils } from "three";
+import { Group, Vector3, Matrix4, MathUtils, Vector2 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 import { Quaternion } from "three";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-export const threshold = MathUtils.degToRad(30);
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
@@ -533,37 +531,56 @@ export function startCamera(videoElement) {
 	);
 }
 
-export function compareWaving(poseData, animationObj, animationIndex) {
-	for (let i in poseData) {
-		poseData[i].x *= -1;
-		poseData[i].y *= -1;
-		poseData[i].z *= -1;
-	}
+export function projectedDistance(a, b) {
+	return ((a.x - b.x) ** 2 + (a.y - b.y) ** 2) ** 0.5;
+}
+
+export function compareArms(poseData, animationObj, animationIndex) {
+	const left_shoulder = poseToVector(
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+	);
+	const left_elbow = poseToVector(
+		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+	);
+	const left_wrist = poseToVector(
+		poseData[BlazePoseKeypointsValues["LEFT_WRIST"]]
+	);
+
+	const right_shoulder = poseToVector(
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+	);
+	const right_elbow = poseToVector(
+		poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
+	);
+	const right_wrist = poseToVector(
+		poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]]
+	);
 
 	const basisMatrix = getBasisFromPose(poseData);
 
-	const leftArmOrientation = posePointsToVector(
-		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]],
-		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-	);
-	const leftForeArmOrientation = posePointsToVector(
-		poseData[BlazePoseKeypointsValues["LEFT_WRIST"]],
-		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]]
-	);
-	// const leftArmOrientation = posePointsToVector(
-	// 	poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]],
-	// 	poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
-	// );
-	// const leftForeArmOrientation = posePointsToVector(
-	// 	poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]],
-	// 	poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
-	// );
+	left_elbow.applyMatrix4(basisMatrix);
+	left_shoulder.applyMatrix4(basisMatrix);
+	left_wrist.applyMatrix4(basisMatrix);
 
-	// console.log("leftArmOrientation", leftArmOrientation);
-	// console.log("leftForeArmOrientation", leftForeArmOrientation);
+	right_elbow.applyMatrix4(basisMatrix);
+	right_shoulder.applyMatrix4(basisMatrix);
+	right_wrist.applyMatrix4(basisMatrix);
 
-	leftArmOrientation.applyMatrix4(basisMatrix);
-	leftForeArmOrientation.applyMatrix4(basisMatrix);
+	const leftArmOrientation = posePointsToVector(left_elbow, left_shoulder);
+	const leftForeArmOrientation = posePointsToVector(left_wrist, left_elbow);
+
+	const rightArmOrientation = posePointsToVector(right_elbow, right_shoulder);
+	const rightForeArmOrientation = posePointsToVector(
+		right_wrist,
+		right_elbow
+	);
+
+	const leftArmStates =
+		animationObj["mixamorigLeftArm.quaternion"]["states"][animationIndex];
+	const leftForeArmStates =
+		animationObj["mixamorigLeftForeArm.quaternion"]["states"][
+			animationIndex
+		];
 
 	const rightArmStates =
 		animationObj["mixamorigRightArm.quaternion"]["states"][animationIndex];
@@ -572,12 +589,50 @@ export function compareWaving(poseData, animationObj, animationIndex) {
 			animationIndex
 		];
 
-	// console.log(rightArmStates, rightForeArmStates);
+	const res = [];
+
+	if (true) {
+		const thre = 0.5;
+
+		if (projectedDistance(leftArmOrientation, leftArmStates) < thre) {
+			res.push("leftArm");
+		}
+
+		if (
+			projectedDistance(leftForeArmOrientation, leftForeArmStates) < thre
+		) {
+			res.push("leftForeArm");
+		}
+
+		if (projectedDistance(rightArmOrientation, rightArmStates) < thre) {
+			res.push("rightArm");
+		}
+
+		if (
+			projectedDistance(rightForeArmOrientation, rightForeArmStates) <
+			thre
+		) {
+			res.push("rightForeArm");
+		}
+
+		return res;
+	}
 
 	const leftArmDeviation = leftArmOrientation.angleTo(
-		new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
+		new Vector3(leftArmStates.x, leftArmStates.y, leftArmStates.z)
 	);
 	const leftForeArmDeviation = leftForeArmOrientation.angleTo(
+		new Vector3(
+			leftForeArmStates.x,
+			leftForeArmStates.y,
+			leftForeArmStates.z
+		)
+	);
+
+	const rightArmDeviation = rightArmOrientation.angleTo(
+		new Vector3(rightArmStates.x, rightArmStates.y, rightArmStates.z)
+	);
+	const rightForeArmDeviation = rightForeArmOrientation.angleTo(
 		new Vector3(
 			rightForeArmStates.x,
 			rightForeArmStates.y,
@@ -585,9 +640,25 @@ export function compareWaving(poseData, animationObj, animationIndex) {
 		)
 	);
 
-	// console.log(leftArmDeviation, leftForeArmDeviation);
+	const threshold = MathUtils.degToRad(30);
 
-	return leftArmDeviation < threshold && leftForeArmDeviation < threshold;
+	if (leftArmDeviation < threshold) {
+		res.push("leftArm");
+	}
+
+	if (leftForeArmDeviation < threshold) {
+		res.push("leftForeArm");
+	}
+
+	if (rightArmDeviation < threshold) {
+		res.push("rightArm");
+	}
+
+	if (rightForeArmDeviation < threshold) {
+		res.push("rightForeArm");
+	}
+
+	return res;
 }
 
 export function poseToVector(p) {

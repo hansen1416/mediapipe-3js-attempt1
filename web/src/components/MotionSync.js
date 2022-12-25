@@ -7,7 +7,7 @@ import {
 	applyTransfer,
 	startCamera,
 	drawPoseKeypoints,
-	compareWaving,
+	compareArms,
 	box,
 	BlazePoseKeypointsValues,
 	posePointsToVector,
@@ -24,7 +24,7 @@ import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
 
 import SubThreeJsScene from "./SubThreeJsScene";
-import { Group, Vector3 } from "three";
+import { Group, MathUtils, Vector3 } from "three";
 
 export default function MotionSync(props) {
 	const { scene, camera, renderer, controls } = props;
@@ -130,7 +130,7 @@ export default function MotionSync(props) {
 					];
 
 					for (const p of parts) {
-						for (const v of animationTracks.current["Clapping"][
+						for (const v of animationTracks.current["JumpingJacks"][
 							p[0]
 						]["states"]) {
 							const d = box(0.04, p[1]);
@@ -148,8 +148,10 @@ export default function MotionSync(props) {
 				{
 					const g = new Group();
 
+					const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00];
+
 					for (let i in [0, 1, 2, 3]) {
-						const d = box(0.1, 0xffffff);
+						const d = box(0.1, colors[i]);
 						g.add(d);
 					}
 
@@ -200,18 +202,18 @@ export default function MotionSync(props) {
 					v["y"] *= -1;
 					v["z"] *= -1;
 				}
-				// transfer basis, so that the pose is always stabd up and face to camera
-				const basisMatrix = getBasisFromPose(keypoints3D);
+				// // transfer basis, so that the pose is always stabd up and face to camera
+				// const basisMatrix = getBasisFromPose(keypoints3D);
 
-				for (let k of keypoints3D) {
-					const t = new Vector3(k.x, k.y, k.z);
+				// for (let k of keypoints3D) {
+				// 	const t = new Vector3(k.x, k.y, k.z);
 
-					t.applyMatrix4(basisMatrix);
+				// 	t.applyMatrix4(basisMatrix);
 
-					k.x = t.x;
-					k.y = t.y;
-					k.z = t.z;
-				}
+				// 	k.x = t.x;
+				// 	k.y = t.y;
+				// 	k.z = t.z;
+				// }
 
 				// draw pose keypoints
 				{
@@ -244,15 +246,15 @@ export default function MotionSync(props) {
 						keypoints3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
 					);
 
-					// const basisMatrix = getBasisFromPose(keypoints3D);
+					const basisMatrix = getBasisFromPose(keypoints3D);
 
-					// left_elbow.applyMatrix4(basisMatrix);
-					// left_shoulder.applyMatrix4(basisMatrix);
-					// left_wrist.applyMatrix4(basisMatrix);
+					left_elbow.applyMatrix4(basisMatrix);
+					left_shoulder.applyMatrix4(basisMatrix);
+					left_wrist.applyMatrix4(basisMatrix);
 
-					// right_elbow.applyMatrix4(basisMatrix);
-					// right_shoulder.applyMatrix4(basisMatrix);
-					// right_wrist.applyMatrix4(basisMatrix);
+					right_elbow.applyMatrix4(basisMatrix);
+					right_shoulder.applyMatrix4(basisMatrix);
+					right_wrist.applyMatrix4(basisMatrix);
 
 					const leftArmOrientation = posePointsToVector(
 						left_elbow,
@@ -297,15 +299,17 @@ export default function MotionSync(props) {
 					);
 				}
 
+				const dev = compareArms(
+					keypoints3D,
+					animationTracks.current["JumpingJacks"],
+					0
+				);
+
+				console.log(dev);
+
 				return;
 
-				if (
-					compareWaving(
-						poses[0]["keypoints3D"],
-						animationTracks.current["Waving"],
-						animationIndx.current
-					)
-				) {
+				if (false) {
 					// if (compareWaving(data, jsonObj, animationIndx.current)) {
 					applyTransfer(
 						figureParts.current,
