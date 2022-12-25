@@ -49,7 +49,9 @@ export default function MotionSync(props) {
 	const [poseTrack, setposeTrack] = useState(null);
 	const poseTrackRef = useRef({});
 
-	const animname = "Clapping";
+	const check = useRef(5);
+
+	const animname = "JumpingJacks";
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -301,34 +303,54 @@ export default function MotionSync(props) {
 					);
 				}
 
-				if (
-					compareArms(
-						keypoints3D,
-						animationTracks.current[animname],
-						animationIndx.current
-					) >= 3
-				) {
-					// if (compareWaving(data, jsonObj, animationIndx.current)) {
-					applyTransfer(
-						figureParts.current,
-						animationTracks.current[animname],
-						animationIndx.current
-					);
+				let fitted = false;
 
-					animationIndx.current += 1;
+				for (let i in animationTracks.current[animname][
+					"mixamorigLeftArm.quaternion"
+				]["states"]) {
+					if (
+						compareArms(
+							keypoints3D,
+							animationTracks.current[animname],
+							i
+						) >= 4
+					) {
+						fitted = true;
+						break;
+					}
 				}
 
-				if (
-					animationIndx.current >=
-					animationTracks.current[animname][
-						"mixamorigLeftArm.quaternion"
-					]["states"].length
-				) {
-					setmotionRound(motionRoundRef.current + 1);
-
-					animationIndx.current = 0;
+				if (fitted) {
+					check.current = 0;
+				} else {
+					check.current += 1;
 				}
 			})();
+		}
+
+		if (
+			check.current < 3 &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 2 === 0
+		) {
+			applyTransfer(
+				figureParts.current,
+				animationTracks.current[animname],
+				animationIndx.current
+			);
+
+			animationIndx.current += 1;
+
+			if (
+				animationIndx.current >=
+				animationTracks.current[animname][
+					"mixamorigLeftArm.quaternion"
+				]["states"].length
+			) {
+				setmotionRound(motionRoundRef.current + 1);
+
+				animationIndx.current = 0;
+			}
 		}
 
 		counter.current += 1;
