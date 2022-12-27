@@ -84,6 +84,7 @@ export default function MotionSync(props) {
 				detectorConfig
 			),
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
+			// loadFBX(process.env.PUBLIC_URL + "/fbx/Mannequin.fbx"),
 			loadObj(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
 			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
 			loadObj(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
@@ -107,6 +108,8 @@ export default function MotionSync(props) {
 
 				model.position.set(-100, -100, 0);
 				camera.current.position.set(0, 0, 240);
+
+				console.log(model);
 
 				scene.current.add(model);
 
