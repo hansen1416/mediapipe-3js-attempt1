@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useLocation } from "react-router-dom";
 
 import MotionSync from "../components/MotionSync";
+import MotionSyncGLB from "../components/MotionSyncGLB";
 
 export default function ThreeJsScene() {
 	const canvasRef = useRef(null);
@@ -86,6 +87,14 @@ export default function ThreeJsScene() {
 
 			{location.pathname === "/motionsync" && (
 				<MotionSync
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
+			{location.pathname === "/motionsyncglb" && (
+				<MotionSyncGLB
 					scene={scene}
 					camera={camera}
 					renderer={renderer}

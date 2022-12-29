@@ -20,9 +20,11 @@ def video_slicer(filepath, start_time, end_time):
     # fourcc = cv2.VideoWriter_fourcc(*"XVID")
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     writer = cv2.VideoWriter(
-        os.path.join('slices', f"{filename}{start_time}-{end_time}.{fileext}"), fourcc, fps, (w, h))
+        os.path.join('slices', f"{filename}_{start_time}-{end_time}.{fileext}"), fourcc, fps, (w, h))
 
-    f = 0
+    cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+
+    f = start_frame
     while ret:
         f += 1
 

@@ -10,6 +10,9 @@ function App() {
 					<li>
 						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
+					<li>
+						<Link to={`/motionsyncglb`}>Motion Sync GLB</Link>
+					</li>
 				</ul>
 			</nav>
 		</div>
