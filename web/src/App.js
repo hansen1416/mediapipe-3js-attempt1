@@ -8,6 +8,9 @@ function App() {
 			<nav>
 				<ul>
 					<li>
+						<Link to={`/interpreter`}>Interpreter</Link>
+					</li>
+					<li>
 						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
 					<li>

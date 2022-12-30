@@ -23,6 +23,10 @@ const router = createBrowserRouter([
 				element: <Home />,
 			},
 			{
+				path: "/interpreter",
+				element: <ThreeJsScene />,
+			},
+			{
 				path: "/motionsync",
 				element: <ThreeJsScene />,
 			},

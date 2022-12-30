@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Group, Vector3, Matrix4, MathUtils, Vector2 } from "three";
+import { Group, Vector3, Matrix4, MathUtils } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
@@ -449,6 +449,10 @@ export function unitline(a, b, color = 0xffffff) {
 export function applyTransfer(model, animation, indx) {
 	for (let item of Object.values(animation)) {
 		const item_name = item["name"].split(".")[0];
+
+		if (!model[item_name]) {
+			continue;
+		}
 
 		if (item["type"] === "vector") {
 			if (indx < item["vectors"].length) {
