@@ -45,15 +45,11 @@ export default function MotionInterpreter(props) {
 			// loadObj(process.env.PUBLIC_URL + "/json/AirSquat.json"),
 			// loadObj(process.env.PUBLIC_URL + "/json/Clapping.json"),
 			// loadObj(process.env.PUBLIC_URL + "/json/JumpingJacks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
+			// loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
 		]).then((results) => {
 			const [gltf] = results;
 
-			// console.log(gltf.animations[0].toJSON());
-
 			const model = gltf.scene.children[0];
-
-			const animations = results.slice(1);
 
 			model.position.set(0, 0, 0);
 			camera.current.position.set(0, 0, 4);
@@ -68,94 +64,90 @@ export default function MotionInterpreter(props) {
 			scene.current.add(model);
 
 			(async () => {
-				for (let animation of animations) {
-					let longestTrack = 0;
-					let tracks = {};
+				const animation = gltf.animations[0].toJSON();
 
-					// calculate quaternions and vectors for animation tracks
-					for (let item of animation["tracks"]) {
-						if (item["type"] === "quaternion") {
-							const quaternions = [];
-							for (let i = 0; i < item["values"].length; i += 4) {
-								const q = new Quaternion(
-									item["values"][i],
-									item["values"][i + 1],
-									item["values"][i + 2],
-									item["values"][i + 3]
-								);
+				let longestTrack = 0;
+				let tracks = {};
 
-								quaternions.push(q);
-							}
+				// calculate quaternions and vectors for animation tracks
+				for (let item of animation["tracks"]) {
+					if (item["type"] === "quaternion") {
+						const quaternions = [];
+						for (let i = 0; i < item["values"].length; i += 4) {
+							const q = new Quaternion(
+								item["values"][i],
+								item["values"][i + 1],
+								item["values"][i + 2],
+								item["values"][i + 3]
+							);
 
-							item["quaternions"] = quaternions;
-							item["states"] = [];
-
-							if (quaternions.length > longestTrack) {
-								longestTrack = quaternions.length;
-							}
+							quaternions.push(q);
 						}
 
-						if (item["type"] === "vector") {
-							const vectors = [];
-							for (let i = 0; i < item["values"].length; i += 3) {
-								const q = new Vector3(
-									item["values"][i],
-									item["values"][i + 1],
-									item["values"][i + 2]
-								);
+						item["quaternions"] = quaternions;
+						item["states"] = [];
 
-								vectors.push(q);
-							}
-
-							item["vectors"] = vectors;
-						}
-
-						if (
-							item["type"] === "quaternion" ||
-							(item["type"] === "vector" &&
-								item["name"] === "Hips.position")
-						) {
-							tracks[item["name"]] = item;
+						if (quaternions.length > longestTrack) {
+							longestTrack = quaternions.length;
 						}
 					}
 
-					// play the animation, observe the vectors of differnt parts
+					if (item["type"] === "vector") {
+						const vectors = [];
+						for (let i = 0; i < item["values"].length; i += 3) {
+							const q = new Vector3(
+								item["values"][i],
+								item["values"][i + 1],
+								item["values"][i + 2]
+							);
 
-					console.log(parts, tracks);
-
-					for (let i = 0; i < longestTrack; i++) {
-						applyTransfer(parts, tracks, i);
-
-						const matrix = getBasisFromModel(parts);
-
-						for (let name in parts) {
-							if (
-								tracks[name + ".quaternion"] === undefined &&
-								tracks[name + ".quaternion"]["states"] ===
-									undefined
-							) {
-								continue;
-							}
-
-							const q = new Quaternion();
-							const v = upVectors[name].clone();
-
-							parts[name].getWorldQuaternion(q);
-
-							v.applyQuaternion(q);
-							v.applyMatrix4(matrix);
-
-							tracks[name + ".quaternion"]["states"].push(v);
+							vectors.push(q);
 						}
 
-						await sleep(30);
-
-						// break;
+						item["vectors"] = vectors;
 					}
 
-					// todo, use API to save this animation to json file
-					console.log(animation["name"], tracks);
+					if (
+						item["type"] === "quaternion" ||
+						(item["type"] === "vector" &&
+							item["name"] === "Hips.position")
+					) {
+						tracks[item["name"]] = item;
+					}
 				}
+
+				// play the animation, observe the vectors of differnt parts
+				for (let i = 0; i < longestTrack; i++) {
+					applyTransfer(parts, tracks, i);
+
+					const matrix = getBasisFromModel(parts);
+
+					for (let name in parts) {
+						if (
+							tracks[name + ".quaternion"] === undefined &&
+							tracks[name + ".quaternion"]["states"] === undefined
+						) {
+							continue;
+						}
+
+						const q = new Quaternion();
+						const v = upVectors[name].clone();
+
+						parts[name].getWorldQuaternion(q);
+
+						v.applyQuaternion(q);
+						v.applyMatrix4(matrix);
+
+						tracks[name + ".quaternion"]["states"].push(v);
+					}
+
+					await sleep(30);
+
+					// break;
+				}
+
+				// todo, use API to save this animation to json file
+				console.log(animation["name"], tracks);
 			})();
 		});
 	}
