@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useLocation } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import MotionSync from "../components/MotionSync";
 import MotionSyncGLB from "../components/MotionSyncGLB";
 import MotionInterpreter from "../components/MotionInterpreter";
+import PlayGLBAnimation from "../components/PlayGLBAnimation";
 
 export default function ThreeJsScene() {
 	const canvasRef = useRef(null);
@@ -85,6 +86,7 @@ export default function ThreeJsScene() {
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
+
 			{location.pathname === "/interpreter" && (
 				<MotionInterpreter
 					scene={scene}
@@ -101,6 +103,14 @@ export default function ThreeJsScene() {
 					controls={controls}
 				/>
 			)}
+			{location.pathname === "/playglbanimation" && (
+				<PlayGLBAnimation
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
 			{location.pathname === "/motionsyncglb" && (
 				<MotionSyncGLB
 					scene={scene}
@@ -108,7 +118,7 @@ export default function ThreeJsScene() {
 					renderer={renderer}
 					controls={controls}
 				/>
-			)}{" "}
+			)}
 		</div>
 	);
 }

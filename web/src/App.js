@@ -11,6 +11,9 @@ function App() {
 						<Link to={`/interpreter`}>Interpreter</Link>
 					</li>
 					<li>
+						<Link to={`/playglbanimation`}>Play GLB animation</Link>
+					</li>
+					<li>
 						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
 					<li>

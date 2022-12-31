@@ -22,11 +22,11 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
-import * as THREE from "three";
-// import SubThreeJsScene from "./SubThreeJsScene";
+
+import SubThreeJsScene from "./SubThreeJsScene";
 import { Group } from "three";
 
-export default function MotionSyncGLB(props) {
+export default function MotionSync(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const videoRef = useRef(null);
@@ -53,9 +53,10 @@ export default function MotionSyncGLB(props) {
 
 	const animname = "JumpingJacks";
 
-	const mixer = useRef(null);
-
-	const clock = new THREE.Clock();
+	const [leftWidth, setleftWidth] = useState(window.innerWidth - 500);
+	const [rightWidth, setrightWidth] = useState(500);
+	const [leftHeight, setleftHeight] = useState(window.innerHeight);
+	const [rightHeight, setrightHeight] = useState(window.innerHeight / 2);
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -96,6 +97,7 @@ export default function MotionSyncGLB(props) {
 				process.env.PUBLIC_URL + "/json/KettlebellSwingTracks.json"
 			),
 			loadObj(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
+			loadObj(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json"),
 		]).then(
 			([
 				detector,
@@ -106,17 +108,13 @@ export default function MotionSyncGLB(props) {
 				JumpingJacks,
 				KettlebellSwing,
 				Waving,
+				PunchWalk,
 			]) => {
 				poseDetector.current = detector;
 
 				const model = gltf.scene.children[0];
 
-				const animations = gltf.animations;
-
-				// console.log(animations);
-
-				// model.position.set(-100, -100, 0);
-				model.position.set(0, 0, 0);
+				model.position.set(0, -1, 0);
 				camera.current.position.set(0, 0, 4);
 
 				// console.log(model);
@@ -127,30 +125,6 @@ export default function MotionSyncGLB(props) {
 
 				// console.log(figureParts.current);
 
-				mixer.current = new THREE.AnimationMixer(model);
-
-				mixer.current.stopAllAction();
-
-				const action = mixer.current.clipAction(animations[0]);
-
-				action.reset();
-				// action.setLoop(THREE.LoopOnce);
-
-				// action.halt(1);
-
-				// will restore the origin position of model during `time`
-				// action.fadeOut(4);
-
-				// controls how long the animation plays
-				// action.setDuration(1);
-
-				// keep model at the position where it stops
-				action.clampWhenFinished = true;
-
-				action.enable = true;
-
-				action.play();
-
 				animationTracks.current = {
 					AirSquat,
 					BicycleCrunch,
@@ -158,6 +132,7 @@ export default function MotionSyncGLB(props) {
 					JumpingJacks,
 					KettlebellSwing,
 					Waving,
+					PunchWalk,
 				};
 
 				{
@@ -207,6 +182,13 @@ export default function MotionSyncGLB(props) {
 
 		setTimeout(() => {
 			animate();
+
+			if (camera.current && renderer.current) {
+				camera.current.aspect = leftWidth / leftHeight;
+				camera.current.updateProjectionMatrix();
+
+				renderer.current.setSize(leftWidth, leftHeight);
+			}
 		}, 0);
 
 		// eslint-disable-next-line
@@ -218,10 +200,6 @@ export default function MotionSyncGLB(props) {
 
 	function animate() {
 		requestAnimationFrame(animate);
-
-		const delta = clock.getDelta();
-
-		if (mixer.current) mixer.current.update(delta);
 
 		/**
 		 * HTMLMediaElement.readyState, 2,3,4
@@ -404,12 +382,45 @@ export default function MotionSyncGLB(props) {
 
 	return (
 		<div>
+			<div
+				style={{
+					width: rightWidth + "px",
+					height: rightHeight + "px",
+					position: "absolute",
+					top: 0,
+					right: 0,
+					border: "1px solid #fff",
+				}}
+			>
+				<SubThreeJsScene
+					width={rightWidth}
+					height={rightHeight}
+					objects={capturedPose}
+				/>
+			</div>
+			<div
+				style={{
+					width: rightWidth + "px",
+					height: rightHeight + "px",
+					position: "absolute",
+					bottom: 0,
+					right: 0,
+					border: "1px solid #fff",
+				}}
+			>
+				<SubThreeJsScene
+					width={rightWidth}
+					height={rightHeight}
+					objects={motionTrack}
+					objects1={poseTrack}
+				/>
+			</div>
 			<div className="btn-box">
 				<video
 					ref={videoRef}
 					autoPlay={true}
-					width="640px"
-					height="320px"
+					width={leftWidth + "px"}
+					height={leftHeight + "px"}
 				></video>
 
 				<div>{motionRound}</div>

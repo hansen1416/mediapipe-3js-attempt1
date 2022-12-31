@@ -24,7 +24,7 @@ import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
 
 import SubThreeJsScene from "./SubThreeJsScene";
-import { Group, MathUtils, Vector3 } from "three";
+import { Group } from "three";
 
 export default function MotionSync(props) {
 	const { scene, camera, renderer, controls } = props;
