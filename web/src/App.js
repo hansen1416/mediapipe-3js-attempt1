@@ -24,6 +24,11 @@ function App() {
 							Motion Sync GLB Blaze
 						</Link>
 					</li>
+					<li>
+						<Link to={`/motionsyncglbblazearithmetic`}>
+							Motion Sync Arithmetic
+						</Link>
+					</li>
 				</ul>
 			</nav>
 		</div>
