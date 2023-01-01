@@ -7,6 +7,7 @@ import MotionSync from "../components/MotionSync";
 import MotionSyncGLB from "../components/MotionSyncGLB";
 import MotionInterpreter from "../components/MotionInterpreter";
 import PlayGLBAnimation from "../components/PlayGLBAnimation";
+import MotionSyncGLBBlaze from "../components/MotionSyncGLBBlaze";
 
 export default function ThreeJsScene() {
 	const canvasRef = useRef(null);
@@ -86,7 +87,6 @@ export default function ThreeJsScene() {
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-
 			{location.pathname === "/interpreter" && (
 				<MotionInterpreter
 					scene={scene}
@@ -113,6 +113,14 @@ export default function ThreeJsScene() {
 			)}
 			{location.pathname === "/motionsyncglb" && (
 				<MotionSyncGLB
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}{" "}
+			{location.pathname === "/motionsyncglbblaze" && (
+				<MotionSyncGLBBlaze
 					scene={scene}
 					camera={camera}
 					renderer={renderer}

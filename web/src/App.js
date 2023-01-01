@@ -19,6 +19,11 @@ function App() {
 					<li>
 						<Link to={`/motionsyncglb`}>Motion Sync GLB</Link>
 					</li>
+					<li>
+						<Link to={`/motionsyncglbblaze`}>
+							Motion Sync GLB Blaze
+						</Link>
+					</li>
 				</ul>
 			</nav>
 		</div>

@@ -560,15 +560,15 @@ export function compareArms(poseData, animationObj, animationIndex) {
 		poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]]
 	);
 
-	const basisMatrix = getBasisFromPose(poseData);
+	// const basisMatrix = getBasisFromPose(poseData);
 
-	left_elbow.applyMatrix4(basisMatrix);
-	left_shoulder.applyMatrix4(basisMatrix);
-	left_wrist.applyMatrix4(basisMatrix);
+	// left_elbow.applyMatrix4(basisMatrix);
+	// left_shoulder.applyMatrix4(basisMatrix);
+	// left_wrist.applyMatrix4(basisMatrix);
 
-	right_elbow.applyMatrix4(basisMatrix);
-	right_shoulder.applyMatrix4(basisMatrix);
-	right_wrist.applyMatrix4(basisMatrix);
+	// right_elbow.applyMatrix4(basisMatrix);
+	// right_shoulder.applyMatrix4(basisMatrix);
+	// right_wrist.applyMatrix4(basisMatrix);
 
 	const leftArmOrientation = posePointsToVector(left_elbow, left_shoulder);
 	const leftForeArmOrientation = posePointsToVector(left_wrist, left_elbow);
@@ -579,19 +579,37 @@ export function compareArms(poseData, animationObj, animationIndex) {
 		right_elbow
 	);
 
-	const leftArmStates =
-		animationObj["mixamorigLeftArm.quaternion"]["states"][animationIndex];
-	const leftForeArmStates =
-		animationObj["mixamorigLeftForeArm.quaternion"]["states"][
-			animationIndex
-		];
+	let leftArmStates, leftForeArmStates, rightArmStates, rightForeArmStates;
 
-	const rightArmStates =
-		animationObj["mixamorigRightArm.quaternion"]["states"][animationIndex];
-	const rightForeArmStates =
-		animationObj["mixamorigRightForeArm.quaternion"]["states"][
-			animationIndex
-		];
+	if (true) {
+		leftArmStates =
+			animationObj["LeftArm.quaternion"]["states"][animationIndex];
+		leftForeArmStates =
+			animationObj["LeftForeArm.quaternion"]["states"][animationIndex];
+
+		rightArmStates =
+			animationObj["RightArm.quaternion"]["states"][animationIndex];
+		rightForeArmStates =
+			animationObj["RightForeArm.quaternion"]["states"][animationIndex];
+	} else {
+		leftArmStates =
+			animationObj["mixamorigLeftArm.quaternion"]["states"][
+				animationIndex
+			];
+		leftForeArmStates =
+			animationObj["mixamorigLeftForeArm.quaternion"]["states"][
+				animationIndex
+			];
+
+		rightArmStates =
+			animationObj["mixamorigRightArm.quaternion"]["states"][
+				animationIndex
+			];
+		rightForeArmStates =
+			animationObj["mixamorigRightForeArm.quaternion"]["states"][
+				animationIndex
+			];
+	}
 
 	const res = [];
 
@@ -674,11 +692,15 @@ export function compareArms(poseData, animationObj, animationIndex) {
 	return res;
 }
 
-export function poseToVector(p) {
-	return new Vector3(p.x, p.y, p.z);
+export function poseToVector(p, z) {
+	if (z) {
+		return new Vector3(p.x, p.y, z);
+	} else {
+		return new Vector3(p.x, p.y, p.z);
+	}
 }
 
-export function drawPoseKeypoints(keypoints) {
+export function drawPoseKeypoints(keypoints, z_value) {
 	const g = new Group();
 
 	const visibleparts = {};
@@ -686,11 +708,14 @@ export function drawPoseKeypoints(keypoints) {
 	for (let point of keypoints) {
 		if (point.score > 0.5) {
 			const d = box(0.01);
-			d.position.set(point.x, point.y, point.z);
+
+			const z = z_value ? z_value : point.z;
+
+			d.position.set(point.x, point.y, z);
 
 			g.add(d);
 
-			visibleparts[point.name] = new Vector3(point.x, point.y, point.z);
+			visibleparts[point.name] = new Vector3(point.x, point.y, z);
 		}
 	}
 
@@ -792,6 +817,26 @@ export const BlazePoseKeypointsValues = {
 	RIGHT_HEEL: 30,
 	LEFT_FOOT_INDEX: 31,
 	RIGHT_FOOT_INDEX: 32,
+};
+
+export const MoveNetKeypoints = {
+	nose: 0,
+	left_eye: 1,
+	right_eye: 2,
+	left_ear: 3,
+	right_ear: 4,
+	left_shoulder: 5,
+	right_shoulder: 6,
+	left_elbow: 7,
+	right_elbow: 8,
+	left_wrist: 9,
+	right_wrist: 10,
+	left_hip: 11,
+	right_hip: 12,
+	left_knee: 13,
+	right_knee: 14,
+	left_ankle: 15,
+	right_ankle: 16,
 };
 
 export function getBasisFromPose(poseData) {

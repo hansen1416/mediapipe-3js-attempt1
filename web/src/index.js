@@ -38,6 +38,10 @@ const router = createBrowserRouter([
 				path: "/motionsyncglb",
 				element: <ThreeJsScene />,
 			},
+			{
+				path: "/motionsyncglbblaze",
+				element: <ThreeJsScene />,
+			},
 		],
 	},
 ]);
