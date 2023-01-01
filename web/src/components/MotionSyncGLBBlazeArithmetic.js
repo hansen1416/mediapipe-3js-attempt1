@@ -56,6 +56,8 @@ export default function MotionSyncGLBBlazeArithmetic(props) {
 
 	const modelCurve = useRef(null);
 
+	const [diffScore, setdiffScore] = useState(0);
+
 	// const [leftWidth, setleftWidth] = useState(window.innerWidth - 500);
 	// const [rightWidth, setrightWidth] = useState(500);
 	// const [leftHeight, setleftHeight] = useState(window.innerHeight);
@@ -325,7 +327,9 @@ export default function MotionSyncGLBBlazeArithmetic(props) {
 							modelCurve.current.geometry
 						);
 
-						const ratio = d1.y / d2.y;
+						// console.log(d1, d2);
+
+						const ratio = d1[0].y / d2[0].y;
 
 						for (const d of d2) {
 							d.y *= ratio;
@@ -342,6 +346,18 @@ export default function MotionSyncGLBBlazeArithmetic(props) {
 						for (const d of d2) {
 							d.y /= unit2;
 						}
+
+						let diff = 0;
+
+						// console.log(d1, d2);
+
+						for (let i in d1) {
+							diff += Math.abs(d1[i].y - d2[i].y) ** 2;
+						}
+
+						diff = parseInt(100 * diff);
+
+						setdiffScore(diff);
 					}
 				}
 
@@ -424,6 +440,8 @@ export default function MotionSyncGLBBlazeArithmetic(props) {
 				height="480px"
 			></video>
 			<div className="btn-box">
+				<div style={{ fontSize: 40 }}>{diffScore}</div>
+
 				<div>{motionRound}</div>
 
 				<button
