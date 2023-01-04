@@ -14,6 +14,9 @@ function App() {
 						<Link to={`/playglbanimation`}>Play GLB animation</Link>
 					</li>
 					<li>
+						<Link to={`/playfbxanimation`}>Play FBX animation</Link>
+					</li>
+					<li>
 						<Link to={`/motionsync`}>Motion Sync</Link>
 					</li>
 					<li>
@@ -28,11 +31,9 @@ function App() {
 						<Link to={`/motionsyncglbblazearithmetic`}>
 							Motion Sync Arithmetic
 						</Link>
-					</li>					
+					</li>
 					<li>
-						<Link to={`/posesync`}>
-							Pose Sync
-						</Link>
+						<Link to={`/posesync`}>Pose Sync</Link>
 					</li>
 				</ul>
 			</nav>

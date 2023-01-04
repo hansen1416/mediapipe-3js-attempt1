@@ -7,6 +7,7 @@ import MotionSync from "../components/MotionSync";
 import MotionSyncGLB from "../components/MotionSyncGLB";
 import MotionInterpreter from "../components/MotionInterpreter";
 import PlayGLBAnimation from "../components/PlayGLBAnimation";
+import PlayFBXAnimation from "../components/PlayFBXAnimation";
 import MotionSyncGLBBlaze from "../components/MotionSyncGLBBlaze";
 import MotionSyncGLBBlazeArithmetic from "../components/MotionSyncGLBBlazeArithmetic";
 import PoseSync from "../components/PoseSync";
@@ -107,6 +108,14 @@ export default function ThreeJsScene() {
 			)}
 			{location.pathname === "/playglbanimation" && (
 				<PlayGLBAnimation
+					scene={scene}
+					camera={camera}
+					renderer={renderer}
+					controls={controls}
+				/>
+			)}
+			{location.pathname === "/playfbxanimation" && (
+				<PlayFBXAnimation
 					scene={scene}
 					camera={camera}
 					renderer={renderer}
