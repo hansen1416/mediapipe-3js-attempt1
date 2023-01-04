@@ -7,6 +7,20 @@ import { Quaternion } from "three";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export const BlazePoseConfig = {
+	// runtime: "mediapipe", // or 'tfjs'
+	runtime: "tfjs",
+	enableSmoothing: true,
+	modelType: "full",
+	detectorModelUrl:
+		process.env.PUBLIC_URL +
+		"/models/tfjs-model_blazepose_3d_detector_1/model.json",
+	landmarkModelUrl:
+		process.env.PUBLIC_URL +
+		"/models/tfjs-model_blazepose_3d_landmark_full_2/model.json",
+	// solutionPath: process.env.PUBLIC_URL + `/models/mediapipe/pose`,
+};
+
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
 	if (!constraints || !successCallback || !errorCallback) {
