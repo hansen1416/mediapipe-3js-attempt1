@@ -21,21 +21,23 @@ export default function PoseSync(props) {
 	const figureParts = useRef({});
 
 	useEffect(() => {
-
 		Promise.all([
 			poseDetection.createDetector(
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/fbx/crunch.fbx"),
 		]).then(([detector, model]) => {
-
 			poseDetector.current = detector;
+
+			// console.log(model);
 
 			model.position.set(0, -100, 0);
 			camera.current.position.set(0, 0, 240);
 
 			traverseModel(model, figureParts.current);
+
+			console.log(figureParts.current);
 
 			scene.current.add(model);
 		});
@@ -60,7 +62,7 @@ export default function PoseSync(props) {
 					// timestamp
 				);
 
-				console.log(poses)
+				console.log(poses);
 			})();
 		}
 

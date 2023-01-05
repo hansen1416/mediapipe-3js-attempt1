@@ -31,6 +31,10 @@ const router = createBrowserRouter([
 				element: <ThreeJsScene />,
 			},
 			{
+				path: "/playfbxanimation",
+				element: <ThreeJsScene />,
+			},
+			{
 				path: "/motionsync",
 				element: <ThreeJsScene />,
 			},
