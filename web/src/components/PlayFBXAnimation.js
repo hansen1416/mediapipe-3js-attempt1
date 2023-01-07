@@ -21,7 +21,7 @@ export default function PlayFBXAnimation(props) {
 				model.position.set(0, 0, 0);
 				camera.current.position.set(0, 0, 240);
 
-				// console.log(model);
+				console.log(model);
 
 				scene.current.add(model);
 
