@@ -1,5 +1,5 @@
 {
-  "name": "tfpose",
+  "name": "tfjspose",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow/tfjs-node": "^4.2.0",
-    "ffmpeg": "^0.0.4",
-    "node-video-lib": "^2.2.1"
+    "@tensorflow-models/pose-detection": "^2.0.0"
   }
 }

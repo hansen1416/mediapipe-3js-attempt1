@@ -1,165 +1,21 @@
 // Load the binding
 const tf = require('@tensorflow/tfjs-node');
-const fetch = require('node-fetch')
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-/**
- * Get the car data reduced to just the variables we are interested
- * and cleaned of missing data.
- */
-async function getData() {
-    const carsDataResponse = await fetch('https://storage.googleapis.com/tfjs-tutorials/carsData.json');
-    const carsData = await carsDataResponse.json();
-    const cleaned = carsData.map(car => ({
-      mpg: car.Miles_per_Gallon,
-      horsepower: car.Horsepower,
-    }))
-    .filter(car => (car.mpg != null && car.horsepower != null));
-  
-    return cleaned;
+function prepareImage(input, inputSize) {
+    if (!input.shape || !input.shape[1] || !input.shape[2]) return input;
+    padding = [
+      [0, 0], // dont touch batch
+      [input.shape[2] > input.shape[1] ? Math.trunc((input.shape[2] - input.shape[1]) / 2) : 0, input.shape[2] > input.shape[1] ? Math.trunc((input.shape[2] - input.shape[1]) / 2) : 0], // height before&after
+      [input.shape[1] > input.shape[2] ? Math.trunc((input.shape[1] - input.shape[2]) / 2) : 0, input.shape[1] > input.shape[2] ? Math.trunc((input.shape[1] - input.shape[2]) / 2) : 0], // width before&after
+      [0, 0], // dont touch rbg
+    ];
+    const padT = tf.pad(input, padding);
+    const resizeT = tf.image.resizeBilinear(padT, [inputSize, inputSize]);
+    tf.dispose(padT);
+    return resizeT;
 }
-
-
-function createModel() {
-    // Create a sequential model
-    const model = tf.sequential();
-  
-    // Add a single input layer
-    model.add(tf.layers.dense({inputShape: [1], units: 1, useBias: true}));
-  
-    // Add an output layer
-    model.add(tf.layers.dense({units: 1, useBias: true}));
-  
-    return model;
-}
-
-
-/**
- * Convert the input data to tensors that we can use for machine
- * learning. We will also do the important best practices of _shuffling_
- * the data and _normalizing_ the data
- * MPG on the y-axis.
- */
-function convertToTensor(data) {
-    // Wrapping these calculations in a tidy will dispose any
-    // intermediate tensors.
-  
-    return tf.tidy(() => {
-      // Step 1. Shuffle the data
-      tf.util.shuffle(data);
-  
-      // Step 2. Convert data to Tensor
-      const inputs = data.map(d => d.horsepower)
-      const labels = data.map(d => d.mpg);
-  
-      const inputTensor = tf.tensor2d(inputs, [inputs.length, 1]);
-      const labelTensor = tf.tensor2d(labels, [labels.length, 1]);
-  
-      //Step 3. Normalize the data to the range 0 - 1 using min-max scaling
-      const inputMax = inputTensor.max();
-      const inputMin = inputTensor.min();
-      const labelMax = labelTensor.max();
-      const labelMin = labelTensor.min();
-  
-      const normalizedInputs = inputTensor.sub(inputMin).div(inputMax.sub(inputMin));
-      const normalizedLabels = labelTensor.sub(labelMin).div(labelMax.sub(labelMin));
-  
-      return {
-        inputs: normalizedInputs,
-        labels: normalizedLabels,
-        // Return the min/max bounds so we can use them later.
-        inputMax,
-        inputMin,
-        labelMax,
-        labelMin,
-      }
-    });
-  }
-
-
-  async function trainModel(model, inputs, labels) {
-    // Prepare the model for training.
-    model.compile({
-      optimizer: tf.train.adam(),
-      loss: tf.losses.meanSquaredError,
-      metrics: ['mse'],
-    });
-  
-    const batchSize = 32;
-    const epochs = 50;
-  
-    return await model.fit(inputs, labels, {
-      batchSize,
-      epochs,
-      shuffle: true,
-      callbacks: () => {
-        
-      }
-    });
-  }
-
-
-
-  function testModel(model, inputData, normalizationData) {
-    const {inputMax, inputMin, labelMin, labelMax} = normalizationData;
-  
-    // Generate predictions for a uniform range of numbers between 0 and 1;
-    // We un-normalize the data by doing the inverse of the min-max scaling
-    // that we did earlier.
-    const [xs, preds] = tf.tidy(() => {
-  
-      const xsNorm = tf.linspace(0, 1, 100);
-      const predictions = model.predict(xsNorm.reshape([100, 1]));
-  
-      const unNormXs = xsNorm
-        .mul(inputMax.sub(inputMin))
-        .add(inputMin);
-  
-      const unNormPreds = predictions
-        .mul(labelMax.sub(labelMin))
-        .add(labelMin);
-  
-      // Un-normalize the data
-      return [unNormXs.dataSync(), unNormPreds.dataSync()];
-    });
-  
-  
-    const predictedPoints = Array.from(xs).map((val, i) => {
-      return {x: val, y: preds[i]}
-    });
-  
-    const originalPoints = inputData.map(d => ({
-      x: d.horsepower, y: d.mpg,
-    }));
-  
-    console.log(predictedPoints, originalPoints)
-  }
-
-
-  (async () => {
-
-    return
-const data = await getData();
-
-// Create the model
-const model = createModel();
-
-
-// Convert the data to a form we can use for training.
-const tensorData = convertToTensor(data);
-const {inputs, labels} = tensorData;
-
-// Train the model
-await trainModel(model, inputs, labels);
-console.log('Done Training');
-
-
-// Make some predictions using the model and compare them to the
-// original data
-testModel(model, data, tensorData);
-
-})()
-
 
 async function loadModel(model_path) {
 
@@ -167,55 +23,99 @@ async function loadModel(model_path) {
 
     const model = await tf.loadGraphModel(handler);
 
-    // console.log(model)
+    console.log(model)
     return model
 }
 
-function getInputSize(model) {
 
-  const inputs = Object.values(model.modelSignature['inputs']);
+const img_path = path.join('frames', '6packs.mp4', 'frame_1672991373415_1280x720_5.jpg')
 
-  /**
-   * {dim: [ { size: '-1' }, { size: '224' }, { size: '224' }, { size: '3' } ]}
-   */
-  console.log(inputs[0].tensorShape)
+const img_data = fs.readFileSync(img_path)
 
-  const inputSize = [0, 0];
+const img_tensor3d = tf.node.decodeJpeg(img_data)
 
-  inputSize[0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
-  inputSize[1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+const img_tensor4d = tf.tensor4d([img_tensor3d.arraySync()])
 
-  // [ 224, 224 ]
-  // console.log(inputSize)
-  return inputSize
-}
+// console.log(img_tensor4d);
+
+const resized_tensor = prepareImage(img_tensor4d, 224);
 
 const detectorPath = path.join('models', 'tfjs-model_blazepose_3d_detector_1', 'model.json');
-const posePath = path.join('models', 'tfjs-model_blazepose_3d_landmark_heavy_2', 'model.json');
+
+// // helper function: wrapper around console output
+// function log(...msg) {
+//     const dt = new Date();
+//     const ts = `${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}.${dt.getMilliseconds().toString().padStart(3, '0')}`;
+//     // eslint-disable-next-line no-console
+//     if (msg) console.log(ts, ...msg);
+//   }
+  
+
+
+// async function decodeResults(res, config) {
+//     log('decodeResults', { res, config });
+//     const box = [0, 0, 1, 1]; // [x1,y1,x2,y2]
+//     const boxes = [];
+//     boxes.push(box);
+//     return boxes;
+//   }
+
 
 (async() => {
-    const detectorModel = await loadModel(detectorPath);
 
-    const detectorInputsize = getInputSize(detectorModel)
+    const model = await loadModel(detectorPath);
 
-    // console.log(detectorInputsize);
+    const result_tensor = await model.execute(resized_tensor)
 
-    const poseModel = await loadModel(posePath);
-
-    /**
-    if (config.body.modelPath?.includes('lite')) outputNodes = ['ld_3d', 'output_segmentation', 'output_heatmap', 'world_3d', 'output_poseflag'];
-    else outputNodes = ['Identity', 'Identity_2', 'Identity_3', 'Identity_4', 'Identity_1']; // v2 from pinto full and heavy
-     */
-
-    const outputNodes = ['Identity', 'Identity_2', 'Identity_3', 'Identity_4', 'Identity_1'];
-
-    // console.log(poseModel)
-
-    const poseInputsize = getInputSize(poseModel);
-
-    console.log(poseInputsize)
-
-
+    console.log(result_tensor)
 
 })();
+
+function getInputSize(model) {
+
+    const inputs = Object.values(model.modelSignature['inputs']);
+
+    /**
+     * {dim: [ { size: '-1' }, { size: '224' }, { size: '224' }, { size: '3' } ]}
+     */
+    console.log(inputs[0].tensorShape)
+
+    const inputSize = [0, 0];
+
+    inputSize[0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
+    inputSize[1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+
+    // [ 224, 224 ]
+    // console.log(inputSize)
+    return inputSize
+}
+
+// exit()
+
+// 
+// const posePath = path.join('models', 'tfjs-model_blazepose_3d_landmark_heavy_2', 'model.json');
+
+// (async() => {
+//     const detectorModel = await loadModel(detectorPath);
+
+//     const detectorInputsize = getInputSize(detectorModel)
+
+//     // console.log(detectorInputsize);
+
+//     const poseModel = await loadModel(posePath);
+
+//     /**
+//     if (config.body.modelPath?.includes('lite')) outputNodes = ['ld_3d', 'output_segmentation', 'output_heatmap', 'world_3d', 'output_poseflag'];
+//     else outputNodes = ['Identity', 'Identity_2', 'Identity_3', 'Identity_4', 'Identity_1']; // v2 from pinto full and heavy
+//      */
+
+//     const outputNodes = ['Identity', 'Identity_2', 'Identity_3', 'Identity_4', 'Identity_1'];
+
+//     // console.log(poseModel)
+
+//     const poseInputsize = getInputSize(poseModel);
+
+//     console.log(poseInputsize)
+
+// })();
 
