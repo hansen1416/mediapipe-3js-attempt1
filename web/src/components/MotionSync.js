@@ -109,7 +109,7 @@ export default function MotionSync(props) {
 				model.position.set(-100, -100, 0);
 				camera.current.position.set(0, 0, 240);
 
-				console.log(model);
+				// console.log(model);
 
 				scene.current.add(model);
 
