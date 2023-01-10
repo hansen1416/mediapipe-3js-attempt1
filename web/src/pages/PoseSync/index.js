@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import style from './style.css'
 
-import { BlazePoseConfig, traverseModel, loadFBX, startCamera } from "./ropes";
+import { BlazePoseConfig, traverseModel, loadFBX, startCamera } from "../../components/ropes";
 
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";

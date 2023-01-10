@@ -399,14 +399,14 @@ export default function MotionSync(props) {
 					objects1={poseTrack}
 				/>
 			</div>
-			<div className="btn-box">
-				<video
-					ref={videoRef}
-					autoPlay={true}
-					width="640px"
-					height="320px"
-				></video>
+			<video
+				ref={videoRef}
+				autoPlay={true}
+				width="640px"
+				height="480px"
+			></video>
 
+			<div className="btn-box">
 				<div>{motionRound}</div>
 
 				<button
