@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./style.css";
 
-import { box, startCamera } from "../../components/ropes";
+import { box, loadFBX, loadObj, startCamera } from "../../components/ropes";
 
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
@@ -10,8 +10,9 @@ import "@tensorflow/tfjs-backend-webgl";
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { Object3D } from "three";
 
-import SiderAnimation from "./SiderAnimation";
+// import SiderAnimation from "./SiderAnimation";
 
 export default function PoseSync() {
 	const canvasRef = useRef(null);
@@ -25,7 +26,6 @@ export default function PoseSync() {
 	const figureParts = useRef({});
 
 	const sceneInfoList = useRef({});
-	const [sceneList, setsceneList] = useState({});
 	const [animationList, setanimationList] = useState([]);
 
 	const renderer = useRef(null);
@@ -76,26 +76,19 @@ export default function PoseSync() {
 	}, []);
 
 	useEffect(() => {
-		const tmpSceneList = {};
-
-		if (animationList && animationList.length) {
-			// create main scene
-			sceneInfoList.current["main"] = createScene(
-				document.getElementById("main_scene")
-			);
-
-			tmpSceneList["main"] = sceneInfoList.current["main"].scene;
-
-			document.querySelectorAll("[data-animation]").forEach((elem) => {
-				sceneInfoList.current[elem.dataset["animation"]] =
-					createScene(elem);
-
-				tmpSceneList[elem.dataset["animation"]] =
-					sceneInfoList.current[elem.dataset["animation"]].scene;
-			});
+		if (!animationList || !animationList.length) {
+			return;
 		}
 
-		setsceneList(tmpSceneList);
+		// create main scene
+		sceneInfoList.current["main"] = createScene(
+			document.getElementById("main_scene")
+		);
+
+		document.querySelectorAll("[data-animation]").forEach((elem) => {
+			sceneInfoList.current[elem.dataset["animation"]] =
+				createScene(elem);
+		});
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -111,10 +104,33 @@ export default function PoseSync() {
 		renderer.current.clear(true, true);
 		renderer.current.setScissorTest(true);
 
+		loadAnimations(animationList);
+
 		animate();
 
 		// eslint-disable-next-line
 	}, [animationList]);
+
+	function loadAnimations(animation_names) {
+		const tasks = [loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")];
+
+		for (let name of animation_names) {
+			tasks.push(
+				loadObj(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json")
+			);
+		}
+
+		Promise.all(tasks).then(([model]) => {
+			// create main scene
+			sceneInfoList.current["main"].scene.add(model.clone(true));
+			// sceneInfoList.current["main"].scene.add(b);
+
+			for (let name of animation_names) {
+				sceneInfoList.current[name].scene.add(model.clone(true));
+				// sceneInfoList.current[name].scene.add(b);
+			}
+		});
+	}
 
 	// useEffect(() => {
 	// 	Promise.all([
@@ -198,12 +214,17 @@ export default function PoseSync() {
 				<div className="sider">
 					{animationList.map((name) => {
 						return (
-							<SiderAnimation
+							// <SiderAnimation
+							// 	key={name}
+							// 	scene={sceneList[name]}
+							// 	animation_name={name}
+							// 	class_name="animation-scene"
+							// />
+							<div
 								key={name}
-								scene={sceneList[name]}
-								animation_name={name}
-								class_name="animation-scene"
-							/>
+								data-animation={name}
+								className="animation-scene"
+							></div>
 						);
 					})}
 				</div>

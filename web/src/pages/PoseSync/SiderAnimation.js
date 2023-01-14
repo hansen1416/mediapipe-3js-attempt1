@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 
-import { box, startCamera } from "../../components/ropes";
+import { loadFBX } from "../../components/ropes";
 
 export default function SiderAnimation({ scene, animation_name, class_name }) {
 	useEffect(() => {
 		if (scene) {
-			const b = box(50);
-
-			b.position.set(0, 0, 0);
-
-			scene.add(b);
+			Promise.all([
+				loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+			]).then(([model]) => {
+				console.log(model);
+				scene.add(model);
+			});
 		}
 
 		// eslint-disable-next-line
