@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import './style.css'
+import "./style.css";
 
 import { box, startCamera } from "../../components/ropes";
 
@@ -12,7 +12,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export default function PoseSync() {
-
 	const canvasRef = useRef(null);
 
 	const videoRef = useRef(null);
@@ -29,13 +28,17 @@ export default function PoseSync() {
 	const renderer = useRef(null);
 
 	function createScene(elem) {
-
 		const scene = new THREE.Scene();
-		
+
 		const rect = elem.getBoundingClientRect();
-		const {width, height} = rect;
- 
-		const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+		const { width, height } = rect;
+
+		const camera = new THREE.PerspectiveCamera(
+			75,
+			width / height,
+			0.1,
+			1000
+		);
 		camera.position.set(0, 0, 240);
 		// camera.lookAt(0, 0, 0);
 
@@ -45,50 +48,52 @@ export default function PoseSync() {
 		scene.add(camera);
 
 		{
-			const color = 0xFFFFFF;
+			const color = 0xffffff;
 			const intensity = 1;
 			const light = new THREE.DirectionalLight(color, intensity);
 			light.position.set(-1, 2, 4);
 			camera.add(light);
 		}
 
-		return {scene, camera, controls, elem};
+		return { scene, camera, controls, elem };
 	}
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
-			resolve(['1', '2', '3', '4', '5', '6']);
+			resolve(["1", "2", "3", "4", "5", "6"]);
 		});
 	}
 
 	useEffect(() => {
-
 		loadAnimationList().then((data) => {
-			setanimationList(data)
-		})
+			setanimationList(data);
+		});
 
-		
-		
-		
 		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {
-
 		if (animationList && animationList.length) {
 			// create main scene
-			sceneInfoList.current['main'] = createScene(document.getElementById('main_scene'));
+			sceneInfoList.current["main"] = createScene(
+				document.getElementById("main_scene")
+			);
 
-			document.querySelectorAll('[data-animation]').forEach((elem) => {
-				sceneInfoList.current[elem.dataset['animation']] = createScene(elem);
-			})
+			document.querySelectorAll("[data-animation]").forEach((elem) => {
+				sceneInfoList.current[elem.dataset["animation"]] =
+					createScene(elem);
+			});
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current, alpha: true
+			canvas: canvasRef.current,
+			// alpha: true
 		});
 
-		renderer.current.setSize(document.documentElement.clientWidth, document.documentElement.clientHeight);
+		renderer.current.setSize(
+			document.documentElement.clientWidth,
+			document.documentElement.clientHeight
+		);
 
 		renderer.current.setScissorTest(false);
 		renderer.current.clear(true, true);
@@ -96,20 +101,18 @@ export default function PoseSync() {
 
 		animate();
 
-		for ( let key in sceneInfoList.current) {
-
-			const {scene} = sceneInfoList.current[key];
+		for (let key in sceneInfoList.current) {
+			const { scene } = sceneInfoList.current[key];
 
 			const b = box(50);
 
-			b.position.set(0,0,0);
+			b.position.set(0, 0, 0);
 
 			scene.add(b);
 		}
 
 		// eslint-disable-next-line
 	}, [animationList]);
-
 
 	// useEffect(() => {
 	// 	Promise.all([
@@ -155,17 +158,16 @@ export default function PoseSync() {
 		// 	})();
 		// }
 
-
-
-		for ( let key in sceneInfoList.current) {
-
-			const {scene, camera, controls, elem} = sceneInfoList.current[key];
+		for (let key in sceneInfoList.current) {
+			const { scene, camera, controls, elem } =
+				sceneInfoList.current[key];
 
 			// get the viewport relative position of this element
-			const {left, right, top, bottom, width, height} = elem.getBoundingClientRect();
+			const { left, right, top, bottom, width, height } =
+				elem.getBoundingClientRect();
 
-			if (bottom < 0 || top > document.documentElement.clientWidth || right < 0 || left > document.documentElement.clientHeight) {
-				continue
+			if (bottom < 0 || top > document.documentElement.clientWidth) {
+				continue;
 			}
 
 			// camera.aspect = width / height;
@@ -175,16 +177,14 @@ export default function PoseSync() {
 
 			renderer.current.setScissor(left, top, width, height);
 			renderer.current.setViewport(left, top, width, height);
-			
+
 			renderer.current.render(scene, camera);
 		}
 	}
 
 	return (
 		<div>
-			<canvas
-				ref={canvasRef}
-			></canvas>
+			<canvas ref={canvasRef}></canvas>
 			<video
 				ref={videoRef}
 				autoPlay={true}
@@ -194,11 +194,15 @@ export default function PoseSync() {
 			<div className="flex-container">
 				<div id="main_scene"></div>
 				<div className="sider">
-					{
-						animationList.map((name) => {
-							return (<div key={name} data-animation={name} className="animation-scene"></div>)
-						})
-					}
+					{animationList.map((name) => {
+						return (
+							<div
+								key={name}
+								data-animation={name}
+								className="animation-scene"
+							></div>
+						);
+					})}
 				</div>
 			</div>
 
