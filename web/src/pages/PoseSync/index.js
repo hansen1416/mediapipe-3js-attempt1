@@ -11,6 +11,8 @@ import "@tensorflow/tfjs-backend-webgl";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+import SiderAnimation from "./SiderAnimation";
+
 export default function PoseSync() {
 	const canvasRef = useRef(null);
 
@@ -23,6 +25,7 @@ export default function PoseSync() {
 	const figureParts = useRef({});
 
 	const sceneInfoList = useRef({});
+	const [sceneList, setsceneList] = useState({});
 	const [animationList, setanimationList] = useState([]);
 
 	const renderer = useRef(null);
@@ -73,21 +76,30 @@ export default function PoseSync() {
 	}, []);
 
 	useEffect(() => {
+		const tmpSceneList = {};
+
 		if (animationList && animationList.length) {
 			// create main scene
 			sceneInfoList.current["main"] = createScene(
 				document.getElementById("main_scene")
 			);
 
+			tmpSceneList["main"] = sceneInfoList.current["main"].scene;
+
 			document.querySelectorAll("[data-animation]").forEach((elem) => {
 				sceneInfoList.current[elem.dataset["animation"]] =
 					createScene(elem);
+
+				tmpSceneList[elem.dataset["animation"]] =
+					sceneInfoList.current[elem.dataset["animation"]].scene;
 			});
 		}
 
+		setsceneList(tmpSceneList);
+
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
-			// alpha: true
+			alpha: true,
 		});
 
 		renderer.current.setSize(
@@ -100,16 +112,6 @@ export default function PoseSync() {
 		renderer.current.setScissorTest(true);
 
 		animate();
-
-		for (let key in sceneInfoList.current) {
-			const { scene } = sceneInfoList.current[key];
-
-			const b = box(50);
-
-			b.position.set(0, 0, 0);
-
-			scene.add(b);
-		}
 
 		// eslint-disable-next-line
 	}, [animationList]);
@@ -196,11 +198,12 @@ export default function PoseSync() {
 				<div className="sider">
 					{animationList.map((name) => {
 						return (
-							<div
+							<SiderAnimation
 								key={name}
-								data-animation={name}
-								className="animation-scene"
-							></div>
+								scene={sceneList[name]}
+								animation_name={name}
+								class_name="animation-scene"
+							/>
 						);
 					})}
 				</div>
