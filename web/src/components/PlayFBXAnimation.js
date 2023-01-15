@@ -14,42 +14,46 @@ export default function PlayFBXAnimation(props) {
 	const clock = new THREE.Clock();
 
 	useEffect(() => {
-		Promise.all([loadFBX(process.env.PUBLIC_URL + "/fbx/crunch.fbx")]).then(
-			([model]) => {
-				const animations = model.animations;
+		Promise.all([
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		]).then(([model, mini_model]) => {
+			const animations = model.animations;
 
-				model.position.set(0, 0, 0);
-				camera.current.position.set(0, 0, 240);
+			model.position.set(0, -100, 0);
+			camera.current.position.set(0, 0, 900);
 
-				console.log(model);
+			scene.current.add(model);
 
-				scene.current.add(model);
+			// const mini_model = model.clone(true);
+			mini_model.position.set(800, 300, 0);
 
-				mixer.current = new THREE.AnimationMixer(model);
+			scene.current.add(mini_model);
 
-				mixer.current.stopAllAction();
+			mixer.current = new THREE.AnimationMixer(model);
 
-				const action = mixer.current.clipAction(animations[0]);
+			mixer.current.stopAllAction();
 
-				action.reset();
-				// action.setLoop(THREE.LoopOnce);
+			const action = mixer.current.clipAction(animations[0]);
 
-				// action.halt(1);
+			action.reset();
+			// action.setLoop(THREE.LoopOnce);
 
-				// will restore the origin position of model during `time`
-				// action.fadeOut(4);
+			// action.halt(1);
 
-				// controls how long the animation plays
-				// action.setDuration(1);
+			// will restore the origin position of model during `time`
+			// action.fadeOut(4);
 
-				// keep model at the position where it stops
-				action.clampWhenFinished = true;
+			// controls how long the animation plays
+			// action.setDuration(1);
 
-				action.enable = true;
+			// keep model at the position where it stops
+			action.clampWhenFinished = true;
 
-				action.play();
-			}
-		);
+			action.enable = true;
+
+			action.play();
+		});
 
 		setTimeout(() => {
 			animate();

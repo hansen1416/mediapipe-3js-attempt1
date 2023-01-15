@@ -10,9 +10,8 @@ import "@tensorflow/tfjs-backend-webgl";
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Object3D } from "three";
 
-// import SiderAnimation from "./SiderAnimation";
+// import Sider from "./Sider";
 
 export default function PoseSync() {
 	const canvasRef = useRef(null);
@@ -25,112 +24,17 @@ export default function PoseSync() {
 
 	const figureParts = useRef({});
 
-	const sceneInfoList = useRef({});
-	const [animationList, setanimationList] = useState([]);
-
 	const renderer = useRef(null);
 
-	function createScene(elem) {
-		const scene = new THREE.Scene();
-
-		const rect = elem.getBoundingClientRect();
-		const { width, height } = rect;
-
-		const camera = new THREE.PerspectiveCamera(
-			75,
-			width / height,
-			0.1,
-			1000
-		);
-		camera.position.set(0, 0, 240);
-		// camera.lookAt(0, 0, 0);
-
-		const controls = new OrbitControls(camera, elem);
-		controls.noPan = true;
-
-		scene.add(camera);
-
-		{
-			const color = 0xffffff;
-			const intensity = 1;
-			const light = new THREE.DirectionalLight(color, intensity);
-			light.position.set(-1, 2, 4);
-			camera.add(light);
-		}
-
-		return { scene, camera, controls, elem };
-	}
-
-	function loadAnimationList() {
-		return new Promise((resolve) => {
-			resolve(["1", "2", "3", "4", "5", "6"]);
-		});
-	}
-
 	useEffect(() => {
-		loadAnimationList().then((data) => {
-			setanimationList(data);
+		Promise.all([
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		]).then(([model]) => {
+			// create main scene
 		});
 
 		// eslint-disable-next-line
 	}, []);
-
-	useEffect(() => {
-		if (!animationList || !animationList.length) {
-			return;
-		}
-
-		// create main scene
-		sceneInfoList.current["main"] = createScene(
-			document.getElementById("main_scene")
-		);
-
-		document.querySelectorAll("[data-animation]").forEach((elem) => {
-			sceneInfoList.current[elem.dataset["animation"]] =
-				createScene(elem);
-		});
-
-		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current,
-			alpha: true,
-		});
-
-		renderer.current.setSize(
-			document.documentElement.clientWidth,
-			document.documentElement.clientHeight
-		);
-
-		renderer.current.setScissorTest(false);
-		renderer.current.clear(true, true);
-		renderer.current.setScissorTest(true);
-
-		loadAnimations(animationList);
-
-		animate();
-
-		// eslint-disable-next-line
-	}, [animationList]);
-
-	function loadAnimations(animation_names) {
-		const tasks = [loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")];
-
-		for (let name of animation_names) {
-			tasks.push(
-				loadObj(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json")
-			);
-		}
-
-		Promise.all(tasks).then(([model]) => {
-			// create main scene
-			sceneInfoList.current["main"].scene.add(model.clone(true));
-			// sceneInfoList.current["main"].scene.add(b);
-
-			for (let name of animation_names) {
-				sceneInfoList.current[name].scene.add(model.clone(true));
-				// sceneInfoList.current[name].scene.add(b);
-			}
-		});
-	}
 
 	// useEffect(() => {
 	// 	Promise.all([
@@ -175,29 +79,6 @@ export default function PoseSync() {
 		// 		console.log(poses);
 		// 	})();
 		// }
-
-		for (let key in sceneInfoList.current) {
-			const { scene, camera, controls, elem } =
-				sceneInfoList.current[key];
-
-			// get the viewport relative position of this element
-			const { left, right, top, bottom, width, height } =
-				elem.getBoundingClientRect();
-
-			if (bottom < 0 || top > document.documentElement.clientWidth) {
-				continue;
-			}
-
-			// camera.aspect = width / height;
-			// camera.updateProjectionMatrix();
-			// // controls.handleResize();
-			// controls.update()
-
-			renderer.current.setScissor(left, top, width, height);
-			renderer.current.setViewport(left, top, width, height);
-
-			renderer.current.render(scene, camera);
-		}
 	}
 
 	return (
@@ -211,23 +92,6 @@ export default function PoseSync() {
 			></video>
 			<div className="flex-container">
 				<div id="main_scene"></div>
-				<div className="sider">
-					{animationList.map((name) => {
-						return (
-							// <SiderAnimation
-							// 	key={name}
-							// 	scene={sceneList[name]}
-							// 	animation_name={name}
-							// 	class_name="animation-scene"
-							// />
-							<div
-								key={name}
-								data-animation={name}
-								className="animation-scene"
-							></div>
-						);
-					})}
-				</div>
 			</div>
 
 			<div className="btn-box">

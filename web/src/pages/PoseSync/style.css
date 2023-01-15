@@ -33,6 +33,7 @@ video {
 
 .flex-container .sider {
     width: 36%;
+    max-width: 50vh;
     height: 100vh;
 }
 
