@@ -1,9 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import { loadFBX } from "../../components/ropes";
+import { loadFBX, box } from "../../components/ropes";
 
-export default function Sider({ scene, animation_name, class_name }) {
+export default function Sider() {
 	const [animationList, setanimationList] = useState([]);
+
+	const sceneInfoList = useRef({});
+
+	const container = useRef(null);
+	const canvasRef = useRef(null);
+
+	const renderer = useRef(null);
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -25,13 +34,8 @@ export default function Sider({ scene, animation_name, class_name }) {
 		}
 
 		// create main scene
-		sceneInfoList.current["main"] = createScene(
-			document.getElementById("main_scene")
-		);
-
-		document.querySelectorAll("[data-animation]").forEach((elem) => {
-			sceneInfoList.current[elem.dataset["animation"]] =
-				createScene(elem);
+		document.querySelectorAll(".animation-scene").forEach((elem) => {
+			sceneInfoList.current[elem.dataset["animation"]] = createScene(elem);
 		});
 
 		renderer.current = new THREE.WebGLRenderer({
@@ -39,24 +43,36 @@ export default function Sider({ scene, animation_name, class_name }) {
 			alpha: true,
 		});
 
-		renderer.current.setSize(
-			document.documentElement.clientWidth,
-			document.documentElement.clientHeight
-		);
+		const {width, height} = container.current.getBoundingClientRect();
+
+		renderer.current.setSize(width, height);
 
 		renderer.current.setScissorTest(false);
 		renderer.current.clear(true, true);
 		renderer.current.setScissorTest(true);
 
-		loadAnimations(animationList);
+		Promise.all([
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		]).then(([model]) => {
+			
+			for (let i in sceneInfoList.current) {
+				const {scene} = sceneInfoList.current[i];
+// console.log(scene)
+				const b = box(100)
 
-		animate();
+				// scene.add(model.clone())
+				scene.add(b)
+			}
+
+			animate();
+		});
 
 		// eslint-disable-next-line
 	}, [animationList]);
 
 	function createScene(elem) {
 		const scene = new THREE.Scene();
+		scene.background = new THREE.Color(0x22244);
 
 		const rect = elem.getBoundingClientRect();
 		const { width, height } = rect;
@@ -71,7 +87,6 @@ export default function Sider({ scene, animation_name, class_name }) {
 		// camera.lookAt(0, 0, 0);
 
 		const controls = new OrbitControls(camera, elem);
-		controls.noPan = true;
 
 		scene.add(camera);
 
@@ -85,19 +100,6 @@ export default function Sider({ scene, animation_name, class_name }) {
 
 		return { scene, camera, controls, elem };
 	}
-
-	useEffect(() => {
-		if (scene) {
-			Promise.all([
-				loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-			]).then(([model]) => {
-				console.log(model);
-				scene.add(model);
-			});
-		}
-
-		// eslint-disable-next-line
-	}, [scene]);
 
 	function animate() {
 		requestAnimationFrame(animate);
@@ -117,15 +119,14 @@ export default function Sider({ scene, animation_name, class_name }) {
 		// }
 
 		for (let key in sceneInfoList.current) {
-			const { scene, camera, controls, elem } =
-				sceneInfoList.current[key];
+			const { scene, camera, elem } = sceneInfoList.current[key];
 
 			// get the viewport relative position of this element
-			const { left, right, top, bottom, width, height } =
+			const { left, top, bottom, width, height } =
 				elem.getBoundingClientRect();
 
 			if (bottom < 0 || top > document.documentElement.clientWidth) {
-				continue;
+				// continue;
 			}
 
 			// camera.aspect = width / height;
@@ -141,15 +142,16 @@ export default function Sider({ scene, animation_name, class_name }) {
 	}
 
 	return (
-		<div className="sider">
+		<div
+			ref={container}
+			className="sider"
+		>
+			<canvas
+				ref={canvasRef}
+				style={{zIndex: -1, position: "absolute"}}
+			/>
 			{animationList.map((name) => {
 				return (
-					// <SiderAnimation
-					// 	key={name}
-					// 	scene={sceneList[name]}
-					// 	animation_name={name}
-					// 	class_name="animation-scene"
-					// />
 					<div
 						key={name}
 						data-animation={name}

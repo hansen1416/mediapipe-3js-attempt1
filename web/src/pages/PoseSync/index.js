@@ -11,7 +11,7 @@ import "@tensorflow/tfjs-backend-webgl";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-// import Sider from "./Sider";
+import Sider from "./Sider";
 
 export default function PoseSync() {
 
@@ -129,8 +129,9 @@ export default function PoseSync() {
 					id="main_scene"
 					ref={mainSceneRef}
 				>
-					<canvas ref={canvasRef}></canvas>
+					<canvas ref={canvasRef}/>
 				</div>
+				<Sider/>
 			</div>
 
 			<div className="btn-box">
