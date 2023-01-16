@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./style.css";
 
-import { box, loadFBX, loadObj, startCamera } from "../../components/ropes";
+import { BlazePoseConfig, loadFBX, startCamera, traverseModel } from "../../components/ropes";
 
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
@@ -14,54 +14,85 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // import Sider from "./Sider";
 
 export default function PoseSync() {
+
+	const mainSceneRef = useRef(null);
 	const canvasRef = useRef(null);
+	const scene = useRef(null);
+	const camera = useRef(null);
+	const renderer = useRef(null);
+	const controls = useRef(null);
 
 	const videoRef = useRef(null);
-
-	const counter = useRef(0);
 
 	const poseDetector = useRef(null);
 
 	const figureParts = useRef({});
 
-	const renderer = useRef(null);
-
 	useEffect(() => {
+
+		const {width, height} = mainSceneRef.current.getBoundingClientRect();
+
+		_scene(width, height);
+
+		// Promise.all([
+		// 	poseDetection.createDetector(
+		// 		poseDetection.SupportedModels.BlazePose,
+		// 		BlazePoseConfig
+		// 	),
+		// 	loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		// ]).then(([detector, model]) => {
+		// 	poseDetector.current = detector;
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([model]) => {
 			// create main scene
+			model.position.set(0, -100, 0);
+
+			traverseModel(model, figureParts.current);
+
+			scene.current.add(model);
+
+			animate();
 		});
 
+		return () => {
+			controls.current.dispose();
+			renderer.current.dispose();
+		};
 		// eslint-disable-next-line
 	}, []);
 
-	// useEffect(() => {
-	// 	Promise.all([
-	// 		poseDetection.createDetector(
-	// 			poseDetection.SupportedModels.BlazePose,
-	// 			BlazePoseConfig
-	// 		),
-	// 		loadFBX(process.env.PUBLIC_URL + "/fbx/crunch.fbx"),
-	// 	]).then(([detector, model]) => {
-	// 		poseDetector.current = detector;
+	function _scene(viewWidth, viewHeight) {
+		const backgroundColor = 0x22244;
 
-	// 		// console.log(model);
+		scene.current = new THREE.Scene();
+		scene.current.background = new THREE.Color(backgroundColor);
 
-	// 		model.position.set(0, -100, 0);
-	// 		camera.current.position.set(0, 0, 240);
+		camera.current = new THREE.PerspectiveCamera(
+			75,
+			viewWidth / viewHeight,
+			0.1,
+			1000
+		);
 
-	// 		traverseModel(model, figureParts.current);
+		camera.current.position.set(0, 0, 300);
 
-	// 		scene.current.add(model);
-	// 	});
+		{
+			const light = new THREE.PointLight(0xffffff, 1);
+			// light.position.set(10, 10, 10);
+			camera.current.add(light);
 
-	// 	setTimeout(() => {
-	// 		animate();
-	// 	}, 0);
+			scene.current.add(camera.current);
+		}
 
-	// 	// eslint-disable-next-line
-	// }, []);
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+		});
+
+		controls.current = new OrbitControls(camera.current, canvasRef.current);
+
+		renderer.current.setSize(viewWidth, viewHeight);
+	}
 
 	function animate() {
 		requestAnimationFrame(animate);
@@ -79,11 +110,14 @@ export default function PoseSync() {
 		// 		console.log(poses);
 		// 	})();
 		// }
+
+		controls.current.update();
+
+		renderer.current.render(scene.current, camera.current);
 	}
 
 	return (
 		<div>
-			<canvas ref={canvasRef}></canvas>
 			<video
 				ref={videoRef}
 				autoPlay={true}
@@ -91,7 +125,12 @@ export default function PoseSync() {
 				height="480px"
 			></video>
 			<div className="flex-container">
-				<div id="main_scene"></div>
+				<div 
+					id="main_scene"
+					ref={mainSceneRef}
+				>
+					<canvas ref={canvasRef}></canvas>
+				</div>
 			</div>
 
 			<div className="btn-box">
