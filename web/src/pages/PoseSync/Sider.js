@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import { loadFBX, box } from "../../components/ropes";
+import { loadFBX } from "../../components/ropes";
 
 export default function Sider() {
 	const [animationList, setanimationList] = useState([]);
@@ -16,7 +16,11 @@ export default function Sider() {
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
-			resolve(["1", "2", "3", "4", "5", "6"]);
+			resolve(
+				Array(16)
+					.fill(1)
+					.map((x) => x + 1)
+			);
 		});
 	}
 
@@ -35,7 +39,8 @@ export default function Sider() {
 
 		// create main scene
 		document.querySelectorAll(".animation-scene").forEach((elem) => {
-			sceneInfoList.current[elem.dataset["animation"]] = createScene(elem);
+			sceneInfoList.current[elem.dataset["animation"]] =
+				createScene(elem);
 		});
 
 		renderer.current = new THREE.WebGLRenderer({
@@ -43,25 +48,17 @@ export default function Sider() {
 			alpha: true,
 		});
 
-		const {width, height} = container.current.getBoundingClientRect();
+		const { width, height } = container.current.getBoundingClientRect();
 
 		renderer.current.setSize(width, height);
-
-		renderer.current.setScissorTest(false);
-		renderer.current.clear(true, true);
-		renderer.current.setScissorTest(true);
 
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([model]) => {
-			
 			for (let i in sceneInfoList.current) {
-				const {scene} = sceneInfoList.current[i];
-// console.log(scene)
-				const b = box(100)
+				const { scene } = sceneInfoList.current[i];
 
-				// scene.add(model.clone())
-				scene.add(b)
+				scene.add(model.clone());
 			}
 
 			animate();
@@ -74,8 +71,7 @@ export default function Sider() {
 		const scene = new THREE.Scene();
 		scene.background = new THREE.Color(0x22244);
 
-		const rect = elem.getBoundingClientRect();
-		const { width, height } = rect;
+		const { width, height } = elem.getBoundingClientRect();
 
 		const camera = new THREE.PerspectiveCamera(
 			75,
@@ -102,21 +98,9 @@ export default function Sider() {
 	}
 
 	function animate() {
-		requestAnimationFrame(animate);
-
-		// if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
-		// 	(async () => {
-		// 		// const timestamp = performance.now();
-
-		// 		const poses = await poseDetector.current.estimatePoses(
-		// 			videoRef.current
-		// 			// { flipHorizontal: false }
-		// 			// timestamp
-		// 		);
-
-		// 		console.log(poses);
-		// 	})();
-		// }
+		renderer.current.setScissorTest(false);
+		renderer.current.clear(true, true);
+		renderer.current.setScissorTest(true);
 
 		for (let key in sceneInfoList.current) {
 			const { scene, camera, elem } = sceneInfoList.current[key];
@@ -125,7 +109,7 @@ export default function Sider() {
 			const { left, top, bottom, width, height } =
 				elem.getBoundingClientRect();
 
-			if (bottom < 0 || top > document.documentElement.clientWidth) {
+			if (bottom < 0 || top > document.documentElement.clientHeight) {
 				// continue;
 			}
 
@@ -134,26 +118,26 @@ export default function Sider() {
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(left, top, width, height);
-			renderer.current.setViewport(left, top, width, height);
+			renderer.current.setScissor(0, top, width, height);
+			renderer.current.setViewport(0, top, width, height);
 
 			renderer.current.render(scene, camera);
 		}
+
+		requestAnimationFrame(animate);
 	}
 
 	return (
-		<div
-			ref={container}
-			className="sider"
-		>
+		<div ref={container} className="sider">
 			<canvas
 				ref={canvasRef}
-				style={{zIndex: -1, position: "absolute"}}
+				style={{ zIndex: -1, position: "absolute" }}
 			/>
-			{animationList.map((name) => {
+
+			{animationList.map((name, i) => {
 				return (
 					<div
-						key={name}
+						key={i}
 						data-animation={name}
 						className="animation-scene"
 					></div>

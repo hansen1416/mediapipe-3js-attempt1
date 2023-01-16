@@ -28,14 +28,15 @@ video {
 }
 
 .flex-container .sider {
-    width: 36%;
-    max-width: 50vh;
+    width: 100vh;
+    max-width: 100vh;
     height: 100vh;
 }
 
 .flex-container .sider .animation-scene {
-    width: 100%;
-    height: 33.3vh;
+    width: 25vh;
+    height: 25vh;
+    display: inline-block;
     box-sizing: border-box;
     border: 1px solid #fff;
 }

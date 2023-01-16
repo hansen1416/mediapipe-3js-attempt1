@@ -1,7 +1,12 @@
 import { useEffect, useRef } from "react";
 import "./style.css";
 
-import { BlazePoseConfig, loadFBX, startCamera, traverseModel } from "../../components/ropes";
+import {
+	BlazePoseConfig,
+	loadFBX,
+	startCamera,
+	traverseModel,
+} from "../../components/ropes";
 
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
@@ -14,7 +19,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Sider from "./Sider";
 
 export default function PoseSync() {
-
 	const mainSceneRef = useRef(null);
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -29,8 +33,7 @@ export default function PoseSync() {
 	const figureParts = useRef({});
 
 	useEffect(() => {
-
-		const {width, height} = mainSceneRef.current.getBoundingClientRect();
+		const { width, height } = mainSceneRef.current.getBoundingClientRect();
 
 		_scene(width, height);
 
@@ -95,8 +98,6 @@ export default function PoseSync() {
 	}
 
 	function animate() {
-		requestAnimationFrame(animate);
-
 		// if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
 		// 	(async () => {
 		// 		// const timestamp = performance.now();
@@ -114,6 +115,8 @@ export default function PoseSync() {
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
+
+		requestAnimationFrame(animate);
 	}
 
 	return (
@@ -125,13 +128,10 @@ export default function PoseSync() {
 				height="480px"
 			></video>
 			<div className="flex-container">
-				<div 
-					id="main_scene"
-					ref={mainSceneRef}
-				>
-					<canvas ref={canvasRef}/>
+				<div id="main_scene" ref={mainSceneRef}>
+					<canvas ref={canvasRef} />
 				</div>
-				<Sider/>
+				<Sider />
 			</div>
 
 			<div className="btn-box">
