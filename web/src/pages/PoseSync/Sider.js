@@ -15,8 +15,6 @@ export default function Sider() {
 
 	const renderer = useRef(null);
 
-	const mixers = useRef({});
-
 	function loadAnimationList() {
 		return new Promise((resolve) => {
 			resolve(
@@ -61,18 +59,14 @@ export default function Sider() {
 		]).then(([model, animationJSON]) => {
 
 			for (let key in sceneInfoList.current) {
-				const { scene } = sceneInfoList.current[key];
+				const { scene, mixer } = sceneInfoList.current[key];
 
 				const tmpmodel = SkeletonUtils.clone(model)
 				// const tmpmodel = model.clone()
 
 				scene.add(tmpmodel);
 
-				mixers.current[key] = new THREE.AnimationMixer(tmpmodel);
-
-				const animation = THREE.AnimationClip.parse(animationJSON)
-
-				const action = mixers.current[key].clipAction(animation);
+				const action = mixer.clipAction(THREE.AnimationClip.parse(animationJSON), tmpmodel);
 
 				action.reset();
 
@@ -93,7 +87,7 @@ export default function Sider() {
 
 	function createScene(elem) {
 		const scene = new THREE.Scene();
-		scene.background = new THREE.Color(0x22244);
+		scene.background = new THREE.Color(0x022244);
 
 		const { width, height } = elem.getBoundingClientRect();
 
@@ -120,7 +114,9 @@ export default function Sider() {
 
 		const clock = new THREE.Clock();
 
-		return { scene, camera, controls, elem, clock };
+		const mixer = new THREE.AnimationMixer();
+
+		return { scene, camera, controls, elem, clock, mixer };
 	}
 
 	function animate() {
@@ -130,11 +126,11 @@ export default function Sider() {
 
 		for (let key in sceneInfoList.current) {
 
-			const { scene, camera, elem, clock } = sceneInfoList.current[key];
+			const { scene, camera, elem, clock, mixer } = sceneInfoList.current[key];
 			
 			const delta = clock.getDelta();
 
-			if (mixers.current[key]) mixers.current[key].update(delta);
+			mixer.update(delta);
 
 			// get the viewport relative position of this element
 			const { left, top, bottom, width, height } =
