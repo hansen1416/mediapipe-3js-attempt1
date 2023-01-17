@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js'
 
 import { loadFBX, loadObj } from "../../components/ropes";
 
@@ -15,8 +16,6 @@ export default function Sider() {
 	const renderer = useRef(null);
 
 	const mixers = useRef({});
-
-	const clock = new THREE.Clock();
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -61,16 +60,17 @@ export default function Sider() {
 			loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
 		]).then(([model, animationJSON]) => {
 
-			const animation = THREE.AnimationClip.parse(animationJSON)
-
 			for (let key in sceneInfoList.current) {
 				const { scene } = sceneInfoList.current[key];
 
-				// const m = model.clone();
+				const tmpmodel = SkeletonUtils.clone(model)
+				// const tmpmodel = model.clone()
 
-				scene.add(model);
+				scene.add(tmpmodel);
 
-				mixers.current[key] = new THREE.AnimationMixer(model);
+				mixers.current[key] = new THREE.AnimationMixer(tmpmodel);
+
+				const animation = THREE.AnimationClip.parse(animationJSON)
 
 				const action = mixers.current[key].clipAction(animation);
 
@@ -83,7 +83,6 @@ export default function Sider() {
 
 				action.play();
 
-				break
 			}
 
 			animate();
@@ -119,7 +118,9 @@ export default function Sider() {
 			camera.add(light);
 		}
 
-		return { scene, camera, controls, elem };
+		const clock = new THREE.Clock();
+
+		return { scene, camera, controls, elem, clock };
 	}
 
 	function animate() {
@@ -129,11 +130,11 @@ export default function Sider() {
 
 		for (let key in sceneInfoList.current) {
 
+			const { scene, camera, elem, clock } = sceneInfoList.current[key];
+			
 			const delta = clock.getDelta();
 
 			if (mixers.current[key]) mixers.current[key].update(delta);
-
-			const { scene, camera, elem } = sceneInfoList.current[key];
 
 			// get the viewport relative position of this element
 			const { left, top, bottom, width, height } =
@@ -143,13 +144,15 @@ export default function Sider() {
 				continue;
 			}
 
+			const boxheight = container.current.clientHeight;
+
 			// camera.aspect = width / height;
 			// camera.updateProjectionMatrix();
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(left-558, top, width, height);
-			renderer.current.setViewport(left-558, top, width, height);
+			renderer.current.setScissor(left, boxheight-bottom, width, height);
+			renderer.current.setViewport(left, boxheight-bottom, width, height);
 
 			renderer.current.render(scene, camera);
 		}

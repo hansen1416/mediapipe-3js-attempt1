@@ -2,13 +2,13 @@ import { useEffect, useRef } from "react";
 import "./style.css";
 
 import {
-	BlazePoseConfig,
+	// BlazePoseConfig,
 	loadFBX,
 	startCamera,
 	traverseModel,
 } from "../../components/ropes";
 
-import * as poseDetection from "@tensorflow-models/pose-detection";
+// import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
@@ -28,7 +28,7 @@ export default function PoseSync() {
 
 	const videoRef = useRef(null);
 
-	const poseDetector = useRef(null);
+	// const poseDetector = useRef(null);
 
 	const figureParts = useRef({});
 
@@ -128,10 +128,10 @@ export default function PoseSync() {
 				height="480px"
 			></video>
 			<div className="flex-container">
+				<Sider />
 				<div id="main_scene" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>
-				<Sider />
 			</div>
 
 			<div className="btn-box">
