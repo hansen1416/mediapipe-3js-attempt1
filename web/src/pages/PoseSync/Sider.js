@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import { loadFBX } from "../../components/ropes";
+import { loadFBX, loadObj } from "../../components/ropes";
 
 export default function Sider() {
 	const [animationList, setanimationList] = useState([]);
@@ -14,12 +14,16 @@ export default function Sider() {
 
 	const renderer = useRef(null);
 
+	const mixers = useRef({});
+
+	const clock = new THREE.Clock();
+
 	function loadAnimationList() {
 		return new Promise((resolve) => {
 			resolve(
 				Array(16)
 					.fill(1)
-					.map((x) => x + 1)
+					.map((x, i) => x + i)
 			);
 		});
 	}
@@ -54,11 +58,32 @@ export default function Sider() {
 
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-		]).then(([model]) => {
-			for (let i in sceneInfoList.current) {
-				const { scene } = sceneInfoList.current[i];
+			loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
+		]).then(([model, animationJSON]) => {
 
-				scene.add(model.clone());
+			const animation = THREE.AnimationClip.parse(animationJSON)
+
+			for (let key in sceneInfoList.current) {
+				const { scene } = sceneInfoList.current[key];
+
+				// const m = model.clone();
+
+				scene.add(model);
+
+				mixers.current[key] = new THREE.AnimationMixer(model);
+
+				const action = mixers.current[key].clipAction(animation);
+
+				action.reset();
+
+				// keep model at the position where it stops
+				action.clampWhenFinished = true;
+
+				action.enable = true;
+
+				action.play();
+
+				break
 			}
 
 			animate();
@@ -103,6 +128,11 @@ export default function Sider() {
 		renderer.current.setScissorTest(true);
 
 		for (let key in sceneInfoList.current) {
+
+			const delta = clock.getDelta();
+
+			if (mixers.current[key]) mixers.current[key].update(delta);
+
 			const { scene, camera, elem } = sceneInfoList.current[key];
 
 			// get the viewport relative position of this element
@@ -110,7 +140,7 @@ export default function Sider() {
 				elem.getBoundingClientRect();
 
 			if (bottom < 0 || top > document.documentElement.clientHeight) {
-				// continue;
+				continue;
 			}
 
 			// camera.aspect = width / height;
@@ -118,8 +148,8 @@ export default function Sider() {
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(0, top, width, height);
-			renderer.current.setViewport(0, top, width, height);
+			renderer.current.setScissor(left-558, top, width, height);
+			renderer.current.setViewport(left-558, top, width, height);
 
 			renderer.current.render(scene, camera);
 		}
