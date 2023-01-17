@@ -69,6 +69,8 @@ export default function MotionInterpreter(props) {
 
 			scene.current.add(model);
 
+			console.log(model.animations[0]);
+
 			(async () => {
 				for (let animation of animations) {
 					let longestTrack = 0;

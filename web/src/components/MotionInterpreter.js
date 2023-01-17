@@ -3,7 +3,7 @@ import { Quaternion, Vector3, Matrix4 } from "three";
 
 import {
 	sleep,
-	loadGLTF,
+	loadFBX,
 	loadObj,
 	traverseModel,
 	getUpVectors,
@@ -39,7 +39,7 @@ export default function MotionInterpreter(props) {
 	 */
 	function interpretAnimation() {
 		Promise.all([
-			loadGLTF(process.env.PUBLIC_URL + "/glb/punch-walk.glb"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/basic-crunch.fbx"),
 			// loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
 			// loadObj(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
 			// loadObj(process.env.PUBLIC_URL + "/json/AirSquat.json"),
@@ -47,12 +47,11 @@ export default function MotionInterpreter(props) {
 			// loadObj(process.env.PUBLIC_URL + "/json/JumpingJacks.json"),
 			// loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
 		]).then((results) => {
-			const [gltf] = results;
-
-			const model = gltf.scene.children[0];
+			const [model] = results;
 
 			model.position.set(0, 0, 0);
-			camera.current.position.set(0, 0, 4);
+
+			scene.current.add(model);
 
 			const parts = {};
 			const upVectors = {};
@@ -61,10 +60,8 @@ export default function MotionInterpreter(props) {
 			traverseModel(model, parts);
 			getUpVectors(model, upVectors);
 
-			scene.current.add(model);
-
 			(async () => {
-				const animation = gltf.animations[0].toJSON();
+				const animation = model.animations[0].toJSON();
 
 				let longestTrack = 0;
 				let tracks = {};
