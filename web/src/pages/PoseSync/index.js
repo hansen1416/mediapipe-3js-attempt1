@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 
 import {
@@ -32,6 +32,8 @@ export default function PoseSync() {
 
 	const figureParts = useRef({});
 
+	const [selectedExcercise, setselectedExcercise] = useState(null)
+
 	useEffect(() => {
 		const { width, height } = mainSceneRef.current.getBoundingClientRect();
 
@@ -64,6 +66,10 @@ export default function PoseSync() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		console.log(selectedExcercise);
+	}, [selectedExcercise]);
 
 	function _scene(viewWidth, viewHeight) {
 		const backgroundColor = 0x22244;
@@ -128,7 +134,10 @@ export default function PoseSync() {
 				height="480px"
 			></video>
 			<div className="flex-container">
-				<Sider />
+				<Sider
+					selectedExcercise={selectedExcercise}
+					setselectedExcercise={setselectedExcercise}
+				/>
 				<div id="main_scene" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>

@@ -5,7 +5,7 @@ import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js'
 
 import { loadFBX, loadObj } from "../../components/ropes";
 
-export default function Sider({selectedExcercise, setselectedExcercise}) {
+export default function Sider() {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
@@ -76,6 +76,7 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 				action.enable = true;
 
 				action.play();
+
 			}
 
 			animate();
@@ -167,10 +168,7 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 					<div
 						key={i}
 						data-animation={name}
-						className={selectedExcercise === name ? "animation-scene selected" : "animation-scene"}
-						onClick={() => {
-							setselectedExcercise(name)
-						}}
+						className="animation-scene"
 					></div>
 				);
 			})}

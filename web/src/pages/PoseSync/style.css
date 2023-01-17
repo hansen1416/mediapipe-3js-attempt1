@@ -41,6 +41,10 @@ video {
     box-sizing: border-box;
 }
 
+.flex-container .sider .animation-scene.selected {
+    box-shadow: inset 0px 0px 2px 2px rgba(255, 255, 255, 0.3);
+}
+
 /* #pose_scene {
     position: absolute;
     left: 0;
