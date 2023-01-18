@@ -4,7 +4,7 @@ import { Quaternion, Vector3, Matrix4 } from "three";
 import {
 	sleep,
 	loadFBX,
-	loadObj,
+	// loadObj,
 	traverseModel,
 	getUpVectors,
 	middlePosition,
