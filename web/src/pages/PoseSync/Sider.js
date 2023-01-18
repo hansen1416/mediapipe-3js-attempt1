@@ -17,10 +17,22 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
+
 			resolve(
-				Array(16)
-					.fill(1)
-					.map((x, i) => x + i)
+				[
+					'basic-crunch',
+					'bicycle-crunch',
+					'curl-up',
+					'leg-pushes',
+					'leg-scissors',
+					'lying-leg-raises',
+					'oblique-crunch-left',
+					'oblique-crunch-right',
+					'punch-walk',
+					'reverse-crunch',
+					'side-crunch-left',
+					'toe-crunch',
+				]
 			);
 		});
 	}

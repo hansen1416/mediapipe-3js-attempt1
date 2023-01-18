@@ -16,6 +16,9 @@ export default function MotionInterpreter(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	useEffect(() => {
+
+		interpretAnimation();
+
 		setTimeout(() => {
 			animate();
 		}, 0);
@@ -40,12 +43,17 @@ export default function MotionInterpreter(props) {
 	function interpretAnimation() {
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/anims/basic-crunch.fbx"),
-			// loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/AirSquat.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/Clapping.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/JumpingJacks.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/bicycle-crunch.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/curl-up.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/leg-pushes.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/leg-scissors.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/lying-leg-raises.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/oblique-crunch-left.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/oblique-crunch-right.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/punch-walk.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/reverse-crunch.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/side-crunch-left.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/anims/toe-crunch.fbx"),
 		]).then((results) => {
 			const [model] = results;
 
@@ -61,90 +69,95 @@ export default function MotionInterpreter(props) {
 			getUpVectors(model, upVectors);
 
 			(async () => {
-				const animation = model.animations[0].toJSON();
 
-				let longestTrack = 0;
-				let tracks = {};
+				for (let i in results) {
+					const animation = results[i].animations[0].toJSON();
 
-				// calculate quaternions and vectors for animation tracks
-				for (let item of animation["tracks"]) {
-					if (item["type"] === "quaternion") {
-						const quaternions = [];
-						for (let i = 0; i < item["values"].length; i += 4) {
-							const q = new Quaternion(
-								item["values"][i],
-								item["values"][i + 1],
-								item["values"][i + 2],
-								item["values"][i + 3]
-							);
+					let longestTrack = 0;
+					let tracks = {};
 
-							quaternions.push(q);
+					// calculate quaternions and vectors for animation tracks
+					for (let item of animation["tracks"]) {
+						if (item["type"] === "quaternion") {
+							const quaternions = [];
+							for (let i = 0; i < item["values"].length; i += 4) {
+								const q = new Quaternion(
+									item["values"][i],
+									item["values"][i + 1],
+									item["values"][i + 2],
+									item["values"][i + 3]
+								);
+
+								quaternions.push(q);
+							}
+
+							item["quaternions"] = quaternions;
+							item["states"] = [];
+
+							if (quaternions.length > longestTrack) {
+								longestTrack = quaternions.length;
+							}
 						}
 
-						item["quaternions"] = quaternions;
-						item["states"] = [];
+						if (item["type"] === "vector") {
+							const vectors = [];
+							for (let i = 0; i < item["values"].length; i += 3) {
+								const q = new Vector3(
+									item["values"][i],
+									item["values"][i + 1],
+									item["values"][i + 2]
+								);
 
-						if (quaternions.length > longestTrack) {
-							longestTrack = quaternions.length;
-						}
-					}
+								vectors.push(q);
+							}
 
-					if (item["type"] === "vector") {
-						const vectors = [];
-						for (let i = 0; i < item["values"].length; i += 3) {
-							const q = new Vector3(
-								item["values"][i],
-								item["values"][i + 1],
-								item["values"][i + 2]
-							);
-
-							vectors.push(q);
+							item["vectors"] = vectors;
 						}
 
-						item["vectors"] = vectors;
-					}
-
-					if (
-						item["type"] === "quaternion" ||
-						(item["type"] === "vector" &&
-							item["name"] === "Hips.position")
-					) {
-						tracks[item["name"]] = item;
-					}
-				}
-
-				// play the animation, observe the vectors of differnt parts
-				for (let i = 0; i < longestTrack; i++) {
-					applyTransfer(parts, tracks, i);
-
-					const matrix = getBasisFromModel(parts);
-
-					for (let name in parts) {
 						if (
-							tracks[name + ".quaternion"] === undefined &&
-							tracks[name + ".quaternion"]["states"] === undefined
+							item["type"] === "quaternion" ||
+							(item["type"] === "vector" &&
+								item["name"] === "root.position")
 						) {
-							continue;
+							tracks[item["name"]] = item;
 						}
-
-						const q = new Quaternion();
-						const v = upVectors[name].clone();
-
-						parts[name].getWorldQuaternion(q);
-
-						v.applyQuaternion(q);
-						v.applyMatrix4(matrix);
-
-						tracks[name + ".quaternion"]["states"].push(v);
 					}
 
-					await sleep(30);
+					// play the animation, observe the vectors of differnt parts
+					for (let i = 0; i < longestTrack; i++) {
+						applyTransfer(parts, tracks, i);
 
-					// break;
+						const matrix = getBasisFromModel(parts);
+
+						for (let name in parts) {
+							if (
+								tracks[name + ".quaternion"] === undefined &&
+								tracks[name + ".quaternion"]["states"] === undefined
+							) {
+								continue;
+							}
+
+							const q = new Quaternion();
+							const v = upVectors[name].clone();
+
+							parts[name].getWorldQuaternion(q);
+
+							v.applyQuaternion(q);
+							v.applyMatrix4(matrix);
+
+							tracks[name + ".quaternion"]["states"].push(v);
+						}
+
+						await sleep(30);
+
+						// break;
+					}
+
+					animation['tracks'] = tracks
+
+					// todo, use API to save this animation to json file
+					console.log(animation["name"], tracks);
 				}
-
-				// todo, use API to save this animation to json file
-				console.log(animation["name"], tracks);
 			})();
 		});
 	}
@@ -158,10 +171,10 @@ export default function MotionInterpreter(props) {
 		// modelParts["mixamorigLeftShoulder"].getWorldPosition(leftshoulder);
 		// modelParts["mixamorigRightShoulder"].getWorldPosition(rightshoulder);
 
-		modelParts["LeftShoulder"].getWorldPosition(leftshoulder);
-		modelParts["RightShoulder"].getWorldPosition(rightshoulder);
+		modelParts["upperarm_l"].getWorldPosition(leftshoulder);
+		modelParts["upperarm_r"].getWorldPosition(rightshoulder);
 
-		modelParts["Hips"].getWorldPosition(hips);
+		modelParts["pelvis"].getWorldPosition(hips);
 
 		// console.log(leftshoulder, rightshoulder, lefthip, righthip);
 
