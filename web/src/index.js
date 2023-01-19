@@ -12,6 +12,7 @@ import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
 import ThreeJsScene from "./pages/ThreeJsScene";
 import ExcerciseEditor from "./pages/ExcerciseEditor";
+import DigitalTrainer from "./pages/DigitalTrainer";
 
 const router = createBrowserRouter([
 	{
@@ -52,8 +53,12 @@ const router = createBrowserRouter([
 				element: <ThreeJsScene />,
 			},
 			{
-				path: "/posesync",
+				path: "/excercise-editor",
 				element: <ExcerciseEditor />,
+			},
+			{
+				path: "/digital-trainer",
+				element: <DigitalTrainer />,
 			},
 		],
 	},

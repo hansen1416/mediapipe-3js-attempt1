@@ -33,7 +33,10 @@ function App() {
 						</Link>
 					</li>
 					<li>
-						<Link to={`/posesync`}>Pose Sync</Link>
+						<Link to={`/excercise-editor`}>Excercis Editor</Link>
+					</li>
+					<li>
+						<Link to={`/digital-trainer`}>Digital Trainer</Link>
 					</li>
 				</ul>
 			</nav>

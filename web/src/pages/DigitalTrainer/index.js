@@ -1,0 +1,150 @@
+import { useEffect, useRef, useState } from "react";
+import "./style.css";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import * as poseDetection from "@tensorflow-models/pose-detection";
+// import * as tf from "@tensorflow/tfjs-core";
+// Register one of the TF.js backends.
+import "@tensorflow/tfjs-backend-webgl";
+
+import {
+	BlazePoseConfig,
+	loadFBX,
+	startCamera,
+	traverseModel,
+	applyTransfer,
+} from "../../components/ropes";
+
+export default function DigitalTrainer() {
+
+    const canvasRef = useRef(null);
+	const scene = useRef(null);
+	const camera = useRef(null);
+	const renderer = useRef(null);
+	const controls = useRef(null);
+
+    const videoRef = useRef(null);
+
+    const poseDetector = useRef(null);
+
+    const figureParts = useRef({});
+
+    const counter = useRef(0);
+
+    useEffect(() => {
+
+        Promise.all([
+            poseDetection.createDetector(
+                poseDetection.SupportedModels.BlazePose,
+                BlazePoseConfig
+            ),
+            loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+        ]).then(([detector, model]) => {
+            poseDetector.current = detector;
+
+            _scene(document.documentElement.clientWidth, document.documentElement.clientHeight);
+
+			model.position.set(0, -100, 0);
+
+			traverseModel(model, figureParts.current);
+
+			scene.current.add(model);
+
+            animate()
+        });
+
+        // eslint-disable-next-line
+	}, []);
+
+
+    function _scene(viewWidth, viewHeight) {
+		const backgroundColor = 0x022244;
+
+		scene.current = new THREE.Scene();
+		scene.current.background = new THREE.Color(backgroundColor);
+
+		camera.current = new THREE.PerspectiveCamera(
+			75,
+			viewWidth / viewHeight,
+			0.1,
+			1000
+		);
+
+		camera.current.position.set(0, 0, 300);
+
+		{
+			const light = new THREE.PointLight(0xffffff, 1);
+			// light.position.set(10, 10, 10);
+			camera.current.add(light);
+
+			scene.current.add(camera.current);
+		}
+
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+		});
+
+		controls.current = new OrbitControls(camera.current, canvasRef.current);
+
+		renderer.current.setSize(viewWidth, viewHeight);
+	}
+
+
+    function animate() {
+		if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
+			(async () => {
+				// const timestamp = performance.now();
+
+				const poses = await poseDetector.current.estimatePoses(
+					videoRef.current
+					// { flipHorizontal: false }
+					// timestamp
+				);
+
+				console.log(poses);
+			})();
+		}
+
+		controls.current.update();
+
+		renderer.current.render(scene.current, camera.current);
+
+		requestAnimationFrame(animate);
+	}
+
+
+return (
+    <div>
+        <video
+            ref={videoRef}
+            autoPlay={true}
+            width="640px"
+            height="480px"
+        ></video>
+
+        <canvas ref={canvasRef} />
+
+        <div className="btn-box">
+            <button
+                onClick={() => {
+                    if (videoRef.current) {
+                        startCamera(videoRef.current);
+                    }
+                }}
+            >
+                camera start
+            </button>
+            <button
+                onClick={() => {
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = null;
+                    }
+                }}
+            >
+                camera stop
+            </button>
+        </div>
+    </div>
+);
+
+}

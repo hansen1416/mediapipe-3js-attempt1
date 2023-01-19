@@ -1,22 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import "./style.css";
-
-import {
-	// BlazePoseConfig,
-	loadFBX,
-	startCamera,
-	traverseModel,
-	applyTransfer,
-} from "../../components/ropes";
-
-// import * as poseDetection from "@tensorflow-models/pose-detection";
-// import * as tf from "@tensorflow/tfjs-core";
-// Register one of the TF.js backends.
-import "@tensorflow/tfjs-backend-webgl";
-
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+import {loadFBX,traverseModel,applyTransfer} from "../../components/ropes";
 import Sider from "./Sider";
 
 export default function ExcerciseEditor() {
@@ -27,8 +14,6 @@ export default function ExcerciseEditor() {
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
-	const videoRef = useRef(null);
-
 	const figureParts = useRef({});
 
 	const [selectedExcercise, setselectedExcercise] = useState(null)
@@ -36,25 +21,12 @@ export default function ExcerciseEditor() {
 
 	const animationIndx = useRef(0);
 	const longestTrack = useRef(0);
-	
-	
-	// const poseDetector = useRef(null);
-
-
 
 	useEffect(() => {
 		const { width, height } = mainSceneRef.current.getBoundingClientRect();
 
 		_scene(width, height);
 
-		// Promise.all([
-		// 	poseDetection.createDetector(
-		// 		poseDetection.SupportedModels.BlazePose,
-		// 		BlazePoseConfig
-		// 	),
-		// 	loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-		// ]).then(([detector, model]) => {
-		// 	poseDetector.current = detector;
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([model]) => {
@@ -90,7 +62,7 @@ export default function ExcerciseEditor() {
 	}, [selectedExcercise]);
 
 	function _scene(viewWidth, viewHeight) {
-		const backgroundColor = 0x22244;
+		const backgroundColor = 0x022244;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
@@ -122,20 +94,7 @@ export default function ExcerciseEditor() {
 	}
 
 	function animate() {
-		// if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
-		// 	(async () => {
-		// 		// const timestamp = performance.now();
-
-		// 		const poses = await poseDetector.current.estimatePoses(
-		// 			videoRef.current
-		// 			// { flipHorizontal: false }
-		// 			// timestamp
-		// 		);
-
-		// 		console.log(poses);
-		// 	})();
-		// }
-
+		
 		if (selectedExcerciseRef.current) {
 
 			applyTransfer(figureParts.current, selectedExcerciseRef.current, animationIndx.current)
@@ -156,12 +115,6 @@ export default function ExcerciseEditor() {
 
 	return (
 		<div>
-			<video
-				ref={videoRef}
-				autoPlay={true}
-				width="640px"
-				height="480px"
-			></video>
 			<div className="flex-container">
 				<Sider
 					selectedExcercise={selectedExcercise}
@@ -170,27 +123,6 @@ export default function ExcerciseEditor() {
 				<div id="main_scene" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>
-			</div>
-
-			<div className="btn-box">
-				<button
-					onClick={() => {
-						if (videoRef.current) {
-							startCamera(videoRef.current);
-						}
-					}}
-				>
-					camera start
-				</button>
-				<button
-					onClick={() => {
-						if (videoRef.current) {
-							videoRef.current.srcObject = null;
-						}
-					}}
-				>
-					camera stop
-				</button>
 			</div>
 		</div>
 	);
