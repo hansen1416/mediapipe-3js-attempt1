@@ -19,7 +19,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import Sider from "./Sider";
 
-export default function PoseSync() {
+export default function ExcerciseEditor() {
 	const mainSceneRef = useRef(null);
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
