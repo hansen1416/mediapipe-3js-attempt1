@@ -46,8 +46,9 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 	}, []);
 
 	useEffect(() => {
+
 		if (!animationList || !animationList.length) {
-			return;
+			return
 		}
 
 		// create main scene
@@ -65,10 +66,25 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 		renderer.current.setSize(width, height);
 
-		Promise.all([
+		const tasks = [
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-			loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
-		]).then(([model, animationJSON]) => {
+		]
+
+		for (let name of animationList) {
+			tasks.push(
+				loadObj(process.env.PUBLIC_URL + "/animjson/" + name + ".json")
+			)
+		}
+
+		Promise.all(tasks).then((results) => {
+
+			const [model] = results;
+
+			const animationJSONs = {}
+			
+			for (let v of results.slice(1)) {
+				animationJSONs[v.name] = v
+			}
 
 			for (let key in sceneInfoList.current) {
 				const { scene, mixer } = sceneInfoList.current[key];
@@ -78,7 +94,10 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 				scene.add(tmpmodel);
 
-				const action = mixer.clipAction(THREE.AnimationClip.parse(animationJSON), tmpmodel);
+				const clip = THREE.AnimationClip.parse(animationJSONs[key])
+
+				const action = mixer.clipAction(clip, tmpmodel);
+				// const action = mixer.clipAction(animationJSONs[key], tmpmodel);
 
 				action.reset();
 
@@ -88,11 +107,12 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 				action.enable = true;
 
 				action.play();
+
+				// break
 			}
 
 			animate();
 		});
-
 		// eslint-disable-next-line
 	}, [animationList]);
 

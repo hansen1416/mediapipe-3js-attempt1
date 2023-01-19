@@ -153,10 +153,10 @@ export default function MotionInterpreter(props) {
 						// break;
 					}
 
-					animation['tracks'] = tracks
+					animation['tracks'] = Object.values(tracks)
 
 					// todo, use API to save this animation to json file
-					console.log(animation["name"], tracks);
+					console.log(animation["name"], animation);
 				}
 			})();
 		});

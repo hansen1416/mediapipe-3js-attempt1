@@ -68,7 +68,7 @@ export default function PoseSync() {
 	}, []);
 
 	useEffect(() => {
-		console.log(selectedExcercise);
+		console.log('selectedExcercise', selectedExcercise);
 	}, [selectedExcercise]);
 
 	function _scene(viewWidth, viewHeight) {
