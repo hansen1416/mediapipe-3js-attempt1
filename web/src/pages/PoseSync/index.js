@@ -28,11 +28,16 @@ export default function PoseSync() {
 
 	const videoRef = useRef(null);
 
-	// const poseDetector = useRef(null);
-
 	const figureParts = useRef({});
 
 	const [selectedExcercise, setselectedExcercise] = useState(null)
+	const animationIndx = useRef(0);
+	const longestTrack = useRef(0);
+	
+	
+	// const poseDetector = useRef(null);
+
+
 
 	useEffect(() => {
 		const { width, height } = mainSceneRef.current.getBoundingClientRect();
@@ -55,6 +60,8 @@ export default function PoseSync() {
 
 			traverseModel(model, figureParts.current);
 
+			console.log(figureParts)
+
 			scene.current.add(model);
 
 			animate();
@@ -68,7 +75,13 @@ export default function PoseSync() {
 	}, []);
 
 	useEffect(() => {
-		console.log('selectedExcercise', selectedExcercise);
+		if (selectedExcercise && selectedExcercise.tracks) {
+			for (let v of selectedExcercise.tracks) {
+				if (v.values.length > longestTrack.current) {
+					longestTrack.current = v.values.length
+				}
+			}
+		}
 	}, [selectedExcercise]);
 
 	function _scene(viewWidth, viewHeight) {
@@ -117,6 +130,14 @@ export default function PoseSync() {
 		// 		console.log(poses);
 		// 	})();
 		// }
+
+		if (selectedExcercise && selectedExcercise.tracks) {
+			animationIndx.current += 1;
+
+			if (animationIndx.current >= longestTrack.current) {
+				animationIndx.current = 0;
+			}
+		}
 
 		controls.current.update();
 

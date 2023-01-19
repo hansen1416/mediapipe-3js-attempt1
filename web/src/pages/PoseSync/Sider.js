@@ -10,6 +10,8 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 	const sceneInfoList = useRef({});
 
+	const [animationData, setanimationData] = useState({})
+
 	const container = useRef(null);
 	const canvasRef = useRef(null);
 
@@ -85,6 +87,8 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 			for (let v of results.slice(1)) {
 				animationJSONs[v.name] = v
 			}
+
+			setanimationData(animationJSONs)
 
 			for (let key in sceneInfoList.current) {
 				const { scene, mixer } = sceneInfoList.current[key];
@@ -201,7 +205,9 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 						data-animation={name}
 						className={selectedExcercise === name ? "animation-scene selected" : "animation-scene"}
 						onClick={() => {
-							setselectedExcercise(name)
+							if (animationData && animationData[name]) {
+								setselectedExcercise(animationData[name]);
+							}
 						}}
 					></div>
 				);
