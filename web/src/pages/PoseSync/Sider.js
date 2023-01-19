@@ -205,8 +205,15 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 						data-animation={name}
 						className={selectedExcercise === name ? "animation-scene selected" : "animation-scene"}
 						onClick={() => {
-							if (animationData && animationData[name]) {
-								setselectedExcercise(animationData[name]);
+							if (animationData && animationData[name] && animationData[name].tracks) {
+
+								const tracks = {}
+
+								for (let i in animationData[name].tracks) {
+									tracks[animationData[name].tracks[i].name] = animationData[name].tracks[i]
+								}
+
+								setselectedExcercise(tracks);
 							}
 						}}
 					></div>

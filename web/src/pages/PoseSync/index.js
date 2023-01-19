@@ -6,6 +6,7 @@ import {
 	loadFBX,
 	startCamera,
 	traverseModel,
+	applyTransfer,
 } from "../../components/ropes";
 
 // import * as poseDetection from "@tensorflow-models/pose-detection";
@@ -31,6 +32,8 @@ export default function PoseSync() {
 	const figureParts = useRef({});
 
 	const [selectedExcercise, setselectedExcercise] = useState(null)
+	const selectedExcerciseRef = useRef(null);
+
 	const animationIndx = useRef(0);
 	const longestTrack = useRef(0);
 	
@@ -60,8 +63,6 @@ export default function PoseSync() {
 
 			traverseModel(model, figureParts.current);
 
-			console.log(figureParts)
-
 			scene.current.add(model);
 
 			animate();
@@ -75,12 +76,16 @@ export default function PoseSync() {
 	}, []);
 
 	useEffect(() => {
-		if (selectedExcercise && selectedExcercise.tracks) {
-			for (let v of selectedExcercise.tracks) {
+		if (selectedExcercise) {
+			for (const v of Object.values(selectedExcercise)) {
 				if (v.values.length > longestTrack.current) {
 					longestTrack.current = v.values.length
 				}
 			}
+
+			// reset the animation
+			animationIndx.current = 0;
+			selectedExcerciseRef.current = selectedExcercise
 		}
 	}, [selectedExcercise]);
 
@@ -131,7 +136,10 @@ export default function PoseSync() {
 		// 	})();
 		// }
 
-		if (selectedExcercise && selectedExcercise.tracks) {
+		if (selectedExcerciseRef.current) {
+
+			applyTransfer(figureParts.current, selectedExcerciseRef.current, animationIndx.current)
+
 			animationIndx.current += 1;
 
 			if (animationIndx.current >= longestTrack.current) {
