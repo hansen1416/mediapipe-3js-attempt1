@@ -3,7 +3,7 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import {loadFBX,traverseModel,applyTransfer} from "../../components/ropes";
+import { loadFBX, traverseModel, applyTransfer } from "../../components/ropes";
 import Sider from "./Sider";
 
 export default function ExcerciseEditor() {
@@ -16,7 +16,7 @@ export default function ExcerciseEditor() {
 
 	const figureParts = useRef({});
 
-	const [selectedExcercise, setselectedExcercise] = useState(null)
+	const [selectedExcercise, setselectedExcercise] = useState(null);
 	const selectedExcerciseRef = useRef(null);
 
 	const animationIndx = useRef(0);
@@ -51,13 +51,13 @@ export default function ExcerciseEditor() {
 		if (selectedExcercise) {
 			for (const v of Object.values(selectedExcercise)) {
 				if (v.values.length > longestTrack.current) {
-					longestTrack.current = v.values.length
+					longestTrack.current = v.values.length;
 				}
 			}
 
 			// reset the animation
 			animationIndx.current = 0;
-			selectedExcerciseRef.current = selectedExcercise
+			selectedExcerciseRef.current = selectedExcercise;
 		}
 	}, [selectedExcercise]);
 
@@ -94,10 +94,12 @@ export default function ExcerciseEditor() {
 	}
 
 	function animate() {
-		
 		if (selectedExcerciseRef.current) {
-
-			applyTransfer(figureParts.current, selectedExcerciseRef.current, animationIndx.current)
+			applyTransfer(
+				figureParts.current,
+				selectedExcerciseRef.current,
+				animationIndx.current
+			);
 
 			animationIndx.current += 1;
 

@@ -7,6 +7,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
 
+import PoseSync from "../../components/PoseSync";
 import {
 	BlazePoseConfig,
 	loadFBX,
@@ -16,33 +17,36 @@ import {
 } from "../../components/ropes";
 
 export default function DigitalTrainer() {
-
-    const canvasRef = useRef(null);
+	const canvasRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
-    const videoRef = useRef(null);
+	const videoRef = useRef(null);
 
-    const poseDetector = useRef(null);
+	const poseDetector = useRef(null);
 
-    const figureParts = useRef({});
+	const figureParts = useRef({});
 
-    const counter = useRef(0);
+	const counter = useRef(0);
 
-    useEffect(() => {
+	const poseSync = useRef(null);
 
-        Promise.all([
-            poseDetection.createDetector(
-                poseDetection.SupportedModels.BlazePose,
-                BlazePoseConfig
-            ),
-            loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-        ]).then(([detector, model]) => {
-            poseDetector.current = detector;
+	useEffect(() => {
+		Promise.all([
+			poseDetection.createDetector(
+				poseDetection.SupportedModels.BlazePose,
+				BlazePoseConfig
+			),
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		]).then(([detector, model]) => {
+			poseDetector.current = detector;
 
-            _scene(document.documentElement.clientWidth, document.documentElement.clientHeight);
+			_scene(
+				document.documentElement.clientWidth,
+				document.documentElement.clientHeight
+			);
 
 			model.position.set(0, -100, 0);
 
@@ -50,14 +54,32 @@ export default function DigitalTrainer() {
 
 			scene.current.add(model);
 
-            animate()
-        });
+			animate();
+		});
 
-        // eslint-disable-next-line
+		// eslint-disable-next-line
 	}, []);
 
+	function loadAnimationList() {
+		return new Promise((resolve) => {
+			resolve([
+				"basic-crunch",
+				"bicycle-crunch",
+				"curl-up",
+				"leg-pushes",
+				"leg-scissors",
+				"lying-leg-raises",
+				"oblique-crunch-left",
+				"oblique-crunch-right",
+				"punch-walk",
+				"reverse-crunch",
+				"side-crunch-left",
+				"toe-crunch",
+			]);
+		});
+	}
 
-    function _scene(viewWidth, viewHeight) {
+	function _scene(viewWidth, viewHeight) {
 		const backgroundColor = 0x022244;
 
 		scene.current = new THREE.Scene();
@@ -89,8 +111,7 @@ export default function DigitalTrainer() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
-
-    function animate() {
+	function animate() {
 		if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
 			(async () => {
 				// const timestamp = performance.now();
@@ -112,39 +133,37 @@ export default function DigitalTrainer() {
 		requestAnimationFrame(animate);
 	}
 
+	return (
+		<div>
+			<video
+				ref={videoRef}
+				autoPlay={true}
+				width="640px"
+				height="480px"
+			></video>
 
-return (
-    <div>
-        <video
-            ref={videoRef}
-            autoPlay={true}
-            width="640px"
-            height="480px"
-        ></video>
+			<canvas ref={canvasRef} />
 
-        <canvas ref={canvasRef} />
-
-        <div className="btn-box">
-            <button
-                onClick={() => {
-                    if (videoRef.current) {
-                        startCamera(videoRef.current);
-                    }
-                }}
-            >
-                camera start
-            </button>
-            <button
-                onClick={() => {
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = null;
-                    }
-                }}
-            >
-                camera stop
-            </button>
-        </div>
-    </div>
-);
-
+			<div className="btn-box">
+				<button
+					onClick={() => {
+						if (videoRef.current) {
+							startCamera(videoRef.current);
+						}
+					}}
+				>
+					camera start
+				</button>
+				<button
+					onClick={() => {
+						if (videoRef.current) {
+							videoRef.current.srcObject = null;
+						}
+					}}
+				>
+					camera stop
+				</button>
+			</div>
+		</div>
+	);
 }
