@@ -11,6 +11,7 @@ import PoseSync from "../../components/PoseSync";
 import {
 	BlazePoseConfig,
 	loadFBX,
+	loadObj,
 	startCamera,
 	traverseModel,
 	applyTransfer,
@@ -24,6 +25,10 @@ export default function DigitalTrainer() {
 	const controls = useRef(null);
 
 	const videoRef = useRef(null);
+
+	const [animationList, setanimationList] = useState([])
+
+	const animationData = useRef(null)
 
 	const poseDetector = useRef(null);
 
@@ -55,6 +60,10 @@ export default function DigitalTrainer() {
 			scene.current.add(model);
 
 			animate();
+
+			loadAnimationList().then((data) => {
+				setanimationList(data)
+			})
 		});
 
 		// eslint-disable-next-line
@@ -133,6 +142,13 @@ export default function DigitalTrainer() {
 		requestAnimationFrame(animate);
 	}
 
+	function loadAnimation(animation_name) {
+		loadObj(process.env.PUBLIC_URL + "/animjson/" + animation_name + ".json")
+		.then((data) => {
+			animationData.current = data;
+		})
+	}
+
 	return (
 		<div>
 			<video
@@ -145,6 +161,16 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			<div className="btn-box">
+				<ul>
+					{animationList.map((name) => {
+						return (<li
+							key={name}
+							onClick={() => {
+								loadAnimation(name)
+							}}
+						>{name}</li>)
+					})}
+				</ul>
 				<button
 					onClick={() => {
 						if (videoRef.current) {
