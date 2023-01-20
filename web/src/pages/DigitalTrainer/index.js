@@ -14,7 +14,7 @@ import {
 	loadObj,
 	startCamera,
 	traverseModel,
-	applyTransfer,
+	// applyTransfer,
 } from "../../components/ropes";
 
 export default function DigitalTrainer() {
@@ -27,8 +27,6 @@ export default function DigitalTrainer() {
 	const videoRef = useRef(null);
 
 	const [animationList, setanimationList] = useState([])
-
-	const animationData = useRef(null)
 
 	const poseDetector = useRef(null);
 
@@ -135,6 +133,12 @@ export default function DigitalTrainer() {
 			})();
 		}
 
+		if (counter.current % 6000000 === 0) {
+			console.log(poseSync.current)
+		}
+
+		counter.current += 1;
+
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
@@ -145,7 +149,7 @@ export default function DigitalTrainer() {
 	function loadAnimation(animation_name) {
 		loadObj(process.env.PUBLIC_URL + "/animjson/" + animation_name + ".json")
 		.then((data) => {
-			animationData.current = data;
+			poseSync.current = new PoseSync(data)
 		})
 	}
 
