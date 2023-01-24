@@ -28,11 +28,6 @@ function App() {
 						</Link>
 					</li>
 					<li>
-						<Link to={`/motionsyncglbblazearithmetic`}>
-							Motion Sync Arithmetic
-						</Link>
-					</li>
-					<li>
 						<Link to={`/excercise-editor`}>Excercis Editor</Link>
 					</li>
 					<li>
