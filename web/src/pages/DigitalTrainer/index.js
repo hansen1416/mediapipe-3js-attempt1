@@ -42,6 +42,7 @@ export default function DigitalTrainer() {
 	const poseSync = useRef(null);
 
 	const [diffScore, setdiffScore] = useState(0);
+	const bufferStep = useRef(50);
 
 	const poseCurve = useRef(null);
 	const boneCurve = useRef(null);
@@ -151,7 +152,7 @@ export default function DigitalTrainer() {
 	}
 
 	function animate() {
-		if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
+		if (videoRef.current.readyState >= 2 && counter.current % 2 === 0) {
 			(async () => {
 				// const timestamp = performance.now();
 
@@ -167,17 +168,13 @@ export default function DigitalTrainer() {
 				// console.log(figureParts.current)
 				const score = poseSync.current.compare(poses[0]["keypoints3D"], figureParts.current, poseCurve.current.geometry, boneCurve.current.geometry)
 
+				if (score < 150) {
+					bufferStep.current = 0;
+				}
+
 				setdiffScore(score);
 
 				// console.log(poseSync.current.animation_data)
-
-				applyTransfer(figureParts.current, poseSync.current.animation_data.tracks, animationIndx.current);
-
-				animationIndx.current += 1;
-
-				if (animationIndx.current >= longestTrack.current) {
-					animationIndx.current = 0;
-				}
 
 				{
 					const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
@@ -188,6 +185,19 @@ export default function DigitalTrainer() {
 				}
 				
 			})();
+		}
+
+		if (poseSync.current && bufferStep.current < 50) {
+
+			applyTransfer(figureParts.current, poseSync.current.animation_data.tracks, animationIndx.current);
+
+			animationIndx.current += 1;
+
+			if (animationIndx.current >= longestTrack.current) {
+				animationIndx.current = 0;
+			}
+
+			bufferStep.current += 1;
 		}
 
 		counter.current += 1;
@@ -204,8 +214,8 @@ export default function DigitalTrainer() {
 		.then((data) => {
 
 			for (const v of Object.values(data.tracks)) {
-				if (v.type === "quaternion" && v.values.length > longestTrack.current) {
-					longestTrack.current = v.values.length;
+				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+					longestTrack.current = v.quaternions.length;
 				}
 			}
 
