@@ -252,7 +252,11 @@ export default function DigitalTrainer() {
 						return (<li
 							key={name}
 							onClick={() => {
-								loadAnimation(name)
+								loadAnimation(name);
+
+								if (videoRef.current) {
+									startCamera(videoRef.current);
+								}
 							}}
 						>{name}</li>)
 					})}
