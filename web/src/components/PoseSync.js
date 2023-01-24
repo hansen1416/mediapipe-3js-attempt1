@@ -3,6 +3,7 @@ import {
 	distanceBetweenPoints,
 	BlazePoseKeypointsValues
 } from "./ropes";
+import * as THREE from "three";
 
 export default class PoseSync {
     constructor(animation_data) {
@@ -10,6 +11,13 @@ export default class PoseSync {
     }
 
     keypointsDistances(keypoints3D) {
+
+		for (let v of keypoints3D) {
+			v["x"] *= -1;
+			v["y"] *= -1;
+			v["z"] *= -1;
+		}
+
 		const upper = [
 			"LEFT_SHOULDER",
 			"RIGHT_SHOULDER",
@@ -51,8 +59,8 @@ export default class PoseSync {
 		const upper = [
 			"upperarm_l",
 			"upperarm_r",
-			"lowarm_l",
-			"lowarm_r",
+			"lowerarm_l",
+			"lowerarm_r",
 			"hand_l",
 			"hand_r",
 			"thigh_l",
@@ -77,8 +85,8 @@ export default class PoseSync {
 	}
 
 
-    compare(keypoints3D, bones) {
-        const d1 = this.keypointsDistances(keypoints3D);
+    compare(pose3D, bones, poseGeometry, bonesGeometry) {
+        const d1 = this.keypointsDistances(pose3D);
 
         const d2 = this.modelBonesDistances(bones);
 
@@ -99,6 +107,9 @@ export default class PoseSync {
         for (const i of d2) {
             d2[i] /= unit2;
         }
+
+		poseGeometry.setFromPoints(new THREE.SplineCurve(d1).getPoints(50));
+		bonesGeometry.setFromPoints(new THREE.SplineCurve(d2).getPoints(50));
 
         let diff = 0;
 
