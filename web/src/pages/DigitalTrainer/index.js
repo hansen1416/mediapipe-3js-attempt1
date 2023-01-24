@@ -74,16 +74,16 @@ export default function DigitalTrainer() {
 					new THREE.Vector2(100, 0),
 				]);
 
-				poseCurve.current = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+				poseCurve.current = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
 					color: 0xff0000,
 				}));
 
-				boneCurve.current = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+				boneCurve.current = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
 					color: 0x00ff00,
 				}));
 
-				poseCurve.current.position.set(-400, 0, 0);
-				boneCurve.current.position.set(-400, 0, 0);
+				poseCurve.current.position.set(-400, -100, 0);
+				boneCurve.current.position.set(-400, -100, 0);
 
 				scene.current.add(poseCurve.current);
 				scene.current.add(boneCurve.current);
@@ -185,8 +185,6 @@ export default function DigitalTrainer() {
 					g.scale.set(8, 8, 8);
 
 					setcapturedPose(g);
-
-					console.log(g)
 				}
 				
 			})();
@@ -206,8 +204,7 @@ export default function DigitalTrainer() {
 		.then((data) => {
 
 			for (const v of Object.values(data.tracks)) {
-
-				if (v.values.length > longestTrack.current) {
+				if (v.type === "quaternion" && v.values.length > longestTrack.current) {
 					longestTrack.current = v.values.length;
 				}
 			}

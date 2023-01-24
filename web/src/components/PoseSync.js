@@ -104,12 +104,23 @@ export default class PoseSync {
 
         const unit2 = d2[0];
 
-        for (const i of d2) {
+        for (const i in d2) {
             d2[i] /= unit2;
         }
 
-		poseGeometry.setFromPoints(new THREE.SplineCurve(d1).getPoints(50));
-		bonesGeometry.setFromPoints(new THREE.SplineCurve(d2).getPoints(50));
+		const d1v2 = []
+		const d2v2 = []
+		let x = 0
+
+		for (let i in d1) {
+			d1v2.push(new Vector2(x, d1[i] * 50))
+			d2v2.push(new Vector2(x, d2[i] * 50))
+
+			x += 10;
+		}
+
+		poseGeometry.setFromPoints(new THREE.SplineCurve(d1v2).getPoints(50));
+		bonesGeometry.setFromPoints(new THREE.SplineCurve(d2v2).getPoints(50));
 
         let diff = 0;
 
