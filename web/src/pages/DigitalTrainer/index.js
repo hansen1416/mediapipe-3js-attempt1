@@ -168,6 +168,7 @@ export default function DigitalTrainer() {
 				// console.log(figureParts.current)
 				const score = poseSync.current.compare(poses[0]["keypoints3D"], figureParts.current, poseCurve.current.geometry, boneCurve.current.geometry)
 
+				// todo, move score and buffer step to PoseSync
 				if (score < 150) {
 					bufferStep.current = 0;
 				}
@@ -242,7 +243,7 @@ export default function DigitalTrainer() {
 					height: "400px",
 					position: "absolute",
 					top: 0,
-					right: 0,
+					left: 0,
 					border: "1px solid #fff",
 				}}
 			>
@@ -254,41 +255,45 @@ export default function DigitalTrainer() {
 			</div>
 
 			<div className="btn-box">
-				<ul>
-					{animationList.map((name) => {
-						return (<li
-							key={name}
-							onClick={() => {
-								loadAnimation(name);
+				<div>
+					<ul>
+						{animationList.map((name) => {
+							return (<li
+								key={name}
+								onClick={() => {
+									loadAnimation(name);
 
-								if (videoRef.current) {
-									startCamera(videoRef.current);
-								}
-							}}
-						>{name}</li>)
-					})}
-				</ul>
-				<div
-					style={{fontSize: '40px'}}
-				>{diffScore}</div>
-				<button
-					onClick={() => {
-						if (videoRef.current) {
-							startCamera(videoRef.current);
-						}
-					}}
-				>
-					camera start
-				</button>
-				<button
-					onClick={() => {
-						if (videoRef.current) {
-							videoRef.current.srcObject = null;
-						}
-					}}
-				>
-					camera stop
-				</button>
+									if (videoRef.current) {
+										startCamera(videoRef.current);
+									}
+								}}
+							>{name}</li>)
+						})}
+					</ul>
+				</div>
+				<div>
+					<span
+						style={{fontSize: '40px', margin: "0 20px 0 0"}}
+					>{diffScore}</span>
+					<button
+						onClick={() => {
+							if (videoRef.current) {
+								startCamera(videoRef.current);
+							}
+						}}
+					>
+						camera start
+					</button>
+					<button
+						onClick={() => {
+							if (videoRef.current) {
+								videoRef.current.srcObject = null;
+							}
+						}}
+					>
+						camera stop
+					</button>
+				</div>
 			</div>
 		</div>
 	);

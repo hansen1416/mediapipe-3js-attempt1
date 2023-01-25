@@ -6,7 +6,7 @@ import {
 import * as THREE from "three";
 
 export default class PoseSync {
-    constructor(animation_data) {
+    constructor(animation_data, ) {
         this.animation_data = animation_data
     }
 
