@@ -499,13 +499,26 @@ export function applyTransfer(model, animation, indx) {
 	}
 }
 
+/**
+ * apply one frame data of an animation to the data
+ * @param {*} model 
+ * @param {*} animationFrameData 
+ */
 export function applyAnimationFrame(model, animationFrameData) {
-console.log(animationFrameData)
+
 	for (let item_name in animationFrameData) {
+
+		if (!model[item_name]) {
+			continue
+		}
+
 		const item = animationFrameData[item_name];
-console.log(item)
-		if (item instanceof Quaternion) {
-			model[item_name].setRotationFromQuaternion(item);
+
+		if (item.isQuaternion) {
+
+			const q = new Quaternion(item._x, item._y, item._z, item._w);
+
+			model[item_name].setRotationFromQuaternion(q);
 		} else {
 			model[item_name].position.set(item.x, item.y, item.z)
 		}		
