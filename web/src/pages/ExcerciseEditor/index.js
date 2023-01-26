@@ -50,8 +50,8 @@ export default function ExcerciseEditor() {
 	useEffect(() => {
 		if (selectedExcercise) {
 			for (const v of Object.values(selectedExcercise)) {
-				if (v.values.length > longestTrack.current) {
-					longestTrack.current = v.values.length;
+				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+					longestTrack.current = v.quaternions.length;
 				}
 			}
 

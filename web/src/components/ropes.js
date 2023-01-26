@@ -499,6 +499,19 @@ export function applyTransfer(model, animation, indx) {
 	}
 }
 
+export function applyAnimationFrame(model, animationFrameData) {
+console.log(animationFrameData)
+	for (let item_name in animationFrameData) {
+		const item = animationFrameData[item_name];
+console.log(item)
+		if (item instanceof Quaternion) {
+			model[item_name].setRotationFromQuaternion(item);
+		} else {
+			model[item_name].position.set(item.x, item.y, item.z)
+		}		
+	}
+}
+
 /**
  * blender uses right hand coordinate system with the
  * Z axis pointing upwards.
