@@ -98,7 +98,7 @@ export default class PoseSync {
 	compareCurrentPose(pose3D, bones) {
 		const d1 = this.keypointsDistances(pose3D);
 
-        const d2 = this.modelBonesDistances(bones);
+        const d2 = this.modelBonesDistances(bones); 
 
         const ratio = d1[0] / d2[0];
 
