@@ -48,6 +48,8 @@ export default function DigitalTrainer() {
 	const boneCurve = useRef(null);
 	const [capturedPose, setcapturedPose] = useState();
 
+	const animationNumber = useRef(0);
+
 	useEffect(() => {
 		Promise.all([
 			poseDetection.createDetector(
@@ -96,6 +98,10 @@ export default function DigitalTrainer() {
 				setanimationList(data)
 			})
 		});
+
+		return () => {
+			cancelAnimationFrame(animationNumber.current)
+		}
 
 		// eslint-disable-next-line
 	}, []);
@@ -153,7 +159,7 @@ export default function DigitalTrainer() {
 
 	function animate() {
 
-		if (videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
+		if (videoRef.current && videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
 			(async () => {
 				// const timestamp = performance.now();
 
@@ -229,7 +235,7 @@ export default function DigitalTrainer() {
 
 		renderer.current.render(scene.current, camera.current);
 
-		requestAnimationFrame(animate);
+		animationNumber.current = requestAnimationFrame(animate);
 	}
 
 	function loadAnimation(animation_name) {
