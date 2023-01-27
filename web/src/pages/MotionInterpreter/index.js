@@ -14,8 +14,6 @@ export default function MotionInterpreter() {
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
-	const location = useLocation();
-
 	useEffect(() => {
 		_scene();
 
