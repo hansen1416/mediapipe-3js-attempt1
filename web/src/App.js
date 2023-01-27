@@ -11,23 +11,6 @@ function App() {
 						<Link to={`/interpreter`}>Interpreter</Link>
 					</li>
 					<li>
-						<Link to={`/playglbanimation`}>Play GLB animation</Link>
-					</li>
-					<li>
-						<Link to={`/playfbxanimation`}>Play FBX animation</Link>
-					</li>
-					<li>
-						<Link to={`/motionsync`}>Motion Sync</Link>
-					</li>
-					<li>
-						<Link to={`/motionsyncglb`}>Motion Sync GLB</Link>
-					</li>
-					<li>
-						<Link to={`/motionsyncglbblaze`}>
-							Motion Sync GLB Blaze
-						</Link>
-					</li>
-					<li>
 						<Link to={`/excercise-editor`}>Excercis Editor</Link>
 					</li>
 					<li>

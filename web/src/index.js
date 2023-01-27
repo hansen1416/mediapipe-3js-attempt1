@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
-import ThreeJsScene from "./pages/ThreeJsScene";
+import MotionInterpreter from "./pages/MotionInterpreter";
 import ExcerciseEditor from "./pages/ExcerciseEditor";
 import DigitalTrainer from "./pages/DigitalTrainer";
 
@@ -26,27 +26,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/interpreter",
-				element: <ThreeJsScene />,
-			},
-			{
-				path: "/playglbanimation",
-				element: <ThreeJsScene />,
-			},
-			{
-				path: "/playfbxanimation",
-				element: <ThreeJsScene />,
-			},
-			{
-				path: "/motionsync",
-				element: <ThreeJsScene />,
-			},
-			{
-				path: "/motionsyncglb",
-				element: <ThreeJsScene />,
-			},
-			{
-				path: "/motionsyncglbblaze",
-				element: <ThreeJsScene />,
+				element: <MotionInterpreter />,
 			},
 			{
 				path: "/excercise-editor",

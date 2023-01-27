@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-	loadFBX,
+	loadGLTF,
 	loadObj,
 	traverseModel,
 	applyTransfer,
@@ -13,7 +13,8 @@ import {
 	posePointsToVector,
 	getBasisFromPose,
 	poseToVector,
-} from "./ropes";
+	removeObject3D,
+} from "../components/ropes";
 
 // import { Pose } from "kalidokit";
 
@@ -23,10 +24,12 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 // import "@mediapipe/pose";
 
-import SubThreeJsScene from "./SubThreeJsScene";
-import { Group } from "three";
+import SubThreeJsScene from "../components/SubThreeJsScene";
+import { Group, Vector3 } from "three";
 
-export default function MotionSync(props) {
+import perspectiveTransform from "perspective-transform";
+
+export default function MotionSyncGLBBlaze(props) {
 	const { scene, camera, renderer, controls } = props;
 
 	const videoRef = useRef(null);
@@ -43,7 +46,7 @@ export default function MotionSync(props) {
 	const [motionRound, setmotionRound] = useState(0);
 	const motionRoundRef = useRef(motionRound);
 
-	const [capturedPose, setcapturedPose] = useState(null);
+	const [capturedPose, setcapturedPose] = useState();
 
 	const [motionTrack, setmotionTrack] = useState(null);
 	const [poseTrack, setposeTrack] = useState(null);
@@ -51,7 +54,14 @@ export default function MotionSync(props) {
 
 	const check = useRef(5);
 
-	const animname = "JumpingJacks";
+	const animname = "PunchWalk";
+
+	const [leftWidth, setleftWidth] = useState(window.innerWidth - 500);
+	const [rightWidth, setrightWidth] = useState(500);
+	const [leftHeight, setleftHeight] = useState(window.innerHeight);
+	const [rightHeight, setrightHeight] = useState(window.innerHeight / 2);
+
+	const modelPlane = useRef(new Group());
 
 	useEffect(() => {
 		// const detectorConfig = {
@@ -83,8 +93,7 @@ export default function MotionSync(props) {
 				poseDetection.SupportedModels.BlazePose,
 				detectorConfig
 			),
-			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
-			// loadFBX(process.env.PUBLIC_URL + "/fbx/Mannequin.fbx"),
+			loadGLTF(process.env.PUBLIC_URL + "/glb/punch-walk.glb"),
 			loadObj(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
 			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
 			loadObj(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
@@ -93,21 +102,25 @@ export default function MotionSync(props) {
 				process.env.PUBLIC_URL + "/json/KettlebellSwingTracks.json"
 			),
 			loadObj(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
+			loadObj(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json"),
 		]).then(
 			([
 				detector,
-				model,
+				gltf,
 				AirSquat,
 				BicycleCrunch,
 				Clapping,
 				JumpingJacks,
 				KettlebellSwing,
 				Waving,
+				PunchWalk,
 			]) => {
 				poseDetector.current = detector;
 
-				model.position.set(-100, -100, 0);
-				camera.current.position.set(0, 0, 240);
+				const model = gltf.scene.children[0];
+
+				model.position.set(0, -1, 0);
+				camera.current.position.set(0, 0, 4);
 
 				// console.log(model);
 
@@ -115,7 +128,19 @@ export default function MotionSync(props) {
 
 				traverseModel(model, figureParts.current);
 
+				// figureParts.current["LeftArm"].scale.set(1, 1.1, 1);
+
 				// console.log(figureParts.current);
+
+				{
+					for (let _ in [0, 1, 2, 3]) {
+						const d1 = box(0.02);
+
+						modelPlane.current.add(d1);
+					}
+
+					scene.current.add(modelPlane.current);
+				}
 
 				animationTracks.current = {
 					AirSquat,
@@ -124,16 +149,17 @@ export default function MotionSync(props) {
 					JumpingJacks,
 					KettlebellSwing,
 					Waving,
+					PunchWalk,
 				};
 
 				{
 					const g = new Group();
 
 					const parts = [
-						["mixamorigLeftArm.quaternion", 0xff0000],
-						["mixamorigLeftForeArm.quaternion", 0x00ff00],
-						["mixamorigRightArm.quaternion", 0x0000ff],
-						["mixamorigRightForeArm.quaternion", 0xffff00],
+						["LeftArm.quaternion", 0xff0000],
+						["LeftForeArm.quaternion", 0x00ff00],
+						["RightArm.quaternion", 0x00ffff],
+						["RightForeArm.quaternion", 0xffff00],
 					];
 
 					for (const p of parts) {
@@ -147,7 +173,7 @@ export default function MotionSync(props) {
 						}
 					}
 
-					g.scale.set(3, 3, 3);
+					g.scale.set(4, 4, 4);
 
 					setmotionTrack(g);
 				}
@@ -155,14 +181,14 @@ export default function MotionSync(props) {
 				{
 					const g = new Group();
 
-					const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00];
+					const colors = [0xff0000, 0x00ff00, 0x00ffff, 0xffff00];
 
 					for (let i in [0, 1, 2, 3]) {
 						const d = box(0.1, colors[i]);
 						g.add(d);
 					}
 
-					g.scale.set(3, 3, 3);
+					g.scale.set(4, 4, 4);
 
 					poseTrackRef.current = g;
 
@@ -173,6 +199,13 @@ export default function MotionSync(props) {
 
 		setTimeout(() => {
 			animate();
+
+			if (camera.current && renderer.current) {
+				camera.current.aspect = leftWidth / leftHeight;
+				camera.current.updateProjectionMatrix();
+
+				renderer.current.setSize(leftWidth, leftHeight);
+			}
 		}, 0);
 
 		// eslint-disable-next-line
@@ -209,6 +242,7 @@ export default function MotionSync(props) {
 					v["y"] *= -1;
 					v["z"] *= -1;
 				}
+
 				// // transfer basis, so that the pose is always stabd up and face to camera
 				// const basisMatrix = getBasisFromPose(keypoints3D);
 
@@ -253,15 +287,15 @@ export default function MotionSync(props) {
 						keypoints3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
 					);
 
-					const basisMatrix = getBasisFromPose(keypoints3D);
+					// const basisMatrix = getBasisFromPose(keypoints3D);
 
-					left_elbow.applyMatrix4(basisMatrix);
-					left_shoulder.applyMatrix4(basisMatrix);
-					left_wrist.applyMatrix4(basisMatrix);
+					// left_elbow.applyMatrix4(basisMatrix);
+					// left_shoulder.applyMatrix4(basisMatrix);
+					// left_wrist.applyMatrix4(basisMatrix);
 
-					right_elbow.applyMatrix4(basisMatrix);
-					right_shoulder.applyMatrix4(basisMatrix);
-					right_wrist.applyMatrix4(basisMatrix);
+					// right_elbow.applyMatrix4(basisMatrix);
+					// right_shoulder.applyMatrix4(basisMatrix);
+					// right_wrist.applyMatrix4(basisMatrix);
 
 					const leftArmOrientation = posePointsToVector(
 						left_elbow,
@@ -309,7 +343,7 @@ export default function MotionSync(props) {
 				let fitted = false;
 
 				for (let i in animationTracks.current[animname][
-					"mixamorigLeftArm.quaternion"
+					"LeftArm.quaternion"
 				]["states"]) {
 					if (
 						compareArms(
@@ -346,9 +380,9 @@ export default function MotionSync(props) {
 
 			if (
 				animationIndx.current >=
-				animationTracks.current[animname][
-					"mixamorigLeftArm.quaternion"
-				]["states"].length
+				animationTracks.current[animname]["LeftArm.quaternion"][
+					"states"
+				].length
 			) {
 				setmotionRound(motionRoundRef.current + 1);
 
@@ -368,8 +402,8 @@ export default function MotionSync(props) {
 		<div>
 			<div
 				style={{
-					width: "500px",
-					height: "400px",
+					width: rightWidth + "px",
+					height: rightHeight + "px",
 					position: "absolute",
 					top: 0,
 					right: 0,
@@ -377,15 +411,15 @@ export default function MotionSync(props) {
 				}}
 			>
 				<SubThreeJsScene
-					width={500}
-					height={400}
+					width={rightWidth}
+					height={rightHeight}
 					objects={capturedPose}
 				/>
 			</div>
 			<div
 				style={{
-					width: "500px",
-					height: "400px",
+					width: rightWidth + "px",
+					height: rightHeight + "px",
 					position: "absolute",
 					bottom: 0,
 					right: 0,
@@ -393,8 +427,8 @@ export default function MotionSync(props) {
 				}}
 			>
 				<SubThreeJsScene
-					width={500}
-					height={400}
+					width={rightWidth}
+					height={rightHeight}
 					objects={motionTrack}
 					objects1={poseTrack}
 				/>
@@ -405,7 +439,6 @@ export default function MotionSync(props) {
 				width="640px"
 				height="480px"
 			></video>
-
 			<div className="btn-box">
 				<div>{motionRound}</div>
 
