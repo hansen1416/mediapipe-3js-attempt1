@@ -14,7 +14,7 @@ import {
 	loadObj,
 	startCamera,
 	traverseModel,
-	applyAnimationFrame,
+	applyTransfer,
 	drawPoseKeypoints,
 } from "../../components/ropes";
 import SubThreeJsScene from "../../components/SubThreeJsScene";
@@ -37,14 +37,12 @@ export default function DigitalTrainer() {
 	const keypoints3D = useRef(null);
 
 	const counter = useRef(0);
-
-	// const animationIndx = useRef(0);
-	// const longestTrack = useRef(0);
+	const animationIndx = useRef(0);
+	const longestTrack = useRef(0);
 
 	const poseSync = useRef(null);
-
 	const [diffScore, setdiffScore] = useState(0);
-	// const bufferStep = useRef(50);
+	const poseCompareResult = useRef(null);
 
 	const poseCurve = useRef(null);
 	const boneCurve = useRef(null);
@@ -165,7 +163,7 @@ export default function DigitalTrainer() {
 					// timestamp
 				);
 
-				if (!poses || !poses[0] || !poses[0]["keypoints3D"]) {
+				if (!poses || !poses[0] || !poses[0]["keypoints3D"] || !poseSync.current) {
 					return;
 				}
 
@@ -177,17 +175,16 @@ export default function DigitalTrainer() {
 					v["z"] *= -1;
 				}	
 
-				// // console.log(figureParts.current)
-				// const score = poseSync.current.compare(poses[0]["keypoints3D"], figureParts.current, poseCurve.current.geometry, boneCurve.current.geometry)
 
-				// // todo, move score and buffer step to PoseSync
-				// if (score < 150) {
-				// 	bufferStep.current = 0;
-				// }
+				{
+					poseCompareResult.current = poseSync.current.compareCurrentPose(keypoints3D.current, figureParts.current);
+				
+					setdiffScore(parseInt(poseSync.current.diffScore));
+		
+					poseCurve.current.geometry.setFromPoints(poseSync.current.poseSpline.getPoints(50));
+					boneCurve.current.geometry.setFromPoints(poseSync.current.boneSpline.getPoints(50));
+				}
 
-				// setdiffScore(score);
-
-				// console.log(poseSync.current.animation_data)
 
 				{
 					const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
@@ -202,32 +199,29 @@ export default function DigitalTrainer() {
 			keypoints3D.current = null;
 		}
 
-		if (poseSync.current && keypoints3D.current) {
+		
 
-			const animation_frame_data = poseSync.current.animationFrame(keypoints3D.current, figureParts.current);
+		if (poseSync.current) {
 
-			// console.log(animation_frame_data);
+			if (poseCompareResult.current) {
 
-			applyAnimationFrame(figureParts.current, animation_frame_data)
+				if (poseCompareResult.current instanceof Number) {
+					animationIndx.current = poseCompareResult.current;
+				}
 
-			setdiffScore(parseInt(poseSync.current.diffScore));
+				applyTransfer(figureParts.current, poseSync.current.animation_data.tracks, animationIndx.current);
 
-			poseCurve.current.geometry.setFromPoints(poseSync.current.poseSpline.getPoints(50));
-			boneCurve.current.geometry.setFromPoints(poseSync.current.boneSpline.getPoints(50));
+				animationIndx.current += 1;
+
+			} else if (poseCompareResult.current === false) {
+				// compare failed, stop animation
+			}
+
+			if (animationIndx.current >= longestTrack.current) {
+				animationIndx.current = 0;
+			}
+
 		}
-
-		// if (poseSync.current && bufferStep.current < 50) {
-
-		// 	applyTransfer(figureParts.current, poseSync.current.animation_data.tracks, animationIndx.current);
-
-		// 	animationIndx.current += 1;
-
-		// 	if (animationIndx.current >= longestTrack.current) {
-		// 		animationIndx.current = 0;
-		// 	}
-
-		// 	bufferStep.current += 1;
-		// }
 
 		counter.current += 1;
 
@@ -242,14 +236,14 @@ export default function DigitalTrainer() {
 		loadObj(process.env.PUBLIC_URL + "/animjson/" + animation_name + ".json")
 		.then((data) => {
 
-			// for (const v of Object.values(data.tracks)) {
-			// 	if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
-			// 		longestTrack.current = v.quaternions.length;
-			// 	}
-			// }
+			for (const v of Object.values(data.tracks)) {
+				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+					longestTrack.current = v.quaternions.length;
+				}
+			}
 
-			// // reset the animation
-			// animationIndx.current = 0;
+			// reset the animation
+			animationIndx.current = 0;
 			poseSync.current = new PoseSync(data);
 		})
 	}

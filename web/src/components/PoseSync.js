@@ -7,7 +7,7 @@ import * as THREE from "three";
 
 export default class PoseSync {
 
-	#scoreThreshold = 15000;
+	#scoreThreshold = 1500;
 	#bufferThreshold = 50;
 	#bufferStep = 50;
 	#animationIndx = 0;
@@ -93,6 +93,65 @@ export default class PoseSync {
 		}
 
 		return distances;
+	}
+
+	compareCurrentPose(pose3D, bones) {
+		const d1 = this.keypointsDistances(pose3D);
+
+        const d2 = this.modelBonesDistances(bones);
+
+        const ratio = d1[0] / d2[0];
+
+        for (const i in d2) {
+            d2[i] *= ratio;
+        }
+
+        const unit1 = d1[0];
+
+        for (const i in d1) {
+            d1[i] /= unit1;
+        }
+
+        const unit2 = d2[0];
+
+        for (const i in d2) {
+            d2[i] /= unit2;
+        }
+
+		const d1v2 = []
+		const d2v2 = []
+		let x = 0
+
+		for (let i in d1) {
+			d1v2.push(new Vector2(x, d1[i] * 50))
+			d2v2.push(new Vector2(x, d2[i] * 50))
+
+			x += 10;
+		}
+
+		this.poseSpline = new THREE.SplineCurve(d1v2);
+		this.boneSpline = new THREE.SplineCurve(d2v2);
+
+        let diff = 0;
+
+        // console.log(d1, d2);
+
+        for (let i in d1) {
+            diff += Math.abs(d1[i] - d2[i]) ** 2;
+        }
+
+		this.diffScore = 100 * diff
+
+        if (this.diffScore <= this.#scoreThreshold) {
+
+			this.#bufferStep = 0;
+
+		} else {
+
+			this.#bufferStep += 1;
+		}
+
+		return this.#bufferStep < this.#bufferThreshold
 	}
 
 
