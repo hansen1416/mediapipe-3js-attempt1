@@ -11,6 +11,8 @@ export default function SubThreeJsScene({ width, height, objects, objects1 }) {
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
+	const animationNumber = useRef(0);
+
 	useEffect(() => {
 		_scene();
 
@@ -19,6 +21,8 @@ export default function SubThreeJsScene({ width, height, objects, objects1 }) {
 		animate();
 
 		return () => {
+			cancelAnimationFrame(animationNumber.current)
+
 			controls.current.dispose();
 			renderer.current.dispose();
 		};
@@ -75,7 +79,7 @@ export default function SubThreeJsScene({ width, height, objects, objects1 }) {
 	}
 
 	function animate() {
-		requestAnimationFrame(animate);
+		animationNumber.current = requestAnimationFrame(animate);
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
 
