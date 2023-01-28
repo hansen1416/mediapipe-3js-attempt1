@@ -92,8 +92,8 @@ export default function DigitalTrainer() {
 					color: 0x00ff00,
 				}));
 
-				poseCurve.current.position.set(-400, -100, 0);
-				boneCurve.current.position.set(-400, -100, 0);
+				poseCurve.current.position.set(-460, -200, 0);
+				boneCurve.current.position.set(-460, -200, 0);
 
 				scene.current.add(poseCurve.current);
 				scene.current.add(boneCurve.current);
@@ -301,17 +301,7 @@ export default function DigitalTrainer() {
 					objects={capturedPose}
 				/>
 			</div>
-
 			<div className="btn-box">
-				<div>
-					{
-						distacneSortIndex && distacneSortIndex.map((indx, i) => {
-							return (<div 
-								key={i}
-								><span>{distanceNames[indx]}</span><span>{vectorDistances[indx].toFixed(3)}</span></div>)
-						})
-					}
-				</div>
 				<div>
 					<ul>
 						{animationList.map((name) => {
@@ -332,6 +322,17 @@ export default function DigitalTrainer() {
 					<span
 						style={{fontSize: '40px', margin: "0 20px 0 0"}}
 					>{diffScore}</span>
+				</div>
+				<div>
+					{
+						distacneSortIndex && distacneSortIndex.map((indx, i) => {
+							return (<div 
+								key={i}
+								><span>{distanceNames[indx]}</span><span>{vectorDistances[indx].toFixed(3)}</span></div>)
+						})
+					}
+				</div>
+				<div>
 					<button
 						onClick={() => {
 							if (videoRef.current) {

@@ -112,7 +112,7 @@ export default class PoseSyncVector {
         const res = []
 
         for (let i in l1) {
-            res.push(l1[i].distanceTo(l2[i]))
+            res.push(l1[i].angleTo(l2[i]))
         }
 
         return res
