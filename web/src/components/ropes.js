@@ -44,13 +44,9 @@ export function radiansToDegrees(radian) {
 	return (radian / Math.PI) * 180;
 }
 
-// export function originToEnd(originPosition, length, rotations) {
-// 	return [
-// 		originPosition.x + Math.sin(rotations.z) * length,
-// 		originPosition.y + Math.cos(rotations.y) * length,
-// 		originPosition.z + Math.sin(rotations.z) * length,
-// 	];
-// }
+export function srotIndex(arr) {
+	return Array.from(Array(arr.length).keys()).sort((a, b) => arr[a] < arr[b] ? -1 : (arr[b] < arr[a]) | 0);
+}
 
 export function posePointsToVector(a, b, norm = true) {
 	let v;

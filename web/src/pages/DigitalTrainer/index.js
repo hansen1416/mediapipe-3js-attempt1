@@ -7,7 +7,9 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
 
+import SubThreeJsScene from "../../components/SubThreeJsScene";
 import PoseSync from "../../components/PoseSync";
+import PoseSyncVector from "../../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
 	loadFBX,
@@ -16,8 +18,8 @@ import {
 	traverseModel,
 	applyTransfer,
 	drawPoseKeypoints,
+	srotIndex,
 } from "../../components/ropes";
-import SubThreeJsScene from "../../components/SubThreeJsScene";
 
 export default function DigitalTrainer() {
 	const canvasRef = useRef(null);
@@ -43,6 +45,11 @@ export default function DigitalTrainer() {
 	const poseSync = useRef(null);
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
+
+	const poseSyncVector = useRef(null);
+	const [vectorDistances, setvectorDistances] = useState([]);
+	const [distanceNames] = useState(['left arm', 'left forearm', 'right arm', 'right forearm']);
+	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
 	const poseCurve = useRef(null);
 	const boneCurve = useRef(null);
@@ -105,6 +112,12 @@ export default function DigitalTrainer() {
 
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		if (vectorDistances && vectorDistances.length) {
+			setdistacneSortIndex(srotIndex(vectorDistances))
+		}
+	}, [vectorDistances]);
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -191,6 +204,12 @@ export default function DigitalTrainer() {
 					boneCurve.current.geometry.setFromPoints(poseSync.current.boneSpline.getPoints(50));
 				}
 
+				{
+					if (poseSyncVector.current) {
+						setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, animationIndx.current))
+					}
+				}
+
 
 				{
 					const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
@@ -204,8 +223,6 @@ export default function DigitalTrainer() {
 		} else {
 			keypoints3D.current = null;
 		}
-
-		
 
 		if (poseSync.current) {
 
@@ -229,6 +246,8 @@ export default function DigitalTrainer() {
 
 		}
 
+		
+
 		counter.current += 1;
 
 		controls.current.update();
@@ -251,6 +270,7 @@ export default function DigitalTrainer() {
 			// reset the animation
 			animationIndx.current = 0;
 			poseSync.current = new PoseSync(data);
+			poseSyncVector.current = new PoseSyncVector(data);
 		})
 	}
 
@@ -283,6 +303,15 @@ export default function DigitalTrainer() {
 			</div>
 
 			<div className="btn-box">
+				<div>
+					{
+						distacneSortIndex && distacneSortIndex.map((indx, i) => {
+							return (<div 
+								key={i}
+								><span>{distanceNames[indx]}</span><span>{vectorDistances[indx].toFixed(3)}</span></div>)
+						})
+					}
+				</div>
 				<div>
 					<ul>
 						{animationList.map((name) => {
