@@ -194,7 +194,6 @@ export default function DigitalTrainer() {
 					v["z"] *= -1;
 				}	
 
-
 				{
 					poseCompareResult.current = poseSync.current.compareCurrentPose(keypoints3D.current, figureParts.current);
 				
@@ -208,7 +207,6 @@ export default function DigitalTrainer() {
 					// setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, animationIndx.current))
 					setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, figureParts.current));
 				}
-
 
 				{
 					const g = drawPoseKeypoints(poses[0]["keypoints3D"]);

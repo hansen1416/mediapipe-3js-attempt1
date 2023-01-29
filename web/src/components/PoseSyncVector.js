@@ -1,7 +1,7 @@
 
 import * as THREE from "three";
 
-import { BlazePoseKeypointsValues,poseToVector,posePointsToVector,projectedDistance } from "./ropes";
+import { BlazePoseKeypointsValues,poseToVector,posePointsToVector } from "./ropes";
 
 export default class PoseSyncVector {
     
@@ -14,6 +14,39 @@ export default class PoseSyncVector {
             this.animationTracks[v['name']] = v
 		}
     }
+
+    poseTorso(pose3D) {
+
+		const rightshoulder = poseToVector(
+			pose3D[POSE_LANDMARKS["LEFT_SHOULDER"]]
+		);
+		const leftshoulder = poseToVector(
+			pose3D[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+        );
+
+		const righthip = poseToVector(
+			pose3D[POSE_LANDMARKS["LEFT_HIP"]]
+		);
+		const lefthip = poseToVector(
+			pose3D[POSE_LANDMARKS["RIGHT_HIP"]]
+		);
+
+		const pelvis = middlePosition(lefthip, righthip, false);
+
+		const x_basis = posePointsToVector(leftshoulder, rightshoulder);
+		const y_tmp = posePointsToVector(leftshoulder, pelvis);
+		const z_basis = new Vector3()
+			.crossVectors(x_basis, y_tmp)
+			.normalize();
+
+        const y_basis = new Vector3()
+            .crossVectors(x_basis, z_basis)
+            .normalize();
+
+		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
+
+		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+	}
 
     pose3dlimbs(pose3D) {
         
@@ -68,43 +101,35 @@ export default class PoseSyncVector {
         return [leftArmOrientation, leftForeArmOrientation, rightArmOrientation, rightForeArmOrientation]
     }
 
-    /**
-     * @param {*} frameIndx 
-     * @returns 
-     */
-    // animationLimbs(frameIndx) {
-
-    //     /**
-    //      * "upperarm_l",
-	// 		"upperarm_r",
-	// 		"lowerarm_l",
-	// 		"lowerarm_r",
-	// 		"hand_l",
-	// 		"hand_r",
-	// 		"thigh_l",
-	// 		"thigh_r",
-    //     */
+    boneTorso(bones) {
+        const leftshoulder = new THREE.Vector3();
         
-    //     const leftArmStates = new THREE.Vector3(this.animationTracks["upperarm_l.quaternion"]["states"][frameIndx].x,
-    //     this.animationTracks["upperarm_l.quaternion"]["states"][frameIndx].x,
-    //     this.animationTracks["upperarm_l.quaternion"]["states"][frameIndx].z).normalize();
+        bones['upperarm_l'].getWorldPosition(leftshoulder);
 
-    //     const leftForeArmStates = new THREE.Vector3(this.animationTracks["lowerarm_l.quaternion"]["states"][frameIndx].x,
-    //     this.animationTracks["lowerarm_l.quaternion"]["states"][frameIndx].y,
-    //     this.animationTracks["lowerarm_l.quaternion"]["states"][frameIndx].z).normalize();
+        const rightshoulder = new THREE.Vector3();
+        
+        bones['upperarm_r'].getWorldPosition(rightshoulder);
 
-    //     const rightArmStates = new THREE.Vector3(this.animationTracks["upperarm_r.quaternion"]["states"][frameIndx].x,
-    //     this.animationTracks["upperarm_r.quaternion"]["states"][frameIndx].y,
-    //     this.animationTracks["upperarm_r.quaternion"]["states"][frameIndx].z).normalize();
+        const pelvis = new THREE.Vector3();
+        
+        bones['pelvis'].getWorldPosition(pelvis);
 
-    //     const rightForeArmStates = new THREE.Vector3(this.animationTracks["lowerarm_r.quaternion"]["states"][frameIndx].x,
-    //     this.animationTracks["lowerarm_r.quaternion"]["states"][frameIndx].y,
-    //     this.animationTracks["lowerarm_r.quaternion"]["states"][frameIndx].z).normalize();
+		const x_basis = rightshoulder.sub(leftshoulder);
+		const y_tmp = pelvis.sub(leftshoulder);
+		const z_basis = new Vector3()
+			.crossVectors(x_basis, y_tmp)
+			.normalize();
 
-    //     return [leftArmStates, leftForeArmStates, rightArmStates, rightForeArmStates]
-    // }
+        const y_basis = new Vector3()
+            .crossVectors(x_basis, z_basis)
+            .normalize();
 
-    animationLimbs(bones) {
+		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
+
+		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+    }
+
+    boneLimbs(bones) {
         const upper = [
 			["upperarm_l", "lowerarm_l"],
 			["lowerarm_l", "hand_l"],
@@ -136,7 +161,7 @@ export default class PoseSyncVector {
         
         const l1 = this.pose3dlimbs(pose3D);
         // const l2 = this.animationLimbs(frameIndx);
-        const l2 = this.animationLimbs(bones);
+        const l2 = this.boneLimbs(bones);
 
         const res = []
 
@@ -145,5 +170,41 @@ export default class PoseSyncVector {
         }
 
         return res
+    }
+
+     /**
+     * @param {*} frameIndx 
+     * @returns 
+     */
+    animationLimbs(frameIndx) {
+
+        /**
+         * "upperarm_l",
+			"upperarm_r",
+			"lowerarm_l",
+			"lowerarm_r",
+			"hand_l",
+			"hand_r",
+			"thigh_l",
+			"thigh_r",
+        */
+        
+        const leftArmStates = new THREE.Vector3(this.animationTracks["upperarm_l.quaternion"]["states"][frameIndx].x,
+        this.animationTracks["upperarm_l.quaternion"]["states"][frameIndx].x,
+        this.animationTracks["upperarm_l.quaternion"]["states"][frameIndx].z).normalize();
+
+        const leftForeArmStates = new THREE.Vector3(this.animationTracks["lowerarm_l.quaternion"]["states"][frameIndx].x,
+        this.animationTracks["lowerarm_l.quaternion"]["states"][frameIndx].y,
+        this.animationTracks["lowerarm_l.quaternion"]["states"][frameIndx].z).normalize();
+
+        const rightArmStates = new THREE.Vector3(this.animationTracks["upperarm_r.quaternion"]["states"][frameIndx].x,
+        this.animationTracks["upperarm_r.quaternion"]["states"][frameIndx].y,
+        this.animationTracks["upperarm_r.quaternion"]["states"][frameIndx].z).normalize();
+
+        const rightForeArmStates = new THREE.Vector3(this.animationTracks["lowerarm_r.quaternion"]["states"][frameIndx].x,
+        this.animationTracks["lowerarm_r.quaternion"]["states"][frameIndx].y,
+        this.animationTracks["lowerarm_r.quaternion"]["states"][frameIndx].z).normalize();
+
+        return [leftArmStates, leftForeArmStates, rightArmStates, rightForeArmStates]
     }
 }
