@@ -1,16 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js'
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 
 import { loadFBX, loadObj } from "../../components/ropes";
 
-export default function Sider({selectedExcercise, setselectedExcercise}) {
+export default function Sider({ selectedExcercise, setselectedExcercise }) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
 
-	const [animationData, setanimationData] = useState({})
+	const [animationData, setanimationData] = useState({});
 
 	const container = useRef(null);
 	const canvasRef = useRef(null);
@@ -21,23 +21,20 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
-
-			resolve(
-				[
-					'basic-crunch',
-					'bicycle-crunch',
-					'curl-up',
-					'leg-pushes',
-					'leg-scissors',
-					'lying-leg-raises',
-					'oblique-crunch-left',
-					'oblique-crunch-right',
-					'punch-walk',
-					'reverse-crunch',
-					'side-crunch-left',
-					'toe-crunch',
-				]
-			);
+			resolve([
+				"basic-crunch",
+				"bicycle-crunch",
+				"curl-up",
+				"leg-pushes",
+				"leg-scissors",
+				"lying-leg-raises",
+				"oblique-crunch-left",
+				"oblique-crunch-right",
+				"punch-walk",
+				"reverse-crunch",
+				"side-crunch-left",
+				"toe-crunch",
+			]);
 		});
 	}
 
@@ -47,16 +44,15 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 		});
 
 		return () => {
-			cancelAnimationFrame(animationNumber.current)
-		}
+			cancelAnimationFrame(animationNumber.current);
+		};
 
 		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {
-
 		if (!animationList || !animationList.length) {
-			return
+			return;
 		}
 
 		// create main scene
@@ -74,37 +70,34 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 		renderer.current.setSize(width, height);
 
-		const tasks = [
-			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-		]
+		const tasks = [loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")];
 
 		for (let name of animationList) {
 			tasks.push(
 				loadObj(process.env.PUBLIC_URL + "/animjson/" + name + ".json")
-			)
+			);
 		}
 
 		Promise.all(tasks).then((results) => {
-
 			const [model] = results;
 
-			const animationJSONs = {}
-			
+			const animationJSONs = {};
+
 			for (let v of results.slice(1)) {
-				animationJSONs[v.name] = v
+				animationJSONs[v.name] = v;
 			}
 
-			setanimationData(animationJSONs)
+			setanimationData(animationJSONs);
 
 			for (let key in sceneInfoList.current) {
 				const { scene, mixer } = sceneInfoList.current[key];
 
-				const tmpmodel = SkeletonUtils.clone(model)
+				const tmpmodel = SkeletonUtils.clone(model);
 				// const tmpmodel = model.clone()
 
 				scene.add(tmpmodel);
 
-				const clip = THREE.AnimationClip.parse(animationJSONs[key])
+				const clip = THREE.AnimationClip.parse(animationJSONs[key]);
 
 				const action = mixer.clipAction(clip, tmpmodel);
 				// const action = mixer.clipAction(animationJSONs[key], tmpmodel);
@@ -166,9 +159,9 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 		renderer.current.setScissorTest(true);
 
 		for (let key in sceneInfoList.current) {
+			const { scene, camera, elem, clock, mixer } =
+				sceneInfoList.current[key];
 
-			const { scene, camera, elem, clock, mixer } = sceneInfoList.current[key];
-			
 			const delta = clock.getDelta();
 
 			mixer.update(delta);
@@ -212,14 +205,22 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 					<div
 						key={i}
 						data-animation={name}
-						className={selectedExcercise === name ? "animation-scene selected" : "animation-scene"}
+						className={
+							selectedExcercise === name
+								? "animation-scene selected"
+								: "animation-scene"
+						}
 						onClick={() => {
-							if (animationData && animationData[name] && animationData[name].tracks) {
-
-								const tracks = {}
+							if (
+								animationData &&
+								animationData[name] &&
+								animationData[name].tracks
+							) {
+								const tracks = {};
 
 								for (let i in animationData[name].tracks) {
-									tracks[animationData[name].tracks[i].name] = animationData[name].tracks[i]
+									tracks[animationData[name].tracks[i].name] =
+										animationData[name].tracks[i];
 								}
 
 								setselectedExcercise(tracks);

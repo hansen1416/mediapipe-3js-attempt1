@@ -4,7 +4,15 @@ import { Quaternion, Vector3, Matrix4 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useLocation } from "react-router-dom";
 
-import { loadFBX, traverseModel, getUpVectors, applyTransfer, sleep, middlePosition, posePointsToVector } from "../../components/ropes";
+import {
+	loadFBX,
+	traverseModel,
+	getUpVectors,
+	applyTransfer,
+	sleep,
+	middlePosition,
+	posePointsToVector,
+} from "../../components/ropes";
 
 export default function MotionInterpreter() {
 	const canvasRef = useRef(null);
@@ -28,8 +36,7 @@ export default function MotionInterpreter() {
 		// interpretAnimation();
 
 		return () => {
-
-			cancelAnimationFrame(animationNumber.current)
+			cancelAnimationFrame(animationNumber.current);
 
 			controls.current.dispose();
 			renderer.current.dispose();
@@ -133,7 +140,6 @@ export default function MotionInterpreter() {
 			getUpVectors(model, upVectors);
 
 			(async () => {
-
 				for (let i in results) {
 					const animation = results[i].animations[0].toJSON();
 
@@ -196,7 +202,8 @@ export default function MotionInterpreter() {
 						for (let name in parts) {
 							if (
 								tracks[name + ".quaternion"] === undefined &&
-								tracks[name + ".quaternion"]["states"] === undefined
+								tracks[name + ".quaternion"]["states"] ===
+									undefined
 							) {
 								continue;
 							}
@@ -217,7 +224,7 @@ export default function MotionInterpreter() {
 						// break;
 					}
 
-					animation['tracks'] = Object.values(tracks)
+					animation["tracks"] = Object.values(tracks);
 
 					// todo, use API to save this animation to json file
 					console.log(animation["name"], animation);
