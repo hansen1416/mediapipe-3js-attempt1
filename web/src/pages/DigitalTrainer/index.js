@@ -205,9 +205,8 @@ export default function DigitalTrainer() {
 				}
 
 				{
-					if (poseSyncVector.current) {
-						setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, animationIndx.current))
-					}
+					// setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, animationIndx.current))
+					setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, figureParts.current));
 				}
 
 
