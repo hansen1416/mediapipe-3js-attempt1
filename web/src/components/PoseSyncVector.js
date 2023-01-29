@@ -1,7 +1,7 @@
 
 import * as THREE from "three";
 
-import { BlazePoseKeypointsValues,poseToVector,posePointsToVector } from "./ropes";
+import { BlazePoseKeypointsValues,poseToVector,posePointsToVector,middlePosition } from "./ropes";
 
 export default class PoseSyncVector {
     
@@ -18,34 +18,34 @@ export default class PoseSyncVector {
     poseTorso(pose3D) {
 
 		const rightshoulder = poseToVector(
-			pose3D[POSE_LANDMARKS["LEFT_SHOULDER"]]
+			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
 		);
 		const leftshoulder = poseToVector(
-			pose3D[POSE_LANDMARKS["RIGHT_SHOULDER"]]
+			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
         );
 
 		const righthip = poseToVector(
-			pose3D[POSE_LANDMARKS["LEFT_HIP"]]
+			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
 		);
 		const lefthip = poseToVector(
-			pose3D[POSE_LANDMARKS["RIGHT_HIP"]]
+			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
 		);
 
 		const pelvis = middlePosition(lefthip, righthip, false);
 
 		const x_basis = posePointsToVector(leftshoulder, rightshoulder);
 		const y_tmp = posePointsToVector(leftshoulder, pelvis);
-		const z_basis = new Vector3()
+		const z_basis = new THREE.Vector3()
 			.crossVectors(x_basis, y_tmp)
 			.normalize();
 
-        const y_basis = new Vector3()
+        const y_basis = new THREE.Vector3()
             .crossVectors(x_basis, z_basis)
             .normalize();
 
 		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
 
-		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+		return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
 	}
 
     pose3dlimbs(pose3D) {
@@ -116,17 +116,17 @@ export default class PoseSyncVector {
 
 		const x_basis = rightshoulder.sub(leftshoulder);
 		const y_tmp = pelvis.sub(leftshoulder);
-		const z_basis = new Vector3()
+		const z_basis = new THREE.Vector3()
 			.crossVectors(x_basis, y_tmp)
 			.normalize();
 
-        const y_basis = new Vector3()
+        const y_basis = new THREE.Vector3()
             .crossVectors(x_basis, z_basis)
             .normalize();
 
 		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
 
-		return new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
+		return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis).invert();
     }
 
     boneLimbs(bones) {
