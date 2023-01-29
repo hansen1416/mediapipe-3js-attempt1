@@ -123,13 +123,13 @@ export default function ExcerciseEditor() {
 	return (
 		<div>
 			<div className="flex-container">
+				<div id="main_scene" ref={mainSceneRef}>
+					<canvas ref={canvasRef} />
+				</div>
 				<Sider
 					selectedExcercise={selectedExcercise}
 					setselectedExcercise={setselectedExcercise}
 				/>
-				<div id="main_scene" ref={mainSceneRef}>
-					<canvas ref={canvasRef} />
-				</div>
 			</div>
 		</div>
 	);

@@ -181,15 +181,18 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 				continue;
 			}
 
-			const boxheight = container.current.clientHeight;
+			// const boxheight = container.current.clientHeight;
 
 			// camera.aspect = width / height;
 			// camera.updateProjectionMatrix();
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(left, boxheight-bottom, width, height);
-			renderer.current.setViewport(left, boxheight-bottom, width, height);
+			// renderer.current.setScissor(left, boxheight-bottom, width, height);
+			// renderer.current.setViewport(left, boxheight-bottom, width, height);
+
+			renderer.current.setScissor(left, 0, width, height);
+			renderer.current.setViewport(left, 0, width, height);
 
 			renderer.current.render(scene, camera);
 		}
