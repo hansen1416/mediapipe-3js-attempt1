@@ -23,18 +23,37 @@ export default function MotionInterpreter() {
 	const animationPointer = useRef(0);
 
 	const model = useRef(null);
-	const [modelPosition, setmodelPosition] = useState({x:0, y:0, z:0});
-	const [modelRotation, setmodelRotation] = useState({x:0, y:0, z:0});
+	const [modelPosition, setmodelPosition] = useState({ x: 0, y: 0, z: 0 });
+	const [modelRotation, setmodelRotation] = useState({ x: 0, y: 0, z: 0 });
 
-	const allParts = ['torso', 'upperarm_l', 'lowerarm_l', 'upperarm_r', 'lowerarm_r', 'thigh_l', 'calf_l',  'thigh_r', 'calf_r'];
+	const allParts = [
+		"torso",
+		"upperarm_l",
+		"lowerarm_l",
+		"upperarm_r",
+		"lowerarm_r",
+		"thigh_l",
+		"calf_l",
+		"thigh_r",
+		"calf_r",
+	];
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
-	const allMuscleGroups = ['chest', 'back', 'arms', 'abdominals', 'legs', 'shoulders'];
-	const [muscleGroups, setmuscleGroups] = useState([])
+	const allMuscleGroups = [
+		"chest",
+		"back",
+		"arms",
+		"abdominals",
+		"legs",
+		"shoulders",
+	];
+	const [muscleGroups, setmuscleGroups] = useState([]);
 
 	useEffect(() => {
-
-		_scene(document.documentElement.clientWidth, document.documentElement.clientHeight);
+		_scene(
+			document.documentElement.clientWidth,
+			document.documentElement.clientHeight
+		);
 
 		setTimeout(() => {
 			animate();
@@ -43,7 +62,6 @@ export default function MotionInterpreter() {
 		// interpretAnimation();
 
 		return () => {
-
 			cancelAnimationFrame(animationPointer.current);
 
 			controls.current.dispose();
@@ -54,13 +72,21 @@ export default function MotionInterpreter() {
 
 	useEffect(() => {
 		if (model.current) {
-			model.current.position.set(modelPosition.x, modelPosition.y, modelPosition.z);
+			model.current.position.set(
+				modelPosition.x,
+				modelPosition.y,
+				modelPosition.z
+			);
 		}
 	}, [modelPosition]);
 
 	useEffect(() => {
 		if (model.current) {
-			model.current.rotation.set(degreesToRadians(modelRotation.x), degreesToRadians(modelRotation.y), degreesToRadians(modelRotation.z));
+			model.current.rotation.set(
+				degreesToRadians(modelRotation.x),
+				degreesToRadians(modelRotation.y),
+				degreesToRadians(modelRotation.z)
+			);
 		}
 	}, [modelRotation]);
 
@@ -69,7 +95,7 @@ export default function MotionInterpreter() {
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
-		
+
 		/**
 		 * The first attribute is the field of view.
 		 * FOV is the extent of the scene that is seen on the display at any given moment.
@@ -113,7 +139,6 @@ export default function MotionInterpreter() {
 	}
 
 	function animate() {
-
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
@@ -127,13 +152,19 @@ export default function MotionInterpreter() {
 	 * `states` is the orientation of a body part at a time
 	 */
 	function loadAnimation(file_url) {
-
-		loadFBX(file_url)
-		.then((result) => {
+		loadFBX(file_url).then((result) => {
 			model.current = result;
 
-			model.current.position.set(modelPosition.x, modelPosition.y, modelPosition.z);
-			model.current.rotation.set(degreesToRadians(modelRotation.x), degreesToRadians(modelRotation.y), degreesToRadians(modelRotation.z));
+			model.current.position.set(
+				modelPosition.x,
+				modelPosition.y,
+				modelPosition.z
+			);
+			model.current.rotation.set(
+				degreesToRadians(modelRotation.x),
+				degreesToRadians(modelRotation.y),
+				degreesToRadians(modelRotation.z)
+			);
 
 			scene.current.add(model.current);
 
@@ -150,7 +181,6 @@ export default function MotionInterpreter() {
 		getUpVectors(model.current, upVectors);
 
 		(async () => {
-
 			const animation = model.current.animations[0].toJSON();
 
 			let longestTrack = 0;
@@ -233,31 +263,30 @@ export default function MotionInterpreter() {
 				// break;
 			}
 
-			animation['tracks'] = Object.values(tracks);
+			animation["tracks"] = Object.values(tracks);
 
-			animation['rotation'] = modelRotation;
-			animation['position'] = modelPosition;
-			animation['key_parts'] = keyParts;
-			animation['muscle_groups'] = muscleGroups;
+			animation["rotation"] = modelRotation;
+			animation["position"] = modelPosition;
+			animation["key_parts"] = keyParts;
+			animation["muscle_groups"] = muscleGroups;
 
 			// todo, use API to save this animation to json file
 			console.log(animation["name"], animation);
-		
 		})();
 	}
 
 	function getBasisFromModel(bones) {
 		const leftshoulder = new THREE.Vector3();
-        
-        bones['upperarm_l'].getWorldPosition(leftshoulder);
 
-        const rightshoulder = new THREE.Vector3();
-        
-        bones['upperarm_r'].getWorldPosition(rightshoulder);
+		bones["upperarm_l"].getWorldPosition(leftshoulder);
 
-        const pelvis = new THREE.Vector3();
-        
-        bones['pelvis'].getWorldPosition(pelvis);
+		const rightshoulder = new THREE.Vector3();
+
+		bones["upperarm_r"].getWorldPosition(rightshoulder);
+
+		const pelvis = new THREE.Vector3();
+
+		bones["pelvis"].getWorldPosition(pelvis);
 
 		const x_basis = rightshoulder.sub(leftshoulder);
 		const y_tmp = pelvis.sub(leftshoulder);
@@ -265,11 +294,13 @@ export default function MotionInterpreter() {
 			.crossVectors(x_basis, y_tmp)
 			.normalize();
 
-        const y_basis = new THREE.Vector3()
-            .crossVectors(x_basis, z_basis)
-            .normalize();
+		const y_basis = new THREE.Vector3()
+			.crossVectors(x_basis, z_basis)
+			.normalize();
 
-		return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis).invert()
+		return new THREE.Matrix4()
+			.makeBasis(x_basis, y_basis, z_basis)
+			.invert();
 	}
 
 	return (
@@ -280,122 +311,124 @@ export default function MotionInterpreter() {
 					<label>
 						file:
 						<input
-							type={'file'}
+							type={"file"}
 							onChange={(e) => {
-								loadAnimation(URL.createObjectURL(e.target.files[0]));
+								loadAnimation(
+									URL.createObjectURL(e.target.files[0])
+								);
 							}}
 						/>
 					</label>
 				</div>
-				<hr/>
+				<hr />
 				<div>
 					<span>Position: </span>
-					{
-						['x', 'y', 'z'].map((axis) => {
-							return (<label key={axis}>
+					{["x", "y", "z"].map((axis) => {
+						return (
+							<label key={axis}>
 								{axis}
 								<input
-									type={'text'}
+									type={"text"}
 									value={modelPosition[axis]}
-									onChange={(e)=>{
+									onChange={(e) => {
 										const tmp = clone(modelPosition);
-		
+
 										tmp[axis] = e.target.value;
-		
+
 										setmodelPosition(tmp);
 									}}
-									style={{width: '30px'}}
+									style={{ width: "30px" }}
 								/>
-							</label>)
-						})
-					}
+							</label>
+						);
+					})}
 				</div>
-				<hr/>
+				<hr />
 				<div>
 					<span>Rotation: </span>
-					{
-						['x', 'y', 'z'].map((axis) => {
-							return (<label key={axis}>
+					{["x", "y", "z"].map((axis) => {
+						return (
+							<label key={axis}>
 								{axis}
 								<input
-									type={'text'}
+									type={"text"}
 									value={modelRotation[axis]}
-									onChange={(e)=>{
+									onChange={(e) => {
 										const tmp = clone(modelRotation);
-		
+
 										tmp[axis] = e.target.value;
-		
+
 										setmodelRotation(tmp);
 									}}
-									style={{width: '30px'}}
+									style={{ width: "30px" }}
 								/>
-							</label>)
-						})
-					}
+							</label>
+						);
+					})}
 				</div>
-				<hr/>
+				<hr />
 				<div>
 					{allParts.map((item) => {
 						return (
-						<div
-							key={item}
-						>
-							<label>
-								{item}
-								<input 
-									type={'checkbox'}
-									checked={keyParts.indexOf(item) !== -1}
-									onChange={(e) => {
-										let tmp = clone(keyParts)
-
-										if (e.target.checked) {
-											tmp.push(item)
-										} else {
-											tmp = tmp.filter(x => x !== item)
-										}
-
-										setkeyParts(tmp)
-									}}
-								/>
-							</label>
-						</div>
-						)
-					})}
-				</div>
-				<hr/>
-				<div>
-					{
-						allMuscleGroups.map((item) => {
-							return (<div
-								key={item}
-							>
+							<div key={item}>
 								<label>
 									{item}
-									<input 
-										type={'checkbox'}
-										checked={muscleGroups.indexOf(item) !== -1}
+									<input
+										type={"checkbox"}
+										checked={keyParts.indexOf(item) !== -1}
 										onChange={(e) => {
-											let tmp = clone(muscleGroups)
+											let tmp = clone(keyParts);
 
 											if (e.target.checked) {
-												tmp.push(item)
+												tmp.push(item);
 											} else {
-												tmp = tmp.filter(x => x !== item)
+												tmp = tmp.filter(
+													(x) => x !== item
+												);
 											}
 
-											setmuscleGroups(tmp)
+											setkeyParts(tmp);
 										}}
 									/>
 								</label>
-							</div>)
-						})
-					}
+							</div>
+						);
+					})}
 				</div>
-				<hr/>
+				<hr />
 				<div>
-					<button
-						onClick={interpretAnimation}
-					>
+					{allMuscleGroups.map((item) => {
+						return (
+							<div key={item}>
+								<label>
+									{item}
+									<input
+										type={"checkbox"}
+										checked={
+											muscleGroups.indexOf(item) !== -1
+										}
+										onChange={(e) => {
+											let tmp = clone(muscleGroups);
+
+											if (e.target.checked) {
+												tmp.push(item);
+											} else {
+												tmp = tmp.filter(
+													(x) => x !== item
+												);
+											}
+
+											setmuscleGroups(tmp);
+										}}
+									/>
+								</label>
+							</div>
+						);
+					})}
+				</div>
+				<hr />
+				<div>
+					<button onClick={interpretAnimation}>
 						Interpret Again
 					</button>
 				</div>

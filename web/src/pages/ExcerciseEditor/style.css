@@ -23,18 +23,16 @@ video {
 
 .flex-container #main_scene {
 	/* width: 64%; */
-	height: 70vh;
+	height: 80vh;
 	/* flex-shrink: 1; */
 }
 
 .flex-container .sider {
 	width: 100vw;
-	height: 30vh;
+	height: 20vh;
 }
 
 .flex-container .sider .animation-scene {
-	width: 30vh;
-	height: 30vh;
 	display: inline-block;
 	box-sizing: border-box;
 }

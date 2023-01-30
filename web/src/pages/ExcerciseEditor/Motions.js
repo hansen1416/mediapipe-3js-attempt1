@@ -9,6 +9,9 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
+	const [sceneWidth, setsceneWidth] = useState(100);
+	const [sceneHeight, setsceneHeight] = useState(100);
+	const [btnWdith] = useState(20);
 
 	const [animationData, setanimationData] = useState({});
 
@@ -39,13 +42,21 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 	}
 
 	useEffect(() => {
+		const vw = document.documentElement.clientWidth;
+		const vh = document.documentElement.clientHeight;
+
+		const n = Math.round((vw - btnWdith * 2) / (vh / 5));
+
+		setsceneWidth((vw - btnWdith * 2) / n);
+		setsceneHeight(vh / 5);
+
 		loadAnimationList().then((data) => {
 			setanimationList(data);
 		});
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
-		}
+		};
 
 		// eslint-disable-next-line
 	}, []);
@@ -199,7 +210,9 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 				ref={canvasRef}
 				style={{ zIndex: -1, position: "absolute" }}
 			/>
-
+			<div
+				style={{ width: btnWdith + "px", display: "inline-block" }}
+			></div>
 			{animationList.map((name, i) => {
 				return (
 					<div
@@ -210,6 +223,10 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 								? "animation-scene selected"
 								: "animation-scene"
 						}
+						style={{
+							width: sceneWidth + "px",
+							height: sceneHeight + "px",
+						}}
 						onClick={() => {
 							if (
 								animationData &&
@@ -229,6 +246,9 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 					></div>
 				);
 			})}
+			<div
+				style={{ width: btnWdith + "px", display: "inline-block" }}
+			></div>
 		</div>
 	);
 }
