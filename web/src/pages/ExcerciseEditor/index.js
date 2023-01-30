@@ -4,7 +4,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import { loadFBX, traverseModel, applyTransfer } from "../../components/ropes";
-import Sider from "./Sider";
+import Synthesizer from './Synthesizer'
+import Motions from "./Motions";
 
 export default function ExcerciseEditor() {
 	const mainSceneRef = useRef(null);
@@ -128,7 +129,10 @@ export default function ExcerciseEditor() {
 				<div id="main_scene" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>
-				<Sider
+				<Synthesizer
+					
+				/>
+				<Motions
 					selectedExcercise={selectedExcercise}
 					setselectedExcercise={setselectedExcercise}
 				/>

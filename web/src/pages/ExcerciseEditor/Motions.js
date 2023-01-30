@@ -5,7 +5,7 @@ import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 
 import { loadFBX, loadObj } from "../../components/ropes";
 
-export default function Sider({ selectedExcercise, setselectedExcercise }) {
+export default function Motions({ selectedExcercise, setselectedExcercise }) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
