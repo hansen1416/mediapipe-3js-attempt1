@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { Quaternion, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
 
@@ -26,8 +25,8 @@ export default function MotionInterpreter() {
 	const [animationFilename, setanimationFilename] = useState("punch-walk.fbx");
 	const [modelPosition, setmodelPosition] = useState({x:0, y:0, z:0});
 
-	const allParts = ['torso', 'upperarm_l', 'lowerarm_l', 'upperarm_r', 'lowerarm_r', 'thigh_l', 'calf_l',  'thigh_r', 'calf_r']
-	const [keyParts, setkeyParts] = useState(clone(allParts))
+	const allParts = ['torso', 'upperarm_l', 'lowerarm_l', 'upperarm_r', 'lowerarm_r', 'thigh_l', 'calf_l',  'thigh_r', 'calf_r'];
+	const [keyParts, setkeyParts] = useState(clone(allParts));
 
 
 	useEffect(() => {
@@ -152,7 +151,7 @@ export default function MotionInterpreter() {
 				if (item["type"] === "quaternion") {
 					const quaternions = [];
 					for (let i = 0; i < item["values"].length; i += 4) {
-						const q = new Quaternion(
+						const q = new THREE.Quaternion(
 							item["values"][i],
 							item["values"][i + 1],
 							item["values"][i + 2],
@@ -173,7 +172,7 @@ export default function MotionInterpreter() {
 				if (item["type"] === "vector") {
 					const vectors = [];
 					for (let i = 0; i < item["values"].length; i += 3) {
-						const q = new Vector3(
+						const q = new THREE.Vector3(
 							item["values"][i],
 							item["values"][i + 1],
 							item["values"][i + 2]
@@ -208,7 +207,7 @@ export default function MotionInterpreter() {
 						continue;
 					}
 
-					const q = new Quaternion();
+					const q = new THREE.Quaternion();
 					const v = upVectors[name].clone();
 
 					parts[name].getWorldQuaternion(q);
@@ -224,7 +223,10 @@ export default function MotionInterpreter() {
 				// break;
 			}
 
-			animation['tracks'] = Object.values(tracks)
+			animation['tracks'] = Object.values(tracks);
+
+			animation['position'] = modelPosition;
+			animation['key_parts'] = keyParts;
 
 			// todo, use API to save this animation to json file
 			console.log(animation["name"], animation);
