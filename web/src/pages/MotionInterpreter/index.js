@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
 
 import {
+	degreesToRadians,
 	loadFBX,
 	traverseModel,
 	getUpVectors,
@@ -56,6 +57,12 @@ export default function MotionInterpreter() {
 			model.current.position.set(modelPosition.x, modelPosition.y, modelPosition.z);
 		}
 	}, [modelPosition]);
+
+	useEffect(() => {
+		if (model.current) {
+			model.current.rotation.set(degreesToRadians(modelRotation.x), degreesToRadians(modelRotation.y), degreesToRadians(modelRotation.z));
+		}
+	}, [modelRotation]);
 
 	function _scene(viewWidth, viewHeight) {
 		const backgroundColor = 0x022244;
@@ -126,6 +133,7 @@ export default function MotionInterpreter() {
 			model.current = result;
 
 			model.current.position.set(modelPosition.x, modelPosition.y, modelPosition.z);
+			model.current.rotation.set(degreesToRadians(modelRotation.x), degreesToRadians(modelRotation.y), degreesToRadians(modelRotation.z));
 
 			scene.current.add(model.current);
 
@@ -227,6 +235,7 @@ export default function MotionInterpreter() {
 
 			animation['tracks'] = Object.values(tracks);
 
+			animation['rotation'] = modelRotation;
 			animation['position'] = modelPosition;
 			animation['key_parts'] = keyParts;
 			animation['muscle_groups'] = muscleGroups;
@@ -280,7 +289,7 @@ export default function MotionInterpreter() {
 				</div>
 				<hr/>
 				<div>
-				<span>Position: </span>
+					<span>Position: </span>
 					{
 						['x', 'y', 'z'].map((axis) => {
 							return (<label key={axis}>
