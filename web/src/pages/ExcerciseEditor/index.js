@@ -22,7 +22,7 @@ export default function ExcerciseEditor() {
 	const animationIndx = useRef(0);
 	const longestTrack = useRef(0);
 
-	const animationNumber = useRef(0);
+	const animationPointer = useRef(0);
 
 	useEffect(() => {
 		const { width, height } = mainSceneRef.current.getBoundingClientRect();
@@ -44,7 +44,7 @@ export default function ExcerciseEditor() {
 
 		return () => {
 
-			cancelAnimationFrame(animationNumber.current)
+			cancelAnimationFrame(animationPointer.current)
 
 			controls.current.dispose();
 			renderer.current.dispose();
@@ -117,7 +117,7 @@ export default function ExcerciseEditor() {
 
 		renderer.current.render(scene.current, camera.current);
 
-		animationNumber.current = requestAnimationFrame(animate);
+		animationPointer.current = requestAnimationFrame(animate);
 	}
 
 	return (

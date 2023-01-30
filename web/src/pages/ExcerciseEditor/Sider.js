@@ -17,7 +17,7 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 
 	const renderer = useRef(null);
 
-	const animationNumber = useRef(0);
+	const animationPointer = useRef(0);
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -47,7 +47,7 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 		});
 
 		return () => {
-			cancelAnimationFrame(animationNumber.current)
+			cancelAnimationFrame(animationPointer.current)
 		}
 
 		// eslint-disable-next-line
@@ -197,7 +197,7 @@ export default function Sider({selectedExcercise, setselectedExcercise}) {
 			renderer.current.render(scene, camera);
 		}
 
-		animationNumber.current = requestAnimationFrame(animate);
+		animationPointer.current = requestAnimationFrame(animate);
 	}
 
 	return (

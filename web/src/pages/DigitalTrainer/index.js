@@ -55,7 +55,7 @@ export default function DigitalTrainer() {
 	const boneCurve = useRef(null);
 	const [capturedPose, setcapturedPose] = useState();
 
-	const animationNumber = useRef(0);
+	const animationPointer = useRef(0);
 
 	useEffect(() => {
 		Promise.all([
@@ -107,7 +107,7 @@ export default function DigitalTrainer() {
 		});
 
 		return () => {
-			cancelAnimationFrame(animationNumber.current)
+			cancelAnimationFrame(animationPointer.current)
 		}
 
 		// eslint-disable-next-line
@@ -251,7 +251,7 @@ export default function DigitalTrainer() {
 
 		renderer.current.render(scene.current, camera.current);
 
-		animationNumber.current = requestAnimationFrame(animate);
+		animationPointer.current = requestAnimationFrame(animate);
 	}
 
 	function loadAnimation(animation_name) {

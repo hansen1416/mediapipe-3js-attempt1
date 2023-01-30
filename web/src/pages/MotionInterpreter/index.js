@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Quaternion, Vector3, Matrix4 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { useLocation } from "react-router-dom";
+import { clone } from "lodash";
 
 import { loadFBX, traverseModel, getUpVectors, applyTransfer, sleep, middlePosition, posePointsToVector } from "../../components/ropes";
 
@@ -14,12 +14,19 @@ export default function MotionInterpreter() {
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
-	const animationNumber = useRef(0);
+	const animationPointer = useRef(0);
+
+	const model = useRef(null);
+	const [animationFilename, setanimationFilename] = useState("punch-walk.fbx");
+	const [modelPosition, setmodelPosition] = useState({x:0, y:0, z:0});
+
+	const allParts = ['torso', 'upperarm_l', 'lowerarm_l', 'upperarm_r', 'lowerarm_r', 'thigh_l', 'calf_l',  'thigh_r', 'calf_r']
+	const [keyParts, setkeyParts] = useState(clone(allParts))
+
 
 	useEffect(() => {
-		_scene();
 
-		_light();
+		_scene(document.documentElement.clientWidth, document.documentElement.clientHeight);
 
 		setTimeout(() => {
 			animate();
@@ -29,7 +36,7 @@ export default function MotionInterpreter() {
 
 		return () => {
 
-			cancelAnimationFrame(animationNumber.current)
+			cancelAnimationFrame(animationPointer.current);
 
 			controls.current.dispose();
 			renderer.current.dispose();
@@ -37,15 +44,18 @@ export default function MotionInterpreter() {
 		// eslint-disable-next-line
 	}, []);
 
-	function _scene() {
-		const backgroundColor = 0x22244;
+	useEffect(() => {
+		if (model.current) {
+			model.current.position.set(modelPosition.x, modelPosition.y, modelPosition.z);
+		}
+	}, [modelPosition]);
+
+	function _scene(viewWidth, viewHeight) {
+		const backgroundColor = 0x022244;
 
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(backgroundColor);
-		// scene.current.fog = new THREE.Fog(backgroundColor, 60, 100);
-
-		const viewWidth = document.documentElement.clientWidth;
-		const viewHeight = document.documentElement.clientHeight;
+		
 		/**
 		 * The first attribute is the field of view.
 		 * FOV is the extent of the scene that is seen on the display at any given moment.
@@ -69,7 +79,15 @@ export default function MotionInterpreter() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 240);
+		camera.current.position.set(0, 0, 300);
+
+		{
+			const light = new THREE.PointLight(0xffffff, 1);
+			// light.position.set(10, 10, 10);
+			camera.current.add(light);
+
+			scene.current.add(camera.current);
+		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -80,23 +98,13 @@ export default function MotionInterpreter() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
-	function _light() {
-		const color = 0xffffff;
-		const amblight = new THREE.AmbientLight(color, 1);
-		scene.current.add(amblight);
-
-		const plight = new THREE.PointLight(color, 1);
-		plight.position.set(5, 5, 2);
-		scene.current.add(plight);
-	}
-
 	function animate() {
-		animationNumber.current = requestAnimationFrame(animate);
 
-		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
+
+		animationPointer.current = requestAnimationFrame(animate);
 	}
 
 	/**
@@ -104,126 +112,118 @@ export default function MotionInterpreter() {
 	 * add `states` for each body part
 	 * `states` is the orientation of a body part at a time
 	 */
-	function interpretAnimation() {
-		Promise.all([
-			loadFBX(process.env.PUBLIC_URL + "/anims/basic-crunch.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/bicycle-crunch.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/curl-up.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/leg-pushes.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/leg-scissors.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/lying-leg-raises.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/oblique-crunch-left.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/oblique-crunch-right.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/punch-walk.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/reverse-crunch.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/side-crunch-left.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/anims/toe-crunch.fbx"),
-		]).then((results) => {
-			const [model] = results;
+	function loadAnimation() {
 
-			model.position.set(0, 0, 0);
+		loadFBX(process.env.PUBLIC_URL + "/anims/" + animationFilename)
+		.then((result) => {
+			model.current = result;
 
-			scene.current.add(model);
+			model.current.position.set(modelPosition.x, modelPosition.y, modelPosition.z);
 
-			const parts = {};
-			const upVectors = {};
+			scene.current.add(model.current);
 
-			// read attributes from the model
-			traverseModel(model, parts);
-			getUpVectors(model, upVectors);
-
-			(async () => {
-
-				for (let i in results) {
-					const animation = results[i].animations[0].toJSON();
-
-					let longestTrack = 0;
-					let tracks = {};
-
-					// calculate quaternions and vectors for animation tracks
-					for (let item of animation["tracks"]) {
-						if (item["type"] === "quaternion") {
-							const quaternions = [];
-							for (let i = 0; i < item["values"].length; i += 4) {
-								const q = new Quaternion(
-									item["values"][i],
-									item["values"][i + 1],
-									item["values"][i + 2],
-									item["values"][i + 3]
-								);
-
-								quaternions.push(q);
-							}
-
-							item["quaternions"] = quaternions;
-							item["states"] = [];
-
-							if (quaternions.length > longestTrack) {
-								longestTrack = quaternions.length;
-							}
-						}
-
-						if (item["type"] === "vector") {
-							const vectors = [];
-							for (let i = 0; i < item["values"].length; i += 3) {
-								const q = new Vector3(
-									item["values"][i],
-									item["values"][i + 1],
-									item["values"][i + 2]
-								);
-
-								vectors.push(q);
-							}
-
-							item["vectors"] = vectors;
-						}
-
-						if (
-							item["type"] === "quaternion" ||
-							(item["type"] === "vector" &&
-								item["name"] === "root.position")
-						) {
-							tracks[item["name"]] = item;
-						}
-					}
-
-					// play the animation, observe the vectors of differnt parts
-					for (let i = 0; i < longestTrack; i++) {
-						applyTransfer(parts, tracks, i);
-
-						const matrix = getBasisFromModel(parts);
-
-						for (let name in parts) {
-							if (
-								tracks[name + ".quaternion"] === undefined &&
-								tracks[name + ".quaternion"]["states"] === undefined
-							) {
-								continue;
-							}
-
-							const q = new Quaternion();
-							const v = upVectors[name].clone();
-
-							parts[name].getWorldQuaternion(q);
-
-							v.applyQuaternion(q);
-							v.applyMatrix4(matrix);
-
-							tracks[name + ".quaternion"]["states"].push(v);
-						}
-
-						await sleep(30);
-
-						// break;
-					}
-
-					animation['tracks'] = Object.values(tracks)
-
-					// todo, use API to save this animation to json file
-					console.log(animation["name"], animation);
-				}
-			})();
+			interpretAnimation();
 		});
+	}
+
+	function interpretAnimation() {
+		const parts = {};
+		const upVectors = {};
+
+		// read attributes from the model
+		traverseModel(model.current, parts);
+		getUpVectors(model.current, upVectors);
+
+		(async () => {
+
+			const animation = model.current.animations[0].toJSON();
+
+			let longestTrack = 0;
+			let tracks = {};
+
+			// calculate quaternions and vectors for animation tracks
+			for (let item of animation["tracks"]) {
+				if (item["type"] === "quaternion") {
+					const quaternions = [];
+					for (let i = 0; i < item["values"].length; i += 4) {
+						const q = new Quaternion(
+							item["values"][i],
+							item["values"][i + 1],
+							item["values"][i + 2],
+							item["values"][i + 3]
+						);
+
+						quaternions.push(q);
+					}
+
+					item["quaternions"] = quaternions;
+					item["states"] = [];
+
+					if (quaternions.length > longestTrack) {
+						longestTrack = quaternions.length;
+					}
+				}
+
+				if (item["type"] === "vector") {
+					const vectors = [];
+					for (let i = 0; i < item["values"].length; i += 3) {
+						const q = new Vector3(
+							item["values"][i],
+							item["values"][i + 1],
+							item["values"][i + 2]
+						);
+
+						vectors.push(q);
+					}
+
+					item["vectors"] = vectors;
+				}
+
+				if (
+					item["type"] === "quaternion" ||
+					(item["type"] === "vector" &&
+						item["name"] === "root.position")
+				) {
+					tracks[item["name"]] = item;
+				}
+			}
+
+			// play the animation, observe the vectors of differnt parts
+			for (let i = 0; i < longestTrack; i++) {
+				applyTransfer(parts, tracks, i);
+
+				const matrix = getBasisFromModel(parts);
+
+				for (let name in parts) {
+					if (
+						tracks[name + ".quaternion"] === undefined &&
+						tracks[name + ".quaternion"]["states"] === undefined
+					) {
+						continue;
+					}
+
+					const q = new Quaternion();
+					const v = upVectors[name].clone();
+
+					parts[name].getWorldQuaternion(q);
+
+					v.applyQuaternion(q);
+					v.applyMatrix4(matrix);
+
+					tracks[name + ".quaternion"]["states"].push(v);
+				}
+
+				await sleep(16);
+
+				// break;
+			}
+
+			animation['tracks'] = Object.values(tracks)
+
+			// todo, use API to save this animation to json file
+			console.log(animation["name"], animation);
+		
+		})();
 	}
 
 	function getBasisFromModel(modelParts) {
@@ -267,13 +267,79 @@ export default function MotionInterpreter() {
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
 			<div className="btn-box">
-				<button
-					onClick={() => {
-						interpretAnimation();
-					}}
-				>
-					Interpret Animation
-				</button>
+				<div>
+					{allParts.map((item) => {
+						return (
+						<div
+							key={item}
+						>
+							<label>
+								<input 
+									type={'checkbox'}
+									checked={keyParts.indexOf(item) !== -1}
+									onChange={(e) => {
+										let tmp = clone(keyParts)
+
+										if (e.target.checked) {
+											tmp.push(item)
+										} else {
+											tmp = tmp.filter(x => x !== item)
+										}
+
+										setkeyParts(tmp)
+									}}
+								/>
+								{item}
+							</label>
+						</div>
+						)
+					})}
+				</div>
+				<div>
+					<label>
+						name:
+						<input
+							type={'text'}
+							value={animationFilename}
+							onChange={(e) => {
+								setanimationFilename(e.target.value)
+							}}
+						/>
+					</label>
+				</div>
+				<div>
+					{
+						['x', 'y', 'z'].map((axis) => {
+							return (<label key={axis}>
+								{axis}:
+								<input
+									type={'text'}
+									value={modelPosition[axis]}
+									onChange={(e)=>{
+										const tmp = clone(modelPosition);
+		
+										tmp[axis] = e.target.value;
+		
+										setmodelPosition(tmp);
+									}}
+									style={{width: '30px'}}
+								/>
+							</label>)
+						})
+					}
+				</div>
+				<div>
+					<button
+						onClick={loadAnimation}
+					>
+						load Animation
+					</button>
+					<button
+						onClick={interpretAnimation}
+					>
+						Interpret
+					</button>
+				</div>
 			</div>
 		</div>
 	);
