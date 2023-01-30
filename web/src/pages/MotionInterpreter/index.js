@@ -22,12 +22,14 @@ export default function MotionInterpreter() {
 	const animationPointer = useRef(0);
 
 	const model = useRef(null);
-	const [animationFilename, setanimationFilename] = useState("punch-walk.fbx");
 	const [modelPosition, setmodelPosition] = useState({x:0, y:0, z:0});
+	const [modelRotation, setmodelRotation] = useState({x:0, y:0, z:0});
 
 	const allParts = ['torso', 'upperarm_l', 'lowerarm_l', 'upperarm_r', 'lowerarm_r', 'thigh_l', 'calf_l',  'thigh_r', 'calf_r'];
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
+	const allMuscleGroups = ['chest', 'back', 'arms', 'abdominals', 'legs', 'shoulders'];
+	const [muscleGroups, setmuscleGroups] = useState([])
 
 	useEffect(() => {
 
@@ -227,6 +229,7 @@ export default function MotionInterpreter() {
 
 			animation['position'] = modelPosition;
 			animation['key_parts'] = keyParts;
+			animation['muscle_groups'] = muscleGroups;
 
 			// todo, use API to save this animation to json file
 			console.log(animation["name"], animation);
@@ -275,11 +278,13 @@ export default function MotionInterpreter() {
 						/>
 					</label>
 				</div>
+				<hr/>
 				<div>
+				<span>Position: </span>
 					{
 						['x', 'y', 'z'].map((axis) => {
 							return (<label key={axis}>
-								{axis}:
+								{axis}
 								<input
 									type={'text'}
 									value={modelPosition[axis]}
@@ -296,6 +301,30 @@ export default function MotionInterpreter() {
 						})
 					}
 				</div>
+				<hr/>
+				<div>
+					<span>Rotation: </span>
+					{
+						['x', 'y', 'z'].map((axis) => {
+							return (<label key={axis}>
+								{axis}
+								<input
+									type={'text'}
+									value={modelRotation[axis]}
+									onChange={(e)=>{
+										const tmp = clone(modelRotation);
+		
+										tmp[axis] = e.target.value;
+		
+										setmodelRotation(tmp);
+									}}
+									style={{width: '30px'}}
+								/>
+							</label>)
+						})
+					}
+				</div>
+				<hr/>
 				<div>
 					{allParts.map((item) => {
 						return (
@@ -324,6 +353,36 @@ export default function MotionInterpreter() {
 						)
 					})}
 				</div>
+				<hr/>
+				<div>
+					{
+						allMuscleGroups.map((item) => {
+							return (<div
+								key={item}
+							>
+								<label>
+									{item}
+									<input 
+										type={'checkbox'}
+										checked={muscleGroups.indexOf(item) !== -1}
+										onChange={(e) => {
+											let tmp = clone(muscleGroups)
+
+											if (e.target.checked) {
+												tmp.push(item)
+											} else {
+												tmp = tmp.filter(x => x !== item)
+											}
+
+											setmuscleGroups(tmp)
+										}}
+									/>
+								</label>
+							</div>)
+						})
+					}
+				</div>
+				<hr/>
 				<div>
 					<button
 						onClick={interpretAnimation}
