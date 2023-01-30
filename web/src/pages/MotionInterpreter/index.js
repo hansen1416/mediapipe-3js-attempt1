@@ -4,7 +4,15 @@ import { Quaternion, Vector3, Matrix4 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
 
-import { loadFBX, traverseModel, getUpVectors, applyTransfer, sleep, middlePosition, posePointsToVector } from "../../components/ropes";
+import {
+	loadFBX,
+	traverseModel,
+	getUpVectors,
+	applyTransfer,
+	sleep,
+	middlePosition,
+	posePointsToVector,
+} from "../../components/ropes";
 
 export default function MotionInterpreter() {
 	const canvasRef = useRef(null);

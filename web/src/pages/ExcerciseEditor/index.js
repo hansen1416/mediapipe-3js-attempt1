@@ -43,8 +43,7 @@ export default function ExcerciseEditor() {
 		});
 
 		return () => {
-
-			cancelAnimationFrame(animationPointer.current)
+			cancelAnimationFrame(animationPointer.current);
 
 			controls.current.dispose();
 			renderer.current.dispose();
@@ -55,7 +54,10 @@ export default function ExcerciseEditor() {
 	useEffect(() => {
 		if (selectedExcercise) {
 			for (const v of Object.values(selectedExcercise)) {
-				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+				if (
+					v.type === "quaternion" &&
+					v.quaternions.length > longestTrack.current
+				) {
 					longestTrack.current = v.quaternions.length;
 				}
 			}

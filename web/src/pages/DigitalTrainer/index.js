@@ -30,7 +30,7 @@ export default function DigitalTrainer() {
 
 	const videoRef = useRef(null);
 
-	const [animationList, setanimationList] = useState([])
+	const [animationList, setanimationList] = useState([]);
 
 	const poseDetector = useRef(null);
 
@@ -48,7 +48,12 @@ export default function DigitalTrainer() {
 
 	const poseSyncVector = useRef(null);
 	const [vectorDistances, setvectorDistances] = useState([]);
-	const [distanceNames] = useState(['left arm', 'left forearm', 'right arm', 'right forearm']);
+	const [distanceNames] = useState([
+		"left arm",
+		"left forearm",
+		"right arm",
+		"right forearm",
+	]);
 	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
 	const poseCurve = useRef(null);
@@ -84,13 +89,19 @@ export default function DigitalTrainer() {
 					new THREE.Vector2(100, 0),
 				]);
 
-				poseCurve.current = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-					color: 0xff0000,
-				}));
+				poseCurve.current = new THREE.Line(
+					geometry.clone(),
+					new THREE.LineBasicMaterial({
+						color: 0xff0000,
+					})
+				);
 
-				boneCurve.current = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-					color: 0x00ff00,
-				}));
+				boneCurve.current = new THREE.Line(
+					geometry.clone(),
+					new THREE.LineBasicMaterial({
+						color: 0x00ff00,
+					})
+				);
 
 				poseCurve.current.position.set(-460, -200, 0);
 				boneCurve.current.position.set(-460, -200, 0);
@@ -102,20 +113,20 @@ export default function DigitalTrainer() {
 			animate();
 
 			loadAnimationList().then((data) => {
-				setanimationList(data)
-			})
+				setanimationList(data);
+			});
 		});
 
 		return () => {
-			cancelAnimationFrame(animationPointer.current)
-		}
+			cancelAnimationFrame(animationPointer.current);
+		};
 
 		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {
 		if (vectorDistances && vectorDistances.length) {
-			setdistacneSortIndex(srotIndex(vectorDistances))
+			setdistacneSortIndex(srotIndex(vectorDistances));
 		}
 	}, [vectorDistances]);
 
@@ -171,8 +182,11 @@ export default function DigitalTrainer() {
 	}
 
 	function animate() {
-
-		if (videoRef.current && videoRef.current.readyState >= 2 && counter.current % 6 === 0) {
+		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 6 === 0
+		) {
 			(async () => {
 				// const timestamp = performance.now();
 
@@ -182,7 +196,12 @@ export default function DigitalTrainer() {
 					// timestamp
 				);
 
-				if (!poses || !poses[0] || !poses[0]["keypoints3D"] || !poseSync.current) {
+				if (
+					!poses ||
+					!poses[0] ||
+					!poses[0]["keypoints3D"] ||
+					!poseSync.current
+				) {
 					return;
 				}
 
@@ -192,20 +211,33 @@ export default function DigitalTrainer() {
 					v["x"] *= -1;
 					v["y"] *= -1;
 					v["z"] *= -1;
-				}	
+				}
 
 				{
-					poseCompareResult.current = poseSync.current.compareCurrentPose(keypoints3D.current, figureParts.current);
-				
+					poseCompareResult.current =
+						poseSync.current.compareCurrentPose(
+							keypoints3D.current,
+							figureParts.current
+						);
+
 					setdiffScore(parseInt(poseSync.current.diffScore));
-		
-					poseCurve.current.geometry.setFromPoints(poseSync.current.poseSpline.getPoints(50));
-					boneCurve.current.geometry.setFromPoints(poseSync.current.boneSpline.getPoints(50));
+
+					poseCurve.current.geometry.setFromPoints(
+						poseSync.current.poseSpline.getPoints(50)
+					);
+					boneCurve.current.geometry.setFromPoints(
+						poseSync.current.boneSpline.getPoints(50)
+					);
 				}
 
 				{
 					// setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, animationIndx.current))
-					setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, figureParts.current));
+					setvectorDistances(
+						poseSyncVector.current.compareCurrentPose(
+							keypoints3D.current,
+							figureParts.current
+						)
+					);
 				}
 
 				{
@@ -215,24 +247,24 @@ export default function DigitalTrainer() {
 
 					setcapturedPose(g);
 				}
-				
 			})();
 		} else {
 			keypoints3D.current = null;
 		}
 
 		if (poseSync.current) {
-
 			if (poseCompareResult.current) {
-
 				if (poseCompareResult.current instanceof Number) {
 					animationIndx.current = poseCompareResult.current;
 				}
 
-				applyTransfer(figureParts.current, poseSync.current.animation_data.tracks, animationIndx.current);
+				applyTransfer(
+					figureParts.current,
+					poseSync.current.animation_data.tracks,
+					animationIndx.current
+				);
 
 				animationIndx.current += 1;
-
 			} else if (poseCompareResult.current === false) {
 				// compare failed, stop animation
 			}
@@ -240,10 +272,7 @@ export default function DigitalTrainer() {
 			if (animationIndx.current >= longestTrack.current) {
 				animationIndx.current = 0;
 			}
-
 		}
-
-		
 
 		counter.current += 1;
 
@@ -255,11 +284,14 @@ export default function DigitalTrainer() {
 	}
 
 	function loadAnimation(animation_name) {
-		loadObj(process.env.PUBLIC_URL + "/animjson/" + animation_name + ".json")
-		.then((data) => {
-
+		loadObj(
+			process.env.PUBLIC_URL + "/animjson/" + animation_name + ".json"
+		).then((data) => {
 			for (const v of Object.values(data.tracks)) {
-				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+				if (
+					v.type === "quaternion" &&
+					v.quaternions.length > longestTrack.current
+				) {
 					longestTrack.current = v.quaternions.length;
 				}
 			}
@@ -268,7 +300,7 @@ export default function DigitalTrainer() {
 			animationIndx.current = 0;
 			poseSync.current = new PoseSync(data);
 			poseSyncVector.current = new PoseSyncVector(data);
-		})
+		});
 	}
 
 	return (
@@ -302,32 +334,40 @@ export default function DigitalTrainer() {
 				<div>
 					<ul>
 						{animationList.map((name) => {
-							return (<li
-								key={name}
-								onClick={() => {
-									loadAnimation(name);
+							return (
+								<li
+									key={name}
+									onClick={() => {
+										loadAnimation(name);
 
-									if (videoRef.current) {
-										startCamera(videoRef.current);
-									}
-								}}
-							>{name}</li>)
+										if (videoRef.current) {
+											startCamera(videoRef.current);
+										}
+									}}
+								>
+									{name}
+								</li>
+							);
 						})}
 					</ul>
 				</div>
 				<div>
-					<span
-						style={{fontSize: '40px', margin: "0 20px 0 0"}}
-					>{diffScore}</span>
+					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
+						{diffScore}
+					</span>
 				</div>
 				<div>
-					{
-						distacneSortIndex && distacneSortIndex.map((indx, i) => {
-							return (<div 
-								key={i}
-								><span>{distanceNames[indx]}</span><span>{vectorDistances[indx].toFixed(3)}</span></div>)
-						})
-					}
+					{distacneSortIndex &&
+						distacneSortIndex.map((indx, i) => {
+							return (
+								<div key={i}>
+									<span>{distanceNames[indx]}</span>
+									<span>
+										{vectorDistances[indx].toFixed(3)}
+									</span>
+								</div>
+							);
+						})}
 				</div>
 				<div>
 					<button

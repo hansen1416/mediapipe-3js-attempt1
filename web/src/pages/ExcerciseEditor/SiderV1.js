@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js'
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 
 import { loadFBX, loadObj } from "../../components/ropes";
 
@@ -57,16 +57,18 @@ export default function Sider() {
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 			loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
 		]).then(([model, animationJSON]) => {
-
 			for (let key in sceneInfoList.current) {
 				const { scene, mixer } = sceneInfoList.current[key];
 
-				const tmpmodel = SkeletonUtils.clone(model)
+				const tmpmodel = SkeletonUtils.clone(model);
 				// const tmpmodel = model.clone()
 
 				scene.add(tmpmodel);
 
-				const action = mixer.clipAction(THREE.AnimationClip.parse(animationJSON), tmpmodel);
+				const action = mixer.clipAction(
+					THREE.AnimationClip.parse(animationJSON),
+					tmpmodel
+				);
 
 				action.reset();
 
@@ -76,7 +78,6 @@ export default function Sider() {
 				action.enable = true;
 
 				action.play();
-
 			}
 
 			animate();
@@ -125,9 +126,9 @@ export default function Sider() {
 		renderer.current.setScissorTest(true);
 
 		for (let key in sceneInfoList.current) {
+			const { scene, camera, elem, clock, mixer } =
+				sceneInfoList.current[key];
 
-			const { scene, camera, elem, clock, mixer } = sceneInfoList.current[key];
-			
 			const delta = clock.getDelta();
 
 			mixer.update(delta);
@@ -147,8 +148,18 @@ export default function Sider() {
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(left, boxheight-bottom, width, height);
-			renderer.current.setViewport(left, boxheight-bottom, width, height);
+			renderer.current.setScissor(
+				left,
+				boxheight - bottom,
+				width,
+				height
+			);
+			renderer.current.setViewport(
+				left,
+				boxheight - bottom,
+				width,
+				height
+			);
 
 			renderer.current.render(scene, camera);
 		}
