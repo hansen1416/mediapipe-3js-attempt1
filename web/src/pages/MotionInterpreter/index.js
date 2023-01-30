@@ -276,34 +276,6 @@ export default function MotionInterpreter() {
 					</label>
 				</div>
 				<div>
-					{allParts.map((item) => {
-						return (
-						<div
-							key={item}
-						>
-							<label>
-								<input 
-									type={'checkbox'}
-									checked={keyParts.indexOf(item) !== -1}
-									onChange={(e) => {
-										let tmp = clone(keyParts)
-
-										if (e.target.checked) {
-											tmp.push(item)
-										} else {
-											tmp = tmp.filter(x => x !== item)
-										}
-
-										setkeyParts(tmp)
-									}}
-								/>
-								{item}
-							</label>
-						</div>
-						)
-					})}
-				</div>
-				<div>
 					{
 						['x', 'y', 'z'].map((axis) => {
 							return (<label key={axis}>
@@ -323,6 +295,34 @@ export default function MotionInterpreter() {
 							</label>)
 						})
 					}
+				</div>
+				<div>
+					{allParts.map((item) => {
+						return (
+						<div
+							key={item}
+						>
+							<label>
+								{item}
+								<input 
+									type={'checkbox'}
+									checked={keyParts.indexOf(item) !== -1}
+									onChange={(e) => {
+										let tmp = clone(keyParts)
+
+										if (e.target.checked) {
+											tmp.push(item)
+										} else {
+											tmp = tmp.filter(x => x !== item)
+										}
+
+										setkeyParts(tmp)
+									}}
+								/>
+							</label>
+						</div>
+						)
+					})}
 				</div>
 				<div>
 					<button
