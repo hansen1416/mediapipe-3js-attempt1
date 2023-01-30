@@ -232,7 +232,7 @@ export default function MotionInterpreter() {
 		})();
 	}
 
-	function getBasisFromModel(modelParts) {
+	function getBasisFromModel(bones) {
 		const leftshoulder = new THREE.Vector3();
         
         bones['upperarm_l'].getWorldPosition(leftshoulder);
