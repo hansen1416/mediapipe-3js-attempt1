@@ -117,9 +117,9 @@ export default function MotionInterpreter() {
 	 * add `states` for each body part
 	 * `states` is the orientation of a body part at a time
 	 */
-	function loadAnimation() {
+	function loadAnimation(file_url) {
 
-		loadFBX(process.env.PUBLIC_URL + "/anims/" + animationFilename)
+		loadFBX(file_url)
 		.then((result) => {
 			model.current = result;
 
@@ -265,6 +265,17 @@ export default function MotionInterpreter() {
 			<canvas ref={canvasRef}></canvas>
 			<div className="btn-box">
 				<div>
+					<label>
+						file:
+						<input
+							type={'file'}
+							onChange={(e) => {
+								loadAnimation(URL.createObjectURL(e.target.files[0]));
+							}}
+						/>
+					</label>
+				</div>
+				<div>
 					{allParts.map((item) => {
 						return (
 						<div
@@ -293,18 +304,6 @@ export default function MotionInterpreter() {
 					})}
 				</div>
 				<div>
-					<label>
-						name:
-						<input
-							type={'text'}
-							value={animationFilename}
-							onChange={(e) => {
-								setanimationFilename(e.target.value)
-							}}
-						/>
-					</label>
-				</div>
-				<div>
 					{
 						['x', 'y', 'z'].map((axis) => {
 							return (<label key={axis}>
@@ -327,14 +326,9 @@ export default function MotionInterpreter() {
 				</div>
 				<div>
 					<button
-						onClick={loadAnimation}
-					>
-						load Animation
-					</button>
-					<button
 						onClick={interpretAnimation}
 					>
-						Interpret
+						Interpret Again
 					</button>
 				</div>
 			</div>
