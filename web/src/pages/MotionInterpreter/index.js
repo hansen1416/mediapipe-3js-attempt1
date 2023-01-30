@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { Quaternion, Vector3, Matrix4 } from "three";
+import { Quaternion, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
 
@@ -10,8 +10,6 @@ import {
 	getUpVectors,
 	applyTransfer,
 	sleep,
-	middlePosition,
-	posePointsToVector,
 } from "../../components/ropes";
 
 export default function MotionInterpreter() {
@@ -235,40 +233,29 @@ export default function MotionInterpreter() {
 	}
 
 	function getBasisFromModel(modelParts) {
-		const leftshoulder = new Vector3();
-		const rightshoulder = new Vector3();
+		const leftshoulder = new THREE.Vector3();
+        
+        bones['upperarm_l'].getWorldPosition(leftshoulder);
 
-		const hips = new Vector3();
+        const rightshoulder = new THREE.Vector3();
+        
+        bones['upperarm_r'].getWorldPosition(rightshoulder);
 
-		// modelParts["mixamorigLeftShoulder"].getWorldPosition(leftshoulder);
-		// modelParts["mixamorigRightShoulder"].getWorldPosition(rightshoulder);
+        const pelvis = new THREE.Vector3();
+        
+        bones['pelvis'].getWorldPosition(pelvis);
 
-		modelParts["upperarm_l"].getWorldPosition(leftshoulder);
-		modelParts["upperarm_r"].getWorldPosition(rightshoulder);
-
-		modelParts["pelvis"].getWorldPosition(hips);
-
-		// console.log(leftshoulder, rightshoulder, lefthip, righthip);
-
-		const a = middlePosition(leftshoulder, rightshoulder, false);
-
-		// console.log('a,b', a, b);
-
-		const y_basis = posePointsToVector(hips, a, false).normalize();
-		const x_basis = posePointsToVector(leftshoulder, a, false).normalize();
-		const z_basis = new Vector3()
-			.crossVectors(y_basis, x_basis)
+		const x_basis = rightshoulder.sub(leftshoulder);
+		const y_tmp = pelvis.sub(leftshoulder);
+		const z_basis = new THREE.Vector3()
+			.crossVectors(x_basis, y_tmp)
 			.normalize();
 
-		const originBasis = new Matrix4().makeBasis(
-			new Vector3(1, 0, 0),
-			new Vector3(0, -1, 0),
-			new Vector3(0, 0, 1)
-		);
+        const y_basis = new THREE.Vector3()
+            .crossVectors(x_basis, z_basis)
+            .normalize();
 
-		return originBasis.multiply(
-			new Matrix4().makeBasis(x_basis, y_basis, z_basis).invert()
-		);
+		return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis).invert()
 	}
 
 	return (
