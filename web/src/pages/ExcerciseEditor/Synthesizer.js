@@ -1,3 +1,4 @@
+import { cloneDeep } from "lodash";
 import { useEffect, useState, useRef } from "react";
 
 export default function Synthesizer({
@@ -105,9 +106,82 @@ export default function Synthesizer({
 				})}
 			{showEditor && (
 				<div className="editor" style={{ left: editorLeft + "px" }}>
-					<div className="btn">+</div>
-					<div className="btn">-</div>
-					<div className="btn">x</div>
+					<div className="num">
+						{training &&
+							training.map((item, i) => {
+								if (Number(i) === Number(selectedExercise)) {
+									return <span>{item.round}</span>;
+								}
+							})}
+					</div>
+					<div
+						className="btn"
+						onClick={() => {
+							const tmp = cloneDeep(training);
+
+							for (let i in tmp) {
+								if (Number(i) === Number(selectedExercise)) {
+									tmp[i].round += 1;
+								}
+							}
+
+							settraining(tmp);
+						}}
+					>
+						+
+					</div>
+					<div
+						className="btn"
+						onClick={() => {
+							const tmp = cloneDeep(training);
+
+							let toDelete = false;
+
+							for (let i in tmp) {
+								if (Number(i) === Number(selectedExercise)) {
+									tmp[i].round -= 1;
+
+									if (tmp[i].round <= 0) {
+										toDelete = i;
+									}
+								}
+							}
+
+							if (toDelete !== false) {
+								tmp.splice(toDelete, 1);
+
+								setshowEditor(false);
+							}
+
+							settraining(tmp);
+						}}
+					>
+						-
+					</div>
+					<div
+						className="btn"
+						onClick={() => {
+							const tmp = cloneDeep(training);
+
+							let toDelete = false;
+
+							for (let i in tmp) {
+								if (Number(i) === Number(selectedExercise)) {
+									toDelete = i;
+								}
+							}
+
+							if (toDelete !== false) {
+								tmp.splice(toDelete, 1);
+
+								setshowEditor(false);
+							}
+
+							settraining(tmp);
+						}}
+					>
+						x
+					</div>
 				</div>
 			)}
 		</div>

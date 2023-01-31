@@ -60,16 +60,31 @@ video {
 
 .training-bar .editor {
 	position: absolute;
-	width: 200px;
+	width: 160px;
 	height: 40px;
 	background-color: #ccc;
 	top: -40px;
+}
+
+.training-bar .editor .num {
+	width: 30px;
+	height: 30px;
+	margin: 5px;
+	display: inline-block;
+	color: #222;
+	background-color: skyblue;
+	font-size: 30px;
 }
 
 .training-bar .editor .btn {
 	width: 30px;
 	height: 30px;
 	margin: 5px;
+	display: inline-block;
+	color: #fff;
+	background-color: skyblue;
+	font-size: 30px;
+	cursor: pointer;
 }
 
 /* #pose_scene {
