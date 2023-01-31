@@ -41,6 +41,22 @@ video {
 	box-shadow: inset 0px 0px 2px 2px rgba(255, 255, 255, 0.3);
 }
 
+.training-bar {
+	width: 100%;
+	height: 40px;
+}
+
+.training-bar .exercise-block {
+	border-right: 1px solid #ccc;
+	display: inline-block;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.training-bar .exercise-block:last-child {
+	border-right-width: 0;
+}
+
 /* #pose_scene {
     position: absolute;
     left: 0;

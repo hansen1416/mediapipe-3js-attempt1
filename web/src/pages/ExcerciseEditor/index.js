@@ -23,6 +23,8 @@ export default function ExcerciseEditor() {
 	const animationPointer = useRef(0);
 
 	const [training, settraining] = useState([]);
+	const [selectedExercise, setselectedExercise] = useState(-1);
+	const selectedExerciseRef = useRef(null);
 
 	useEffect(() => {
 		const { width, height } = mainSceneRef.current.getBoundingClientRect();
@@ -50,6 +52,21 @@ export default function ExcerciseEditor() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		if (training && training.length) {
+			selectedExerciseRef.current = training[selectedExercise].animation;
+
+			longestTrack.current = 0;
+			animationIndx.current = 0;
+
+			for (const v of selectedExerciseRef.current.tracks) {
+				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+					longestTrack.current = v.quaternions.length;
+				}
+			}
+		}
+	}, [selectedExercise]);
 
 	function _scene(viewWidth, viewHeight) {
 		const backgroundColor = 0x022244;
@@ -84,19 +101,19 @@ export default function ExcerciseEditor() {
 	}
 
 	function animate() {
-		// if (false) {
-		// 	applyTransfer(
-		// 		figureParts.current,
-		// 		selectedExcerciseRef.current,
-		// 		animationIndx.current
-		// 	);
+		if (selectedExerciseRef.current) {
+			applyTransfer(
+				figureParts.current,
+				selectedExerciseRef.current.tracks,
+				animationIndx.current
+			);
 
-		// 	animationIndx.current += 1;
+			animationIndx.current += 1;
 
-		// 	if (animationIndx.current >= longestTrack.current) {
-		// 		animationIndx.current = 0;
-		// 	}
-		// }
+			if (animationIndx.current >= longestTrack.current) {
+				animationIndx.current = 0;
+			}
+		}
 
 		controls.current.update();
 
@@ -114,6 +131,8 @@ export default function ExcerciseEditor() {
 				<Synthesizer
 					training={training}
 					settraining={settraining}
+					setselectedExercise={setselectedExercise}
+
 				/>
 				<Motions
 					training={training}

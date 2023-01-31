@@ -28,14 +28,14 @@ export default function Motions({ training, settraining }) {
 	function loadAnimationList() {
 		return new Promise((resolve) => {
 			resolve([
-				"basic-crunch",
-				"bicycle-crunch",
-				"curl-up",
-				"leg-pushes",
-				"leg-scissors",
-				"lying-leg-raises",
-				"oblique-crunch-left",
-				"oblique-crunch-right",
+				// "basic-crunch",
+				// "bicycle-crunch",
+				// "curl-up",
+				// "leg-pushes",
+				// "leg-scissors",
+				// "lying-leg-raises",
+				// "oblique-crunch-left",
+				// "oblique-crunch-right",
 				"punch-walk",
 				"reverse-crunch",
 				"side-crunch-left",
