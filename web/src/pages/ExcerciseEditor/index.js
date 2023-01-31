@@ -17,13 +17,12 @@ export default function ExcerciseEditor() {
 
 	const figureParts = useRef({});
 
-	const [selectedExcercise, setselectedExcercise] = useState(null);
-	const selectedExcerciseRef = useRef(null);
-
 	const animationIndx = useRef(0);
 	const longestTrack = useRef(0);
 
 	const animationPointer = useRef(0);
+
+	const [training, settraining] = useState([]);
 
 	useEffect(() => {
 		const { width, height } = mainSceneRef.current.getBoundingClientRect();
@@ -51,23 +50,6 @@ export default function ExcerciseEditor() {
 		};
 		// eslint-disable-next-line
 	}, []);
-
-	useEffect(() => {
-		if (selectedExcercise) {
-			for (const v of Object.values(selectedExcercise)) {
-				if (
-					v.type === "quaternion" &&
-					v.quaternions.length > longestTrack.current
-				) {
-					longestTrack.current = v.quaternions.length;
-				}
-			}
-
-			// reset the animation
-			animationIndx.current = 0;
-			selectedExcerciseRef.current = selectedExcercise;
-		}
-	}, [selectedExcercise]);
 
 	function _scene(viewWidth, viewHeight) {
 		const backgroundColor = 0x022244;
@@ -102,19 +84,19 @@ export default function ExcerciseEditor() {
 	}
 
 	function animate() {
-		if (selectedExcerciseRef.current) {
-			applyTransfer(
-				figureParts.current,
-				selectedExcerciseRef.current,
-				animationIndx.current
-			);
+		// if (false) {
+		// 	applyTransfer(
+		// 		figureParts.current,
+		// 		selectedExcerciseRef.current,
+		// 		animationIndx.current
+		// 	);
 
-			animationIndx.current += 1;
+		// 	animationIndx.current += 1;
 
-			if (animationIndx.current >= longestTrack.current) {
-				animationIndx.current = 0;
-			}
-		}
+		// 	if (animationIndx.current >= longestTrack.current) {
+		// 		animationIndx.current = 0;
+		// 	}
+		// }
 
 		controls.current.update();
 
@@ -129,10 +111,13 @@ export default function ExcerciseEditor() {
 				<div id="main_scene" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>
-				<Synthesizer />
+				<Synthesizer
+					training={training}
+					settraining={settraining}
+				/>
 				<Motions
-					selectedExcercise={selectedExcercise}
-					setselectedExcercise={setselectedExcercise}
+					training={training}
+					settraining={settraining}
 				/>
 			</div>
 		</div>

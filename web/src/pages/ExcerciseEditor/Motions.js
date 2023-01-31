@@ -2,10 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { cloneDeep } from "lodash";
 
 import { loadFBX, loadObj } from "../../components/ropes";
 
-export default function Motions({ selectedExcercise, setselectedExcercise }) {
+export default function Motions({ training, settraining }) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
@@ -21,6 +22,8 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 	const renderer = useRef(null);
 
 	const animationPointer = useRef(0);
+
+	const [activated, setactivated] = useState('')
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -204,6 +207,27 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
+	function addExerciseToTraining(animation_name) {
+		if (
+			!animationData || !animationData[animation_name]
+		) {
+			return
+		}
+
+		const tmp = cloneDeep(training);
+
+		if (tmp.length && tmp[tmp.length-1].animation.name === animation_name) {
+			tmp[tmp.length-1].round += 1;
+		} else {
+			tmp.push({
+				round: 1,
+				animation: animationData[animation_name],
+			});
+		}
+
+		settraining(tmp);
+	}
+
 	return (
 		<div ref={container} className="sider">
 			<canvas
@@ -219,8 +243,8 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 						key={i}
 						data-animation={name}
 						className={
-							selectedExcercise === name
-								? "animation-scene selected"
+							activated === name
+								? "animation-scene className"
 								: "animation-scene"
 						}
 						style={{
@@ -228,19 +252,10 @@ export default function Motions({ selectedExcercise, setselectedExcercise }) {
 							height: sceneHeight + "px",
 						}}
 						onClick={() => {
-							if (
-								animationData &&
-								animationData[name] &&
-								animationData[name].tracks
-							) {
-								const tracks = {};
-
-								for (let i in animationData[name].tracks) {
-									tracks[animationData[name].tracks[i].name] =
-										animationData[name].tracks[i];
-								}
-
-								setselectedExcercise(tracks);
+							if (activated === name) {
+								addExerciseToTraining(name)
+							} else {
+								setactivated(name)
 							}
 						}}
 					></div>
