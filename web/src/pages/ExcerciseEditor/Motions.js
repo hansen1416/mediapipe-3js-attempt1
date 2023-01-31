@@ -23,7 +23,7 @@ export default function Motions({ training, settraining }) {
 
 	const animationPointer = useRef(0);
 
-	const [activated, setactivated] = useState('')
+	const [activated, setactivated] = useState("");
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -106,14 +106,26 @@ export default function Motions({ training, settraining }) {
 			for (let key in sceneInfoList.current) {
 				const { scene, mixer } = sceneInfoList.current[key];
 
-				const tmpmodel = SkeletonUtils.clone(model);
+				const mannequin = SkeletonUtils.clone(model);
 				// const tmpmodel = model.clone()
 
-				scene.add(tmpmodel);
+				scene.add(mannequin);
+
+				mannequin.position.set(
+					animationJSONs[key].position.x,
+					animationJSONs[key].position.y,
+					animationJSONs[key].position.z
+				);
+
+				mannequin.rotation.set(
+					animationJSONs[key].rotation.x,
+					animationJSONs[key].rotation.y,
+					animationJSONs[key].rotation.z
+				);
 
 				const clip = THREE.AnimationClip.parse(animationJSONs[key]);
 
-				const action = mixer.clipAction(clip, tmpmodel);
+				const action = mixer.clipAction(clip, mannequin);
 				// const action = mixer.clipAction(animationJSONs[key], tmpmodel);
 
 				action.reset();
@@ -208,16 +220,17 @@ export default function Motions({ training, settraining }) {
 	}
 
 	function addExerciseToTraining(animation_name) {
-		if (
-			!animationData || !animationData[animation_name]
-		) {
-			return
+		if (!animationData || !animationData[animation_name]) {
+			return;
 		}
 
 		const tmp = cloneDeep(training);
 
-		if (tmp.length && tmp[tmp.length-1].animation.name === animation_name) {
-			tmp[tmp.length-1].round += 1;
+		if (
+			tmp.length &&
+			tmp[tmp.length - 1].animation.name === animation_name
+		) {
+			tmp[tmp.length - 1].round += 1;
 		} else {
 			tmp.push({
 				round: 1,
@@ -253,9 +266,9 @@ export default function Motions({ training, settraining }) {
 						}}
 						onClick={() => {
 							if (activated === name) {
-								addExerciseToTraining(name)
+								addExerciseToTraining(name);
 							} else {
-								setactivated(name)
+								setactivated(name);
 							}
 						}}
 					></div>

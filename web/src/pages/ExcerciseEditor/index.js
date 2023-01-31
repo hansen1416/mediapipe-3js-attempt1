@@ -15,6 +15,8 @@ export default function ExcerciseEditor() {
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
+	const mannequin = useRef(null);
+
 	const figureParts = useRef({});
 
 	const animationIndx = useRef(0);
@@ -34,12 +36,13 @@ export default function ExcerciseEditor() {
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([model]) => {
+			mannequin.current = model;
 			// create main scene
-			model.position.set(0, -100, 0);
+			mannequin.current.position.set(0, -100, 0);
 
-			traverseModel(model, figureParts.current);
+			traverseModel(mannequin.current, figureParts.current);
 
-			scene.current.add(model);
+			scene.current.add(mannequin.current);
 
 			animate();
 		});
@@ -57,11 +60,26 @@ export default function ExcerciseEditor() {
 		if (training && training.length) {
 			selectedExerciseRef.current = training[selectedExercise].animation;
 
+			mannequin.current.position.set(
+				selectedExerciseRef.current.position.x,
+				selectedExerciseRef.current.position.y,
+				selectedExerciseRef.current.position.z
+			);
+
+			mannequin.current.rotation.set(
+				selectedExerciseRef.current.rotation.x,
+				selectedExerciseRef.current.rotation.y,
+				selectedExerciseRef.current.rotation.z
+			);
+
 			longestTrack.current = 0;
 			animationIndx.current = 0;
 
 			for (const v of selectedExerciseRef.current.tracks) {
-				if (v.type === "quaternion" && v.quaternions.length > longestTrack.current) {
+				if (
+					v.type === "quaternion" &&
+					v.quaternions.length > longestTrack.current
+				) {
 					longestTrack.current = v.quaternions.length;
 				}
 			}
@@ -131,13 +149,10 @@ export default function ExcerciseEditor() {
 				<Synthesizer
 					training={training}
 					settraining={settraining}
+					selectedExercise={selectedExercise}
 					setselectedExercise={setselectedExercise}
-
 				/>
-				<Motions
-					training={training}
-					settraining={settraining}
-				/>
+				<Motions training={training} settraining={settraining} />
 			</div>
 		</div>
 	);
