@@ -60,15 +60,16 @@ video {
 
 .training-bar .editor {
 	position: absolute;
-	width: 160px;
+	width: auto;
 	height: 40px;
 	background-color: #ccc;
 	top: -40px;
 }
 
 .training-bar .editor .num {
-	width: 30px;
+	width: auto;
 	height: 30px;
+	padding: 0 4px;
 	margin: 5px;
 	display: inline-block;
 	color: #222;
