@@ -44,6 +44,7 @@ video {
 .training-bar {
 	width: 100%;
 	height: 40px;
+	position: relative;
 }
 
 .training-bar .exercise-block {
@@ -55,6 +56,20 @@ video {
 
 .training-bar .exercise-block:last-child {
 	border-right-width: 0;
+}
+
+.training-bar .editor {
+	position: absolute;
+	width: 200px;
+	height: 40px;
+	background-color: #ccc;
+	top: -40px;
+}
+
+.training-bar .editor .btn {
+	width: 30px;
+	height: 30px;
+	margin: 5px;
 }
 
 /* #pose_scene {

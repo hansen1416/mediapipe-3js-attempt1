@@ -5,6 +5,9 @@ export default function Synthesizer({ training, settraining, setselectedExercise
 	const [totalRound, settotalRound] = useState(0);
 	const [totalWidth, settotalWidth] = useState(0);
 
+	const [showEditor, setshowEditor] = useState(false);
+	const [editorLeft, seteditorLeft] = useState(0);
+
 	const muscleColors = {
 		"chest": 'rgba(255, 0, 0)',
 		"back": 'rgb(255, 234, 2)',
@@ -48,6 +51,8 @@ export default function Synthesizer({ training, settraining, setselectedExercise
 			gradient += ", " + muscleColors[animation_data.muscle_groups[i]] + " " + (Number(i)+1)/animation_data.muscle_groups.length*100 + '%';
 		}
 
+		gradient += ")";
+
 		return gradient
 	}
 
@@ -66,11 +71,28 @@ export default function Synthesizer({ training, settraining, setselectedExercise
 						height: '100%',
 						background: getBackgroundColor(item.animation)
 					}}
-					onClick={() => {
-						setselectedExercise(i)
+					onClick={(e) => {
+						setselectedExercise(i);
+
+						setshowEditor(!showEditor);
+
+						const {left, width} = e.target.getBoundingClientRect();
+
+						seteditorLeft(left + width/2 - 100);
 					}}
 				></div>)
 			})
+		}
+		{
+			showEditor && 
+			<div 
+				className="editor"
+				style={{left: editorLeft + 'px'}}
+			>
+				<div className="btn">+</div>
+				<div className="btn">-</div>
+				<div className="btn">x</div>
+			</div>
 		}
     </div>)
 }
