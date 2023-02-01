@@ -266,7 +266,7 @@ export default function Motions({ training, settraining }) {
 			0.1,
 			1000
 		);
-		camera.position.set(0, 0, 300);
+		camera.position.set(0, 0, 200);
 
 		const controls = new OrbitControls(camera, elem);
 
@@ -383,7 +383,6 @@ export default function Motions({ training, settraining }) {
 							key={i}
 							data-animation={i}
 							className={["block", "animation-scene", animationList[i] && activated === animationList[i] ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-							style={{display: i < animationList.length ? 'inline-block' : 'none'}}
 							onClick={() => {
 
 								if (!animationList[i]) {
