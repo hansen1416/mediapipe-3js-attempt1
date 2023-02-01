@@ -236,7 +236,13 @@ export default function Motions({ training, settraining }) {
 			<div className="tabs">
 				{
 					musclGroups && musclGroups.map((item) => {
-						return (<div>{item}</div>)
+						return (<div
+							key={item}
+							onClick={() => {
+								// making request to get exercise json
+								setsceneBgColor(muscleGroupsColors[item])
+							}}
+						>{item}</div>)
 					}) 
 				}
 			</div>
@@ -247,7 +253,7 @@ export default function Motions({ training, settraining }) {
 							key={i}
 							data-animation={name}
 							className={["animation-scene", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-							style={{backgroundColor: '#ffff00'}}
+							style={{backgroundColor: sceneBgColor}}
 						></div>
 					);
 				})}

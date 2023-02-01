@@ -43,13 +43,16 @@ body {
 }
 
 .container .panel .tabs div {
-	
+	width: 16.88%;
+	height: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: pointer;
 }
 
 .container .panel .motions .animation-scene {
 	display: inline-block;
 	box-sizing: border-box;
-	/* background-color: #022244; */
 	width: 8vw;
 	height: 8vw;
 	margin: 0 1vw 1vw 0;
