@@ -77,6 +77,9 @@ export default function Motions({ training, settraining }) {
 	}, []);
 
 	useEffect(() => {
+
+		return;
+
 		if (!animationList || !animationList.length) {
 			return;
 		}
@@ -268,13 +271,12 @@ export default function Motions({ training, settraining }) {
 				}
 			</div>
 			<div className="motions" style={{ zIndex: -2, position: "absolute", width: '100%', height: '100%' }}>
-				{animationList.map((name, i) => {
+				{Array(16).map((_, i) => {
 					return (
 						<div
 							key={i}
-							data-animation={name}
-							className={["animation-scene", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-							style={{backgroundColor: sceneBgColor}}
+							className={["block", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+							style={{backgroundColor: sceneBgColor, display: i < animationList.length ? 'inline-block' : 'none'}}
 						></div>
 					);
 				})}
@@ -284,21 +286,30 @@ export default function Motions({ training, settraining }) {
 				style={{ zIndex: -1, position: "absolute" }}
 			/>
 			<div className="motions">
-				{animationList.map((name, i) => {
-					return (
-						<div
-							key={i}
-							data-animation={name}
-							className={["animation-scene", activated ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-							onClick={() => {
-								if (activated === name) {
-									addExerciseToTraining(name);
-								} else {
-									setactivated(name);
-								}
-							}}
-						></div>
-					);
+				{Array(16).map((_, i) => {
+					if (i < animationList.length) {
+						return (
+							<div
+								key={i}
+								data-animation={animationList[i]}
+								className={["block", "animation-scene", activated === animationList[i] ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+								onClick={() => {
+									if (activated === animationList[i]) {
+										addExerciseToTraining(animationList[i]);
+									} else {
+										setactivated(animationList[i]);
+									}
+								}}
+							></div>
+						);
+					} else {
+						return (
+							<div
+								key={i}
+								className={["block", "animation-scene", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+							></div>
+						);
+					}
 				})}
 			</div>
 		</div>

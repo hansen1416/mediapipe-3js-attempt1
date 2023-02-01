@@ -50,7 +50,7 @@ body {
 	cursor: pointer;
 }
 
-.container .panel .motions .animation-scene {
+.container .panel .motions .block {
 	display: inline-block;
 	box-sizing: border-box;
 	width: 8vw;
@@ -59,7 +59,7 @@ body {
 	border-radius: 4px;
 }
 
-.container .panel .animation-scene.border {
+.container .panel .block.border {
 	margin-right: 0;
 }
 
