@@ -41,7 +41,7 @@ body {
 .container .panel .animation-scene {
 	display: inline-block;
 	box-sizing: border-box;
-	background-color: #022244;
+	/* background-color: #022244; */
 	width: 8vw;
 	height: 8vw;
 	margin: 0 1vw 1vw 0;

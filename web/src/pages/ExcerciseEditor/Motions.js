@@ -148,7 +148,6 @@ export default function Motions({ training, settraining }) {
 			1000
 		);
 		camera.position.set(0, 0, 300);
-		// camera.lookAt(0, 0, 0);
 
 		const controls = new OrbitControls(camera, elem);
 
@@ -186,24 +185,19 @@ export default function Motions({ training, settraining }) {
 			const { left, top, bottom, width, height } =
 				elem.getBoundingClientRect();
 
-			const { containerLeft, containerTop } = container.current.getBoundingClientRect();
+			const containerRect = container.current.getBoundingClientRect();
 
 			if (bottom < 0 || top > document.documentElement.clientHeight) {
 				continue;
 			}
-
-			// const boxheight = container.current.clientHeight;
 
 			// camera.aspect = width / height;
 			// camera.updateProjectionMatrix();
 			// // controls.handleResize();
 			// controls.update()
 
-			// renderer.current.setScissor(left, boxheight-bottom, width, height);
-			// renderer.current.setViewport(left, boxheight-bottom, width, height);
-
-			renderer.current.setScissor(left - containerLeft, top - containerTop, width, height);
-			renderer.current.setViewport(left - containerLeft, top - containerTop, width, height);
+			renderer.current.setScissor(left - containerRect.left, containerRect.height - bottom, width, height);
+			renderer.current.setViewport(left - containerRect.left, containerRect.height - bottom, width, height);
 
 			renderer.current.render(scene, camera);
 		}
