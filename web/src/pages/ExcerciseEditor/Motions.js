@@ -159,6 +159,17 @@ export default function Motions({ training, settraining }) {
 
 	useEffect(() => {
 
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+			alpha: true,
+		});
+
+		const { width, height } = container.current.getBoundingClientRect();
+
+		renderer.current.setSize(width, height);
+
+		animate();
+
 		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")
 		.then((model) => {
 			// create scene list
@@ -192,15 +203,6 @@ export default function Motions({ training, settraining }) {
 			return;
 		}
 
-		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current,
-			alpha: true,
-		});
-
-		const { width, height } = container.current.getBoundingClientRect();
-
-		renderer.current.setSize(width, height);
-
 		const tasks = [];
 
 		for (let name of animationList) {
@@ -211,12 +213,18 @@ export default function Motions({ training, settraining }) {
 
 		Promise.all(tasks).then((results) => {
 
-			setanimationData(results);
+			const tmp = {}
+
+			for (let v of results) {
+				tmp[v.name] = v
+			}
+
+			setanimationData(tmp);
 
 			for (let i in results) {
 
 				const { mannequin, mixer } = sceneInfoList.current[i];
-console.log(i)
+
 				// mannequin.position.set(
 					// results[i].position.x,
 					// results[i].position.y,
@@ -242,8 +250,6 @@ console.log(i)
 
 				action.play();
 			}
-
-			animate();
 		});
 		// eslint-disable-next-line
 	}, [animationList]);
@@ -260,7 +266,7 @@ console.log(i)
 			0.1,
 			1000
 		);
-		camera.position.set(0, 0, 200);
+		camera.position.set(0, 0, 300);
 
 		const controls = new OrbitControls(camera, elem);
 
