@@ -1,5 +1,5 @@
+import { useEffect, useState, useRef } from "react";
 import { cloneDeep } from "lodash";
-import { useEffect, useState } from "react";
 
 import { muscleGroupsColors } from "../../components/ropes";
 
@@ -9,6 +9,8 @@ export default function Synthesizer({
 	selectedExercise,
 	setselectedExercise,
 }) {
+	const container = useRef(null);
+
 	const [totalRound, settotalRound] = useState(0);
 	const [totalWidth, settotalWidth] = useState(0);
 
@@ -16,7 +18,7 @@ export default function Synthesizer({
 	const [editorLeft, seteditorLeft] = useState(0);
 
 	useEffect(() => {
-		settotalWidth(document.documentElement.clientWidth);
+		settotalWidth(container.current.clientWidth);
 
 		// eslint-disable-next-line
 	}, []);
@@ -65,7 +67,7 @@ export default function Synthesizer({
 	}
 
 	return (
-		<div className={"training-bar"}>
+		<div ref={container} className={"synthesizer"}>
 			{training &&
 				training.map((item, i) => {
 					return (

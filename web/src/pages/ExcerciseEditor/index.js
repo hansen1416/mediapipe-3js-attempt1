@@ -146,8 +146,7 @@ export default function ExcerciseEditor() {
 		<div>
 			<div className="container">
 				<Motions training={training} settraining={settraining} />
-				<div className="middle"></div>
-				<div className="panel" ref={mainSceneRef}>
+				<div className="panel main" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>
 			</div>
