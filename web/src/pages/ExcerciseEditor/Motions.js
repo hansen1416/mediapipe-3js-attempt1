@@ -69,6 +69,24 @@ export default function Motions({ training, settraining }) {
 
 		loadAnimationList(musclGroups[0]);
 
+		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")
+		.then((model) => {
+			// create scene list
+			document.querySelectorAll(".animation-scene").forEach((elem) => {
+				sceneInfoList.current[elem.dataset["animation"]] = createScene(elem);
+
+				const mannequin = SkeletonUtils.clone(model);
+
+				sceneInfoList.current[elem.dataset["animation"]]['mannequin'] = mannequin;
+
+				const { scene } = sceneInfoList.current[elem.dataset["animation"]];
+
+				scene.add(mannequin);
+
+				mannequin.position.set(0,0,0);
+			});
+		});
+
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
 		};
@@ -78,19 +96,9 @@ export default function Motions({ training, settraining }) {
 
 	useEffect(() => {
 
-		return;
-
 		if (!animationList || !animationList.length) {
 			return;
 		}
-
-		// destroy all previous scene
-
-		// create main scene
-		document.querySelectorAll(".animation-scene").forEach((elem) => {
-			sceneInfoList.current[elem.dataset["animation"]] =
-				createScene(elem);
-		});
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -101,7 +109,7 @@ export default function Motions({ training, settraining }) {
 
 		renderer.current.setSize(width, height);
 
-		const tasks = [loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")];
+		const tasks = [];
 
 		for (let name of animationList) {
 			tasks.push(
@@ -110,38 +118,26 @@ export default function Motions({ training, settraining }) {
 		}
 
 		Promise.all(tasks).then((results) => {
-			const [model] = results;
 
-			const animationJSONs = {};
+			setanimationData(results);
 
-			for (let v of results.slice(1)) {
-				animationJSONs[v.name] = v;
-			}
+			for (let i in results) {
 
-			setanimationData(animationJSONs);
+				const { mannequin, mixer } = sceneInfoList.current[i];
 
-			for (let key in sceneInfoList.current) {
-				const { scene, mixer } = sceneInfoList.current[key];
-
-				const mannequin = SkeletonUtils.clone(model);
-				// const tmpmodel = model.clone()
-
-				scene.add(mannequin);
-
-				mannequin.position.set(
-					// animationJSONs[key].position.x,
-					// animationJSONs[key].position.y,
-					// animationJSONs[key].position.z
-					0,0,0
-				);
+				// mannequin.position.set(
+					// results[i].position.x,
+					// results[i].position.y,
+					// results[i].position.z
+				// );
 
 				mannequin.rotation.set(
-					animationJSONs[key].rotation.x,
-					animationJSONs[key].rotation.y,
-					animationJSONs[key].rotation.z
+					results[i].rotation.x,
+					results[i].rotation.y,
+					results[i].rotation.z
 				);
 
-				const clip = THREE.AnimationClip.parse(animationJSONs[key]);
+				const clip = THREE.AnimationClip.parse(results[i]);
 
 				const action = mixer.clipAction(clip, mannequin);
 				// const action = mixer.clipAction(animationJSONs[key], tmpmodel);
@@ -271,7 +267,7 @@ export default function Motions({ training, settraining }) {
 				}
 			</div>
 			<div className="motions" style={{ zIndex: -2, position: "absolute", width: '100%', height: '100%' }}>
-				{Array(16).map((_, i) => {
+				{Array(20).fill(0).map((_, i) => {
 					return (
 						<div
 							key={i}
@@ -286,12 +282,12 @@ export default function Motions({ training, settraining }) {
 				style={{ zIndex: -1, position: "absolute" }}
 			/>
 			<div className="motions">
-				{Array(16).map((_, i) => {
+				{Array(20).fill(0).map((_, i) => {
 					if (i < animationList.length) {
 						return (
 							<div
 								key={i}
-								data-animation={animationList[i]}
+								data-animation={i}
 								className={["block", "animation-scene", activated === animationList[i] ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
 								onClick={() => {
 									if (activated === animationList[i]) {
@@ -306,7 +302,9 @@ export default function Motions({ training, settraining }) {
 						return (
 							<div
 								key={i}
+								data-animation={i}
 								className={["block", "animation-scene", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+								style={{display: i < animationList.length ? 'inline-block' : 'none'}}
 							></div>
 						);
 					}
