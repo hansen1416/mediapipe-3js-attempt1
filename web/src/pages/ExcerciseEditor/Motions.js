@@ -25,6 +25,46 @@ export default function Motions({ training, settraining }) {
 	const musclGroups = Object.keys(muscleGroupsColors);
 	const [sceneBgColor, setsceneBgColor] =  useState("");
 
+	useEffect(() => {
+
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+			alpha: true,
+		});
+
+		const { width, height } = container.current.getBoundingClientRect();
+
+		renderer.current.setSize(width, height);
+
+		animate();
+
+		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")
+		.then((model) => {
+			// create scene list
+			document.querySelectorAll(".animation-scene").forEach((elem) => {
+				sceneInfoList.current[elem.dataset["animation"]] = createScene(elem);
+
+				const mannequin = SkeletonUtils.clone(model);
+
+				sceneInfoList.current[elem.dataset["animation"]]['mannequin'] = mannequin;
+
+				const { scene } = sceneInfoList.current[elem.dataset["animation"]];
+
+				scene.add(mannequin);
+
+				mannequin.position.set(0,0,0);
+			});
+
+			// loadAnimationList(musclGroups[0]);
+		});
+
+		return () => {
+			cancelAnimationFrame(animationPointer.current);
+		};
+
+		// eslint-disable-next-line
+	}, []);
+
 	function loadAnimationList(muscle_group) {
 		new Promise((resolve) => {
 
@@ -156,46 +196,6 @@ export default function Motions({ training, settraining }) {
 			setsceneBgColor(muscleGroupsColors[muscle_group])
 		});
 	}
-
-	useEffect(() => {
-
-		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current,
-			alpha: true,
-		});
-
-		const { width, height } = container.current.getBoundingClientRect();
-
-		renderer.current.setSize(width, height);
-
-		animate();
-
-		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")
-		.then((model) => {
-			// create scene list
-			document.querySelectorAll(".animation-scene").forEach((elem) => {
-				sceneInfoList.current[elem.dataset["animation"]] = createScene(elem);
-
-				const mannequin = SkeletonUtils.clone(model);
-
-				sceneInfoList.current[elem.dataset["animation"]]['mannequin'] = mannequin;
-
-				const { scene } = sceneInfoList.current[elem.dataset["animation"]];
-
-				scene.add(mannequin);
-
-				mannequin.position.set(0,0,0);
-			});
-
-			loadAnimationList(musclGroups[0]);
-		});
-
-		return () => {
-			cancelAnimationFrame(animationPointer.current);
-		};
-
-		// eslint-disable-next-line
-	}, []);
 
 	useEffect(() => {
 
