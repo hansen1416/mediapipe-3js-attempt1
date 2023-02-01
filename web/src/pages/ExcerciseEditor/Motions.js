@@ -52,8 +52,6 @@ export default function Motions({ training, settraining }) {
 					sceneInfoList.current[elem.dataset["animation"]];
 
 				scene.add(mannequin);
-
-				mannequin.position.set(0, 0, 100);
 			});
 
 			loadAnimationList(musclGroups[0]);
@@ -251,7 +249,7 @@ export default function Motions({ training, settraining }) {
 			0.1,
 			1000
 		);
-		camera.position.set(0, 0, 300);
+		camera.position.set(0, 0, 230);
 
 		const controls = new OrbitControls(camera, elem);
 
@@ -300,15 +298,17 @@ export default function Motions({ training, settraining }) {
 			// // controls.handleResize();
 			// controls.update()
 
+			// seems bottom is different in 30px, find out why
+
 			renderer.current.setScissor(
 				left - containerRect.left,
-				container.current.clientHeight - bottom,
+				container.current.clientHeight - bottom + 30,
 				width,
 				height
 			);
 			renderer.current.setViewport(
 				left - containerRect.left,
-				container.current.clientHeight - bottom,
+				container.current.clientHeight - bottom + 30,
 				width,
 				height
 			);
