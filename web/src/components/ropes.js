@@ -7,6 +7,18 @@ import { Quaternion } from "three";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const typeSizes = {
+	"undefined": () => 0,
+	"boolean": () => 4,
+	"number": () => 8,
+	"string": item => 2 * item.length,
+	"object": item => !item ? 0 : Object
+	  .keys(item)
+	  .reduce((total, key) => sizeOf(key) + sizeOf(item[key]) + total, 0)
+  };
+  
+export const sizeOf = value => typeSizes[typeof value](value);
+
 export const BlazePoseConfig = {
 	// runtime: "mediapipe", // or 'tfjs'
 	runtime: "tfjs",
@@ -20,6 +32,15 @@ export const BlazePoseConfig = {
 		"/models/tfjs-model_blazepose_3d_landmark_full_2/model.json",
 	// solutionPath: process.env.PUBLIC_URL + `/models/mediapipe/pose`,
 };
+
+export const muscleGroupsColors = {
+	'chest': "rgba(255, 0, 0)",
+	'back': "rgb(255, 234, 2)",
+	'arms': "rgb(48, 255, 2)",
+	'abdominals': "rgb(228, 106, 18)",
+	'legs': "rgb(2, 36, 255)",
+	'shoulders': "rgb(2, 255, 251)",
+}
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
@@ -35,18 +56,6 @@ export function getUserMedia(constraints, successCallback, errorCallback) {
 		navigator.getUserMedia(constraints, successCallback, errorCallback);
 	}
 }
-
-const typeSizes = {
-	"undefined": () => 0,
-	"boolean": () => 4,
-	"number": () => 8,
-	"string": item => 2 * item.length,
-	"object": item => !item ? 0 : Object
-	  .keys(item)
-	  .reduce((total, key) => sizeOf(key) + sizeOf(item[key]) + total, 0)
-  };
-  
-export const sizeOf = value => typeSizes[typeof value](value);
 
 export function degreesToRadians(degrees) {
 	return degrees * (Math.PI / 180);

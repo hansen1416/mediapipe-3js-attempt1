@@ -16,9 +16,8 @@ body {
 .container .panel {
 	width: 35vw;
 	height: 45vw;
-	background-color: #0083B0;
 	border-radius: 4px;
-	overflow: hidden;
+	position: relative;
 }
 
 .container .panel canvas {
@@ -34,11 +33,20 @@ body {
 	border-radius: 4px;
 }
 
-.container .panel.motions {
-	background: none;
+.container .panel .tabs {
+	position: absolute;
+	width: 100%;
+	height: 30px;
+	top: -30px;
+	display: flex;
+	flex-direction: row;
 }
 
-.container .panel .animation-scene {
+.container .panel .tabs div {
+	
+}
+
+.container .panel .motions .animation-scene {
 	display: inline-block;
 	box-sizing: border-box;
 	/* background-color: #022244; */

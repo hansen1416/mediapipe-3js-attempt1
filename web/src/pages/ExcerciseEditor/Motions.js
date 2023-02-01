@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { cloneDeep } from "lodash";
 
-import { loadFBX, loadObj } from "../../components/ropes";
+import { loadFBX, loadObj, muscleGroupsColors } from "../../components/ropes";
 
 export default function Motions({ training, settraining }) {
 	const [animationList, setanimationList] = useState([]);
@@ -21,6 +21,9 @@ export default function Motions({ training, settraining }) {
 	const animationPointer = useRef(0);
 
 	const [activated, setactivated] = useState("");
+
+	const musclGroups = Object.keys(muscleGroupsColors);
+	const [sceneBgColor, setsceneBgColor] =  useState("");
 
 	function loadAnimationList() {
 		return new Promise((resolve) => {
@@ -102,9 +105,10 @@ export default function Motions({ training, settraining }) {
 				scene.add(mannequin);
 
 				mannequin.position.set(
-					animationJSONs[key].position.x,
-					animationJSONs[key].position.y,
-					animationJSONs[key].position.z
+					// animationJSONs[key].position.x,
+					// animationJSONs[key].position.y,
+					// animationJSONs[key].position.z
+					0,0,0
 				);
 
 				mannequin.rotation.set(
@@ -228,27 +232,48 @@ export default function Motions({ training, settraining }) {
 	}
 
 	return (
-		<div ref={container} className="panel motions">
+		<div ref={container} className="panel">
+			<div className="tabs">
+				{
+					musclGroups && musclGroups.map((item) => {
+						return (<div>{item}</div>)
+					}) 
+				}
+			</div>
+			<div className="motions" style={{ zIndex: -2, position: "absolute", width: '100%', height: '100%' }}>
+				{animationList.map((name, i) => {
+					return (
+						<div
+							key={i}
+							data-animation={name}
+							className={["animation-scene", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+							style={{backgroundColor: '#ffff00'}}
+						></div>
+					);
+				})}
+			</div>
 			<canvas
 				ref={canvasRef}
 				style={{ zIndex: -1, position: "absolute" }}
 			/>
-			{animationList.map((name, i) => {
-				return (
-					<div
-						key={i}
-						data-animation={name}
-						className={["animation-scene", activated ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-						onClick={() => {
-							if (activated === name) {
-								addExerciseToTraining(name);
-							} else {
-								setactivated(name);
-							}
-						}}
-					></div>
-				);
-			})}
+			<div className="motions">
+				{animationList.map((name, i) => {
+					return (
+						<div
+							key={i}
+							data-animation={name}
+							className={["animation-scene", activated ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+							onClick={() => {
+								if (activated === name) {
+									addExerciseToTraining(name);
+								} else {
+									setactivated(name);
+								}
+							}}
+						></div>
+					);
+				})}
+			</div>
 		</div>
 	);
 }

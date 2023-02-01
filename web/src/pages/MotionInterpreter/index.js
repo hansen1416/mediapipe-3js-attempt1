@@ -4,12 +4,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
 
 import {
-	degreesToRadians,
-	loadFBX,
-	traverseModel,
-	getUpVectors,
 	applyTransfer,
+	degreesToRadians,
+	getUpVectors,
+	loadFBX,
+	muscleGroupsColors,
 	sleep,
+	traverseModel,
 } from "../../components/ropes";
 
 export default function MotionInterpreter() {
@@ -39,14 +40,8 @@ export default function MotionInterpreter() {
 	];
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
-	const allMuscleGroups = [
-		"chest",
-		"back",
-		"arms",
-		"abdominals",
-		"legs",
-		"shoulders",
-	];
+	const allMuscleGroups = Object.keys(muscleGroupsColors);
+	
 	const [muscleGroups, setmuscleGroups] = useState([]);
 
 	useEffect(() => {
