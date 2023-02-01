@@ -103,10 +103,10 @@ export default function Synthesizer({
 						{training &&
 							training.map((item, i) => {
 								if (Number(i) === Number(selectedExercise)) {
-									return <span>{item.round}</span>;
+									return <span key={i}>{item.round}</span>;
 								}
 
-								return <></>
+								return <></>;
 							})}
 					</div>
 					<div

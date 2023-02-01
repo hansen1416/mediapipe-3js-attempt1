@@ -23,10 +23,9 @@ export default function Motions({ training, settraining }) {
 	const [activated, setactivated] = useState("");
 
 	const musclGroups = Object.keys(muscleGroupsColors);
-	const [sceneBgColor, setsceneBgColor] =  useState("");
+	const [sceneBgColor, setsceneBgColor] = useState("");
 
 	useEffect(() => {
-
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
 			alpha: true,
@@ -38,21 +37,23 @@ export default function Motions({ training, settraining }) {
 
 		animate();
 
-		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")
-		.then((model) => {
+		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx").then((model) => {
 			// create scene list
 			document.querySelectorAll(".animation-scene").forEach((elem) => {
-				sceneInfoList.current[elem.dataset["animation"]] = createScene(elem);
+				sceneInfoList.current[elem.dataset["animation"]] =
+					createScene(elem);
 
 				const mannequin = SkeletonUtils.clone(model);
 
-				sceneInfoList.current[elem.dataset["animation"]]['mannequin'] = mannequin;
+				sceneInfoList.current[elem.dataset["animation"]]["mannequin"] =
+					mannequin;
 
-				const { scene } = sceneInfoList.current[elem.dataset["animation"]];
+				const { scene } =
+					sceneInfoList.current[elem.dataset["animation"]];
 
 				scene.add(mannequin);
 
-				mannequin.position.set(0,0,100);
+				mannequin.position.set(0, 0, 100);
 			});
 
 			loadAnimationList(musclGroups[0]);
@@ -67,11 +68,9 @@ export default function Motions({ training, settraining }) {
 
 	function loadAnimationList(muscle_group) {
 		new Promise((resolve) => {
-
 			let result;
 
-			if (muscle_group === 'chest') {
-
+			if (muscle_group === "chest") {
 				result = [
 					"basic-crunch",
 					"bicycle-crunch",
@@ -86,9 +85,7 @@ export default function Motions({ training, settraining }) {
 					"side-crunch-left",
 					"toe-crunch",
 				];
-
-			} else if (muscle_group === 'back') {
-				
+			} else if (muscle_group === "back") {
 				result = [
 					"basic-crunch",
 					"bicycle-crunch",
@@ -103,9 +100,7 @@ export default function Motions({ training, settraining }) {
 					"side-crunch-left",
 					"toe-crunch",
 				];
-
-			} else if (muscle_group === 'arms') {
-				
+			} else if (muscle_group === "arms") {
 				result = [
 					"basic-crunch",
 					"bicycle-crunch",
@@ -123,9 +118,7 @@ export default function Motions({ training, settraining }) {
 					"side-crunch-left",
 					"toe-crunch",
 				];
-
-			} else if (muscle_group === 'abdominals') {
-				
+			} else if (muscle_group === "abdominals") {
 				result = [
 					"basic-crunch",
 					"bicycle-crunch",
@@ -148,9 +141,7 @@ export default function Motions({ training, settraining }) {
 					"oblique-crunch-right",
 					"reverse-crunch",
 				];
-
-			} else if (muscle_group === 'legs') {
-				
+			} else if (muscle_group === "legs") {
 				result = [
 					"basic-crunch",
 					"bicycle-crunch",
@@ -163,9 +154,7 @@ export default function Motions({ training, settraining }) {
 					"oblique-crunch-right",
 					"reverse-crunch",
 				];
-
-			} else if (muscle_group === 'shoulders') {
-				
+			} else if (muscle_group === "shoulders") {
 				result = [
 					"basic-crunch",
 					"bicycle-crunch",
@@ -186,19 +175,17 @@ export default function Motions({ training, settraining }) {
 					"leg-pushes",
 					"leg-scissors",
 				];
-
 			}
 
 			resolve(result);
 		}).then((data) => {
 			setanimationList(data);
 
-			setsceneBgColor(muscleGroupsColors[muscle_group])
+			setsceneBgColor(muscleGroupsColors[muscle_group]);
 		});
 	}
 
 	useEffect(() => {
-
 		if (!animationList || !animationList.length) {
 			return;
 		}
@@ -212,23 +199,21 @@ export default function Motions({ training, settraining }) {
 		}
 
 		Promise.all(tasks).then((results) => {
-
-			const tmp = {}
+			const tmp = {};
 
 			for (let v of results) {
-				tmp[v.name] = v
+				tmp[v.name] = v;
 			}
 
 			setanimationData(tmp);
 
 			for (let i in results) {
-
 				const { mannequin, mixer } = sceneInfoList.current[i];
 
 				// mannequin.position.set(
-					// results[i].position.x,
-					// results[i].position.y,
-					// results[i].position.z
+				// results[i].position.x,
+				// results[i].position.y,
+				// results[i].position.z
 				// );
 
 				mannequin.rotation.set(
@@ -315,8 +300,18 @@ export default function Motions({ training, settraining }) {
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(left - containerRect.left, container.current.clientHeight - bottom, width, height);
-			renderer.current.setViewport(left - containerRect.left, container.current.clientHeight - bottom, width, height);
+			renderer.current.setScissor(
+				left - containerRect.left,
+				container.current.clientHeight - bottom,
+				width,
+				height
+			);
+			renderer.current.setViewport(
+				left - containerRect.left,
+				container.current.clientHeight - bottom,
+				width,
+				height
+			);
 
 			renderer.current.render(scene, camera);
 		}
@@ -349,56 +344,86 @@ export default function Motions({ training, settraining }) {
 	return (
 		<div className="panel">
 			<div className="tabs">
-				{
-					musclGroups && musclGroups.map((item) => {
-						return (<div
-							key={item}
-							onClick={() => {
-								// making request to get exercise json
-								loadAnimationList(item)
-							}}
-						>{item}</div>)
-					}) 
-				}
+				{musclGroups &&
+					musclGroups.map((item) => {
+						return (
+							<div
+								key={item}
+								onClick={() => {
+									// making request to get exercise json
+									loadAnimationList(item);
+								}}
+							>
+								{item}
+							</div>
+						);
+					})}
 			</div>
-			<div className="motions" style={{ zIndex: -2, position: "absolute", width: '100%', height: '100%' }}>
-				{Array(20).fill(0).map((_, i) => {
-					return (
-						<div
-							key={i}
-							className={["block", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-							style={{backgroundColor: sceneBgColor, display: i < animationList.length ? 'inline-block' : 'none'}}
-						></div>
-					);
-				})}
+			<div
+				className="motions"
+				style={{
+					zIndex: -2,
+					position: "absolute",
+					width: "100%",
+					height: "100%",
+				}}
+			>
+				{Array(20)
+					.fill(0)
+					.map((_, i) => {
+						return (
+							<div
+								key={i}
+								className={[
+									"block",
+									(i + 1) % 4 === 0 ? "border" : "",
+								].join(" ")}
+								style={{
+									backgroundColor: sceneBgColor,
+									display:
+										i < animationList.length
+											? "inline-block"
+											: "none",
+								}}
+							></div>
+						);
+					})}
 			</div>
 			<div ref={container} className="motions">
 				<canvas
 					ref={canvasRef}
 					style={{ zIndex: -1, position: "absolute" }}
 				/>
-				{Array(20).fill(0).map((_, i) => {
-					return (
-						<div
-							key={i}
-							data-animation={i}
-							className={["block", "animation-scene", animationList[i] && activated === animationList[i] ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-							onClick={() => {
+				{Array(20)
+					.fill(0)
+					.map((_, i) => {
+						return (
+							<div
+								key={i}
+								data-animation={i}
+								className={[
+									"block",
+									"animation-scene",
+									animationList[i] &&
+									activated === animationList[i]
+										? "active"
+										: "",
+									(i + 1) % 4 === 0 ? "border" : "",
+								].join(" ")}
+								onClick={() => {
+									if (!animationList[i]) {
+										return;
+									}
 
-								if (!animationList[i]) {
-									return
-								}
-
-								if (activated === animationList[i]) {
-									addExerciseToTraining(animationList[i]);
-								} else {
-									setactivated(animationList[i]);
-								}
-							}}
-						></div>
-					);
-
-				})}
+									if (activated === animationList[i]) {
+										addExerciseToTraining(animationList[i]);
+									} else {
+										setactivated(animationList[i]);
+									}
+								}}
+							></div>
+						);
+					})}
 			</div>
 		</div>
 	);
