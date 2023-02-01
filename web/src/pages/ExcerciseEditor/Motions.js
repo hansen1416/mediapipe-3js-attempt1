@@ -52,10 +52,10 @@ export default function Motions({ training, settraining }) {
 
 				scene.add(mannequin);
 
-				mannequin.position.set(0,0,0);
+				mannequin.position.set(0,0,100);
 			});
 
-			// loadAnimationList(musclGroups[0]);
+			loadAnimationList(musclGroups[0]);
 		});
 
 		return () => {
@@ -266,7 +266,7 @@ export default function Motions({ training, settraining }) {
 			0.1,
 			1000
 		);
-		camera.position.set(0, 0, 200);
+		camera.position.set(0, 0, 300);
 
 		const controls = new OrbitControls(camera, elem);
 
@@ -315,8 +315,8 @@ export default function Motions({ training, settraining }) {
 			// // controls.handleResize();
 			// controls.update()
 
-			renderer.current.setScissor(left - containerRect.left, containerRect.height - bottom, width, height);
-			renderer.current.setViewport(left - containerRect.left, containerRect.height - bottom, width, height);
+			renderer.current.setScissor(left - containerRect.left, container.current.clientHeight - bottom, width, height);
+			renderer.current.setViewport(left - containerRect.left, container.current.clientHeight - bottom, width, height);
 
 			renderer.current.render(scene, camera);
 		}
@@ -347,7 +347,7 @@ export default function Motions({ training, settraining }) {
 	}
 
 	return (
-		<div ref={container} className="panel">
+		<div className="panel">
 			<div className="tabs">
 				{
 					musclGroups && musclGroups.map((item) => {
@@ -372,11 +372,11 @@ export default function Motions({ training, settraining }) {
 					);
 				})}
 			</div>
-			<canvas
-				ref={canvasRef}
-				style={{ zIndex: -1, position: "absolute" }}
-			/>
-			<div className="motions">
+			<div ref={container} className="motions">
+				<canvas
+					ref={canvasRef}
+					style={{ zIndex: -1, position: "absolute" }}
+				/>
 				{Array(20).fill(0).map((_, i) => {
 					return (
 						<div
