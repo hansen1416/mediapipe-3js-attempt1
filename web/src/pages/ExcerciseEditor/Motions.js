@@ -28,33 +28,125 @@ export default function Motions({ training, settraining }) {
 	function loadAnimationList(muscle_group) {
 		new Promise((resolve) => {
 
-			const result = [
-				"basic-crunch",
-				"bicycle-crunch",
-				"curl-up",
-				"punch-walk",
-				"leg-pushes",
-				"leg-scissors",
-				"lying-leg-raises",
-				"oblique-crunch-left",
-				"oblique-crunch-right",
-				"reverse-crunch",
-				"side-crunch-left",
-				"toe-crunch",
-			];
+			let result;
 
 			if (muscle_group === 'chest') {
 
+				result = [
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+					"side-crunch-left",
+					"toe-crunch",
+				];
+
 			} else if (muscle_group === 'back') {
 				
+				result = [
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+					"side-crunch-left",
+					"toe-crunch",
+				];
+
 			} else if (muscle_group === 'arms') {
 				
-			} else if (muscle_group === 'chest') {
+				result = [
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+					"side-crunch-left",
+					"toe-crunch",
+					"reverse-crunch",
+					"side-crunch-left",
+					"toe-crunch",
+				];
+
+			} else if (muscle_group === 'abdominals') {
 				
-			} else if (muscle_group === 'chest') {
+				result = [
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+					"side-crunch-left",
+					"toe-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+				];
+
+			} else if (muscle_group === 'legs') {
 				
-			} else if (muscle_group === 'chest') {
+				result = [
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+				];
+
+			} else if (muscle_group === 'shoulders') {
 				
+				result = [
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+					"lying-leg-raises",
+					"oblique-crunch-left",
+					"oblique-crunch-right",
+					"reverse-crunch",
+					"side-crunch-left",
+					"toe-crunch",
+					"basic-crunch",
+					"bicycle-crunch",
+					"curl-up",
+					"punch-walk",
+					"leg-pushes",
+					"leg-scissors",
+				];
+
 			}
 
 			resolve(result);
@@ -66,8 +158,6 @@ export default function Motions({ training, settraining }) {
 	}
 
 	useEffect(() => {
-
-		loadAnimationList(musclGroups[0]);
 
 		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx")
 		.then((model) => {
@@ -85,6 +175,8 @@ export default function Motions({ training, settraining }) {
 
 				mannequin.position.set(0,0,0);
 			});
+
+			loadAnimationList(musclGroups[0]);
 		});
 
 		return () => {
@@ -124,7 +216,7 @@ export default function Motions({ training, settraining }) {
 			for (let i in results) {
 
 				const { mannequin, mixer } = sceneInfoList.current[i];
-
+console.log(i)
 				// mannequin.position.set(
 					// results[i].position.x,
 					// results[i].position.y,
@@ -140,7 +232,6 @@ export default function Motions({ training, settraining }) {
 				const clip = THREE.AnimationClip.parse(results[i]);
 
 				const action = mixer.clipAction(clip, mannequin);
-				// const action = mixer.clipAction(animationJSONs[key], tmpmodel);
 
 				action.reset();
 
@@ -150,8 +241,6 @@ export default function Motions({ training, settraining }) {
 				action.enable = true;
 
 				action.play();
-
-				// break
 			}
 
 			animate();
@@ -171,7 +260,7 @@ export default function Motions({ training, settraining }) {
 			0.1,
 			1000
 		);
-		camera.position.set(0, 0, 300);
+		camera.position.set(0, 0, 200);
 
 		const controls = new OrbitControls(camera, elem);
 
@@ -283,31 +372,27 @@ export default function Motions({ training, settraining }) {
 			/>
 			<div className="motions">
 				{Array(20).fill(0).map((_, i) => {
-					if (i < animationList.length) {
-						return (
-							<div
-								key={i}
-								data-animation={i}
-								className={["block", "animation-scene", activated === animationList[i] ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-								onClick={() => {
-									if (activated === animationList[i]) {
-										addExerciseToTraining(animationList[i]);
-									} else {
-										setactivated(animationList[i]);
-									}
-								}}
-							></div>
-						);
-					} else {
-						return (
-							<div
-								key={i}
-								data-animation={i}
-								className={["block", "animation-scene", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
-								style={{display: i < animationList.length ? 'inline-block' : 'none'}}
-							></div>
-						);
-					}
+					return (
+						<div
+							key={i}
+							data-animation={i}
+							className={["block", "animation-scene", animationList[i] && activated === animationList[i] ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
+							style={{display: i < animationList.length ? 'inline-block' : 'none'}}
+							onClick={() => {
+
+								if (!animationList[i]) {
+									return
+								}
+
+								if (activated === animationList[i]) {
+									addExerciseToTraining(animationList[i]);
+								} else {
+									setactivated(animationList[i]);
+								}
+							}}
+						></div>
+					);
+
 				})}
 			</div>
 		</div>
