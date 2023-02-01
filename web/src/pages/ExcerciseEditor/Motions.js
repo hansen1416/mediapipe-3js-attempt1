@@ -25,9 +25,10 @@ export default function Motions({ training, settraining }) {
 	const musclGroups = Object.keys(muscleGroupsColors);
 	const [sceneBgColor, setsceneBgColor] =  useState("");
 
-	function loadAnimationList() {
-		return new Promise((resolve) => {
-			resolve([
+	function loadAnimationList(muscle_group) {
+		new Promise((resolve) => {
+
+			const result = [
 				"basic-crunch",
 				"bicycle-crunch",
 				"curl-up",
@@ -40,15 +41,33 @@ export default function Motions({ training, settraining }) {
 				"reverse-crunch",
 				"side-crunch-left",
 				"toe-crunch",
-			]);
+			];
+
+			if (muscle_group === 'chest') {
+
+			} else if (muscle_group === 'back') {
+				
+			} else if (muscle_group === 'arms') {
+				
+			} else if (muscle_group === 'chest') {
+				
+			} else if (muscle_group === 'chest') {
+				
+			} else if (muscle_group === 'chest') {
+				
+			}
+
+			resolve(result);
+		}).then((data) => {
+			setanimationList(data);
+
+			setsceneBgColor(muscleGroupsColors[muscle_group])
 		});
 	}
 
 	useEffect(() => {
 
-		loadAnimationList().then((data) => {
-			setanimationList(data);
-		});
+		loadAnimationList(musclGroups[0]);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -61,6 +80,8 @@ export default function Motions({ training, settraining }) {
 		if (!animationList || !animationList.length) {
 			return;
 		}
+
+		// destroy all previous scene
 
 		// create main scene
 		document.querySelectorAll(".animation-scene").forEach((elem) => {
@@ -240,7 +261,7 @@ export default function Motions({ training, settraining }) {
 							key={item}
 							onClick={() => {
 								// making request to get exercise json
-								setsceneBgColor(muscleGroupsColors[item])
+								loadAnimationList(item)
 							}}
 						>{item}</div>)
 					}) 
