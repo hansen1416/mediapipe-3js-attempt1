@@ -10,9 +10,6 @@ export default function Motions({ training, settraining }) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
-	const [sceneWidth, setsceneWidth] = useState(100);
-	const [sceneHeight, setsceneHeight] = useState(100);
-	const [btnWdith] = useState(20);
 
 	const [animationData, setanimationData] = useState({});
 
@@ -45,13 +42,6 @@ export default function Motions({ training, settraining }) {
 	}
 
 	useEffect(() => {
-		const vw = document.documentElement.clientWidth;
-		const vh = document.documentElement.clientHeight;
-
-		const n = Math.round((vw - btnWdith * 2) / (vh / 5));
-
-		setsceneWidth((vw - btnWdith * 2) / n);
-		setsceneHeight(vh / 5);
 
 		loadAnimationList().then((data) => {
 			setanimationList(data);
@@ -147,7 +137,7 @@ export default function Motions({ training, settraining }) {
 
 	function createScene(elem) {
 		const scene = new THREE.Scene();
-		scene.background = new THREE.Color(0x022244);
+		// scene.background = new THREE.Color(0x022244);
 
 		const { width, height } = elem.getBoundingClientRect();
 
@@ -196,6 +186,8 @@ export default function Motions({ training, settraining }) {
 			const { left, top, bottom, width, height } =
 				elem.getBoundingClientRect();
 
+			const { containerLeft, containerTop } = container.current.getBoundingClientRect();
+
 			if (bottom < 0 || top > document.documentElement.clientHeight) {
 				continue;
 			}
@@ -210,8 +202,8 @@ export default function Motions({ training, settraining }) {
 			// renderer.current.setScissor(left, boxheight-bottom, width, height);
 			// renderer.current.setViewport(left, boxheight-bottom, width, height);
 
-			renderer.current.setScissor(left, 0, width, height);
-			renderer.current.setViewport(left, 0, width, height);
+			renderer.current.setScissor(left - containerLeft, top - containerTop, width, height);
+			renderer.current.setViewport(left - containerLeft, top - containerTop, width, height);
 
 			renderer.current.render(scene, camera);
 		}
@@ -242,28 +234,17 @@ export default function Motions({ training, settraining }) {
 	}
 
 	return (
-		<div ref={container} className="sider">
+		<div ref={container} className="panel motions">
 			<canvas
 				ref={canvasRef}
 				style={{ zIndex: -1, position: "absolute" }}
 			/>
-			<div
-				style={{ width: btnWdith + "px", display: "inline-block" }}
-			></div>
 			{animationList.map((name, i) => {
 				return (
 					<div
 						key={i}
 						data-animation={name}
-						className={
-							activated === name
-								? "animation-scene className"
-								: "animation-scene"
-						}
-						style={{
-							width: sceneWidth + "px",
-							height: sceneHeight + "px",
-						}}
+						className={["animation-scene", activated ? "active" : "", (i + 1) % 4 === 0 ? "border" : "" ].join(' ')}
 						onClick={() => {
 							if (activated === name) {
 								addExerciseToTraining(name);
@@ -274,9 +255,6 @@ export default function Motions({ training, settraining }) {
 					></div>
 				);
 			})}
-			<div
-				style={{ width: btnWdith + "px", display: "inline-block" }}
-			></div>
 		</div>
 	);
 }

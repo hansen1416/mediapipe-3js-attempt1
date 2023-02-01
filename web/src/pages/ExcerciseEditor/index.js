@@ -84,6 +84,8 @@ export default function ExcerciseEditor() {
 				}
 			}
 		}
+
+		// eslint-disable-next-line
 	}, [selectedExercise]);
 
 	function _scene(viewWidth, viewHeight) {
@@ -142,18 +144,20 @@ export default function ExcerciseEditor() {
 
 	return (
 		<div>
-			<div className="flex-container">
-				<div id="main_scene" ref={mainSceneRef}>
+			<div className="container">
+				<Motions training={training} settraining={settraining} />
+				<div className="middle"></div>
+				<div className="panel" ref={mainSceneRef}>
 					<canvas ref={canvasRef} />
 				</div>
-				<Synthesizer
-					training={training}
-					settraining={settraining}
-					selectedExercise={selectedExercise}
-					setselectedExercise={setselectedExercise}
-				/>
-				<Motions training={training} settraining={settraining} />
 			</div>
+
+			<Synthesizer
+				training={training}
+				settraining={settraining}
+				selectedExercise={selectedExercise}
+				setselectedExercise={setselectedExercise}
+			/>
 		</div>
 	);
 }

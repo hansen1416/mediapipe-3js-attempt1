@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function Synthesizer({
 	training,
@@ -112,6 +112,8 @@ export default function Synthesizer({
 								if (Number(i) === Number(selectedExercise)) {
 									return <span>{item.round}</span>;
 								}
+
+								return <></>
 							})}
 					</div>
 					<div
