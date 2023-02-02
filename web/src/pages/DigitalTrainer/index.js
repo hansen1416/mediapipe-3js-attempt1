@@ -64,6 +64,7 @@ export default function DigitalTrainer() {
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
 	const selectedTrainingIndxRef = useRef(-1);
 	const animationJSONs = useRef({});
+	const exerciseQueue = useRef([]);
 
 	useEffect(() => {
 		Promise.all([
@@ -137,14 +138,19 @@ export default function DigitalTrainer() {
 		new Promise((resolve) => {
 			resolve([
 				{
-					'name': 'default training',
-					'exercise': [{round: 10, name: 'basic-crunch'}, {round: 4, name: 'curl-up'}, {round: 6, name: 'leg-scissors'}, 
-					{round: 8, name: 'leg-scissors'}, {round: 8, name: "toe-crunch"}]
+					name: "default training",
+					exercise: [
+						{ round: 10, name: "basic-crunch" },
+						{ round: 4, name: "curl-up" },
+						{ round: 6, name: "leg-scissors" },
+						{ round: 8, name: "leg-scissors" },
+						{ round: 8, name: "toe-crunch" },
+					],
 				},
 			]);
 		}).then((data) => {
 			settrainingList(data);
-		})
+		});
 	}
 
 	function _scene(viewWidth, viewHeight) {
@@ -239,14 +245,13 @@ export default function DigitalTrainer() {
 						)
 					);
 				}
-				
+
 				// draw the pose as dots and lines on the sub scene
 				const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
 
 				g.scale.set(8, 8, 8);
 
 				setcapturedPose(g);
-				
 			})();
 		} else {
 			keypoints3D.current = null;
@@ -284,26 +289,36 @@ export default function DigitalTrainer() {
 	}
 
 	useEffect(() => {
-
 		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
-
 			selectedTrainingIndxRef.current = selectedTrainingIndx;
 
 			const tasks = [];
 
 			for (let t of trainingList) {
 				for (const e of t.exercise) {
-					tasks.push(loadObj(
-						process.env.PUBLIC_URL + "/animjson/" + e.name + ".json"
-					));
+					tasks.push(
+						loadObj(
+							process.env.PUBLIC_URL +
+								"/animjson/" +
+								e.name +
+								".json"
+						)
+					);
 				}
 			}
 
+			exerciseQueue.current = [];
+
 			Promise.all(tasks).then((data) => {
+				const q = [];
 
 				for (const v of data) {
 					animationJSONs.current[v.name] = v;
+
+					q.push(v.name);
 				}
+
+				exerciseQueue.current = q.reverse();
 
 				// for (const v of Object.values(data.tracks)) {
 				// 	if (
@@ -313,15 +328,14 @@ export default function DigitalTrainer() {
 				// 		longestTrack.current = v.quaternions.length;
 				// 	}
 				// }
-	
+
 				// // reset the animation
 				// animationIndx.current = 0;
 				// poseSync.current = new PoseSync(data);
 				// poseSyncVector.current = new PoseSyncVector(data);
 			});
-
 		}
-	// eslint-disable-next-line
+		// eslint-disable-next-line
 	}, [selectedTrainingIndx]);
 
 	return (
@@ -331,7 +345,7 @@ export default function DigitalTrainer() {
 				autoPlay={true}
 				width="640px"
 				height="480px"
-				style={{display: 'none'}}
+				style={{ display: "none" }}
 			></video>
 
 			<canvas ref={canvasRef} />
@@ -355,16 +369,19 @@ export default function DigitalTrainer() {
 			<div className="btn-box">
 				<div>
 					<ul>
-						{trainingList && trainingList.map((item, i) => {
-							return (
-								<li
-									key={i}
-									onClick={() => {setselectedTrainingIndx(i)}}
-								>
-									{item.name}
-								</li>
-							);
-						})}
+						{trainingList &&
+							trainingList.map((item, i) => {
+								return (
+									<li
+										key={i}
+										onClick={() => {
+											setselectedTrainingIndx(i);
+										}}
+									>
+										{item.name}
+									</li>
+								);
+							})}
 					</ul>
 				</div>
 				<div>
