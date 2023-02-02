@@ -370,7 +370,7 @@ export default function Motions({ training, settraining }) {
 					height: "100%",
 				}}
 			>
-				{Array(20)
+				{Array(16)
 					.fill(0)
 					.map((_, i) => {
 						return (
@@ -396,7 +396,7 @@ export default function Motions({ training, settraining }) {
 					ref={canvasRef}
 					style={{ zIndex: -1, position: "absolute" }}
 				/>
-				{Array(20)
+				{Array(16)
 					.fill(0)
 					.map((_, i) => {
 						return (

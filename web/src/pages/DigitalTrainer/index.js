@@ -310,6 +310,7 @@ export default function DigitalTrainer() {
 				autoPlay={true}
 				width="640px"
 				height="480px"
+				style={{display: 'none'}}
 			></video>
 
 			<canvas ref={canvasRef} />
