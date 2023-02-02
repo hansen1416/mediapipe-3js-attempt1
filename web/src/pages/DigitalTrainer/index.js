@@ -30,8 +30,6 @@ export default function DigitalTrainer() {
 
 	const videoRef = useRef(null);
 
-	const [animationList, setanimationList] = useState([]);
-
 	const poseDetector = useRef(null);
 
 	const figureParts = useRef({});
@@ -61,6 +59,11 @@ export default function DigitalTrainer() {
 	const [capturedPose, setcapturedPose] = useState();
 
 	const animationPointer = useRef(0);
+
+	const [trainingList, settrainingList] = useState([]);
+	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
+	const selectedTrainingIndxRef = useRef(-1);
+	const animationJSONs = useRef({});
 
 	useEffect(() => {
 		Promise.all([
@@ -111,11 +114,10 @@ export default function DigitalTrainer() {
 			}
 
 			animate();
-
-			loadAnimationList().then((data) => {
-				setanimationList(data);
-			});
 		});
+
+		// we can load training list separately
+		loadTrainingList();
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -128,25 +130,21 @@ export default function DigitalTrainer() {
 		if (vectorDistances && vectorDistances.length) {
 			setdistacneSortIndex(srotIndex(vectorDistances));
 		}
+		// eslint-disable-next-line
 	}, [vectorDistances]);
 
-	function loadAnimationList() {
-		return new Promise((resolve) => {
+	function loadTrainingList() {
+		new Promise((resolve) => {
 			resolve([
-				"basic-crunch",
-				"bicycle-crunch",
-				"curl-up",
-				"leg-pushes",
-				"leg-scissors",
-				"lying-leg-raises",
-				"oblique-crunch-left",
-				"oblique-crunch-right",
-				"punch-walk",
-				"reverse-crunch",
-				"side-crunch-left",
-				"toe-crunch",
+				{
+					'name': 'default training',
+					'exercise': [{round: 10, name: 'basic-crunch'}, {round: 4, name: 'curl-up'}, {round: 6, name: 'leg-scissors'}, 
+					{round: 8, name: 'leg-scissors'}, {round: 8, name: "toe-crunch"}]
+				},
 			]);
-		});
+		}).then((data) => {
+			settrainingList(data);
+		})
 	}
 
 	function _scene(viewWidth, viewHeight) {
@@ -213,7 +211,8 @@ export default function DigitalTrainer() {
 					v["z"] *= -1;
 				}
 
-				{
+				if (poseSync.current) {
+					// compare the distance curve between animation and pose
 					poseCompareResult.current =
 						poseSync.current.compareCurrentPose(
 							keypoints3D.current,
@@ -228,10 +227,11 @@ export default function DigitalTrainer() {
 					boneCurve.current.geometry.setFromPoints(
 						poseSync.current.boneSpline.getPoints(50)
 					);
+					// compare the distance curve between animation and pose
 				}
 
-				{
-					// setvectorDistances(poseSyncVector.current.compareCurrentPose(keypoints3D.current, animationIndx.current))
+				if (poseSyncVector.current) {
+					// compare the limbs vectors between pose and animation
 					setvectorDistances(
 						poseSyncVector.current.compareCurrentPose(
 							keypoints3D.current,
@@ -239,14 +239,14 @@ export default function DigitalTrainer() {
 						)
 					);
 				}
+				
+				// draw the pose as dots and lines on the sub scene
+				const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
 
-				{
-					const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
+				g.scale.set(8, 8, 8);
 
-					g.scale.set(8, 8, 8);
-
-					setcapturedPose(g);
-				}
+				setcapturedPose(g);
+				
 			})();
 		} else {
 			keypoints3D.current = null;
@@ -283,25 +283,46 @@ export default function DigitalTrainer() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	function loadAnimation(animation_name) {
-		loadObj(
-			process.env.PUBLIC_URL + "/animjson/" + animation_name + ".json"
-		).then((data) => {
-			for (const v of Object.values(data.tracks)) {
-				if (
-					v.type === "quaternion" &&
-					v.quaternions.length > longestTrack.current
-				) {
-					longestTrack.current = v.quaternions.length;
+	useEffect(() => {
+
+		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
+
+			selectedTrainingIndxRef.current = selectedTrainingIndx;
+
+			const tasks = [];
+
+			for (let t of trainingList) {
+				for (const e of t.exercise) {
+					tasks.push(loadObj(
+						process.env.PUBLIC_URL + "/animjson/" + e.name + ".json"
+					));
 				}
 			}
 
-			// reset the animation
-			animationIndx.current = 0;
-			poseSync.current = new PoseSync(data);
-			poseSyncVector.current = new PoseSyncVector(data);
-		});
-	}
+			Promise.all(tasks).then((data) => {
+
+				for (const v of data) {
+					animationJSONs.current[v.name] = v;
+				}
+
+				// for (const v of Object.values(data.tracks)) {
+				// 	if (
+				// 		v.type === "quaternion" &&
+				// 		v.quaternions.length > longestTrack.current
+				// 	) {
+				// 		longestTrack.current = v.quaternions.length;
+				// 	}
+				// }
+	
+				// // reset the animation
+				// animationIndx.current = 0;
+				// poseSync.current = new PoseSync(data);
+				// poseSyncVector.current = new PoseSyncVector(data);
+			});
+
+		}
+	// eslint-disable-next-line
+	}, [selectedTrainingIndx]);
 
 	return (
 		<div>
@@ -334,19 +355,13 @@ export default function DigitalTrainer() {
 			<div className="btn-box">
 				<div>
 					<ul>
-						{animationList.map((name) => {
+						{trainingList && trainingList.map((item, i) => {
 							return (
 								<li
-									key={name}
-									onClick={() => {
-										loadAnimation(name);
-
-										if (videoRef.current) {
-											startCamera(videoRef.current);
-										}
-									}}
+									key={i}
+									onClick={() => {setselectedTrainingIndx(i)}}
 								>
-									{name}
+									{item.name}
 								</li>
 							);
 						})}
