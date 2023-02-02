@@ -33,6 +33,8 @@ export default function Motions({ training, settraining }) {
 
 		const { width, height } = container.current.getBoundingClientRect();
 
+		console.log(width, height)
+
 		renderer.current.setSize(width, height);
 
 		animate();
@@ -208,11 +210,11 @@ export default function Motions({ training, settraining }) {
 			for (let i in results) {
 				const { mannequin, mixer } = sceneInfoList.current[i];
 
-				// mannequin.position.set(
-				// results[i].position.x,
-				// results[i].position.y,
-				// results[i].position.z
-				// );
+				mannequin.position.set(
+					results[i].position.x,
+					results[i].position.y,
+					results[i].position.z
+				);
 
 				mannequin.rotation.set(
 					results[i].rotation.x,
@@ -410,6 +412,12 @@ export default function Motions({ training, settraining }) {
 										: "",
 									(i + 1) % 4 === 0 ? "border" : "",
 								].join(" ")}
+								// style={{
+								// 	display:
+								// 		animationList.length === 0 || i < animationList.length
+								// 			? "inline-block"
+								// 			: "none",
+								// 		}}
 								onClick={() => {
 									if (!animationList[i]) {
 										return;

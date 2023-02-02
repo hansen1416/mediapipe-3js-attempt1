@@ -157,6 +157,22 @@ export default function ExcerciseEditor() {
 				selectedExercise={selectedExercise}
 				setselectedExercise={setselectedExercise}
 			/>
+
+			<div className="actions">
+				<button
+					onClick={() => {
+						if (training && training.length) {
+							const data = []
+
+							for (let v of training) {
+								data.push({round: v.round, name: v.animation.name});
+							}
+
+							sessionStorage.setItem('my-training', data);
+						}
+					}}
+				>Save</button>
+			</div>
 		</div>
 	);
 }

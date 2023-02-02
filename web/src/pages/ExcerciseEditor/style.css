@@ -71,6 +71,7 @@ body {
 	margin: 0 auto;
 	border-radius: 4px;
 	overflow: hidden;
+	background-color: #ccc;
 }
 
 .synthesizer .exercise-block {
@@ -114,10 +115,10 @@ body {
 	cursor: pointer;
 }
 
-/* #pose_scene {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 320px;
-    height: 240px;
-} */
+.actions {
+	width: 78vw;
+	height: 4vh;
+	position: relative;
+	margin: 20px auto 0;
+	text-align: right;
+}
