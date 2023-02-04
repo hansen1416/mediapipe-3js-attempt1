@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import "./style.css";
+import "../../styles/css/ExerciseEditor.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
@@ -28,24 +28,16 @@ export default function ExcerciseEditor() {
 	const [selectedExercise, setselectedExercise] = useState(-1);
 	const selectedExerciseRef = useRef(null);
 
+	const [boxWidth, setBoxWidth] = useState(0);
+	const [boxHeight, setBoxHeight] = useState(0);
+
+	const [panelWidth, setPanelWidth] = useState(0);
+	const [panelHeight, setPanelHeight] = useState(0);
+
 	useEffect(() => {
-		const { width, height } = mainSceneRef.current.getBoundingClientRect();
+		setBoxWidth(document.documentElement.clientWidth * 0.8);
 
-		_scene(width, height);
-
-		Promise.all([
-			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-		]).then(([model]) => {
-			mannequin.current = model;
-			// create main scene
-			mannequin.current.position.set(0, -100, 0);
-
-			traverseModel(mannequin.current, figureParts.current);
-
-			scene.current.add(mannequin.current);
-
-			animate();
-		});
+		setBoxHeight(document.documentElement.clientHeight - 120);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -55,6 +47,29 @@ export default function ExcerciseEditor() {
 		};
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		if (boxWidth && boxHeight) {
+			setPanelWidth(boxWidth * 0.46);
+			setPanelHeight(boxHeight * 0.7);
+
+			_scene(boxWidth * 0.42, boxHeight * 0.7);
+
+			Promise.all([
+				loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+			]).then(([model]) => {
+				mannequin.current = model;
+				// create main scene
+				mannequin.current.position.set(0, -100, 0);
+
+				traverseModel(mannequin.current, figureParts.current);
+
+				scene.current.add(mannequin.current);
+
+				animate();
+			});
+		}
+	}, [boxWidth, boxHeight]);
 
 	useEffect(() => {
 		if (training && training.length) {
@@ -89,10 +104,8 @@ export default function ExcerciseEditor() {
 	}, [selectedExercise]);
 
 	function _scene(viewWidth, viewHeight) {
-		const backgroundColor = 0x022244;
-
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(backgroundColor);
+		scene.current.background = new THREE.Color(0x2e6bc4);
 
 		camera.current = new THREE.PerspectiveCamera(
 			75,
@@ -143,10 +156,25 @@ export default function ExcerciseEditor() {
 	}
 
 	return (
-		<div>
+		<div
+			className="box"
+			style={{ width: boxWidth + "px", height: boxHeight + "px" }}
+		>
 			<div className="container">
-				<Motions training={training} settraining={settraining} />
-				<div className="panel main" ref={mainSceneRef}>
+				<Motions
+					training={training}
+					settraining={settraining}
+					width={panelWidth}
+					height={panelHeight}
+				/>
+				<div
+					className="panel main"
+					ref={mainSceneRef}
+					style={{
+						width: panelWidth + "px",
+						height: panelHeight + "px",
+					}}
+				>
 					<canvas ref={canvasRef} />
 				</div>
 			</div>
@@ -162,16 +190,21 @@ export default function ExcerciseEditor() {
 				<button
 					onClick={() => {
 						if (training && training.length) {
-							const data = []
+							const data = [];
 
 							for (let v of training) {
-								data.push({round: v.round, name: v.animation.name});
+								data.push({
+									round: v.round,
+									name: v.animation.name,
+								});
 							}
 
-							sessionStorage.setItem('my-training', data);
+							sessionStorage.setItem("my-training", data);
 						}
 					}}
-				>Save</button>
+				>
+					Save
+				</button>
 			</div>
 		</div>
 	);

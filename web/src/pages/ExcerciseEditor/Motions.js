@@ -6,7 +6,7 @@ import { cloneDeep } from "lodash";
 
 import { loadFBX, loadObj, muscleGroupsColors } from "../../components/ropes";
 
-export default function Motions({ training, settraining }) {
+export default function Motions({ training, settraining, width, height }) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
@@ -26,45 +26,52 @@ export default function Motions({ training, settraining }) {
 	const [sceneBgColor, setsceneBgColor] = useState("");
 
 	useEffect(() => {
-		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current,
-			alpha: true,
-		});
-
-		const { width, height } = container.current.getBoundingClientRect();
-
-		console.log(width, height)
-
-		renderer.current.setSize(width, height);
-
-		animate();
-
-		loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx").then((model) => {
-			// create scene list
-			document.querySelectorAll(".animation-scene").forEach((elem) => {
-				sceneInfoList.current[elem.dataset["animation"]] =
-					createScene(elem);
-
-				const mannequin = SkeletonUtils.clone(model);
-
-				sceneInfoList.current[elem.dataset["animation"]]["mannequin"] =
-					mannequin;
-
-				const { scene } =
-					sceneInfoList.current[elem.dataset["animation"]];
-
-				scene.add(mannequin);
-			});
-
-			loadAnimationList(musclGroups[0]);
-		});
-
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
 		};
 
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		if (width && height && renderer.current === null) {
+			renderer.current = new THREE.WebGLRenderer({
+				canvas: canvasRef.current,
+				alpha: true,
+			});
+
+			renderer.current.setSize(width, height);
+
+			animate();
+
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx").then(
+				(model) => {
+					// create scene list
+					document
+						.querySelectorAll(".animation-scene")
+						.forEach((elem) => {
+							sceneInfoList.current[elem.dataset["animation"]] =
+								createScene(elem);
+
+							const mannequin = SkeletonUtils.clone(model);
+
+							sceneInfoList.current[elem.dataset["animation"]][
+								"mannequin"
+							] = mannequin;
+
+							const { scene } =
+								sceneInfoList.current[
+									elem.dataset["animation"]
+								];
+
+							scene.add(mannequin);
+						});
+
+					loadAnimationList(musclGroups[0]);
+				}
+			);
+		}
+	}, [width, height]);
 
 	function loadAnimationList(muscle_group) {
 		new Promise((resolve) => {
@@ -344,7 +351,10 @@ export default function Motions({ training, settraining }) {
 	}
 
 	return (
-		<div className="panel">
+		<div
+			className="panel"
+			style={{ width: width + "px", height: height + "px" }}
+		>
 			<div className="tabs">
 				{musclGroups &&
 					musclGroups.map((item) => {
