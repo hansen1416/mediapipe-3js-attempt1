@@ -35,7 +35,7 @@ export default function ExcerciseEditor() {
 	const [panelHeight, setpanelHeight] = useState(0);
 	const [blockSize, setblockSize] = useState(0);
 	const [blockN, setblockN] = useState(0);
-	const [synthesizerHeight, setsynthesizerHeight] = useState(120);
+	const [synthesizerHeight] = useState(120);
 
 	const overallWidthMargin = 300;
 	const overallHeightMargin = 120;
@@ -210,6 +210,7 @@ export default function ExcerciseEditor() {
 					height={panelHeight}
 					blockSize={blockSize}
 					blockN={blockN}
+					setselectedExercise={setselectedExercise}
 				/>
 				<div
 					className="panel main"

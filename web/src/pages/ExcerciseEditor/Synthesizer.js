@@ -16,6 +16,7 @@ export default function Synthesizer({
 	const [totalWidth, settotalWidth] = useState(0);
 
 	const [selectedExerciseRound, setselectedExerciseRound] = useState(0);
+	const [selectedExerciseName, setselectedExerciseName] = useState("");
 
 	useEffect(() => {
 		if (container.current) {
@@ -29,8 +30,14 @@ export default function Synthesizer({
 		if (training && training.length) {
 			let t = 0;
 
-			for (let v of training) {
-				t += parseInt(v.round);
+			for (let i in training) {
+				t += parseInt(training[i].round);
+
+				if (Number(i) === Number(selectedExercise)) {
+					setselectedExerciseRound(parseInt(training[i].round));
+
+					setselectedExerciseName(training[i].animation.name);
+				}
 			}
 			// console.log(training);
 			settotalRound(t);
@@ -98,16 +105,8 @@ export default function Synthesizer({
 			</div>
 
 			<div className="actions">
-				<div className="num">
-					{training &&
-						training.map((item, i) => {
-							if (Number(i) === Number(selectedExercise)) {
-								return <span key={i}>{item.round}</span>;
-							}
-
-							return <></>;
-						})}
-				</div>
+				<div>{selectedExerciseName}</div>
+				<div className="num">{selectedExerciseRound}</div>
 				<div
 					className="btn"
 					onClick={() => {
@@ -172,7 +171,6 @@ export default function Synthesizer({
 				>
 					x
 				</div>
-
 				<div
 					className="btn"
 					onClick={() => {

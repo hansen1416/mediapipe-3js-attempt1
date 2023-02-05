@@ -13,6 +13,7 @@ export default function Motions({
 	height,
 	blockSize,
 	blockN,
+	setselectedExercise,
 }) {
 	const [animationList, setanimationList] = useState([]);
 
@@ -365,6 +366,8 @@ export default function Motions({
 				round: 1,
 				animation: animationData[animation_name],
 			});
+
+			setselectedExercise(tmp.length - 1);
 		}
 
 		settraining(tmp);
