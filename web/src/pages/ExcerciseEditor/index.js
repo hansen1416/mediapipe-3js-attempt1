@@ -80,7 +80,7 @@ export default function ExcerciseEditor() {
 						break;
 					}
 				}
-				console.log(col, row);
+
 				pHeight = bSize * row + (row - 1) * margin;
 
 				setpanelWidth(pWidth);

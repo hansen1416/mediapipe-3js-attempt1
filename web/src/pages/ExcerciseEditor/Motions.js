@@ -221,39 +221,46 @@ export default function Motions({
 		Promise.all(tasks).then((results) => {
 			const tmp = {};
 
-			for (let v of results) {
+			for (const v of results) {
 				tmp[v.name] = v;
 			}
 
 			setanimationData(tmp);
 
-			for (let i in results) {
+			for (let i in sceneInfoList.current) {
 				const { mannequin, mixer } = sceneInfoList.current[i];
 
-				mannequin.position.set(
-					results[i].position.x,
-					results[i].position.y,
-					results[i].position.z
-				);
+				i = Number(i);
 
-				mannequin.rotation.set(
-					results[i].rotation.x,
-					results[i].rotation.y,
-					results[i].rotation.z
-				);
+				if (i < results.length) {
+					mannequin.visible = true;
+					mannequin.position.set(
+						results[i].position.x,
+						results[i].position.y,
+						results[i].position.z
+					);
 
-				const clip = THREE.AnimationClip.parse(results[i]);
+					mannequin.rotation.set(
+						results[i].rotation.x,
+						results[i].rotation.y,
+						results[i].rotation.z
+					);
 
-				const action = mixer.clipAction(clip, mannequin);
+					const clip = THREE.AnimationClip.parse(results[i]);
 
-				action.reset();
+					const action = mixer.clipAction(clip, mannequin);
 
-				// keep model at the position where it stops
-				action.clampWhenFinished = true;
+					action.reset();
 
-				action.enable = true;
+					// keep model at the position where it stops
+					action.clampWhenFinished = true;
 
-				action.play();
+					action.enable = true;
+
+					action.play();
+				} else {
+					mannequin.visible = false;
+				}
 			}
 		});
 		// eslint-disable-next-line
@@ -323,13 +330,13 @@ export default function Motions({
 			// seems bottom is different in 30px, find out why
 
 			renderer.current.setScissor(
-				left - containerRect.left + 10,
+				left - containerRect.left,
 				container.current.clientHeight - bottom + 50,
 				width,
 				height
 			);
 			renderer.current.setViewport(
-				left - containerRect.left + 10,
+				left - containerRect.left,
 				container.current.clientHeight - bottom + 50,
 				width,
 				height
