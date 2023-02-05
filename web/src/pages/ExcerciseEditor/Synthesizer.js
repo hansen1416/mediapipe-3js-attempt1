@@ -15,14 +15,15 @@ export default function Synthesizer({
 	const [totalRound, settotalRound] = useState(0);
 	const [totalWidth, settotalWidth] = useState(0);
 
-	const [showEditor, setshowEditor] = useState(false);
-	const [editorLeft, seteditorLeft] = useState(0);
+	const [selectedExerciseRound, setselectedExerciseRound] = useState(0);
 
 	useEffect(() => {
-		settotalWidth(container.current.clientWidth);
+		if (container.current) {
+			settotalWidth(container.current.clientWidth);
+		}
 
 		// eslint-disable-next-line
-	}, []);
+	}, [container.current]);
 
 	useEffect(() => {
 		if (training && training.length) {
@@ -31,14 +32,12 @@ export default function Synthesizer({
 			for (let v of training) {
 				t += parseInt(v.round);
 			}
-
+			// console.log(training);
 			settotalRound(t);
 		}
-	}, [training]);
 
-	useEffect(() => {
 		// eslint-disable-next-line
-	}, [height]);
+	}, [training]);
 
 	function getBackgroundColor(animation_data) {
 		if (
@@ -91,118 +90,91 @@ export default function Synthesizer({
 									),
 								}}
 								onClick={(e) => {
-									if (i === selectedExercise) {
-										setshowEditor(!showEditor);
-									} else {
-										setshowEditor(true);
-
-										const { left, width } =
-											e.target.getBoundingClientRect();
-
-										seteditorLeft(left + width / 2 - 100);
-									}
-
 									setselectedExercise(i);
 								}}
 							></div>
 						);
 					})}
-				{showEditor && (
-					<div className="editor" style={{ left: editorLeft + "px" }}>
-						<div className="num">
-							{training &&
-								training.map((item, i) => {
-									if (
-										Number(i) === Number(selectedExercise)
-									) {
-										return (
-											<span key={i}>{item.round}</span>
-										);
-									}
-
-									return <></>;
-								})}
-						</div>
-						<div
-							className="btn"
-							onClick={() => {
-								const tmp = cloneDeep(training);
-
-								for (let i in tmp) {
-									if (
-										Number(i) === Number(selectedExercise)
-									) {
-										tmp[i].round += 1;
-									}
-								}
-
-								settraining(tmp);
-							}}
-						>
-							+
-						</div>
-						<div
-							className="btn"
-							onClick={() => {
-								const tmp = cloneDeep(training);
-
-								let toDelete = false;
-
-								for (let i in tmp) {
-									if (
-										Number(i) === Number(selectedExercise)
-									) {
-										tmp[i].round -= 1;
-
-										if (tmp[i].round <= 0) {
-											toDelete = i;
-										}
-									}
-								}
-
-								if (toDelete !== false) {
-									tmp.splice(toDelete, 1);
-
-									setshowEditor(false);
-								}
-
-								settraining(tmp);
-							}}
-						>
-							-
-						</div>
-						<div
-							className="btn"
-							onClick={() => {
-								const tmp = cloneDeep(training);
-
-								let toDelete = false;
-
-								for (let i in tmp) {
-									if (
-										Number(i) === Number(selectedExercise)
-									) {
-										toDelete = i;
-									}
-								}
-
-								if (toDelete !== false) {
-									tmp.splice(toDelete, 1);
-
-									setshowEditor(false);
-								}
-
-								settraining(tmp);
-							}}
-						>
-							x
-						</div>
-					</div>
-				)}
 			</div>
 
 			<div className="actions">
-				<button
+				<div className="num">
+					{training &&
+						training.map((item, i) => {
+							if (Number(i) === Number(selectedExercise)) {
+								return <span key={i}>{item.round}</span>;
+							}
+
+							return <></>;
+						})}
+				</div>
+				<div
+					className="btn"
+					onClick={() => {
+						const tmp = cloneDeep(training);
+
+						for (let i in tmp) {
+							if (Number(i) === Number(selectedExercise)) {
+								tmp[i].round += 1;
+							}
+						}
+
+						settraining(tmp);
+					}}
+				>
+					+
+				</div>
+				<div
+					className="btn"
+					onClick={() => {
+						const tmp = cloneDeep(training);
+
+						let toDelete = false;
+
+						for (let i in tmp) {
+							if (Number(i) === Number(selectedExercise)) {
+								tmp[i].round -= 1;
+
+								if (tmp[i].round <= 0) {
+									toDelete = i;
+								}
+							}
+						}
+
+						if (toDelete !== false) {
+							tmp.splice(toDelete, 1);
+						}
+
+						settraining(tmp);
+					}}
+				>
+					-
+				</div>
+				<div
+					className="btn"
+					onClick={() => {
+						const tmp = cloneDeep(training);
+
+						let toDelete = false;
+
+						for (let i in tmp) {
+							if (Number(i) === Number(selectedExercise)) {
+								toDelete = i;
+							}
+						}
+
+						if (toDelete !== false) {
+							tmp.splice(toDelete, 1);
+						}
+
+						settraining(tmp);
+					}}
+				>
+					x
+				</div>
+
+				<div
+					className="btn"
 					onClick={() => {
 						if (training && training.length) {
 							const data = [];
@@ -219,7 +191,7 @@ export default function Synthesizer({
 					}}
 				>
 					Save
-				</button>
+				</div>
 			</div>
 		</div>
 	);

@@ -94,39 +94,6 @@ body {
 			border-right-width: 0;
 		}
 	}
-
-	.editor {
-		position: absolute;
-		width: auto;
-		height: 40px;
-		background-color: #ccc;
-		top: -40px;
-
-		.num {
-			width: auto;
-			height: 30px;
-			padding: 0 4px;
-			margin: 5px;
-			display: inline-block;
-			color: #222;
-			background-color: skyblue;
-			font-size: 30px;
-		}
-
-		.btn {
-			width: 30px;
-			height: 30px;
-			margin: 5px;
-			display: inline-block;
-			color: #fff;
-			background-color: skyblue;
-			font-size: 30px;
-			cursor: pointer;
-		}
-	}
-
-
-	
 }
 
 .actions {
@@ -135,6 +102,36 @@ body {
 	position: relative;
 	margin: 20px auto 0;
 	text-align: right;
+	height: 40px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+
+	.num {
+		width: auto;
+		height: 30px;
+		padding: 0 4px;
+		margin: 5px;
+		display: inline-block;
+		color: #222;
+		background-color: skyblue;
+		border-radius: @border-radius;
+		font-size: 30px;
+	}
+
+	.btn {
+		height: 30px;
+		margin: 10px;
+		padding: 0 10px;
+		display: inline-block;
+		color: #fff;
+		background-color: skyblue;
+		border-radius: @border-radius;
+		font-size: 30px;
+		cursor: pointer;
+	}
+
 
 	button {
 		font-size: 16px;

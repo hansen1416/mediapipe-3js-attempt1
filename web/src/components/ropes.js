@@ -8,16 +8,20 @@ import { Quaternion } from "three";
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const typeSizes = {
-	"undefined": () => 0,
-	"boolean": () => 4,
-	"number": () => 8,
-	"string": item => 2 * item.length,
-	"object": item => !item ? 0 : Object
-	  .keys(item)
-	  .reduce((total, key) => sizeOf(key) + sizeOf(item[key]) + total, 0)
-  };
-  
-export const sizeOf = value => typeSizes[typeof value](value);
+	undefined: () => 0,
+	boolean: () => 4,
+	number: () => 8,
+	string: (item) => 2 * item.length,
+	object: (item) =>
+		!item
+			? 0
+			: Object.keys(item).reduce(
+					(total, key) => sizeOf(key) + sizeOf(item[key]) + total,
+					0
+			  ),
+};
+
+export const sizeOf = (value) => typeSizes[typeof value](value);
 
 export const BlazePoseConfig = {
 	// runtime: "mediapipe", // or 'tfjs'
@@ -34,13 +38,13 @@ export const BlazePoseConfig = {
 };
 
 export const muscleGroupsColors = {
-	'chest': "rgba(255, 0, 0)",
-	'back': "rgb(255, 234, 2)",
-	'arms': "rgb(48, 255, 2)",
-	'abdominals': "rgb(228, 106, 18)",
-	'legs': "rgb(2, 36, 255)",
-	'shoulders': "rgb(2, 255, 251)",
-}
+	chest: "rgba(255, 0, 0)",
+	shoulders: "rgb(228, 106, 18)",
+	back: "rgb(255, 234, 2)",
+	arms: "rgb(59,148,94)",
+	abdominals: "rgb(136,96,208)",
+	legs: "rgb(2, 36, 255)",
+};
 
 // Integrate navigator.getUserMedia & navigator.mediaDevices.getUserMedia
 export function getUserMedia(constraints, successCallback, errorCallback) {
@@ -66,7 +70,9 @@ export function radiansToDegrees(radian) {
 }
 
 export function srotIndex(arr) {
-	return Array.from(Array(arr.length).keys()).sort((a, b) => arr[a] < arr[b] ? -1 : (arr[b] < arr[a]) | 0);
+	return Array.from(Array(arr.length).keys()).sort((a, b) =>
+		arr[a] < arr[b] ? -1 : (arr[b] < arr[a]) | 0
+	);
 }
 
 export function posePointsToVector(a, b, norm = true) {
@@ -518,27 +524,24 @@ export function applyTransfer(model, animation, indx) {
 
 /**
  * apply one frame data of an animation to the data
- * @param {*} model 
- * @param {*} animationFrameData 
+ * @param {*} model
+ * @param {*} animationFrameData
  */
 export function applyAnimationFrame(model, animationFrameData) {
-
 	for (let item_name in animationFrameData) {
-
 		if (!model[item_name]) {
-			continue
+			continue;
 		}
 
 		const item = animationFrameData[item_name];
 
 		if (item.isQuaternion) {
-
 			const q = new Quaternion(item._x, item._y, item._z, item._w);
 
 			model[item_name].setRotationFromQuaternion(q);
 		} else {
-			model[item_name].position.set(item.x, item.y, item.z)
-		}		
+			model[item_name].position.set(item.x, item.y, item.z);
+		}
 	}
 }
 
