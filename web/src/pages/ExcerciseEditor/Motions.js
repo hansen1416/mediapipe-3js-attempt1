@@ -381,6 +381,9 @@ export default function Motions({
 						return (
 							<div
 								key={item}
+								style={{
+									backgroundColor: muscleGroupsColors[item],
+								}}
 								onClick={() => {
 									// making request to get exercise json
 									loadAnimationList(item);

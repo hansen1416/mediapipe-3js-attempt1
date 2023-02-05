@@ -35,7 +35,7 @@ export default function ExcerciseEditor() {
 	const [panelHeight, setpanelHeight] = useState(0);
 	const [blockSize, setblockSize] = useState(0);
 	const [blockN, setblockN] = useState(0);
-	const [synthesizerHeight, setsynthesizerHeight] = useState(0);
+	const [synthesizerHeight, setsynthesizerHeight] = useState(120);
 
 	const overallWidthMargin = 300;
 	const overallHeightMargin = 120;
@@ -69,12 +69,12 @@ export default function ExcerciseEditor() {
 
 				let bSize = (pWidth - 10 * (col - 1)) / col;
 
-				let sHeight = 100;
-
 				for (let i = 0; i < 10; i++) {
 					if (
-						bSize * i + (i - 1) * margin <= boxHeight - sHeight &&
-						bSize * (i + 1) + i * margin > boxHeight - sHeight
+						bSize * i + (i - 1) * margin <=
+							boxHeight - synthesizerHeight &&
+						bSize * (i + 1) + i * margin >
+							boxHeight - synthesizerHeight
 					) {
 						row = i;
 						break;
@@ -87,7 +87,6 @@ export default function ExcerciseEditor() {
 				setpanelHeight(pHeight);
 				setblockSize(bSize);
 				setblockN(row * col);
-				setsynthesizerHeight(sHeight);
 			}
 		}
 
@@ -148,7 +147,7 @@ export default function ExcerciseEditor() {
 
 	function _scene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(0x2e6bc4);
+		scene.current.background = new THREE.Color(0x0f2027);
 
 		camera.current = new THREE.PerspectiveCamera(
 			75,
@@ -229,28 +228,8 @@ export default function ExcerciseEditor() {
 				settraining={settraining}
 				selectedExercise={selectedExercise}
 				setselectedExercise={setselectedExercise}
+				height={synthesizerHeight}
 			/>
-
-			<div className="actions">
-				<button
-					onClick={() => {
-						if (training && training.length) {
-							const data = [];
-
-							for (let v of training) {
-								data.push({
-									round: v.round,
-									name: v.animation.name,
-								});
-							}
-
-							sessionStorage.setItem("my-training", data);
-						}
-					}}
-				>
-					Save
-				</button>
-			</div>
 		</div>
 	);
 }
