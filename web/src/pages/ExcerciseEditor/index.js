@@ -28,16 +28,25 @@ export default function ExcerciseEditor() {
 	const [selectedExercise, setselectedExercise] = useState(-1);
 	const selectedExerciseRef = useRef(null);
 
-	const [boxWidth, setBoxWidth] = useState(0);
-	const [boxHeight, setBoxHeight] = useState(0);
+	const [boxWidth, setboxWidth] = useState(0);
+	const [boxHeight, setboxHeight] = useState(0);
 
-	const [panelWidth, setPanelWidth] = useState(0);
-	const [panelHeight, setPanelHeight] = useState(0);
+	const [panelWidth, setpanelWidth] = useState(0);
+	const [panelHeight, setpanelHeight] = useState(0);
+	const [blockSize, setblockSize] = useState(0);
+	const [blockN, setblockN] = useState(0);
+	const [synthesizerHeight, setsynthesizerHeight] = useState(0);
+
+	const overallWidthMargin = 300;
+	const overallHeightMargin = 120;
+	const panelRatio = 0.46;
 
 	useEffect(() => {
-		setBoxWidth(document.documentElement.clientWidth * 0.8);
+		setboxWidth(document.documentElement.clientWidth - overallWidthMargin);
 
-		setBoxHeight(document.documentElement.clientHeight - 120);
+		setboxHeight(
+			document.documentElement.clientHeight - overallHeightMargin
+		);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -50,10 +59,44 @@ export default function ExcerciseEditor() {
 
 	useEffect(() => {
 		if (boxWidth && boxHeight) {
-			setPanelWidth(boxWidth * 0.46);
-			setPanelHeight(boxHeight * 0.7);
+			{
+				// calculate element sizes
+				const margin = 10;
+				const col = 4;
+				let row = 10;
+				const pWidth = boxWidth * panelRatio;
+				let pHeight;
 
-			_scene(boxWidth * 0.42, boxHeight * 0.7);
+				let bSize = (pWidth - 10 * (col - 1)) / col;
+
+				let sHeight = 100;
+
+				for (let i = 0; i < 10; i++) {
+					if (
+						bSize * i + (i - 1) * margin <= boxHeight - sHeight &&
+						bSize * (i + 1) + i * margin > boxHeight - sHeight
+					) {
+						row = i;
+						break;
+					}
+				}
+				console.log(col, row);
+				pHeight = bSize * row + (row - 1) * margin;
+
+				setpanelWidth(pWidth);
+				setpanelHeight(pHeight);
+				setblockSize(bSize);
+				setblockN(row * col);
+				setsynthesizerHeight(sHeight);
+			}
+		}
+
+		// eslint-disable-next-line
+	}, [boxWidth, boxHeight]);
+
+	useEffect(() => {
+		if ((panelWidth, panelHeight)) {
+			_scene(panelWidth, panelHeight);
 
 			Promise.all([
 				loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
@@ -69,7 +112,7 @@ export default function ExcerciseEditor() {
 				animate();
 			});
 		}
-	}, [boxWidth, boxHeight]);
+	}, [panelWidth, panelHeight]);
 
 	useEffect(() => {
 		if (training && training.length) {
@@ -166,6 +209,8 @@ export default function ExcerciseEditor() {
 					settraining={settraining}
 					width={panelWidth}
 					height={panelHeight}
+					blockSize={blockSize}
+					blockN={blockN}
 				/>
 				<div
 					className="panel main"

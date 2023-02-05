@@ -6,7 +6,14 @@ import { cloneDeep } from "lodash";
 
 import { loadFBX, loadObj, muscleGroupsColors } from "../../components/ropes";
 
-export default function Motions({ training, settraining, width, height }) {
+export default function Motions({
+	training,
+	settraining,
+	width,
+	height,
+	blockSize,
+	blockN,
+}) {
 	const [animationList, setanimationList] = useState([]);
 
 	const sceneInfoList = useRef({});
@@ -34,7 +41,13 @@ export default function Motions({ training, settraining, width, height }) {
 	}, []);
 
 	useEffect(() => {
-		if (width && height && renderer.current === null) {
+		if (
+			width &&
+			height &&
+			blockSize &&
+			blockN &&
+			renderer.current === null
+		) {
 			renderer.current = new THREE.WebGLRenderer({
 				canvas: canvasRef.current,
 				alpha: true,
@@ -71,7 +84,7 @@ export default function Motions({ training, settraining, width, height }) {
 				}
 			);
 		}
-	}, [width, height]);
+	}, [width, height, blockSize, blockN]);
 
 	function loadAnimationList(muscle_group) {
 		new Promise((resolve) => {
@@ -310,14 +323,14 @@ export default function Motions({ training, settraining, width, height }) {
 			// seems bottom is different in 30px, find out why
 
 			renderer.current.setScissor(
-				left - containerRect.left,
-				container.current.clientHeight - bottom + 30,
+				left - containerRect.left + 10,
+				container.current.clientHeight - bottom + 50,
 				width,
 				height
 			);
 			renderer.current.setViewport(
-				left - containerRect.left,
-				container.current.clientHeight - bottom + 30,
+				left - containerRect.left + 10,
+				container.current.clientHeight - bottom + 50,
 				width,
 				height
 			);
@@ -380,68 +393,76 @@ export default function Motions({ training, settraining, width, height }) {
 					height: "100%",
 				}}
 			>
-				{Array(16)
-					.fill(0)
-					.map((_, i) => {
-						return (
-							<div
-								key={i}
-								className={[
-									"block",
-									(i + 1) % 4 === 0 ? "border" : "",
-								].join(" ")}
-								style={{
-									backgroundColor: sceneBgColor,
-									display:
-										i < animationList.length
-											? "inline-block"
-											: "none",
-								}}
-							></div>
-						);
-					})}
+				{blockN &&
+					Array(blockN)
+						.fill(0)
+						.map((_, i) => {
+							return (
+								<div
+									key={i}
+									className={[
+										"block",
+										(i + 1) % 4 === 0 ? "border" : "",
+									].join(" ")}
+									style={{
+										width: blockSize,
+										height: blockSize,
+										backgroundColor: sceneBgColor,
+										display:
+											i < animationList.length
+												? "inline-block"
+												: "none",
+									}}
+								></div>
+							);
+						})}
 			</div>
 			<div ref={container} className="motions">
 				<canvas
 					ref={canvasRef}
 					style={{ zIndex: -1, position: "absolute" }}
 				/>
-				{Array(16)
-					.fill(0)
-					.map((_, i) => {
-						return (
-							<div
-								key={i}
-								data-animation={i}
-								className={[
-									"block",
-									"animation-scene",
-									animationList[i] &&
-									activated === animationList[i]
-										? "active"
-										: "",
-									(i + 1) % 4 === 0 ? "border" : "",
-								].join(" ")}
-								// style={{
-								// 	display:
-								// 		animationList.length === 0 || i < animationList.length
-								// 			? "inline-block"
-								// 			: "none",
-								// 		}}
-								onClick={() => {
-									if (!animationList[i]) {
-										return;
-									}
+				{blockN &&
+					Array(blockN)
+						.fill(0)
+						.map((_, i) => {
+							return (
+								<div
+									key={i}
+									data-animation={i}
+									className={[
+										"block",
+										"animation-scene",
+										animationList[i] &&
+										activated === animationList[i]
+											? "active"
+											: "",
+										(i + 1) % 4 === 0 ? "border" : "",
+									].join(" ")}
+									style={{
+										width: blockSize,
+										height: blockSize,
+										// display:
+										// 	animationList.length === 0 || i < animationList.length
+										// 		? "inline-block"
+										// 		: "none",
+									}}
+									onClick={() => {
+										if (!animationList[i]) {
+											return;
+										}
 
-									if (activated === animationList[i]) {
-										addExerciseToTraining(animationList[i]);
-									} else {
-										setactivated(animationList[i]);
-									}
-								}}
-							></div>
-						);
-					})}
+										if (activated === animationList[i]) {
+											addExerciseToTraining(
+												animationList[i]
+											);
+										} else {
+											setactivated(animationList[i]);
+										}
+									}}
+								></div>
+							);
+						})}
 			</div>
 		</div>
 	);
