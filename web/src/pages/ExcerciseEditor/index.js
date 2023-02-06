@@ -37,7 +37,7 @@ export default function ExcerciseEditor() {
 	const [blockN, setblockN] = useState(0);
 	const [synthesizerHeight] = useState(120);
 
-	const overallWidthMargin = 400;
+	const overallWidthMargin = 360;
 	const overallHeightMargin = 120;
 	const panelRatio = 0.46;
 

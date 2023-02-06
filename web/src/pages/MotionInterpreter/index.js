@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
-
+import "../../styles/css/MotionInterpreter.css";
 import {
 	applyTransfer,
 	degreesToRadians,
@@ -41,7 +41,7 @@ export default function MotionInterpreter() {
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
 	const allMuscleGroups = Object.keys(muscleGroupsColors);
-	
+
 	const [muscleGroups, setmuscleGroups] = useState([]);
 
 	useEffect(() => {
