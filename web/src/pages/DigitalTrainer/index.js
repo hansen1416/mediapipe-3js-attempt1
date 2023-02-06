@@ -20,6 +20,10 @@ import {
 	srotIndex,
 } from "../../components/ropes";
 
+/**
+ * BE SUCCESSFUL!!
+ * @returns
+ */
 export default function DigitalTrainer() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -36,8 +40,6 @@ export default function DigitalTrainer() {
 	const keypoints3D = useRef(null);
 
 	const counter = useRef(0);
-	const animationIndx = useRef(0);
-	const longestTrack = useRef(0);
 
 	const poseSync = useRef(null);
 	const [diffScore, setdiffScore] = useState(0);
@@ -59,11 +61,18 @@ export default function DigitalTrainer() {
 
 	const animationPointer = useRef(0);
 
+	const [startBtnShow, setstartBtnShow] = useState(false);
+	const [stopBtnShow, setstopBtnShow] = useState(false);
+	const inExercise = useRef(false);
+
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
-	const selectedTrainingIndxRef = useRef(-1);
+
 	const animationJSONs = useRef({});
 	const exerciseQueue = useRef([]);
+	const exerciseQueueIndx = useRef(0);
+	const currentAnimationIndx = useRef(0);
+	const currentLongestTrack = useRef(0);
 
 	useEffect(() => {
 		Promise.all([
@@ -185,14 +194,31 @@ export default function DigitalTrainer() {
 	}
 
 	function animate() {
-		if (
-			videoRef.current &&
-			videoRef.current.readyState >= 2 &&
-			counter.current % 6 === 0
-		) {
-			(async () => {
-				// const timestamp = performance.now();
+		if (inExercise.current) {
+			watchAnimation();
+		}
 
+		controls.current.update();
+
+		renderer.current.render(scene.current, camera.current);
+
+		animationPointer.current = requestAnimationFrame(animate);
+	}
+
+	function watchAnimation() {
+		if (
+			!videoRef.current ||
+			videoRef.current.readyState < 2 ||
+			counter.current % 6 !== 0
+		) {
+			keypoints3D.current = null;
+		} else {
+			/**
+			 * in this async function,
+			 * we calculate `keypoints3D.current`
+			 *
+			 */
+			(async () => {
 				const poses = await poseDetector.current.estimatePoses(
 					videoRef.current
 					// { flipHorizontal: false }
@@ -252,45 +278,57 @@ export default function DigitalTrainer() {
 
 				setcapturedPose(g);
 			})();
-		} else {
-			keypoints3D.current = null;
+		}
+
+		if (currentAnimationIndx.current < currentLongestTrack.current) {
+		} else if (exerciseQueue.current.length) {
+			// for (const v of Object.values(data.tracks)) {
+			// 	if (
+			// 		v.type === "quaternion" &&
+			// 		v.quaternions.length > currentLongestTrack.current
+			// 	) {
+			// 		currentLongestTrack.current = v.quaternions.length;
+			// 	}
+			// }
+			// // reset the animation
+			// currentAnimationIndx.current = 0;
+			// poseSync.current = new PoseSync(data);
+			// poseSyncVector.current = new PoseSyncVector(data);
 		}
 
 		if (poseSync.current) {
 			if (poseCompareResult.current) {
 				if (poseCompareResult.current instanceof Number) {
-					animationIndx.current = poseCompareResult.current;
+					currentAnimationIndx.current = poseCompareResult.current;
 				}
 
 				applyTransfer(
 					figureParts.current,
 					poseSync.current.animation_data.tracks,
-					animationIndx.current
+					currentAnimationIndx.current
 				);
 
-				animationIndx.current += 1;
+				currentAnimationIndx.current += 1;
 			} else if (poseCompareResult.current === false) {
 				// compare failed, stop animation
 			}
 
-			if (animationIndx.current >= longestTrack.current) {
-				animationIndx.current = 0;
+			if (currentAnimationIndx.current >= currentLongestTrack.current) {
+				currentAnimationIndx.current = 0;
 			}
 		}
 
 		counter.current += 1;
-
-		controls.current.update();
-
-		renderer.current.render(scene.current, camera.current);
-
-		animationPointer.current = requestAnimationFrame(animate);
 	}
 
 	useEffect(() => {
+		/**
+		 * when select one of the training
+		 * load all of the animation jsons `animationJSONs`
+		 * add then add all names to `exerciseQueue`
+		 * in `animate`, we consume `exerciseQueue`
+		 */
 		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
-			selectedTrainingIndxRef.current = selectedTrainingIndx;
-
 			const tasks = [];
 
 			for (let t of trainingList) {
@@ -319,19 +357,11 @@ export default function DigitalTrainer() {
 
 				exerciseQueue.current = q.reverse();
 
-				// for (const v of Object.values(data.tracks)) {
-				// 	if (
-				// 		v.type === "quaternion" &&
-				// 		v.quaternions.length > longestTrack.current
-				// 	) {
-				// 		longestTrack.current = v.quaternions.length;
-				// 	}
-				// }
+				exerciseQueueIndx.current = 0;
+				currentAnimationIndx.current = 0;
+				currentLongestTrack.current = 0;
 
-				// // reset the animation
-				// animationIndx.current = 0;
-				// poseSync.current = new PoseSync(data);
-				// poseSyncVector.current = new PoseSyncVector(data);
+				setstartBtnShow(true);
 			});
 		}
 		// eslint-disable-next-line
@@ -402,24 +432,36 @@ export default function DigitalTrainer() {
 						})}
 				</div>
 				<div>
-					<button
-						onClick={() => {
-							if (videoRef.current) {
-								startCamera(videoRef.current);
-							}
-						}}
-					>
-						camera start
-					</button>
-					<button
-						onClick={() => {
-							if (videoRef.current) {
-								videoRef.current.srcObject = null;
-							}
-						}}
-					>
-						camera stop
-					</button>
+					{startBtnShow && (
+						<button
+							onClick={() => {
+								if (videoRef.current) {
+									startCamera(videoRef.current);
+
+									inExercise.current = true;
+
+									setstopBtnShow(true);
+								}
+							}}
+						>
+							Start
+						</button>
+					)}
+					{stopBtnShow && (
+						<button
+							onClick={() => {
+								if (videoRef.current) {
+									videoRef.current.srcObject = null;
+
+									inExercise.current = false;
+
+									setstopBtnShow(false);
+								}
+							}}
+						>
+							Stop
+						</button>
+					)}
 				</div>
 			</div>
 		</div>
