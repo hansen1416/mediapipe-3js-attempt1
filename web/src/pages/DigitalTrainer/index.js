@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as poseDetection from "@tensorflow-models/pose-detection";

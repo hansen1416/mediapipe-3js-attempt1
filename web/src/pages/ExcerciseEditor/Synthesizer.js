@@ -46,6 +46,12 @@ export default function Synthesizer({
 		// eslint-disable-next-line
 	}, [training]);
 
+	useEffect(() => {
+		if (selectedExercise > 0 && training[selectedExercise]) {
+			setselectedExerciseRound(training[selectedExercise].round);
+		}
+	}, [selectedExercise]);
+
 	function getBackgroundColor(animation_data) {
 		if (
 			!animation_data ||
