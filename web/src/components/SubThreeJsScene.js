@@ -3,7 +3,13 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { removeObject3D } from "./ropes";
 
-export default function SubThreeJsScene({ width, height, objects, objects1 }) {
+export default function SubThreeJsScene({
+	width,
+	height,
+	objects,
+	objects1,
+	cameraZ,
+}) {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
@@ -57,7 +63,7 @@ export default function SubThreeJsScene({ width, height, objects, objects1 }) {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 10);
+		camera.current.position.set(0, 0, cameraZ ? cameraZ : 10);
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,

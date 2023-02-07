@@ -239,17 +239,14 @@ export default class PoseSync {
 		let x = 0;
 
 		for (let i in d1) {
-			d1v2.push(new Vector2(x, d1[i] * 50));
-			d2v2.push(new Vector2(x, d2[i] * 50));
+			d1v2.push(new Vector2(x, d1[i]));
+			d2v2.push(new Vector2(x, d2[i]));
 
-			x += 10;
+			x += 1;
 		}
 
 		this.poseSpline = new THREE.SplineCurve(d1v2);
 		this.boneSpline = new THREE.SplineCurve(d2v2);
-
-		// poseGeometry.setFromPoints(.getPoints(50));
-		// bonesGeometry.setFromPoints(new THREE.SplineCurve(d2v2).getPoints(50));
 
 		let diff = 0;
 

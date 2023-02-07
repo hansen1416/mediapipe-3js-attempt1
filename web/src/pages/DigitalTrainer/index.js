@@ -55,8 +55,13 @@ export default function DigitalTrainer() {
 	]);
 	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
-	const poseCurve = useRef(null);
-	const boneCurve = useRef(null);
+	// ========= diff curve logic
+	const [poseCurve, setposeCurve] = useState(null);
+	const poseCurveRef = useRef(null);
+	const [boneCurve, setboneCurve] = useState(null);
+	const boneCurveRef = useRef(null);
+	// ========= diff curve logic
+
 	const [capturedPose, setcapturedPose] = useState();
 
 	const animationPointer = useRef(0);
@@ -101,31 +106,35 @@ export default function DigitalTrainer() {
 			scene.current.add(model);
 
 			{
+				// ========= diff curve logic
 				const geometry = new THREE.BufferGeometry().setFromPoints([
 					new THREE.Vector2(0, 0),
 					new THREE.Vector2(100, 0),
 				]);
 
-				poseCurve.current = new THREE.Line(
+				poseCurveRef.current = new THREE.Line(
 					geometry.clone(),
 					new THREE.LineBasicMaterial({
 						color: 0xff0000,
 					})
 				);
 
-				boneCurve.current = new THREE.Line(
+				boneCurveRef.current = new THREE.Line(
 					geometry.clone(),
 					new THREE.LineBasicMaterial({
 						color: 0x00ff00,
 					})
 				);
 
-				poseCurve.current.position.set(-460, -200, 0);
-				boneCurve.current.position.set(-460, -200, 0);
+				poseCurveRef.current.position.set(-100, -50, 0);
+				boneCurveRef.current.position.set(-100, -50, 0);
 
-				scene.current.add(poseCurve.current);
-				scene.current.add(boneCurve.current);
-			}
+				scene.current.add(poseCurveRef.current);
+				scene.current.add(boneCurveRef.current);
+
+				setposeCurve(poseCurveRef.current);
+				setboneCurve(boneCurveRef.current);
+			} // ========= diff curve logic
 
 			animate();
 		});
@@ -262,12 +271,14 @@ export default function DigitalTrainer() {
 
 				setdiffScore(parseInt(poseSync.current.diffScore));
 
-				poseCurve.current.geometry.setFromPoints(
+				// ========= diff curve logic
+				poseCurveRef.current.geometry.setFromPoints(
 					poseSync.current.poseSpline.getPoints(50)
 				);
-				boneCurve.current.geometry.setFromPoints(
+				boneCurveRef.current.geometry.setFromPoints(
 					poseSync.current.boneSpline.getPoints(50)
 				);
+				// ========= diff curve logic
 				// compare the distance curve between animation and pose
 			}
 
@@ -441,7 +452,7 @@ export default function DigitalTrainer() {
 					objects={capturedPose}
 				/>
 			</div>
-
+			{/* // ========= diff curve logic */}
 			<div
 				style={{
 					width: "500px",
@@ -455,9 +466,12 @@ export default function DigitalTrainer() {
 				<SubThreeJsScene
 					width={500}
 					height={400}
-					objects={capturedPose}
+					objects={poseCurve}
+					objects1={boneCurve}
+					cameraZ={200}
 				/>
 			</div>
+			{/* // ========= diff curve logic */}
 			<div className="btn-box">
 				<div>
 					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
