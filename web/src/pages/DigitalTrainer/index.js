@@ -105,8 +105,8 @@ export default function DigitalTrainer() {
 
 			scene.current.add(model);
 
+			// ========= diff curve logic
 			{
-				// ========= diff curve logic
 				const geometry = new THREE.BufferGeometry().setFromPoints([
 					new THREE.Vector2(0, 0),
 					new THREE.Vector2(100, 0),
