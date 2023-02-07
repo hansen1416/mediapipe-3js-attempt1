@@ -159,9 +159,9 @@ export default class PoseSyncVector {
 
     compareCurrentPose(pose3D, bones) {
         
-        const l1 = this.pose3dlimbs(pose3D);
+        const l1 = this.boneLimbs(bones);
         // const l2 = this.animationLimbs(frameIndx);
-        const l2 = this.boneLimbs(bones);
+        const l2 = this.pose3dlimbs(pose3D);
 
         const res = []
 

@@ -206,119 +206,155 @@ export default function DigitalTrainer() {
 	}
 
 	function watchAnimation() {
+
+		counter.current += 1;
+
 		if (
 			!videoRef.current ||
 			videoRef.current.readyState < 2 ||
-			counter.current % 6 !== 0
+			counter.current % 3 !== 0
 		) {
 			keypoints3D.current = null;
-		} else {
-			/**
-			 * in this async function,
-			 * we calculate `keypoints3D.current`
-			 *
-			 */
-			(async () => {
-				const poses = await poseDetector.current.estimatePoses(
-					videoRef.current
-					// { flipHorizontal: false }
-					// timestamp
-				);
-
-				if (
-					!poses ||
-					!poses[0] ||
-					!poses[0]["keypoints3D"] ||
-					!poseSync.current
-				) {
-					return;
-				}
-
-				keypoints3D.current = poses[0]["keypoints3D"];
-
-				for (let v of keypoints3D.current) {
-					v["x"] *= -1;
-					v["y"] *= -1;
-					v["z"] *= -1;
-				}
-
-				if (poseSync.current) {
-					// compare the distance curve between animation and pose
-					poseCompareResult.current =
-						poseSync.current.compareCurrentPose(
-							keypoints3D.current,
-							figureParts.current
-						);
-
-					setdiffScore(parseInt(poseSync.current.diffScore));
-
-					poseCurve.current.geometry.setFromPoints(
-						poseSync.current.poseSpline.getPoints(50)
-					);
-					boneCurve.current.geometry.setFromPoints(
-						poseSync.current.boneSpline.getPoints(50)
-					);
-					// compare the distance curve between animation and pose
-				}
-
-				if (poseSyncVector.current) {
-					// compare the limbs vectors between pose and animation
-					setvectorDistances(
-						poseSyncVector.current.compareCurrentPose(
-							keypoints3D.current,
-							figureParts.current
-						)
-					);
-				}
-
-				// draw the pose as dots and lines on the sub scene
-				const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
-
-				g.scale.set(8, 8, 8);
-
-				setcapturedPose(g);
-			})();
+			return;
 		}
+		
+		/**
+		 * in this async function,
+		 * 1. calculate `keypoints3D.current`
+		 * 2. calculate different of distance among different joints
+		 * 3. calculate different of vectors between limbs
+		 * 4. draw pose on the sub-scene
+		 */
+		(async () => {
+			const poses = await poseDetector.current.estimatePoses(
+				videoRef.current
+				// { flipHorizontal: false }
+				// timestamp
+			);
+
+			if (
+				!poses ||
+				!poses[0] ||
+				!poses[0]["keypoints3D"] ||
+				!poseSync.current
+			) {
+				return;
+			}
+
+			keypoints3D.current = poses[0]["keypoints3D"];
+
+			for (let v of keypoints3D.current) {
+				v["x"] *= -1;
+				v["y"] *= -1;
+				v["z"] *= -1;
+			}
+
+			if (poseSync.current) {
+				// compare the distance curve between animation and pose
+				poseCompareResult.current =
+					poseSync.current.compareCurrentPose(
+						keypoints3D.current,
+						figureParts.current
+					);
+
+				setdiffScore(parseInt(poseSync.current.diffScore));
+
+				poseCurve.current.geometry.setFromPoints(
+					poseSync.current.poseSpline.getPoints(50)
+				);
+				boneCurve.current.geometry.setFromPoints(
+					poseSync.current.boneSpline.getPoints(50)
+				);
+				// compare the distance curve between animation and pose
+			}
+
+			if (poseSyncVector.current) {
+				// compare the limbs vectors between pose and animation
+				setvectorDistances(
+					poseSyncVector.current.compareCurrentPose(
+						keypoints3D.current,
+						figureParts.current
+					)
+				);
+			}
+
+			// draw the pose as dots and lines on the sub scene
+			const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+		})();
+	
 
 		if (currentAnimationIndx.current < currentLongestTrack.current) {
-		} else if (exerciseQueue.current.length) {
-			// for (const v of Object.values(data.tracks)) {
-			// 	if (
-			// 		v.type === "quaternion" &&
-			// 		v.quaternions.length > currentLongestTrack.current
-			// 	) {
-			// 		currentLongestTrack.current = v.quaternions.length;
-			// 	}
-			// }
-			// // reset the animation
-			// currentAnimationIndx.current = 0;
-			// poseSync.current = new PoseSync(data);
-			// poseSyncVector.current = new PoseSyncVector(data);
-		}
+			// the current animation is still in progess
 
-		if (poseSync.current) {
-			if (poseCompareResult.current) {
-				if (poseCompareResult.current instanceof Number) {
-					currentAnimationIndx.current = poseCompareResult.current;
+			if (poseSync.current) {
+				if (poseCompareResult.current) {
+					if (poseCompareResult.current instanceof Number) {
+						currentAnimationIndx.current = poseCompareResult.current;
+					}
+	
+					applyTransfer(
+						figureParts.current,
+						poseSync.current.animation_data.tracks,
+						currentAnimationIndx.current
+					);
+	
+					currentAnimationIndx.current += 1;
+				} else if (poseCompareResult.current === false) {
+					// compare failed, stop animation
 				}
-
-				applyTransfer(
-					figureParts.current,
-					poseSync.current.animation_data.tracks,
-					currentAnimationIndx.current
-				);
-
-				currentAnimationIndx.current += 1;
-			} else if (poseCompareResult.current === false) {
-				// compare failed, stop animation
+	
+				if (currentAnimationIndx.current >= currentLongestTrack.current) {
+					currentAnimationIndx.current = 0;
+				}
 			}
 
-			if (currentAnimationIndx.current >= currentLongestTrack.current) {
+			currentAnimationIndx.current += 1;
+
+		} else {
+			// the current animation finished
+
+			if (exerciseQueueIndx.current < exerciseQueue.current.length - 1) {
+				// there are more animation in the queue
+
+				exerciseQueueIndx.current += 1;
 				currentAnimationIndx.current = 0;
+
+				const animation_data = animationJSONs.current[exerciseQueue.current[exerciseQueueIndx.current]];
+
+				currentLongestTrack.current = calculateLongestTrackFromAnimation(animation_data.tracks);
+
+				poseSync.current = new PoseSync(animation_data);
+				poseSyncVector.current = new PoseSyncVector(animation_data);
+
+			} else {
+				// all animation played
+				// todo all complete hook
+
+				inExercise.current = false;
+
+				exerciseQueueIndx.current = 0;
+				currentAnimationIndx.current = 0;
+				currentLongestTrack.current = 0;
+			}
+
+		}
+	}
+
+	function calculateLongestTrackFromAnimation(animation_tracks) {
+
+		let longest = 0;
+
+		for (const v of animation_tracks) {
+			if (v.type === "quaternion" && v.quaternions.length > longest) {
+				longest = v.quaternions.length;
 			}
 		}
 
-		counter.current += 1;
+		return longest
 	}
 
 	useEffect(() => {
@@ -397,23 +433,6 @@ export default function DigitalTrainer() {
 			</div>
 			<div className="btn-box">
 				<div>
-					<ul>
-						{trainingList &&
-							trainingList.map((item, i) => {
-								return (
-									<li
-										key={i}
-										onClick={() => {
-											setselectedTrainingIndx(i);
-										}}
-									>
-										{item.name}
-									</li>
-								);
-							})}
-					</ul>
-				</div>
-				<div>
 					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
 						{diffScore}
 					</span>
@@ -430,6 +449,23 @@ export default function DigitalTrainer() {
 								</div>
 							);
 						})}
+				</div>
+				<div>
+					<ul>
+						{trainingList &&
+							trainingList.map((item, i) => {
+								return (
+									<li
+										key={i}
+										onClick={() => {
+											setselectedTrainingIndx(i);
+										}}
+									>
+										{item.name}
+									</li>
+								);
+							})}
+					</ul>
 				</div>
 				<div>
 					{startBtnShow && (

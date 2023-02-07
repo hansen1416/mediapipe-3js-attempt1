@@ -7,7 +7,7 @@ import * as THREE from "three";
 
 export default class PoseSync {
 
-	#scoreThreshold = 1500;
+	#scoreThreshold = 15000;
 	#bufferThreshold = 50;
 	#bufferStep = 50;
 	#animationIndx = 0;
@@ -27,7 +27,7 @@ export default class PoseSync {
 		}
     }
 
-    keypointsDistances(keypoints3D) {
+    keypointsDistances(keypoints3D, compare_upper=true, compare_lower=false) {
 
 		const upper = [
 			"LEFT_SHOULDER",
@@ -51,14 +51,29 @@ export default class PoseSync {
 
 		const distances = [];
 
-		for (let i = 0; i < upper.length - 1; i++) {
-			for (let j = i + 1; j < upper.length; j++) {
-				distances.push(
-                    distanceBetweenPoints(
-                        keypoints3D[BlazePoseKeypointsValues[upper[i]]],
-                        keypoints3D[BlazePoseKeypointsValues[upper[j]]]
-                    )
-				);
+		if (compare_upper) {
+			for (let i = 0; i < upper.length - 1; i++) {
+				for (let j = i + 1; j < upper.length; j++) {
+					distances.push(
+						distanceBetweenPoints(
+							keypoints3D[BlazePoseKeypointsValues[upper[i]]],
+							keypoints3D[BlazePoseKeypointsValues[upper[j]]]
+						)
+					);
+				}
+			}
+		}
+
+		if (compare_lower) {
+			for (let i = 0; i < lower.length - 1; i++) {
+				for (let j = i + 1; j < lower.length; j++) {
+					distances.push(
+						distanceBetweenPoints(
+							keypoints3D[BlazePoseKeypointsValues[lower[i]]],
+							keypoints3D[BlazePoseKeypointsValues[lower[j]]]
+						)
+					);
+				}
 			}
 		}
 
@@ -66,7 +81,7 @@ export default class PoseSync {
 	}
 
 
-    modelBonesDistances(bones) {
+    modelBonesDistances(bones, compare_upper=true, compare_lower=false) {
 		const upper = [
 			"upperarm_l",
 			"upperarm_r",
@@ -78,27 +93,52 @@ export default class PoseSync {
 			"thigh_r",
 		];
 
+		const lower = [
+			"thigh_l",
+			"thigh_r",
+			"calf_l",
+			"calf_r",
+			"foot_l",
+			"foot_r",
+		];
+
 		const distances = [];
 
-		for (let i = 0; i < upper.length - 1; i++) {
-			for (let j = i + 1; j < upper.length; j++) {
-				const v1 = new Vector3();
-				const v2 = new Vector3();
+		if (compare_upper) {
+			for (let i = 0; i < upper.length - 1; i++) {
+				for (let j = i + 1; j < upper.length; j++) {
+					const v1 = new Vector3();
+					const v2 = new Vector3();
 
-				bones[upper[i]].getWorldPosition(v1);
-				bones[upper[j]].getWorldPosition(v2);
+					bones[upper[i]].getWorldPosition(v1);
+					bones[upper[j]].getWorldPosition(v2);
 
-				distances.push(distanceBetweenPoints(v1, v2));
+					distances.push(distanceBetweenPoints(v1, v2));
+				}
+			}
+		}
+
+		if (compare_lower) {
+			for (let i = 0; i < lower.length - 1; i++) {
+				for (let j = i + 1; j < lower.length; j++) {
+					const v1 = new Vector3();
+					const v2 = new Vector3();
+
+					bones[lower[i]].getWorldPosition(v1);
+					bones[lower[j]].getWorldPosition(v2);
+
+					distances.push(distanceBetweenPoints(v1, v2));
+				}
 			}
 		}
 
 		return distances;
 	}
 
-	compareCurrentPose(pose3D, bones) {
-		const d1 = this.keypointsDistances(pose3D);
+	compareCurrentPose(pose3D, bones, compare_upper=true, compare_lower=false) {
+		const d1 = this.keypointsDistances(pose3D, compare_upper, compare_lower);
 
-        const d2 = this.modelBonesDistances(bones); 
+        const d2 = this.modelBonesDistances(bones, compare_upper, compare_lower); 
 
         const ratio = d1[0] / d2[0];
 
