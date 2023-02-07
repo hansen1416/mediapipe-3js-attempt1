@@ -68,10 +68,15 @@ export default function DigitalTrainer() {
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
 
+	// store the actual animation data, in a name=>value format
 	const animationJSONs = useRef({});
+	// the exercise queue, an array of names
 	const exerciseQueue = useRef([]);
+	// the index of the current exercise in the `exerciseQueue`
 	const exerciseQueueIndx = useRef(0);
+	// the current frame index of the current exercise(animation)
 	const currentAnimationIndx = useRef(0);
+	// the logest track of the current exercise(animation)
 	const currentLongestTrack = useRef(0);
 
 	useEffect(() => {
