@@ -62,7 +62,9 @@ export default function DigitalTrainer() {
 	const boneCurveRef = useRef(null);
 	// ========= diff curve logic
 
+	// ========= captured pose logic
 	const [capturedPose, setcapturedPose] = useState();
+	// ========= captured pose logic
 
 	const animationPointer = useRef(0);
 
@@ -292,12 +294,14 @@ export default function DigitalTrainer() {
 				);
 			}
 
+			// ========= captured pose logic
 			// draw the pose as dots and lines on the sub scene
 			const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
 
 			g.scale.set(8, 8, 8);
 
 			setcapturedPose(g);
+			// ========= captured pose logic
 		})();
 
 		if (currentAnimationIndx.current < currentLongestTrack.current) {
@@ -436,6 +440,7 @@ export default function DigitalTrainer() {
 
 			<canvas ref={canvasRef} />
 
+			{/* // ========= captured pose logic */}
 			<div
 				style={{
 					width: "500px",
@@ -452,6 +457,7 @@ export default function DigitalTrainer() {
 					objects={capturedPose}
 				/>
 			</div>
+			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
 			<div
 				style={{
