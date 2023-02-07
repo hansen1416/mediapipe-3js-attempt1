@@ -21,7 +21,7 @@ export default function SubThreeJsScene({ width, height, objects, objects1 }) {
 		animate();
 
 		return () => {
-			cancelAnimationFrame(animationPointer.current)
+			cancelAnimationFrame(animationPointer.current);
 
 			controls.current.dispose();
 			renderer.current.dispose();

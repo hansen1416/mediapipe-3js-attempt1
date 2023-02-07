@@ -2,12 +2,11 @@ import { Vector2, Vector3 } from "three";
 import {
 	distanceBetweenPoints,
 	BlazePoseKeypointsValues,
-	isLowerBodyVisible
+	isLowerBodyVisible,
 } from "./ropes";
 import * as THREE from "three";
 
 export default class PoseSync {
-
 	#scoreThreshold = 15000;
 	#bufferThreshold = 50;
 	#bufferStep = 50;
@@ -18,18 +17,24 @@ export default class PoseSync {
 	poseSpline = null;
 	bnoneSpline = null;
 
-    constructor(animation_data, ) {
-        this.animation_data = animation_data;
+	constructor(animation_data) {
+		this.animation_data = animation_data;
 
 		for (const v of animation_data.tracks) {
-			if (v.type === "quaternion" && v.quaternions.length > this.#longestTrack) {
+			if (
+				v.type === "quaternion" &&
+				v.quaternions.length > this.#longestTrack
+			) {
 				this.#longestTrack = v.quaternions.length;
 			}
 		}
-    }
+	}
 
-    keypointsDistances(keypoints3D, compare_upper=true, compare_lower=false) {
-
+	keypointsDistances(
+		keypoints3D,
+		compare_upper = true,
+		compare_lower = false
+	) {
 		const upper = [
 			"LEFT_SHOULDER",
 			"RIGHT_SHOULDER",
@@ -81,8 +86,7 @@ export default class PoseSync {
 		return distances;
 	}
 
-
-    modelBonesDistances(bones, compare_upper=true, compare_lower=false) {
+	modelBonesDistances(bones, compare_upper = true, compare_lower = false) {
 		const upper = [
 			"upperarm_l",
 			"upperarm_r",
@@ -136,39 +140,51 @@ export default class PoseSync {
 		return distances;
 	}
 
-	compareCurrentPose(pose3D, bones, compare_upper=true, compare_lower=false) {
-
+	compareCurrentPose(
+		pose3D,
+		bones,
+		compare_upper = true,
+		compare_lower = false
+	) {
 		compare_lower = isLowerBodyVisible(pose3D);
 
-		const d1 = this.keypointsDistances(pose3D, compare_upper, compare_lower);
+		const d1 = this.keypointsDistances(
+			pose3D,
+			compare_upper,
+			compare_lower
+		);
 
-        const d2 = this.modelBonesDistances(bones, compare_upper, compare_lower); 
+		const d2 = this.modelBonesDistances(
+			bones,
+			compare_upper,
+			compare_lower
+		);
 
-        const ratio = d1[0] / d2[0];
+		const ratio = d1[0] / d2[0];
 
-        for (const i in d2) {
-            d2[i] *= ratio;
-        }
+		for (const i in d2) {
+			d2[i] *= ratio;
+		}
 
-        const unit1 = d1[0];
+		const unit1 = d1[0];
 
-        for (const i in d1) {
-            d1[i] /= unit1;
-        }
+		for (const i in d1) {
+			d1[i] /= unit1;
+		}
 
-        const unit2 = d2[0];
+		const unit2 = d2[0];
 
-        for (const i in d2) {
-            d2[i] /= unit2;
-        }
+		for (const i in d2) {
+			d2[i] /= unit2;
+		}
 
-		const d1v2 = []
-		const d2v2 = []
-		let x = 0
+		const d1v2 = [];
+		const d2v2 = [];
+		let x = 0;
 
 		for (let i in d1) {
-			d1v2.push(new Vector2(x, d1[i] * 50))
-			d2v2.push(new Vector2(x, d2[i] * 50))
+			d1v2.push(new Vector2(x, d1[i] * 50));
+			d2v2.push(new Vector2(x, d2[i] * 50));
 
 			x += 10;
 		}
@@ -176,59 +192,55 @@ export default class PoseSync {
 		this.poseSpline = new THREE.SplineCurve(d1v2);
 		this.boneSpline = new THREE.SplineCurve(d2v2);
 
-        let diff = 0;
+		let diff = 0;
 
-        // console.log(d1, d2);
+		// console.log(d1, d2);
 
-        for (let i in d1) {
-            diff += Math.abs(d1[i] - d2[i]) ** 2;
-        }
+		for (let i in d1) {
+			diff += Math.abs(d1[i] - d2[i]) ** 2;
+		}
 
-		this.diffScore = 100 * diff
+		this.diffScore = 100 * diff;
 
-        if (this.diffScore <= this.#scoreThreshold) {
-
+		if (this.diffScore <= this.#scoreThreshold) {
 			this.#bufferStep = 0;
-
 		} else {
-
 			this.#bufferStep += 1;
 		}
 
-		return this.#bufferStep < this.#bufferThreshold
+		return this.#bufferStep < this.#bufferThreshold;
 	}
 
+	animationFrame(pose3D, bones) {
+		const d1 = this.keypointsDistances(pose3D);
 
-    animationFrame(pose3D, bones) {
-        const d1 = this.keypointsDistances(pose3D);
+		const d2 = this.modelBonesDistances(bones);
 
-        const d2 = this.modelBonesDistances(bones);
+		const ratio = d1[0] / d2[0];
 
-        const ratio = d1[0] / d2[0];
+		for (const i in d2) {
+			d2[i] *= ratio;
+		}
 
-        for (const i in d2) {
-            d2[i] *= ratio;
-        }
+		const unit1 = d1[0];
 
-        const unit1 = d1[0];
+		for (const i in d1) {
+			d1[i] /= unit1;
+		}
 
-        for (const i in d1) {
-            d1[i] /= unit1;
-        }
+		const unit2 = d2[0];
 
-        const unit2 = d2[0];
+		for (const i in d2) {
+			d2[i] /= unit2;
+		}
 
-        for (const i in d2) {
-            d2[i] /= unit2;
-        }
-
-		const d1v2 = []
-		const d2v2 = []
-		let x = 0
+		const d1v2 = [];
+		const d2v2 = [];
+		let x = 0;
 
 		for (let i in d1) {
-			d1v2.push(new Vector2(x, d1[i] * 50))
-			d2v2.push(new Vector2(x, d2[i] * 50))
+			d1v2.push(new Vector2(x, d1[i] * 50));
+			d2v2.push(new Vector2(x, d2[i] * 50));
 
 			x += 10;
 		}
@@ -239,46 +251,45 @@ export default class PoseSync {
 		// poseGeometry.setFromPoints(.getPoints(50));
 		// bonesGeometry.setFromPoints(new THREE.SplineCurve(d2v2).getPoints(50));
 
-        let diff = 0;
+		let diff = 0;
 
-        // console.log(d1, d2);
+		// console.log(d1, d2);
 
-        for (let i in d1) {
-            diff += Math.abs(d1[i] - d2[i]) ** 2;
-        }
+		for (let i in d1) {
+			diff += Math.abs(d1[i] - d2[i]) ** 2;
+		}
 
-		this.diffScore = 100 * diff
+		this.diffScore = 100 * diff;
 
-        if (this.diffScore <= this.#scoreThreshold) {
-
+		if (this.diffScore <= this.#scoreThreshold) {
 			this.#bufferStep = 0;
-
 		} else {
-
 			this.#bufferStep += 1;
 		}
 
 		if (this.#bufferStep < this.#bufferThreshold) {
-
 			const animationFrameData = {};
 
 			for (let item of this.animation_data.tracks) {
-
 				const item_name = item["name"].split(".")[0];
-				
+
 				if (item["type"] === "vector") {
 					if (this.#animationIndx < item["vectors"].length) {
-						animationFrameData[item_name] = item["vectors"][this.#animationIndx]
+						animationFrameData[item_name] =
+							item["vectors"][this.#animationIndx];
 					} else {
-						animationFrameData[item_name] = item["vectors"][item["vectors"].length - 1]
+						animationFrameData[item_name] =
+							item["vectors"][item["vectors"].length - 1];
 					}
 				}
-		
+
 				if (item["type"] === "quaternion") {
 					if (this.#animationIndx < item["quaternions"].length) {
-						animationFrameData[item_name] = item["quaternions"][this.#animationIndx]
+						animationFrameData[item_name] =
+							item["quaternions"][this.#animationIndx];
 					} else {
-						animationFrameData[item_name] = item["quaternions"][item["quaternions"].length - 1]
+						animationFrameData[item_name] =
+							item["quaternions"][item["quaternions"].length - 1];
 					}
 				}
 			}
@@ -293,5 +304,5 @@ export default class PoseSync {
 		}
 
 		return null;
-    }
+	}
 }

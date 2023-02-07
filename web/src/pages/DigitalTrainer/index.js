@@ -211,7 +211,6 @@ export default function DigitalTrainer() {
 	}
 
 	function watchAnimation() {
-
 		counter.current += 1;
 
 		if (
@@ -222,7 +221,7 @@ export default function DigitalTrainer() {
 			keypoints3D.current = null;
 			return;
 		}
-		
+
 		/**
 		 * in this async function,
 		 * 1. calculate `keypoints3D.current`
@@ -256,11 +255,10 @@ export default function DigitalTrainer() {
 
 			if (poseSync.current) {
 				// compare the distance curve between animation and pose
-				poseCompareResult.current =
-					poseSync.current.compareCurrentPose(
-						keypoints3D.current,
-						figureParts.current
-					);
+				poseCompareResult.current = poseSync.current.compareCurrentPose(
+					keypoints3D.current,
+					figureParts.current
+				);
 
 				setdiffScore(parseInt(poseSync.current.diffScore));
 
@@ -290,7 +288,6 @@ export default function DigitalTrainer() {
 
 			setcapturedPose(g);
 		})();
-	
 
 		if (currentAnimationIndx.current < currentLongestTrack.current) {
 			// the current animation is still in progess
@@ -298,27 +295,29 @@ export default function DigitalTrainer() {
 			if (poseSync.current) {
 				if (poseCompareResult.current) {
 					if (poseCompareResult.current instanceof Number) {
-						currentAnimationIndx.current = poseCompareResult.current;
+						currentAnimationIndx.current =
+							poseCompareResult.current;
 					}
-	
+
 					applyTransfer(
 						figureParts.current,
 						poseSync.current.animation_data.tracks,
 						currentAnimationIndx.current
 					);
-	
+
 					currentAnimationIndx.current += 1;
 				} else if (poseCompareResult.current === false) {
 					// compare failed, stop animation
 				}
-	
-				if (currentAnimationIndx.current >= currentLongestTrack.current) {
+
+				if (
+					currentAnimationIndx.current >= currentLongestTrack.current
+				) {
 					currentAnimationIndx.current = 0;
 				}
 			}
 
 			currentAnimationIndx.current += 1;
-
 		} else {
 			// the current animation finished
 
@@ -328,13 +327,16 @@ export default function DigitalTrainer() {
 				exerciseQueueIndx.current += 1;
 				currentAnimationIndx.current = 0;
 
-				const animation_data = animationJSONs.current[exerciseQueue.current[exerciseQueueIndx.current]];
+				const animation_data =
+					animationJSONs.current[
+						exerciseQueue.current[exerciseQueueIndx.current]
+					];
 
-				currentLongestTrack.current = calculateLongestTrackFromAnimation(animation_data.tracks);
+				currentLongestTrack.current =
+					calculateLongestTrackFromAnimation(animation_data.tracks);
 
 				poseSync.current = new PoseSync(animation_data);
 				poseSyncVector.current = new PoseSyncVector(animation_data);
-
 			} else {
 				// all animation played
 				// todo all complete hook
@@ -345,17 +347,15 @@ export default function DigitalTrainer() {
 				currentAnimationIndx.current = 0;
 				currentLongestTrack.current = 0;
 			}
-
 		}
 	}
 
 	/**
 	 * get the number of longest track from the animation
-	 * @param {Array} animation_tracks 
-	 * @returns 
+	 * @param {Array} animation_tracks
+	 * @returns
 	 */
 	function calculateLongestTrackFromAnimation(animation_tracks) {
-
 		let longest = 0;
 
 		for (const v of animation_tracks) {
@@ -364,7 +364,7 @@ export default function DigitalTrainer() {
 			}
 		}
 
-		return longest
+		return longest;
 	}
 
 	useEffect(() => {
