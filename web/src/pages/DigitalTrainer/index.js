@@ -441,6 +441,23 @@ export default function DigitalTrainer() {
 					objects={capturedPose}
 				/>
 			</div>
+
+			<div
+				style={{
+					width: "500px",
+					height: "400px",
+					position: "absolute",
+					bottom: 0,
+					left: 0,
+					border: "1px solid #fff",
+				}}
+			>
+				<SubThreeJsScene
+					width={500}
+					height={400}
+					objects={capturedPose}
+				/>
+			</div>
 			<div className="btn-box">
 				<div>
 					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
