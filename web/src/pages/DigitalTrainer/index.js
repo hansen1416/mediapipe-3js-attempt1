@@ -349,6 +349,11 @@ export default function DigitalTrainer() {
 		}
 	}
 
+	/**
+	 * get the number of longest track from the animation
+	 * @param {Array} animation_tracks 
+	 * @returns 
+	 */
 	function calculateLongestTrackFromAnimation(animation_tracks) {
 
 		let longest = 0;
