@@ -1,7 +1,8 @@
 import { Vector2, Vector3 } from "three";
 import {
 	distanceBetweenPoints,
-	BlazePoseKeypointsValues
+	BlazePoseKeypointsValues,
+	isLowerBodyVisible
 } from "./ropes";
 import * as THREE from "three";
 
@@ -136,6 +137,9 @@ export default class PoseSync {
 	}
 
 	compareCurrentPose(pose3D, bones, compare_upper=true, compare_lower=false) {
+
+		compare_lower = isLowerBodyVisible(pose3D);
+
 		const d1 = this.keypointsDistances(pose3D, compare_upper, compare_lower);
 
         const d2 = this.modelBonesDistances(bones, compare_upper, compare_lower); 

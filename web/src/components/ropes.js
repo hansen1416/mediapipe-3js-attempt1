@@ -957,6 +957,15 @@ export function getBasisFromPose(poseData) {
 	);
 }
 
+export function isLowerBodyVisible(poseData) {
+
+	return poseData[BlazePoseKeypointsValues["LEFT_KNEE"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_KNEE"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_ANKLE"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_ANKLE"]].score > 0.5
+	
+}
+
 export function removeObject3D(object) {
 	if (!(object instanceof THREE.Object3D)) return false;
 
