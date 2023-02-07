@@ -56,10 +56,10 @@ export default function DigitalTrainer() {
 	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
 	// ========= diff curve logic
-	const [poseCurve, setposeCurve] = useState(null);
-	const poseCurveRef = useRef(null);
-	const [boneCurve, setboneCurve] = useState(null);
-	const boneCurveRef = useRef(null);
+	// const [poseCurve, setposeCurve] = useState(null);
+	// const poseCurveRef = useRef(null);
+	// const [boneCurve, setboneCurve] = useState(null);
+	// const boneCurveRef = useRef(null);
 	// ========= diff curve logic
 
 	// ========= captured pose logic
@@ -108,35 +108,35 @@ export default function DigitalTrainer() {
 			scene.current.add(model);
 
 			// ========= diff curve logic
-			{
-				const geometry = new THREE.BufferGeometry().setFromPoints([
-					new THREE.Vector2(0, 0),
-					new THREE.Vector2(100, 0),
-				]);
+			// {
+			// 	const geometry = new THREE.BufferGeometry().setFromPoints([
+			// 		new THREE.Vector2(0, 0),
+			// 		new THREE.Vector2(100, 0),
+			// 	]);
 
-				poseCurveRef.current = new THREE.Line(
-					geometry.clone(),
-					new THREE.LineBasicMaterial({
-						color: 0xff0000,
-					})
-				);
+			// 	poseCurveRef.current = new THREE.Line(
+			// 		geometry.clone(),
+			// 		new THREE.LineBasicMaterial({
+			// 			color: 0xff0000,
+			// 		})
+			// 	);
 
-				boneCurveRef.current = new THREE.Line(
-					geometry.clone(),
-					new THREE.LineBasicMaterial({
-						color: 0x00ff00,
-					})
-				);
+			// 	boneCurveRef.current = new THREE.Line(
+			// 		geometry.clone(),
+			// 		new THREE.LineBasicMaterial({
+			// 			color: 0x00ff00,
+			// 		})
+			// 	);
 
-				poseCurveRef.current.position.set(-100, -50, 0);
-				boneCurveRef.current.position.set(-100, -50, 0);
+			// 	poseCurveRef.current.position.set(-100, -50, 0);
+			// 	boneCurveRef.current.position.set(-100, -50, 0);
 
-				scene.current.add(poseCurveRef.current);
-				scene.current.add(boneCurveRef.current);
+			// 	scene.current.add(poseCurveRef.current);
+			// 	scene.current.add(boneCurveRef.current);
 
-				setposeCurve(poseCurveRef.current);
-				setboneCurve(boneCurveRef.current);
-			} // ========= diff curve logic
+			// 	setposeCurve(poseCurveRef.current);
+			// 	setboneCurve(boneCurveRef.current);
+			// } // ========= diff curve logic
 
 			animate();
 		});
@@ -274,12 +274,12 @@ export default function DigitalTrainer() {
 				setdiffScore(parseInt(poseSync.current.diffScore));
 
 				// ========= diff curve logic
-				poseCurveRef.current.geometry.setFromPoints(
-					poseSync.current.poseSpline.getPoints(50)
-				);
-				boneCurveRef.current.geometry.setFromPoints(
-					poseSync.current.boneSpline.getPoints(50)
-				);
+				// poseCurveRef.current.geometry.setFromPoints(
+				// 	poseSync.current.poseSpline.getPoints(50)
+				// );
+				// boneCurveRef.current.geometry.setFromPoints(
+				// 	poseSync.current.boneSpline.getPoints(50)
+				// );
 				// ========= diff curve logic
 				// compare the distance curve between animation and pose
 			}
@@ -459,7 +459,7 @@ export default function DigitalTrainer() {
 			</div>
 			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
-			<div
+			{/* <div
 				style={{
 					width: "500px",
 					height: "400px",
@@ -476,7 +476,7 @@ export default function DigitalTrainer() {
 					objects1={boneCurve}
 					cameraZ={200}
 				/>
-			</div>
+			</div> */}
 			{/* // ========= diff curve logic */}
 			<div className="btn-box">
 				<div>
