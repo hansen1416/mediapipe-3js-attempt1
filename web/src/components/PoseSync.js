@@ -7,7 +7,7 @@ import {
 import * as THREE from "three";
 
 export default class PoseSync {
-	#scoreThreshold = 15000;
+	#scoreThreshold = 1500;
 	#bufferThreshold = 50;
 	#bufferStep = 50;
 	#animationIndx = 0;
