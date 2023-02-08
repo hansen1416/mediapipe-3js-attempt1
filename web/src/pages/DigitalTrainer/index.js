@@ -7,6 +7,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
+import Silhouette from "./Silhouette";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
 import {
@@ -353,7 +354,11 @@ export default function DigitalTrainer() {
 						exerciseQueue.current[exerciseQueueIndx.current]
 					];
 
-				mannequinModel.current.position.set(animation_data.position.x, animation_data.position.y, animation_data.position.z);
+				mannequinModel.current.position.set(
+					animation_data.position.x,
+					animation_data.position.y,
+					animation_data.position.z
+				);
 
 				currentLongestTrack.current =
 					calculateLongestTrackFromAnimation(animation_data.tracks);
@@ -449,7 +454,7 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			{/* // ========= captured pose logic */}
-			<div
+			{/* <div
 				style={{
 					width: "500px",
 					height: "400px",
@@ -464,7 +469,7 @@ export default function DigitalTrainer() {
 					height={400}
 					objects={capturedPose}
 				/>
-			</div>
+			</div> */}
 			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
 			{/* <div
@@ -486,6 +491,17 @@ export default function DigitalTrainer() {
 				/>
 			</div> */}
 			{/* // ========= diff curve logic */}
+			<div
+				style={{
+					width: "300px",
+					height: "300px",
+					position: "absolute",
+					bottom: "100px",
+					left: 0,
+				}}
+			>
+				<Silhouette width={300} height={300} />
+			</div>
 			<div className="btn-box">
 				<div>
 					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
