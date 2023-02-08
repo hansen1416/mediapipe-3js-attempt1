@@ -18,6 +18,7 @@ import {
 	applyTransfer,
 	drawPoseKeypoints,
 	srotIndex,
+	visibleJoints,
 } from "../../components/ropes";
 
 /**
@@ -32,16 +33,14 @@ export default function DigitalTrainer() {
 	const controls = useRef(null);
 	// an integer number, used for cancelAnimationFrame
 	const animationPointer = useRef(0);
+	const counter = useRef(0);
 
 	const videoRef = useRef(null);
 
 	const poseDetector = useRef(null);
-
+	const mannequinModel = useRef(null);
 	const figureParts = useRef({});
-
 	const keypoints3D = useRef(null);
-
-	const counter = useRef(0);
 
 	const poseSync = useRef(null);
 	const [diffScore, setdiffScore] = useState(0);
@@ -95,17 +94,18 @@ export default function DigitalTrainer() {
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([detector, model]) => {
 			poseDetector.current = detector;
+			mannequinModel.current = model;
 
 			_scene(
 				document.documentElement.clientWidth,
 				document.documentElement.clientHeight
 			);
 
-			model.position.set(0, -100, 0);
+			mannequinModel.current.position.set(0, -100, 0);
 
-			traverseModel(model, figureParts.current);
+			traverseModel(mannequinModel.current, figureParts.current);
 
-			scene.current.add(model);
+			scene.current.add(mannequinModel.current);
 
 			// ========= diff curve logic
 			// {
@@ -348,6 +348,8 @@ export default function DigitalTrainer() {
 					animationJSONs.current[
 						exerciseQueue.current[exerciseQueueIndx.current]
 					];
+
+				mannequinModel.current.position.set(animation_data.position.x, animation_data.position.y, animation_data.position.z);
 
 				currentLongestTrack.current =
 					calculateLongestTrackFromAnimation(animation_data.tracks);

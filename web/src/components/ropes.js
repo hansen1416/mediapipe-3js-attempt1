@@ -966,6 +966,24 @@ export function isLowerBodyVisible(poseData) {
 	);
 }
 
+/**
+ * get all the joints that is confidence in the pose result
+ * @param {object} poseData 
+ * @returns 
+ */
+export function visibleJoints(poseData) {
+
+	const joints = []
+
+	for (let name in BlazePoseKeypointsValues) {
+		if (poseData[BlazePoseKeypointsValues[name]].score > 0.5) {
+			joints.push(name)
+		}
+	}
+
+	return joints;
+}
+
 export function removeObject3D(object) {
 	if (!(object instanceof THREE.Object3D)) return false;
 
