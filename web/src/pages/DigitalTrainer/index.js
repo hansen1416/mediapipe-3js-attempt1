@@ -5,7 +5,6 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
-import {createWorkerFactory, useWorker} from '@shopify/react-web-worker';
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 import PoseSync from "../../components/PoseSync";
@@ -31,6 +30,8 @@ export default function DigitalTrainer() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const controls = useRef(null);
+	// an integer number, used for cancelAnimationFrame
+	const animationPointer = useRef(0);
 
 	const videoRef = useRef(null);
 
@@ -66,8 +67,6 @@ export default function DigitalTrainer() {
 	// ========= captured pose logic
 	const [capturedPose, setcapturedPose] = useState();
 	// ========= captured pose logic
-
-	const animationPointer = useRef(0);
 
 	const [startBtnShow, setstartBtnShow] = useState(false);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
@@ -296,12 +295,14 @@ export default function DigitalTrainer() {
 			}
 
 			// ========= captured pose logic
-			// draw the pose as dots and lines on the sub scene
-			const g = drawPoseKeypoints(poses[0]["keypoints3D"]);
+			if (keypoints3D.current) {
+				// draw the pose as dots and lines on the sub scene
+				const g = drawPoseKeypoints(keypoints3D.current);
 
-			g.scale.set(8, 8, 8);
+				g.scale.set(8, 8, 8);
 
-			setcapturedPose(g);
+				setcapturedPose(g);
+			}
 			// ========= captured pose logic
 		})();
 

@@ -419,8 +419,8 @@ export default function Motions({
 										(i + 1) % 4 === 0 ? "border" : "",
 									].join(" ")}
 									style={{
-										width: blockSize,
-										height: blockSize,
+										width: blockSize + 'px',
+										height: blockSize + 'px',
 										backgroundColor: sceneBgColor,
 										display:
 											i < animationList.length
@@ -454,8 +454,8 @@ export default function Motions({
 										(i + 1) % 4 === 0 ? "border" : "",
 									].join(" ")}
 									style={{
-										width: blockSize,
-										height: blockSize,
+										width: blockSize + 'px',
+										height: blockSize + 'px',
 										// display:
 										// 	animationList.length === 0 || i < animationList.length
 										// 		? "inline-block"
