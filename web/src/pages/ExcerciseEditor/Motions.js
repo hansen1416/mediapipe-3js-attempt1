@@ -85,6 +85,7 @@ export default function Motions({
 				}
 			);
 		}
+		// eslint-disable-next-line
 	}, [width, height, blockSize, blockN]);
 
 	function loadAnimationList(muscle_group) {

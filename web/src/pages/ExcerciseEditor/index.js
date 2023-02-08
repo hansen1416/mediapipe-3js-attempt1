@@ -58,36 +58,34 @@ export default function ExcerciseEditor() {
 	}, []);
 
 	useEffect(() => {
-		if (boxWidth && boxHeight) {
-			{
-				// calculate element sizes
-				const margin = 10;
-				const col = 4;
-				let row = 10;
-				const pWidth = boxWidth * panelRatio;
-				let pHeight;
+		if (boxWidth && boxHeight) {			
+			// calculate element sizes
+			const margin = 10;
+			const col = 4;
+			let row = 10;
+			const pWidth = boxWidth * panelRatio;
+			let pHeight;
 
-				let bSize = (pWidth - 10 * (col - 1)) / col;
+			let bSize = (pWidth - 10 * (col - 1)) / col;
 
-				for (let i = 0; i < 10; i++) {
-					if (
-						bSize * i + (i - 1) * margin <=
-							boxHeight - synthesizerHeight &&
-						bSize * (i + 1) + i * margin >
-							boxHeight - synthesizerHeight
-					) {
-						row = i;
-						break;
-					}
+			for (let i = 0; i < 10; i++) {
+				if (
+					bSize * i + (i - 1) * margin <=
+						boxHeight - synthesizerHeight &&
+					bSize * (i + 1) + i * margin >
+						boxHeight - synthesizerHeight
+				) {
+					row = i;
+					break;
 				}
-
-				pHeight = bSize * row + (row - 1) * margin;
-
-				setpanelWidth(pWidth);
-				setpanelHeight(pHeight);
-				setblockSize(bSize);
-				setblockN(row * col);
 			}
+
+			pHeight = bSize * row + (row - 1) * margin;
+
+			setpanelWidth(pWidth);
+			setpanelHeight(pHeight);
+			setblockSize(bSize);
+			setblockN(row * col);
 		}
 
 		// eslint-disable-next-line
@@ -111,6 +109,8 @@ export default function ExcerciseEditor() {
 				animate();
 			});
 		}
+
+		// eslint-disable-next-line
 	}, [panelWidth, panelHeight]);
 
 	useEffect(() => {

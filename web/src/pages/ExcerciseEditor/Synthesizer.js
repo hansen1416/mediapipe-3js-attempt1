@@ -50,6 +50,7 @@ export default function Synthesizer({
 		if (selectedExercise > 0 && training[selectedExercise]) {
 			setselectedExerciseRound(training[selectedExercise].round);
 		}
+		// eslint-disable-next-line
 	}, [selectedExercise]);
 
 	function getBackgroundColor(animation_data) {
