@@ -340,6 +340,10 @@ export default function DigitalTrainer() {
 
 			if (exerciseQueueIndx.current < exerciseQueue.current.length - 1) {
 				// there are more animation in the queue
+				/**
+				 * 1. read animation data, set position, calculate longest track based on it
+				 * 2. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
+				 */
 
 				exerciseQueueIndx.current += 1;
 				currentAnimationIndx.current = 0;
