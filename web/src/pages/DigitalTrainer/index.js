@@ -155,6 +155,8 @@ export default function DigitalTrainer() {
 	useEffect(() => {
 		if (vectorDistances && vectorDistances.length) {
 			setdistacneSortIndex(srotIndex(vectorDistances));
+
+			console.log(vectorDistances);
 		}
 		// eslint-disable-next-line
 	}, [vectorDistances]);
