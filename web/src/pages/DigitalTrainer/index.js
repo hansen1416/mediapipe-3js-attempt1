@@ -75,6 +75,8 @@ export default function DigitalTrainer() {
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
 
+	const [silhouetteColors, setsilhouetteColors] = useState(null);
+
 	// store the actual animation data, in a name=>value format
 	const animationJSONs = useRef({});
 	// the exercise queue, an array of names
@@ -155,8 +157,6 @@ export default function DigitalTrainer() {
 	useEffect(() => {
 		if (vectorDistances && vectorDistances.length) {
 			setdistacneSortIndex(srotIndex(vectorDistances));
-
-			console.log(vectorDistances);
 		}
 		// eslint-disable-next-line
 	}, [vectorDistances]);
@@ -289,12 +289,16 @@ export default function DigitalTrainer() {
 
 			if (poseSyncVector.current) {
 				// compare the limbs vectors between pose and animation
-				setvectorDistances(
-					poseSyncVector.current.compareCurrentPose(
-						keypoints3D.current,
-						figureParts.current
-					)
+
+				const distances = poseSyncVector.current.compareCurrentPose(
+					keypoints3D.current,
+					figureParts.current
 				);
+
+				setvectorDistances(distances);
+
+				// watch keypoints3d and vectorDistances,
+				calculateSilhouetteColors(keypoints3D.current, distances);
 			}
 
 			// ========= captured pose logic
@@ -397,6 +401,16 @@ export default function DigitalTrainer() {
 		return longest;
 	}
 
+	function calculateSilhouetteColors(vectorDistances, keypoints3D) {
+		/**
+		 * todo, compare arms, shouder, abs, thighs, calf
+		 */
+		for (let i in vectorDistances) {
+		}
+
+		console.log(vectorDistances, keypoints3D);
+	}
+
 	useEffect(() => {
 		/**
 		 * when select one of the training
@@ -456,7 +470,7 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			{/* // ========= captured pose logic */}
-			{/* <div
+			<div
 				style={{
 					width: "500px",
 					height: "400px",
@@ -471,7 +485,7 @@ export default function DigitalTrainer() {
 					height={400}
 					objects={capturedPose}
 				/>
-			</div> */}
+			</div>
 			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
 			{/* <div
