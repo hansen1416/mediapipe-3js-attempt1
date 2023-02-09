@@ -37,8 +37,8 @@ export default function ExcerciseEditor() {
 	const [blockN, setblockN] = useState(0);
 	const [synthesizerHeight] = useState(120);
 
-	const overallWidthMargin = 360;
-	const overallHeightMargin = 120;
+	const overallWidthMargin = 0.2 * document.documentElement.clientWidth;
+	const overallHeightMargin = 0.1 * document.documentElement.clientHeight;
 	const panelRatio = 0.46;
 
 	useEffect(() => {
@@ -58,7 +58,7 @@ export default function ExcerciseEditor() {
 	}, []);
 
 	useEffect(() => {
-		if (boxWidth && boxHeight) {			
+		if (boxWidth && boxHeight) {
 			// calculate element sizes
 			const margin = 10;
 			const col = 4;
