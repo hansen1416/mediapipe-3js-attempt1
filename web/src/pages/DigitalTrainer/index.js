@@ -378,7 +378,6 @@ export default function DigitalTrainer() {
 					animation_data.position.z
 				);
 
-				
 				mannequinModel.current.rotation.set(
 					animation_data.rotation.x,
 					animation_data.rotation.y,
