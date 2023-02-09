@@ -178,11 +178,12 @@ export default function DigitalTrainer() {
 				{
 					name: "default training",
 					exercise: [
+						{ round: 50, name: "punch-walk" },
 						{ round: 10, name: "basic-crunch" },
-						{ round: 4, name: "curl-up" },
-						{ round: 6, name: "leg-scissors" },
-						{ round: 8, name: "leg-scissors" },
-						{ round: 8, name: "toe-crunch" },
+						// { round: 4, name: "curl-up" },
+						// { round: 6, name: "leg-scissors" },
+						// { round: 8, name: "leg-scissors" },
+						// { round: 8, name: "toe-crunch" },
 					],
 				},
 			]);
