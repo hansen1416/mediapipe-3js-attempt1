@@ -333,13 +333,15 @@ export default function Motions({
 
 			renderer.current.setScissor(
 				left - containerRect.left,
-				container.current.clientHeight - bottom + 50,
+				container.current.clientHeight - bottom,
+				// bottom,
 				width,
 				height
 			);
 			renderer.current.setViewport(
 				left - containerRect.left,
-				container.current.clientHeight - bottom + 50,
+				container.current.clientHeight - bottom,
+				// bottom,
 				width,
 				height
 			);
