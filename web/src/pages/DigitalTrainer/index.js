@@ -95,6 +95,8 @@ export default function DigitalTrainer() {
 	const currentAnimationIndx = useRef(0);
 	// the logest track of the current exercise(animation)
 	const currentLongestTrack = useRef(0);
+	// number of round of the current exercise(animation)
+	const currentRound = useRef(0);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -365,6 +367,7 @@ export default function DigitalTrainer() {
 
 				exerciseQueueIndx.current += 1;
 				currentAnimationIndx.current = 0;
+				currentRound.current = 0;
 
 				const animation_data =
 					animationJSONs.current[
@@ -397,6 +400,7 @@ export default function DigitalTrainer() {
 				exerciseQueueIndx.current = 0;
 				currentAnimationIndx.current = 0;
 				currentLongestTrack.current = 0;
+				currentRound.current = 0;
 			}
 		}
 	}
@@ -549,6 +553,7 @@ export default function DigitalTrainer() {
 				exerciseQueueIndx.current = 0;
 				currentAnimationIndx.current = 0;
 				currentLongestTrack.current = 0;
+				currentRound.current = 0;
 
 				setstartBtnShow(true);
 			});
