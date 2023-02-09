@@ -104,16 +104,6 @@ export default class PoseSyncVector {
 		const right_ankle = poseToVector(
 			pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
 		);
-		
-		// const basisMatrix = getBasisFromPose(pose3D);
-
-		// left_elbow.applyMatrix4(basisMatrix);
-		// left_shoulder.applyMatrix4(basisMatrix);
-		// left_wrist.applyMatrix4(basisMatrix);
-
-		// right_elbow.applyMatrix4(basisMatrix);
-		// right_shoulder.applyMatrix4(basisMatrix);
-		// right_wrist.applyMatrix4(basisMatrix);
 
 		const chestOrientation = posePointsToVector(
 			left_shoulder,
@@ -160,6 +150,19 @@ export default class PoseSyncVector {
 			right_knee,
 			right_ankle
 		);
+
+		const basisMatrix = this.poseTorso(pose3D);
+
+		chestOrientation.applyMatrix4(basisMatrix);
+		leftArmOrientation.applyMatrix4(basisMatrix);
+		leftForeArmOrientation.applyMatrix4(basisMatrix);
+		rightArmOrientation.applyMatrix4(basisMatrix);
+		rightForeArmOrientation.applyMatrix4(basisMatrix);
+		abdominalOrientation.applyMatrix4(basisMatrix);
+		leftThighOrientation.applyMatrix4(basisMatrix);
+		leftCalfOrientation.applyMatrix4(basisMatrix);
+		rightThighOrientation.applyMatrix4(basisMatrix);
+		rightCalfOrientation.applyMatrix4(basisMatrix);
 
 		return [
 			chestOrientation,
@@ -219,6 +222,8 @@ export default class PoseSyncVector {
 			['calf_r', 'foot_r'],
 		];
 
+		const basisMatrix = this.boneTorso(bones);
+
 		const res = [];
 
 		for (let limb of upper) {
@@ -228,9 +233,11 @@ export default class PoseSyncVector {
 			bones[limb[0]].getWorldPosition(v_start);
 			bones[limb[1]].getWorldPosition(v_end);
 
-			const v = v_end.sub(v_start);
+			const v = v_end.sub(v_start).normalize();
 
-			res.push(v.normalize());
+			v.applyMatrix4(basisMatrix)
+
+			res.push(v);
 		}
 
 		// console.log(res)

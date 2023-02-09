@@ -20,6 +20,7 @@ import {
 	drawPoseKeypoints,
 	srotIndex,
 	BlazePoseKeypointsValues,
+	radianGradientColor,
 } from "../../components/ropes";
 
 /**
@@ -117,8 +118,6 @@ export default function DigitalTrainer() {
 			mannequinModel.current.position.set(0, -100, 0);
 
 			traverseModel(mannequinModel.current, figureParts.current);
-
-console.log(figureParts.current)
 
 			scene.current.add(mannequinModel.current);
 
@@ -378,6 +377,13 @@ console.log(figureParts.current)
 					animation_data.position.z
 				);
 
+				
+				mannequinModel.current.rotation.set(
+					animation_data.rotation.x,
+					animation_data.rotation.y,
+					animation_data.rotation.z
+				);
+
 				currentLongestTrack.current =
 					calculateLongestTrackFromAnimation(animation_data.tracks);
 
@@ -416,62 +422,58 @@ console.log(figureParts.current)
 	function calculateSilhouetteColors(vectorDistances, keypoints3D) {
 
 		const colors = {}
-		const visibleColor = "rgba(130, 209, 255, 0.5)";
 
 		const [chest, leftupperarm, leftforearm, rightupperarm, rightforearm, 
 			abdominal, leftthigh, leftcalf, rightthigh, rightcalf] = vectorDistances;
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_SHOULDER']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_SHOULDER']].score > 0.5) {
-
-			// console.log(chest)
-
-			colors['chest'] = visibleColor;
+			colors['chest'] = radianGradientColor(chest);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_SHOULDER']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['LEFT_ELBOW']].score > 0.5) {
-			colors['leftupperarm'] = visibleColor;
+			colors['leftupperarm'] = radianGradientColor(leftupperarm);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_ELBOW']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['LEFT_WRIST']].score > 0.5) {
-			colors['leftforearm'] = visibleColor;
+			colors['leftforearm'] = radianGradientColor(leftforearm);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_SHOULDER']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_ELBOW']].score > 0.5) {
-			colors['rightupperarm'] = visibleColor;
+			colors['rightupperarm'] = radianGradientColor(rightupperarm);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_ELBOW']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_WRIST']].score > 0.5) {
-			colors['rightforearm'] = visibleColor;
+			colors['rightforearm'] = radianGradientColor(rightforearm);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_HIP']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_HIP']].score > 0.5) {
-			colors['abdominal'] = visibleColor;
+			colors['abdominal'] = radianGradientColor(abdominal);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_HIP']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['LEFT_KNEE']].score > 0.5) {
-			colors['leftthigh'] = visibleColor;
+			colors['leftthigh'] = radianGradientColor(leftthigh);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_KNEE']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['LEFT_ANKLE']].score > 0.5) {
-			colors['leftcalf'] = visibleColor;
+			colors['leftcalf'] = radianGradientColor(leftcalf);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_HIP']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_KNEE']].score > 0.5) {
-			colors['rightthigh'] = visibleColor;
+			colors['rightthigh'] = radianGradientColor(rightthigh);
 		}
 
 		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_KNEE']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_ANKLE']].score > 0.5) {
-			colors['rightcalf'] = visibleColor;
+			colors['rightcalf'] = radianGradientColor(rightcalf);
 		}
 
 		setsilhouetteColors(colors);

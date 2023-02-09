@@ -477,6 +477,30 @@ export function unitline(a, b, color = 0xffffff) {
 }
 
 /**
+ * convert radian to a color, gradiently
+ * @param {number} radian 
+ * @returns 
+ */
+export function radianGradientColor(radian) {
+
+	const cap = Math.PI / 2;
+
+	radian = cap - radian;
+
+	if (radian < 0) {
+		return "rgba(130, 209, 255, 0.5)";
+	}
+
+	const startColour = {r:130,g:209,b:255}
+	const endColour = {r:44,g:33,b:251}
+	const percent = radian / cap;
+
+	return "rgba(" + Math.floor(startColour.r * (1 - percent) + endColour.r * percent) + ',' +
+		Math.floor(startColour.g * (1 - percent) + endColour.g * percent) + "," +
+		Math.floor(startColour.b * (1 - percent) + endColour.b * percent) + ", 0.5)"
+}
+
+/**
  * read data from animations
  * munnually assign translation and rotation to model
  * @param {*} model
