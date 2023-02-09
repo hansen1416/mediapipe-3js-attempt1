@@ -7,6 +7,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
+import Silhouette from "./Silhouette";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
 import {
@@ -73,6 +74,8 @@ export default function DigitalTrainer() {
 
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
+
+	const [silhouetteColors, setsilhouetteColors] = useState(null);
 
 	// store the actual animation data, in a name=>value format
 	const animationJSONs = useRef({});
@@ -286,12 +289,16 @@ export default function DigitalTrainer() {
 
 			if (poseSyncVector.current) {
 				// compare the limbs vectors between pose and animation
-				setvectorDistances(
-					poseSyncVector.current.compareCurrentPose(
-						keypoints3D.current,
-						figureParts.current
-					)
+
+				const distances = poseSyncVector.current.compareCurrentPose(
+					keypoints3D.current,
+					figureParts.current
 				);
+
+				setvectorDistances(distances);
+
+				// watch keypoints3d and vectorDistances,
+				calculateSilhouetteColors(keypoints3D.current, distances);
 			}
 
 			// ========= captured pose logic
@@ -353,7 +360,11 @@ export default function DigitalTrainer() {
 						exerciseQueue.current[exerciseQueueIndx.current]
 					];
 
-				mannequinModel.current.position.set(animation_data.position.x, animation_data.position.y, animation_data.position.z);
+				mannequinModel.current.position.set(
+					animation_data.position.x,
+					animation_data.position.y,
+					animation_data.position.z
+				);
 
 				currentLongestTrack.current =
 					calculateLongestTrackFromAnimation(animation_data.tracks);
@@ -388,6 +399,16 @@ export default function DigitalTrainer() {
 		}
 
 		return longest;
+	}
+
+	function calculateSilhouetteColors(vectorDistances, keypoints3D) {
+		/**
+		 * todo, compare arms, shouder, abs, thighs, calf
+		 */
+		for (let i in vectorDistances) {
+		}
+
+		console.log(vectorDistances, keypoints3D);
 	}
 
 	useEffect(() => {
@@ -486,6 +507,17 @@ export default function DigitalTrainer() {
 				/>
 			</div> */}
 			{/* // ========= diff curve logic */}
+			<div
+				style={{
+					width: "300px",
+					height: "300px",
+					position: "absolute",
+					bottom: "100px",
+					left: 0,
+				}}
+			>
+				<Silhouette width={300} height={300} />
+			</div>
 			<div className="btn-box">
 				<div>
 					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
