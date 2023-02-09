@@ -19,7 +19,7 @@ import {
 	applyTransfer,
 	drawPoseKeypoints,
 	srotIndex,
-	visibleJoints,
+	BlazePoseKeypointsValues,
 } from "../../components/ropes";
 
 /**
@@ -302,7 +302,7 @@ export default function DigitalTrainer() {
 				setvectorDistances(distances);
 
 				// watch keypoints3d and vectorDistances,
-				calculateSilhouetteColors(keypoints3D.current, distances);
+				calculateSilhouetteColors(distances, keypoints3D.current);
 			}
 
 			// ========= captured pose logic
@@ -410,9 +410,63 @@ export default function DigitalTrainer() {
 		 * todo, compare arms, shouder, abs, thighs, calf
 		 */
 		for (let i in vectorDistances) {
+			
 		}
 
-		console.log(vectorDistances, keypoints3D);
+		const colors = {}
+		const visibleColor = "rgba(130, 209, 255, 0.5)"
+
+		if (keypoints3D[BlazePoseKeypointsValues['LEFT_SHOULDER']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_SHOULDER']].score > 0.5) {
+			colors['chest'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['LEFT_SHOULDER']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['LEFT_ELBOW']].score > 0.5) {
+			colors['leftupperarm'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['LEFT_ELBOW']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['LEFT_WRIST']].score > 0.5) {
+			colors['leftforearm'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_SHOULDER']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_ELBOW']].score > 0.5) {
+			colors['rightupperarm'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_ELBOW']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_WRIST']].score > 0.5) {
+			colors['rightforearm'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['LEFT_HIP']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_HIP']].score > 0.5) {
+			colors['abdominal'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['LEFT_HIP']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['LEFT_KNEE']].score > 0.5) {
+			colors['leftthigh'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['LEFT_KNEE']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['LEFT_ANKLE']].score > 0.5) {
+			colors['leftcalf'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_HIP']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_KNEE']].score > 0.5) {
+			colors['rightthigh'] = visibleColor;
+		}
+
+		if (keypoints3D[BlazePoseKeypointsValues['RIGHT_KNEE']].score > 0.5 
+		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_ANKLE']].score > 0.5) {
+			colors['rightcalf'] = visibleColor;
+		}
+
+		setsilhouetteColors(colors);
 	}
 
 	useEffect(() => {

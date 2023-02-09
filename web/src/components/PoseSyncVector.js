@@ -8,6 +8,20 @@ import {
 } from "./ropes";
 
 export default class PoseSyncVector {
+
+	limbs = [
+		'chest',
+		'leftupperarm',
+		'leftforearm',
+		'rightupperarm',
+		'rightforearm',
+		'abdominal',
+		'leftthigh',
+		'leftcalf',
+		'rightthigh',
+		'rightcalf',
+	]
+
 	constructor(animation_data) {
 		this.animationTracks = {};
 
@@ -71,6 +85,26 @@ export default class PoseSyncVector {
 			pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
 		);
 
+		const left_hip = poseToVector(
+			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+		);
+		const left_knee = poseToVector(
+			pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]
+		);
+		const left_ankle = poseToVector(
+			pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]
+		);
+
+		const right_hip = poseToVector(
+			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+		);
+		const right_knee = poseToVector(
+			pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]
+		);
+		const right_ankle = poseToVector(
+			pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
+		);
+		
 		// const basisMatrix = getBasisFromPose(pose3D);
 
 		// left_elbow.applyMatrix4(basisMatrix);
@@ -80,6 +114,11 @@ export default class PoseSyncVector {
 		// right_elbow.applyMatrix4(basisMatrix);
 		// right_shoulder.applyMatrix4(basisMatrix);
 		// right_wrist.applyMatrix4(basisMatrix);
+
+		const chestOrientation = posePointsToVector(
+			left_shoulder,
+			right_shoulder
+		);
 
 		const leftArmOrientation = posePointsToVector(
 			left_elbow,
@@ -99,11 +138,40 @@ export default class PoseSyncVector {
 			right_elbow
 		);
 
+		const abdominalOrientation = posePointsToVector(
+			left_hip,
+			right_hip
+		);
+
+		const leftThighOrientation = posePointsToVector(
+			left_hip,
+			left_knee
+		);
+		const leftCalfOrientation = posePointsToVector(
+			left_knee,
+			left_ankle
+		);
+
+		const rightThighOrientation = posePointsToVector(
+			right_hip,
+			right_knee
+		);
+		const rightCalfOrientation = posePointsToVector(
+			right_knee,
+			right_ankle
+		);
+
 		return [
+			chestOrientation,
 			leftArmOrientation,
 			leftForeArmOrientation,
 			rightArmOrientation,
 			rightForeArmOrientation,
+			abdominalOrientation,
+			leftThighOrientation,
+			leftCalfOrientation,
+			rightThighOrientation,
+			rightCalfOrientation
 		];
 	}
 
