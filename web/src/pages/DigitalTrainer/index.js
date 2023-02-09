@@ -50,10 +50,16 @@ export default function DigitalTrainer() {
 	const poseSyncVector = useRef(null);
 	const [vectorDistances, setvectorDistances] = useState([]);
 	const [distanceNames] = useState([
-		"left arm",
-		"left forearm",
-		"right arm",
-		"right forearm",
+		'chest',
+		'leftupperarm',
+		'leftforearm',
+		'rightupperarm',
+		'rightforearm',
+		'abdominal',
+		'leftthigh',
+		'leftcalf',
+		'rightthigh',
+		'rightcalf',
 	]);
 	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
@@ -408,18 +414,18 @@ console.log(figureParts.current)
 	}
 
 	function calculateSilhouetteColors(vectorDistances, keypoints3D) {
-		/**
-		 * todo, compare arms, shouder, abs, thighs, calf
-		 */
-		for (let i in vectorDistances) {
-
-		}
 
 		const colors = {}
-		const visibleColor = "rgba(130, 209, 255, 0.5)"
+		const visibleColor = "rgba(130, 209, 255, 0.5)";
+
+		const [chest, leftupperarm, leftforearm, rightupperarm, rightforearm, 
+			abdominal, leftthigh, leftcalf, rightthigh, rightcalf] = vectorDistances;
 
 		if (keypoints3D[BlazePoseKeypointsValues['LEFT_SHOULDER']].score > 0.5 
 		&& keypoints3D[BlazePoseKeypointsValues['RIGHT_SHOULDER']].score > 0.5) {
+
+			// console.log(chest)
+
 			colors['chest'] = visibleColor;
 		}
 
