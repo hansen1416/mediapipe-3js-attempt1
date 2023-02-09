@@ -75,8 +75,8 @@ export default function DigitalTrainer() {
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
 
-	const [silhouetteSize, setsilhouetteSize] = useState(null);
-	const [silhouetteColors, setsilhouetteColors] = useState(null);
+	const [silhouetteSize, setsilhouetteSize] = useState(100);
+	const [silhouetteColors, setsilhouetteColors] = useState({});
 
 	// store the actual animation data, in a name=>value format
 	const animationJSONs = useRef({});
