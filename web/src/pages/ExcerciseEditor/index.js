@@ -72,8 +72,7 @@ export default function ExcerciseEditor() {
 				if (
 					bSize * i + (i - 1) * margin <=
 						boxHeight - synthesizerHeight &&
-					bSize * (i + 1) + i * margin >
-						boxHeight - synthesizerHeight
+					bSize * (i + 1) + i * margin > boxHeight - synthesizerHeight
 				) {
 					row = i;
 					break;

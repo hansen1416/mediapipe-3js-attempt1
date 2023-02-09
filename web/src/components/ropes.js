@@ -478,11 +478,10 @@ export function unitline(a, b, color = 0xffffff) {
 
 /**
  * convert radian to a color, gradiently
- * @param {number} radian 
- * @returns 
+ * @param {number} radian
+ * @returns
  */
 export function radianGradientColor(radian) {
-
 	const cap = Math.PI / 2;
 
 	radian = cap - radian;
@@ -491,13 +490,19 @@ export function radianGradientColor(radian) {
 		return "rgba(250, 190, 179, 0.5)";
 	}
 
-	const startColour = {r:250,g:190,b:179}
-	const endColour = {r:248,g:37,b:0}
+	const startColour = { r: 250, g: 190, b: 179 };
+	const endColour = { r: 248, g: 37, b: 0 };
 	const percent = radian / cap;
 
-	return "rgba(" + Math.floor(startColour.r * (1 - percent) + endColour.r * percent) + ',' +
-		Math.floor(startColour.g * (1 - percent) + endColour.g * percent) + "," +
-		Math.floor(startColour.b * (1 - percent) + endColour.b * percent) + ", 0.5)"
+	return (
+		"rgba(" +
+		Math.floor(startColour.r * (1 - percent) + endColour.r * percent) +
+		"," +
+		Math.floor(startColour.g * (1 - percent) + endColour.g * percent) +
+		"," +
+		Math.floor(startColour.b * (1 - percent) + endColour.b * percent) +
+		", 0.5)"
+	);
 }
 
 /**
@@ -992,16 +997,15 @@ export function isLowerBodyVisible(poseData) {
 
 /**
  * get all the joints that is confidence in the pose result
- * @param {object} poseData 
- * @returns 
+ * @param {object} poseData
+ * @returns
  */
 export function visibleJoints(poseData) {
-
-	const joints = []
+	const joints = [];
 
 	for (let name in BlazePoseKeypointsValues) {
 		if (poseData[BlazePoseKeypointsValues[name]].score > 0.5) {
-			joints.push(name)
+			joints.push(name);
 		}
 	}
 
@@ -1082,8 +1086,6 @@ thumb_02_r
 upperarm_l
 upperarm_r
  */
-
-
 
 // function getAnimationState(animationTracks, inheritGraph, upVectors) {
 // 	for (let [name, tracks] of Object.entries(animationTracks)) {

@@ -8,19 +8,18 @@ import {
 } from "./ropes";
 
 export default class PoseSyncVector {
-
 	limbs = [
-		'chest',
-		'leftupperarm',
-		'leftforearm',
-		'rightupperarm',
-		'rightforearm',
-		'abdominal',
-		'leftthigh',
-		'leftcalf',
-		'rightthigh',
-		'rightcalf',
-	]
+		"chest",
+		"leftupperarm",
+		"leftforearm",
+		"rightupperarm",
+		"rightforearm",
+		"abdominal",
+		"leftthigh",
+		"leftcalf",
+		"rightthigh",
+		"rightcalf",
+	];
 
 	constructor(animation_data) {
 		this.animationTracks = {};
@@ -128,24 +127,12 @@ export default class PoseSyncVector {
 			right_elbow
 		);
 
-		const abdominalOrientation = posePointsToVector(
-			left_hip,
-			right_hip
-		);
+		const abdominalOrientation = posePointsToVector(left_hip, right_hip);
 
-		const leftThighOrientation = posePointsToVector(
-			left_hip,
-			left_knee
-		);
-		const leftCalfOrientation = posePointsToVector(
-			left_knee,
-			left_ankle
-		);
+		const leftThighOrientation = posePointsToVector(left_hip, left_knee);
+		const leftCalfOrientation = posePointsToVector(left_knee, left_ankle);
 
-		const rightThighOrientation = posePointsToVector(
-			right_hip,
-			right_knee
-		);
+		const rightThighOrientation = posePointsToVector(right_hip, right_knee);
 		const rightCalfOrientation = posePointsToVector(
 			right_knee,
 			right_ankle
@@ -174,7 +161,7 @@ export default class PoseSyncVector {
 			leftThighOrientation,
 			leftCalfOrientation,
 			rightThighOrientation,
-			rightCalfOrientation
+			rightCalfOrientation,
 		];
 	}
 
@@ -215,11 +202,11 @@ export default class PoseSyncVector {
 			["lowerarm_l", "hand_l"],
 			["upperarm_r", "lowerarm_r"],
 			["lowerarm_r", "hand_r"],
-			['thigh_l', 'thigh_r'],
-			['thigh_l', 'calf_l'],
-			['calf_l', 'foot_l'],
-			['thigh_r', 'calf_r'],
-			['calf_r', 'foot_r'],
+			["thigh_l", "thigh_r"],
+			["thigh_l", "calf_l"],
+			["calf_l", "foot_l"],
+			["thigh_r", "calf_r"],
+			["calf_r", "foot_r"],
 		];
 
 		const basisMatrix = this.boneTorso(bones);
@@ -235,7 +222,7 @@ export default class PoseSyncVector {
 
 			const v = v_end.sub(v_start).normalize();
 
-			v.applyMatrix4(basisMatrix)
+			v.applyMatrix4(basisMatrix);
 
 			res.push(v);
 		}
@@ -265,7 +252,7 @@ export default class PoseSyncVector {
 	 */
 	// animationLimbs(frameIndx) {
 	// 	/**
-    //      * "upperarm_l",
+	//      * "upperarm_l",
 	// 		"upperarm_r",
 	// 		"lowerarm_l",
 	// 		"lowerarm_r",
@@ -273,7 +260,7 @@ export default class PoseSyncVector {
 	// 		"hand_r",
 	// 		"thigh_l",
 	// 		"thigh_r",
-    //     */
+	//     */
 
 	// 	const leftArmStates = new THREE.Vector3(
 	// 		this.animationTracks["upperarm_l.quaternion"]["states"][

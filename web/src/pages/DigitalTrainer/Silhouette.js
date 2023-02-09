@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function Silhouette({ width, height, colors }) {
-
-	const defaultColor = "rgba(100,100,100,0.5)"
+	const defaultColor = "rgba(100,100,100,0.5)";
 
 	const [chestColor, setchestColor] = useState(defaultColor);
 	const [leftUpperArmColor, setleftUpperArmColor] = useState(defaultColor);
@@ -16,48 +15,46 @@ export default function Silhouette({ width, height, colors }) {
 	const [rightCalfColor, setrightCalfColor] = useState(defaultColor);
 
 	useEffect(() => {
-
-		if (colors['chest']) {
-			setchestColor(colors['chest'])
+		if (colors["chest"]) {
+			setchestColor(colors["chest"]);
 		}
 
-		if (colors['leftupperarm']) {
-			setleftUpperArmColor(colors['leftupperarm'])
+		if (colors["leftupperarm"]) {
+			setleftUpperArmColor(colors["leftupperarm"]);
 		}
 
-		if (colors['leftforearm']) {
-			setleftForeArmColor(colors['leftforearm'])
+		if (colors["leftforearm"]) {
+			setleftForeArmColor(colors["leftforearm"]);
 		}
 
-		if (colors['rightupperarm']) {
-			setrightUpperArmColor(colors['rightupperarm'])
+		if (colors["rightupperarm"]) {
+			setrightUpperArmColor(colors["rightupperarm"]);
 		}
 
-		if (colors['rightforearm']) {
-			setrightForeArmColor(colors['rightforearm'])
+		if (colors["rightforearm"]) {
+			setrightForeArmColor(colors["rightforearm"]);
 		}
 
-		if (colors['abdominal']) {
-			setabdominalColor(colors['abdominal'])
+		if (colors["abdominal"]) {
+			setabdominalColor(colors["abdominal"]);
 		}
 
-		if (colors['leftthigh']) {
-			setleftThighColor(colors['leftthigh'])
+		if (colors["leftthigh"]) {
+			setleftThighColor(colors["leftthigh"]);
 		}
 
-		if (colors['leftcalf']) {
-			setleftCalfColor(colors['leftcalf'])
+		if (colors["leftcalf"]) {
+			setleftCalfColor(colors["leftcalf"]);
 		}
 
-		if (colors['rightthigh']) {
-			setrightThighColor(colors['rightthigh'])
+		if (colors["rightthigh"]) {
+			setrightThighColor(colors["rightthigh"]);
 		}
 
-		if (colors['rightcalf']) {
-			setrightCalfColor(colors['rightcalf'])
+		if (colors["rightcalf"]) {
+			setrightCalfColor(colors["rightcalf"]);
 		}
-
-	}, [colors])
+	}, [colors]);
 
 	return (
 		<svg
@@ -131,7 +128,6 @@ export default function Silhouette({ width, height, colors }) {
 					d="M121,66c2.381,3.705,2.29,10.245,2.29,10.245L135,77.6
 					c-3.3-5.282-3.921-15.135-3.921-15.135l-0.146-16.635
 					c-1.157-11.347-9.518-11.429-9.518-11.429z"
-
 				/>
 				<path
 					id="leftforearm"

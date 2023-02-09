@@ -236,11 +236,11 @@ export default function Motions({
 
 				if (i < results.length) {
 					mannequin.visible = true;
-					mannequin.position.set(
-						results[i].position.x,
-						results[i].position.y,
-						results[i].position.z
-					);
+					// mannequin.position.set(
+					// 	results[i].position.x,
+					// 	results[i].position.y,
+					// 	results[i].position.z
+					// );
 
 					mannequin.rotation.set(
 						results[i].rotation.x,
@@ -421,8 +421,8 @@ export default function Motions({
 										(i + 1) % 4 === 0 ? "border" : "",
 									].join(" ")}
 									style={{
-										width: blockSize + 'px',
-										height: blockSize + 'px',
+										width: blockSize + "px",
+										height: blockSize + "px",
 										backgroundColor: sceneBgColor,
 										display:
 											i < animationList.length
@@ -456,8 +456,8 @@ export default function Motions({
 										(i + 1) % 4 === 0 ? "border" : "",
 									].join(" ")}
 									style={{
-										width: blockSize + 'px',
-										height: blockSize + 'px',
+										width: blockSize + "px",
+										height: blockSize + "px",
 										// display:
 										// 	animationList.length === 0 || i < animationList.length
 										// 		? "inline-block"
