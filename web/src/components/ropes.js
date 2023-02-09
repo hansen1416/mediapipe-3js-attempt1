@@ -1013,6 +1013,54 @@ export function removeObject3D(object) {
 	return true;
 }
 
+/**
+ * calf_l
+calf_r
+clavicle_l
+clavicle_r
+foot_l
+foot_r
+hand_l
+hand_r
+ik_foot_root
+ik_hand_gun
+ik_hand_root
+index_01_l
+index_01_r
+index_02_l
+index_02_r
+lowerarm_l
+lowerarm_r
+middle_01_l
+middle_01_r
+middle_02_l
+middle_02_r
+neck_01
+pelvis
+pinky_01_l
+pinky_01_r
+pinky_02_l
+pinky_02_r
+ring_01_l
+ring_01_r
+ring_02_l
+ring_02_r
+root
+spine_01
+spine_02
+spine_03
+thigh_l
+thigh_r
+thumb_01_l
+thumb_01_r
+thumb_02_l
+thumb_02_r
+upperarm_l
+upperarm_r
+ */
+
+
+
 // function getAnimationState(animationTracks, inheritGraph, upVectors) {
 // 	for (let [name, tracks] of Object.entries(animationTracks)) {
 

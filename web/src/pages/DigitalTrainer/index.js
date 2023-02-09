@@ -112,6 +112,8 @@ export default function DigitalTrainer() {
 
 			traverseModel(mannequinModel.current, figureParts.current);
 
+console.log(figureParts.current)
+
 			scene.current.add(mannequinModel.current);
 
 			// ========= diff curve logic
@@ -410,7 +412,7 @@ export default function DigitalTrainer() {
 		 * todo, compare arms, shouder, abs, thighs, calf
 		 */
 		for (let i in vectorDistances) {
-			
+
 		}
 
 		const colors = {}
