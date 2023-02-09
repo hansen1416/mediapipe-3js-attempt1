@@ -520,7 +520,11 @@ export default function DigitalTrainer() {
 					left: 0,
 				}}
 			>
-				<Silhouette width={silhouetteSize} height={silhouetteSize} />
+				<Silhouette
+					width={silhouetteSize}
+					height={silhouetteSize}
+					colors={silhouetteColors}
+				/>
 			</div>
 			<div className="btn-box">
 				<div>

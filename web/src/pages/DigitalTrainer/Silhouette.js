@@ -1,7 +1,63 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function Silhouette({ width, height }) {
-	const [defaultColor] = useState("rgba(100,100,100,0.5)");
+export default function Silhouette({ width, height, colors }) {
+
+	const defaultColor = "rgba(100,100,100,0.5)"
+
+	const [chestColor, setchestColor] = useState(defaultColor);
+	const [leftUpperArmColor, setleftUpperArmColor] = useState(defaultColor);
+	const [leftForeArmColor, setleftForeArmColor] = useState(defaultColor);
+	const [rightUpperArmColor, setrightUpperArmColor] = useState(defaultColor);
+	const [rightForeArmColor, setrightForeArmColor] = useState(defaultColor);
+	const [abdominalColor, setabdominalColor] = useState(defaultColor);
+	const [leftThighColor, setleftThighColor] = useState(defaultColor);
+	const [leftCalfColor, setleftCalfColor] = useState(defaultColor);
+	const [rightThighColor, setrightThighColor] = useState(defaultColor);
+	const [rightCalfColor, setrightCalfColor] = useState(defaultColor);
+
+	useEffect(() => {
+
+		if (colors['chest']) {
+			setchestColor(colors['chest'])
+		}
+
+		if (colors['leftupperarm']) {
+			setleftUpperArmColor(colors['leftupperarm'])
+		}
+
+		if (colors['leftforearm']) {
+			setleftForeArmColor(colors['leftforearm'])
+		}
+
+		if (colors['rightupperarm']) {
+			setrightUpperArmColor(colors['rightupperarm'])
+		}
+
+		if (colors['rightforearm']) {
+			setrightForeArmColor(colors['rightforearm'])
+		}
+
+		if (colors['abdominal']) {
+			setabdominalColor(colors['abdominal'])
+		}
+
+		if (colors['leftthigh']) {
+			setleftThighColor(colors['leftthigh'])
+		}
+
+		if (colors['leftcalf']) {
+			setleftCalfColor(colors['leftcalf'])
+		}
+
+		if (colors['rightthigh']) {
+			setrightThighColor(colors['rightthigh'])
+		}
+
+		if (colors['rightcalf']) {
+			setrightCalfColor(colors['rightcalf'])
+		}
+
+	}, [colors])
 
 	return (
 		<svg
@@ -54,7 +110,7 @@ export default function Silhouette({ width, height }) {
 				</g>
 				<path
 					id="leftleg"
-					fill={defaultColor}
+					fill={leftThighColor}
 					stroke="none"
 					d="M104.265,117.959c-0.304,3.58,2.126,22.529,3.38,29.959c0.597,3.52,2.234,9.255,1.645,12.3
 			c-0.841,4.244-1.084,9.736-0.621,12.934c0.292,1.942,1.211,10.899-0.104,14.175c-0.688,1.718-1.949,10.522-1.949,10.522
@@ -65,7 +121,7 @@ export default function Silhouette({ width, height }) {
 				/>
 				<path
 					id="leftarm"
-					fill={defaultColor}
+					fill={leftUpperArmColor}
 					stroke="none"
 					d="M121.265,66c2.381,3.705,2.29,10.245,2.29,10.245
 			c-0.378,6.859,5.541,17.342,5.541,17.342c2.844,4.332,3.921,8.442,3.921,8.747c0,1.248-0.273,4.269-0.273,4.269l0.109,2.631
@@ -79,7 +135,7 @@ export default function Silhouette({ width, height }) {
 				/>
 				<path
 					id="chest"
-					fill={defaultColor}
+					fill={chestColor}
 					stroke="none"
 					d="M121,34.3c-8.451-1.258-9.627-3.988-9.627-3.988c-1.79-2.576-0.767-7.514-0.767-7.514
 			c1.485-1.208,2.058-4.415,2.058-4.415c2.466-1.891,2.345-4.658,1.206-4.628c-0.914,0.024-0.707-0.733-0.707-0.733
@@ -89,7 +145,7 @@ export default function Silhouette({ width, height }) {
 				/>
 				<path
 					id="rightarm"
-					fill={defaultColor}
+					fill={rightUpperArmColor}
 					stroke="none"
 					d="M85.1,34.3c0,0-8.375,0.082-9.514,11.429l-0.158,16.635c0,0-0.609,9.853-3.922,15.135c0,0-1.921,3.392-2.143,11.198
 			c0,0-0.563,6.616-1.303,8.674c-0.451,1.209-2.021,3.255-3.249,4.789c-2.408,2.993-6.455,9.24-4.29,9.953
@@ -101,14 +157,14 @@ export default function Silhouette({ width, height }) {
 				/>
 				<path
 					id="abdominals"
-					fill={defaultColor}
+					fill={abdominalColor}
 					stroke="none"
 					d="M124.4,112c1.169-9.53-4.141-22.308-4.141-22.308c-1.163-5.2,0.542-23.727,0.542-23.727L85.1,66
 			c0,0,1.69,18.526,0.545,23.727c0,0-5.319,12.778-4.146,22.308L104.265,117.959z"
 				/>
 				<path
 					id="rightleg"
-					fill={defaultColor}
+					fill={rightThighColor}
 					stroke="none"
 					d="M81.4,111.5c0.864,7.094,2.53,22.237,4.226,28.217c0.886,3.094,0.362,10.899,1.072,12.848
 			c0.32,0.847,0.152,1.627-0.536,3.545c-2.387,6.71-2.083,11.436,3.921,29.24c0,0,1.848,3.945,0.914,11.033
