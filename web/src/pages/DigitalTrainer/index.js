@@ -75,6 +75,7 @@ export default function DigitalTrainer() {
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
 
+	const [silhouetteSize, setsilhouetteSize] = useState(null);
 	const [silhouetteColors, setsilhouetteColors] = useState(null);
 
 	// store the actual animation data, in a name=>value format
@@ -89,6 +90,12 @@ export default function DigitalTrainer() {
 	const currentLongestTrack = useRef(0);
 
 	useEffect(() => {
+
+		const documentWidth = document.documentElement.clientWidth;
+		const documentHeight = document.documentElement.clientHeight;
+
+		setsilhouetteSize(0.2*documentHeight);
+
 		Promise.all([
 			poseDetection.createDetector(
 				poseDetection.SupportedModels.BlazePose,
@@ -99,10 +106,7 @@ export default function DigitalTrainer() {
 			poseDetector.current = detector;
 			mannequinModel.current = model;
 
-			_scene(
-				document.documentElement.clientWidth,
-				document.documentElement.clientHeight
-			);
+			_scene(documentWidth, documentHeight);
 
 			mannequinModel.current.position.set(0, -100, 0);
 
@@ -470,7 +474,7 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			{/* // ========= captured pose logic */}
-			<div
+			{/* <div
 				style={{
 					width: "500px",
 					height: "400px",
@@ -485,7 +489,7 @@ export default function DigitalTrainer() {
 					height={400}
 					objects={capturedPose}
 				/>
-			</div>
+			</div> */}
 			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
 			{/* <div
@@ -509,14 +513,14 @@ export default function DigitalTrainer() {
 			{/* // ========= diff curve logic */}
 			<div
 				style={{
-					width: "300px",
-					height: "300px",
+					width: silhouetteSize + "px",
+					height: silhouetteSize + "px",
 					position: "absolute",
-					bottom: "100px",
+					bottom: 0.3*silhouetteSize + "px",
 					left: 0,
 				}}
 			>
-				<Silhouette width={300} height={300} />
+				<Silhouette width={silhouetteSize} height={silhouetteSize} />
 			</div>
 			<div className="btn-box">
 				<div>
