@@ -182,7 +182,7 @@ export default function DigitalTrainer() {
 	}, [vectorDistances]);
 
 	useEffect(() => {
-		poseSyncThresholdRef.current = poseSyncThreshold;
+		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
 	}, [poseSyncThreshold]);
 
 	function loadTrainingList() {
@@ -296,7 +296,8 @@ export default function DigitalTrainer() {
 				// compare the distance curve between animation and pose
 				poseCompareResult.current = poseSync.current.compareCurrentPose(
 					keypoints3D.current,
-					figureParts.current
+					figureParts.current,
+					poseSyncThresholdRef.current
 				);
 
 				setdiffScore(parseInt(poseSync.current.diffScore));
@@ -714,8 +715,8 @@ export default function DigitalTrainer() {
 						defaultValue={[0, 6]}
 						thumbsDisabled={[true, false]}
 						rangeSlideDisabled={true}
-						onInput={(a, b, c) => {
-							console.log(a, b, c);
+						onInput={(values) => {
+							setposeSyncThreshold(values[1]);
 						}}
 					/>
 				</div>
