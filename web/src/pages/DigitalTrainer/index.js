@@ -7,6 +7,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import RangeSlider from "react-range-slider-input";
 import Button from "react-bootstrap/Button";
+import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
 import "../../styles/css/DigitalTrainer.css";
 
@@ -639,11 +640,11 @@ export default function DigitalTrainer() {
 			</div>
 			<div className="controls">
 				<div>
-					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
+					<span style={{ fontSize: "40px", color: "#fff" }}>
 						{diffScore}
 					</span>
 				</div>
-				<div>
+				<div style={{ color: "#fff" }}>
 					{distacneSortIndex &&
 						distacneSortIndex.map((indx, i) => {
 							return (
@@ -656,24 +657,24 @@ export default function DigitalTrainer() {
 							);
 						})}
 				</div>
-				<div>
-					<ul>
+				<div style={{ marginBottom: "40px" }}>
+					<ListGroup>
 						{trainingList &&
 							trainingList.map((item, i) => {
 								return (
-									<li
+									<ListGroup.Item
 										key={i}
 										onClick={() => {
 											setselectedTrainingIndx(i);
 										}}
 									>
 										{item.name}
-									</li>
+									</ListGroup.Item>
 								);
 							})}
-					</ul>
+					</ListGroup>
 				</div>
-				<div>
+				<div style={{ marginBottom: "40px" }}>
 					{startBtnShow && (
 						<Button
 							variant="primary"
