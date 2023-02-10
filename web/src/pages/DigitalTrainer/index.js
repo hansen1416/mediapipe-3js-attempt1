@@ -8,6 +8,7 @@ import "@tensorflow/tfjs-backend-webgl";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette from "./Silhouette";
+import Slider from "../../components/Slider";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
 import {
@@ -45,6 +46,8 @@ export default function DigitalTrainer() {
 	const keypoints3D = useRef(null);
 
 	const poseSync = useRef(null);
+	const [poseSyncThreshold, setposeSyncThreshold] = useState(0);
+	const poseSyncThresholdRef = useRef(0)
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
 
@@ -172,6 +175,10 @@ export default function DigitalTrainer() {
 		}
 		// eslint-disable-next-line
 	}, [vectorDistances]);
+
+	useEffect(() => {
+		poseSyncThresholdRef.current = poseSyncThreshold;
+	}, [poseSyncThreshold]);
 
 	function loadTrainingList() {
 		new Promise((resolve) => {
@@ -624,6 +631,18 @@ export default function DigitalTrainer() {
 					width={silhouetteSize}
 					height={silhouetteSize}
 					colors={silhouetteColors}
+				/>
+			</div>
+			<div
+				style={{position: 'absolute', top: '100px', right: '10px'}}
+			>
+				<Slider
+					value={poseSyncThreshold}
+					setValue={setposeSyncThreshold}
+					maxValue={1000}
+					minValue={100}
+					width={300}
+					height={100}
 				/>
 			</div>
 			<div className="btn-box">
