@@ -5,10 +5,14 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
+import RangeSlider from "react-range-slider-input";
+import Button from "react-bootstrap/Button";
+import "react-range-slider-input/dist/style.css";
+import "../../styles/css/DigitalTrainer.css";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette from "./Silhouette";
-import Slider from "../../components/Slider";
+// import Slider from "../../components/Slider";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
 import {
@@ -47,7 +51,7 @@ export default function DigitalTrainer() {
 
 	const poseSync = useRef(null);
 	const [poseSyncThreshold, setposeSyncThreshold] = useState(0);
-	const poseSyncThresholdRef = useRef(0)
+	const poseSyncThresholdRef = useRef(0);
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
 
@@ -569,7 +573,7 @@ export default function DigitalTrainer() {
 	}, [selectedTrainingIndx]);
 
 	return (
-		<div>
+		<div className="digital-trainer">
 			<video
 				ref={videoRef}
 				autoPlay={true}
@@ -633,19 +637,7 @@ export default function DigitalTrainer() {
 					colors={silhouetteColors}
 				/>
 			</div>
-			<div
-				style={{position: 'absolute', top: '100px', right: '10px'}}
-			>
-				<Slider
-					value={poseSyncThreshold}
-					setValue={setposeSyncThreshold}
-					maxValue={1000}
-					minValue={100}
-					width={300}
-					height={100}
-				/>
-			</div>
-			<div className="btn-box">
+			<div className="controls">
 				<div>
 					<span style={{ fontSize: "40px", margin: "0 20px 0 0" }}>
 						{diffScore}
@@ -683,7 +675,8 @@ export default function DigitalTrainer() {
 				</div>
 				<div>
 					{startBtnShow && (
-						<button
+						<Button
+							variant="primary"
 							onClick={() => {
 								if (videoRef.current) {
 									startCamera(videoRef.current);
@@ -695,10 +688,11 @@ export default function DigitalTrainer() {
 							}}
 						>
 							Start
-						</button>
+						</Button>
 					)}
 					{stopBtnShow && (
-						<button
+						<Button
+							variant="secondary"
 							onClick={() => {
 								if (videoRef.current) {
 									videoRef.current.srcObject = null;
@@ -710,8 +704,19 @@ export default function DigitalTrainer() {
 							}}
 						>
 							Stop
-						</button>
+						</Button>
 					)}
+				</div>
+				<div style={{ marginTop: "20px" }}>
+					<RangeSlider
+						className="single-thumb"
+						defaultValue={[0, 6]}
+						thumbsDisabled={[true, false]}
+						rangeSlideDisabled={true}
+						onInput={(a, b, c) => {
+							console.log(a, b, c);
+						}}
+					/>
 				</div>
 			</div>
 		</div>

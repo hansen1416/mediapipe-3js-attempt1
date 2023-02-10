@@ -1,5 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import "./styles/css/App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
 	return (

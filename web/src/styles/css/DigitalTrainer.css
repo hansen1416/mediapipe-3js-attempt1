@@ -1,0 +1,12 @@
+.digital-trainer .single-thumb .range-slider__thumb[data-lower] {
+  width: 0;
+}
+.digital-trainer .single-thumb .range-slider__range {
+  border-radius: 6px;
+}
+.digital-trainer .controls {
+  position: absolute;
+  width: 200px;
+  right: 20px;
+  bottom: 20px;
+}
