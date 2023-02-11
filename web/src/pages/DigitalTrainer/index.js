@@ -250,6 +250,11 @@ export default function DigitalTrainer() {
 	}
 
 	function watchAnimation() {
+		/**
+		 * todo, separate logic into two parts
+		 * one is generate pose3d data, which happends 60/6 fps
+		 * another is apply animation, also update round and current exercise
+		 */
 		counter.current += 1;
 
 		if (

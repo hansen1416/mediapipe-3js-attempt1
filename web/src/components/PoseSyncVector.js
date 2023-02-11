@@ -196,6 +196,8 @@ export default class PoseSyncVector {
 	}
 
 	boneLimbs(bones) {
+		// left and right reversed
+		// compatible with blazepose
 		const upper = [
 			["upperarm_r", "upperarm_l"],
 			["upperarm_r", "lowerarm_r"],
