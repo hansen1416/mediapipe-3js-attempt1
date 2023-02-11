@@ -358,7 +358,6 @@ export default function DigitalTrainer() {
 		 *
 		 *
 		 */
-
 		if (currentAnimationIndx.current < currentLongestTrack.current) {
 			// the current animation is still in progess
 
@@ -607,7 +606,7 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			{/* // ========= captured pose logic */}
-			{/* <div
+			<div
 				style={{
 					width: "500px",
 					height: "400px",
@@ -622,7 +621,7 @@ export default function DigitalTrainer() {
 					height={400}
 					objects={capturedPose}
 				/>
-			</div> */}
+			</div>
 			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
 			{/* <div
@@ -732,7 +731,7 @@ export default function DigitalTrainer() {
 				<div style={{ marginTop: "20px" }}>
 					<RangeSlider
 						className="single-thumb"
-						defaultValue={[0, 6]}
+						defaultValue={[0, 10]}
 						thumbsDisabled={[true, false]}
 						rangeSlideDisabled={true}
 						onInput={(values) => {
