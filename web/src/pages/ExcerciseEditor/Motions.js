@@ -418,7 +418,7 @@ export default function Motions({
 									key={i}
 									className={[
 										"block",
-										(i + 1) % 4 === 0 ? "border" : "",
+										(i + 1) % 4 === 0 ? "fringe" : "",
 									].join(" ")}
 									style={{
 										width: blockSize + "px",
@@ -453,7 +453,7 @@ export default function Motions({
 										activated === animationList[i]
 											? "active"
 											: "",
-										(i + 1) % 4 === 0 ? "border" : "",
+										(i + 1) % 4 === 0 ? "fringe" : "",
 									].join(" ")}
 									style={{
 										width: blockSize + "px",

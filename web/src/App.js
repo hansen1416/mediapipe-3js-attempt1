@@ -13,8 +13,11 @@ function App() {
 					className="flex-column"
 				>
 					{/* <Nav.Link href="/interpreter">Active</Nav.Link> */}
-					<Link href="/excercise-editor">excercise-editor</Link>
-					<Link href="/digital-trainer">digital-trainer</Link>
+					<Nav.Link href="/excercise-editor">
+						excercise editor
+					</Nav.Link>
+					<Nav.Link href="/digital-trainer">digital trainer</Nav.Link>
+					<Nav.Link href="/cloud-rove">cloud rove</Nav.Link>
 				</Nav>
 			</div>
 		</div>

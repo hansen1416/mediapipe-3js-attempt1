@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import MotionInterpreter from "./pages/MotionInterpreter";
 import ExcerciseEditor from "./pages/ExcerciseEditor";
 import DigitalTrainer from "./pages/DigitalTrainer";
+import CloudRove from "./pages/CloudRove";
 
 const router = createBrowserRouter([
 	{
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
 			{
 				path: "/digital-trainer",
 				element: <DigitalTrainer />,
+			},
+			{
+				path: "/cloud-rove",
+				element: <CloudRove />,
 			},
 		],
 	},

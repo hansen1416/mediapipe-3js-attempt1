@@ -201,7 +201,7 @@ export default function ExcerciseEditor() {
 			className="box"
 			style={{ width: boxWidth + "px", height: boxHeight + "px" }}
 		>
-			<div className="container">
+			<div className="kasten">
 				<Motions
 					training={training}
 					settraining={settraining}
