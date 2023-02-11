@@ -3211,7 +3211,12 @@
   "resolved" "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001412.tgz"
   "version" "1.0.30001412"
 
-"cannon-es@^0.20.0":
+"cannon-es-debugger@^1.0.0":
+  "integrity" "sha512-sE9lDOBAYFKlh+0w+cvWKwUhJef8HYnUSVPWPL0jD15MAuVRQKno4QYZSGxgOoJkMR3mQqxL4bxys2b3RSWH8g=="
+  "resolved" "https://registry.npmmirror.com/cannon-es-debugger/-/cannon-es-debugger-1.0.0.tgz"
+  "version" "1.0.0"
+
+"cannon-es@^0.20.0", "cannon-es@0.x":
   "integrity" "sha512-eZhWTZIkFOnMAJOgfXJa9+b3kVlvG+FX4mdkpePev/w/rP5V8NRquGyEozcjPfEoXUlb+p7d9SUcmDSn14prOA=="
   "resolved" "https://registry.npmjs.org/cannon-es/-/cannon-es-0.20.0.tgz"
   "version" "0.20.0"
@@ -9300,7 +9305,7 @@
   "resolved" "https://registry.npmjs.org/text-table/-/text-table-0.2.0.tgz"
   "version" "0.2.0"
 
-"three@^0.145.0":
+"three@^0.145.0", "three@0.x":
   "integrity" "sha512-EKoHQEtEJ4CB6b2BGMBgLZrfwLjXcSUfoI/MiIXUuRpeYsfK5aPWbYhdtIVWOH+x6X0TouldHKHBuc/LAiFzAw=="
   "resolved" "https://registry.npmjs.org/three/-/three-0.145.0.tgz"
   "version" "0.145.0"
@@ -9462,7 +9467,7 @@
   dependencies:
     "is-typedarray" "^1.0.0"
 
-"typescript@^3.2.1 || ^4", "typescript@>= 2.7", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta":
+"typescript@^3.2.1 || ^4", "typescript@>= 2.7", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.8":
   "integrity" "sha512-goMHfm00nWPa8UvR/CPSvykqf6dVV8x/dp0c5mFTMTIu0u0FlGWRioyy7Nn0PGAdHxpJZnuO/ut+PpQ8UiHAig=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.8.3.tgz"
   "version" "4.8.3"
