@@ -17,42 +17,62 @@ export default function Silhouette({ width, height, colors }) {
 	useEffect(() => {
 		if (colors["chest"]) {
 			setchestColor(colors["chest"]);
+		} else {
+			setchestColor(defaultColor);
 		}
 
 		if (colors["leftupperarm"]) {
 			setleftUpperArmColor(colors["leftupperarm"]);
+		} else {
+			setleftUpperArmColor(defaultColor);
 		}
 
 		if (colors["leftforearm"]) {
 			setleftForeArmColor(colors["leftforearm"]);
+		} else {
+			setleftForeArmColor(defaultColor);
 		}
 
 		if (colors["rightupperarm"]) {
 			setrightUpperArmColor(colors["rightupperarm"]);
+		} else {
+			setrightUpperArmColor(defaultColor);
 		}
 
 		if (colors["rightforearm"]) {
 			setrightForeArmColor(colors["rightforearm"]);
+		} else {
+			setrightForeArmColor(defaultColor);
 		}
 
 		if (colors["abdominal"]) {
 			setabdominalColor(colors["abdominal"]);
+		} else {
+			setabdominalColor(defaultColor);
 		}
 
 		if (colors["leftthigh"]) {
 			setleftThighColor(colors["leftthigh"]);
+		} else {
+			setleftThighColor(defaultColor);
 		}
 
 		if (colors["leftcalf"]) {
 			setleftCalfColor(colors["leftcalf"]);
+		} else {
+			setleftCalfColor(defaultColor);
 		}
 
 		if (colors["rightthigh"]) {
 			setrightThighColor(colors["rightthigh"]);
+		} else {
+			setrightThighColor(defaultColor);
 		}
 
 		if (colors["rightcalf"]) {
 			setrightCalfColor(colors["rightcalf"]);
+		} else {
+			setrightCalfColor(defaultColor);
 		}
 	}, [colors]);
 

@@ -339,6 +339,26 @@ export default function DigitalTrainer() {
 			// ========= captured pose logic
 		})();
 
+		/**
+		 * current animation not finished
+		 * 		continue increment frame index
+		 * else
+		 * 		more round to do
+		 * 			reset frame index
+		 * 		else
+		 * 			more exercise to do
+		 * 				calculate longest track
+		 * 				refill round
+		 * 				reset frame index
+		 * 			else
+		 *				flag no longer in exercise
+		 *				reset frame index
+		 *				reset logest track
+		 *				reset round
+		 *
+		 *
+		 */
+
 		if (currentAnimationIndx.current < currentLongestTrack.current) {
 			// the current animation is still in progess
 
@@ -357,63 +377,79 @@ export default function DigitalTrainer() {
 
 					currentAnimationIndx.current += 1;
 				} else if (poseCompareResult.current === false) {
-					// compare failed, stop animation
+					// compare failed, pause animation
 				}
 
-				if (
-					currentAnimationIndx.current >= currentLongestTrack.current
-				) {
-					currentAnimationIndx.current = 0;
-				}
+				// if (
+				// 	currentAnimationIndx.current >= currentLongestTrack.current
+				// ) {
+				// 	currentAnimationIndx.current = 0;
+				// }
 			}
 
 			currentAnimationIndx.current += 1;
 		} else {
 			// the current animation finished
 
-			if (exerciseQueueIndx.current < exerciseQueue.current.length - 1) {
-				// there are more animation in the queue
-				/**
-				 * 1. read animation data, set position, calculate longest track based on it
-				 * 2. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
-				 */
-
-				exerciseQueueIndx.current += 1;
+			if (currentRound.current > 0) {
+				// still more round to go
+				currentRound.current -= 1;
 				currentAnimationIndx.current = 0;
-				currentRound.current = 0;
-
-				const animation_data =
-					animationJSONs.current[
-						exerciseQueue.current[exerciseQueueIndx.current]
-					];
-
-				mannequinModel.current.position.set(
-					animation_data.position.x,
-					animation_data.position.y,
-					animation_data.position.z
-				);
-
-				mannequinModel.current.rotation.set(
-					animation_data.rotation.x,
-					animation_data.rotation.y,
-					animation_data.rotation.z
-				);
-
-				currentLongestTrack.current =
-					calculateLongestTrackFromAnimation(animation_data.tracks);
-
-				poseSync.current = new PoseSync(animation_data);
-				poseSyncVector.current = new PoseSyncVector(animation_data);
 			} else {
-				// all animation played
-				// todo all complete hook
+				// all round done
 
-				inExercise.current = false;
+				if (
+					exerciseQueueIndx.current <
+					exerciseQueue.current.length - 1
+				) {
+					// there are more animation in the queue
+					/**
+					 * 1. read animation data, set position, calculate longest track based on it
+					 * 2. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
+					 */
 
-				exerciseQueueIndx.current = 0;
-				currentAnimationIndx.current = 0;
-				currentLongestTrack.current = 0;
-				currentRound.current = 0;
+					exerciseQueueIndx.current += 1;
+					currentAnimationIndx.current = 0;
+					currentRound.current = parseInt(
+						exerciseQueue.current[exerciseQueueIndx.current].round
+					);
+
+					const animation_data =
+						animationJSONs.current[
+							exerciseQueue.current[exerciseQueueIndx.current]
+								.name
+						];
+
+					mannequinModel.current.position.set(
+						animation_data.position.x,
+						animation_data.position.y,
+						animation_data.position.z
+					);
+
+					mannequinModel.current.rotation.set(
+						animation_data.rotation.x,
+						animation_data.rotation.y,
+						animation_data.rotation.z
+					);
+
+					currentLongestTrack.current =
+						calculateLongestTrackFromAnimation(
+							animation_data.tracks
+						);
+
+					poseSync.current = new PoseSync(animation_data);
+					poseSyncVector.current = new PoseSyncVector(animation_data);
+				} else {
+					// all animation played
+					// todo all complete hook
+
+					inExercise.current = false;
+
+					exerciseQueueIndx.current = 0;
+					currentAnimationIndx.current = 0;
+					currentLongestTrack.current = 0;
+					currentRound.current = 0;
+				}
 			}
 		}
 	}
@@ -536,32 +572,24 @@ export default function DigitalTrainer() {
 		 */
 		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
 			const tasks = [];
+			const q = [];
 
-			for (let t of trainingList) {
-				for (const e of t.exercise) {
-					tasks.push(
-						loadObj(
-							process.env.PUBLIC_URL +
-								"/animjson/" +
-								e.name +
-								".json"
-						)
-					);
-				}
+			for (const e of trainingList[selectedTrainingIndx].exercise) {
+				tasks.push(
+					loadObj(
+						process.env.PUBLIC_URL + "/animjson/" + e.name + ".json"
+					)
+				);
+
+				q.push(e);
 			}
 
-			exerciseQueue.current = [];
+			exerciseQueue.current = q.reverse();
 
 			Promise.all(tasks).then((data) => {
-				const q = [];
-
 				for (const v of data) {
 					animationJSONs.current[v.name] = v;
-
-					q.push(v.name);
 				}
-
-				exerciseQueue.current = q.reverse();
 
 				exerciseQueueIndx.current = 0;
 				currentAnimationIndx.current = 0;
