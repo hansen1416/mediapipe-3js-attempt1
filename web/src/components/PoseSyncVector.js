@@ -197,16 +197,16 @@ export default class PoseSyncVector {
 
 	boneLimbs(bones) {
 		const upper = [
-			["upperarm_l", "upperarm_r"],
-			["upperarm_l", "lowerarm_l"],
-			["lowerarm_l", "hand_l"],
+			["upperarm_r", "upperarm_l"],
 			["upperarm_r", "lowerarm_r"],
 			["lowerarm_r", "hand_r"],
-			["thigh_l", "thigh_r"],
-			["thigh_l", "calf_l"],
-			["calf_l", "foot_l"],
+			["upperarm_l", "lowerarm_l"],
+			["lowerarm_l", "hand_l"],
+			["thigh_r", "thigh_l"],
 			["thigh_r", "calf_r"],
 			["calf_r", "foot_r"],
+			["thigh_l", "calf_l"],
+			["calf_l", "foot_l"],
 		];
 
 		const basisMatrix = this.boneTorso(bones);
