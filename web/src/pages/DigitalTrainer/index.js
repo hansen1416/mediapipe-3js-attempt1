@@ -191,8 +191,8 @@ export default function DigitalTrainer() {
 				{
 					name: "default training",
 					exercise: [
-						{ round: 50, name: "punch-walk" },
-						{ round: 10, name: "basic-crunch" },
+						{ round: 2, name: "punch-walk" },
+						{ round: 5, name: "basic-crunch" },
 						// { round: 4, name: "curl-up" },
 						// { round: 6, name: "leg-scissors" },
 						// { round: 8, name: "leg-scissors" },
@@ -379,36 +379,26 @@ export default function DigitalTrainer() {
 				} else if (poseCompareResult.current === false) {
 					// compare failed, pause animation
 				}
-
-				// if (
-				// 	currentAnimationIndx.current >= currentLongestTrack.current
-				// ) {
-				// 	currentAnimationIndx.current = 0;
-				// }
 			}
 
 			currentAnimationIndx.current += 1;
 		} else {
 			// the current animation finished
 
-			if (currentRound.current > 0) {
+			if (currentRound.current > 1) {
 				// still more round to go
 				currentRound.current -= 1;
 				currentAnimationIndx.current = 0;
 			} else {
 				// all round done
 
-				if (
-					exerciseQueueIndx.current <
-					exerciseQueue.current.length - 1
-				) {
+				if (exerciseQueueIndx.current < exerciseQueue.current.length) {
 					// there are more animation in the queue
 					/**
 					 * 1. read animation data, set position, calculate longest track based on it
 					 * 2. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
 					 */
 
-					exerciseQueueIndx.current += 1;
 					currentAnimationIndx.current = 0;
 					currentRound.current = parseInt(
 						exerciseQueue.current[exerciseQueueIndx.current].round
@@ -431,6 +421,8 @@ export default function DigitalTrainer() {
 						animation_data.rotation.y,
 						animation_data.rotation.z
 					);
+
+					exerciseQueueIndx.current += 1;
 
 					currentLongestTrack.current =
 						calculateLongestTrackFromAnimation(
@@ -584,7 +576,7 @@ export default function DigitalTrainer() {
 				q.push(e);
 			}
 
-			exerciseQueue.current = q.reverse();
+			exerciseQueue.current = q;
 
 			Promise.all(tasks).then((data) => {
 				for (const v of data) {
