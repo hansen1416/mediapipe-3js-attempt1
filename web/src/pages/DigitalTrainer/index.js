@@ -107,6 +107,10 @@ export default function DigitalTrainer() {
 	// number of round of the current exercise(animation)
 	const currentRound = useRef(0);
 
+	const [currentExerciseName, setcurrentExerciseName] = useState("");
+	const [currentExerciseRemainRound, setcurrentExerciseRemainRound] =
+		useState(0);
+
 	const [counterNumber, setcounterNumber] = useState(-1);
 
 	// get ready count down
@@ -205,11 +209,11 @@ export default function DigitalTrainer() {
 					name: "default training",
 					rest: 180,
 					exercise: [
-						{ round: 2, key: "punch-walk", name: "Punch Walk" },
-						{ round: 2, key: "basic-crunch", name: "Basic Crunch" },
-						{ round: 2, key: "curl-up", name: "Curl Up" },
-						{ round: 2, key: "leg-scissors", name: "Lef Scissors" },
-						{ round: 2, key: "toe-crunch", name: "Toe Crunch" },
+						{ round: 2, key: "punch-walk" },
+						{ round: 2, key: "basic-crunch" },
+						{ round: 2, key: "curl-up" },
+						{ round: 2, key: "leg-scissors" },
+						{ round: 2, key: "toe-crunch" },
 					],
 				},
 			]);
@@ -438,6 +442,8 @@ export default function DigitalTrainer() {
 				// still more round to go
 				currentRound.current -= 1;
 				currentAnimationIndx.current = 0;
+
+				setcurrentExerciseRemainRound(currentRound.current);
 			} else {
 				// all round done, switch to next exercise
 
@@ -467,6 +473,8 @@ export default function DigitalTrainer() {
 
 					// training complete hook
 					setshowCompleted(true);
+					setcurrentExerciseName("");
+					setcurrentExerciseRemainRound(0);
 
 					// todo make API call to save user data
 				}
@@ -665,6 +673,14 @@ export default function DigitalTrainer() {
 		poseSyncVector.current = new PoseSyncVector(animation_data);
 
 		applyTransfer(figureParts.current, animation_data.tracks, 0);
+
+		setcurrentExerciseName(
+			animation_data.display_name
+				? animation_data.display_name
+				: animation_data.name
+		);
+
+		setcurrentExerciseRemainRound(currentRound.current);
 	}
 
 	return (
@@ -842,6 +858,17 @@ export default function DigitalTrainer() {
 					</div>
 				</div>
 			</div>
+
+			{currentExerciseName && (
+				<div className="exercise-info">
+					<span>{currentExerciseName}</span>
+					{currentExerciseRemainRound && (
+						<span style={{ marginLeft: "20px" }}>
+							{currentExerciseRemainRound}
+						</span>
+					)}
+				</div>
+			)}
 
 			{counterNumber >= 0 && <Counter number={counterNumber} />}
 

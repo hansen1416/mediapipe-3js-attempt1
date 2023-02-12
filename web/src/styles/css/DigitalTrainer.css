@@ -12,6 +12,13 @@
   bottom: 6vh;
   font-size: 24px;
 }
+.digital-trainer .exercise-info {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  font-size: 30px;
+  color: #fff;
+}
 .digital-trainer .counter {
   position: absolute;
   width: 200px;
