@@ -205,11 +205,11 @@ export default function DigitalTrainer() {
 					name: "default training",
 					rest: 180,
 					exercise: [
-						{ round: 2, name: "punch-walk" },
-						{ round: 2, name: "basic-crunch" },
-						{ round: 2, name: "curl-up" },
-						{ round: 2, name: "leg-scissors" },
-						{ round: 2, name: "toe-crunch" },
+						{ round: 2, key: "punch-walk", name: "Punch Walk" },
+						{ round: 2, key: "basic-crunch", name: "Basic Crunch" },
+						{ round: 2, key: "curl-up", name: "Curl Up" },
+						{ round: 2, key: "leg-scissors", name: "Lef Scissors" },
+						{ round: 2, key: "toe-crunch", name: "Toe Crunch" },
 					],
 				},
 			]);
@@ -467,6 +467,8 @@ export default function DigitalTrainer() {
 
 					// training complete hook
 					setshowCompleted(true);
+
+					// todo make API call to save user data
 				}
 			}
 		}
@@ -603,7 +605,7 @@ export default function DigitalTrainer() {
 			for (const e of trainingList[selectedTrainingIndx].exercise) {
 				tasks.push(
 					loadObj(
-						process.env.PUBLIC_URL + "/animjson/" + e.name + ".json"
+						process.env.PUBLIC_URL + "/animjson/" + e.key + ".json"
 					)
 				);
 
@@ -640,7 +642,7 @@ export default function DigitalTrainer() {
 
 		const animation_data =
 			animationJSONs.current[
-				exerciseQueue.current[exerciseQueueIndx.current].name
+				exerciseQueue.current[exerciseQueueIndx.current].key
 			];
 
 		mannequinModel.current.position.set(
