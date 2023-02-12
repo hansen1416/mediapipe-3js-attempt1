@@ -14,7 +14,7 @@ import "../../styles/css/DigitalTrainer.css";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette from "./Silhouette";
-// import Slider from "../../components/Slider";
+import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
 import {
@@ -206,7 +206,6 @@ export default function DigitalTrainer() {
 						{ round: 2, name: "punch-walk" },
 						{ round: 2, name: "basic-crunch" },
 						{ round: 2, name: "curl-up" },
-						{ round: 2, name: "leg-scissors" },
 						{ round: 2, name: "leg-scissors" },
 						{ round: 2, name: "toe-crunch" },
 					],
@@ -839,9 +838,7 @@ export default function DigitalTrainer() {
 				</div>
 			</div>
 
-			{counterNumber >= 0 && (
-				<div className="counter">{counterNumber}</div>
-			)}
+			{counterNumber >= 0 && <Counter number={counterNumber} />}
 		</div>
 	);
 }
