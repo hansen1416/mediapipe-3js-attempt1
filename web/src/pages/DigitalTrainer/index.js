@@ -106,6 +106,8 @@ export default function DigitalTrainer() {
 	const currentLongestTrack = useRef(0);
 	// number of round of the current exercise(animation)
 	const currentRound = useRef(0);
+	// rest time in seconds, between exercises
+	const resetTime = useRef(3);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -191,6 +193,7 @@ export default function DigitalTrainer() {
 			resolve([
 				{
 					name: "default training",
+					rest: 3,
 					exercise: [
 						{ round: 2, name: "punch-walk" },
 						{ round: 2, name: "basic-crunch" },
@@ -243,16 +246,16 @@ export default function DigitalTrainer() {
 			counter.current += 1;
 
 			if (
-				!videoRef.current ||
-				videoRef.current.readyState < 2 ||
-				counter.current % 3 !== 0
+				videoRef.current &&
+				videoRef.current.readyState >= 2 &&
+				counter.current % 3 === 0
 			) {
 				calculatePose();
 			} else {
 				keypoints3D.current = null;
 			}
 
-			if (counter.current % 2 !== 0) {
+			if (counter.current % 2 === 0) {
 				applyAnimation();
 			}
 		}
@@ -404,7 +407,7 @@ export default function DigitalTrainer() {
 				currentRound.current -= 1;
 				currentAnimationIndx.current = 0;
 			} else {
-				// all round done
+				// all round done, switch to next exercise
 
 				if (exerciseQueueIndx.current < exerciseQueue.current.length) {
 					// there are more animation in the queue
@@ -445,6 +448,8 @@ export default function DigitalTrainer() {
 
 					poseSync.current = new PoseSync(animation_data);
 					poseSyncVector.current = new PoseSyncVector(animation_data);
+
+					console.log("============== in rest", resetTime.current);
 				} else {
 					// all animation played
 					// todo all complete hook
@@ -579,6 +584,14 @@ export default function DigitalTrainer() {
 		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
 			const tasks = [];
 			const q = [];
+
+			try {
+				resetTime.current = parseInt(
+					trainingList[selectedTrainingIndx].rest
+				);
+			} catch (e) {
+				console.error(e);
+			}
 
 			for (const e of trainingList[selectedTrainingIndx].exercise) {
 				tasks.push(
