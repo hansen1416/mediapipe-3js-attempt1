@@ -106,8 +106,16 @@ export default function DigitalTrainer() {
 	const currentLongestTrack = useRef(0);
 	// number of round of the current exercise(animation)
 	const currentRound = useRef(0);
+
+	const [counterNumber, setcounterNumber] = useState(0);
+
+	// get ready count down
+	const getReadyCountDown = useRef(0);
+
 	// rest time in seconds, between exercises
-	const resetTime = useRef(3);
+	const resetTime = useRef(180);
+
+	const restCountDown = useRef(0);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -193,7 +201,7 @@ export default function DigitalTrainer() {
 			resolve([
 				{
 					name: "default training",
-					rest: 3,
+					rest: 180,
 					exercise: [
 						{ round: 2, name: "punch-walk" },
 						{ round: 2, name: "basic-crunch" },
@@ -245,19 +253,7 @@ export default function DigitalTrainer() {
 		if (inExercise.current) {
 			counter.current += 1;
 
-			if (
-				videoRef.current &&
-				videoRef.current.readyState >= 2 &&
-				counter.current % 3 === 0
-			) {
-				calculatePose();
-			} else {
-				keypoints3D.current = null;
-			}
-
-			if (counter.current % 2 === 0) {
-				applyAnimation();
-			}
+			doingTraining();
 		}
 
 		controls.current.update();
@@ -265,6 +261,38 @@ export default function DigitalTrainer() {
 		renderer.current.render(scene.current, camera.current);
 
 		animationPointer.current = requestAnimationFrame(animate);
+	}
+
+	function doingTraining() {
+		if (getReadyCountDown.current > 0) {
+			getReadyCountDown.current -= 1;
+
+			setcounterNumber(parseInt(getReadyCountDown.current / 60));
+
+			return;
+		}
+
+		if (restCountDown.current > 0) {
+			restCountDown.current -= 1;
+
+			setcounterNumber(parseInt(restCountDown.current / 60));
+
+			return;
+		}
+
+		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 3 === 0
+		) {
+			calculatePose();
+		} else {
+			keypoints3D.current = null;
+		}
+
+		if (counter.current % 2 === 0) {
+			applyAnimation();
+		}
 	}
 
 	function calculatePose() {
@@ -420,7 +448,7 @@ export default function DigitalTrainer() {
 					initializeExercise();
 
 					// todo rest hook
-					console.log("============== in rest", resetTime.current);
+					restCountDown.current = resetTime.current;
 				} else {
 					// all animation played
 
@@ -590,7 +618,7 @@ export default function DigitalTrainer() {
 
 				setstartBtnShow(true);
 
-				// todo training ready hook
+				// training ready hook
 			});
 		}
 		// eslint-disable-next-line
@@ -743,7 +771,9 @@ export default function DigitalTrainer() {
 
 									inExercise.current = true;
 
-									// todo count down loop hook. default 5 seconds
+									// count down loop hook. default 5 seconds
+
+									getReadyCountDown.current = 300;
 
 									setstopBtnShow(true);
 								}
@@ -804,6 +834,8 @@ export default function DigitalTrainer() {
 					</div>
 				</div>
 			</div>
+
+			{counterNumber && <div className="counter">{counterNumber}</div>}
 		</div>
 	);
 }

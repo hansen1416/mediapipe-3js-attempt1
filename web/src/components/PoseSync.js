@@ -8,7 +8,7 @@ import * as THREE from "three";
 
 export default class PoseSync {
 	#bufferThreshold = 50;
-	#bufferStep = 50;
+	#bufferStep = 20;
 	#longestTrack = 0;
 
 	diffScore = 0;
