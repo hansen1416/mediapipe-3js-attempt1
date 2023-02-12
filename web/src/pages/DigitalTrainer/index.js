@@ -6,6 +6,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 // Register one of the TF.js backends.
 import "@tensorflow/tfjs-backend-webgl";
 import RangeSlider from "react-range-slider-input";
+import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
@@ -51,7 +52,7 @@ export default function DigitalTrainer() {
 	const keypoints3D = useRef(null);
 
 	const poseSync = useRef(null);
-	const [poseSyncThreshold, setposeSyncThreshold] = useState(0);
+	const [poseSyncThreshold, setposeSyncThreshold] = useState(10);
 	const poseSyncThresholdRef = useRef(0);
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
@@ -239,7 +240,21 @@ export default function DigitalTrainer() {
 
 	function animate() {
 		if (inExercise.current) {
-			watchAnimation();
+			counter.current += 1;
+
+			if (
+				!videoRef.current ||
+				videoRef.current.readyState < 2 ||
+				counter.current % 3 !== 0
+			) {
+				calculatePose();
+			} else {
+				keypoints3D.current = null;
+			}
+
+			if (counter.current % 2 !== 0) {
+				applyAnimation();
+			}
 		}
 
 		controls.current.update();
@@ -249,23 +264,7 @@ export default function DigitalTrainer() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	function watchAnimation() {
-		/**
-		 * todo, separate logic into two parts
-		 * one is generate pose3d data, which happends 60/6 fps
-		 * another is apply animation, also update round and current exercise
-		 */
-		counter.current += 1;
-
-		if (
-			!videoRef.current ||
-			videoRef.current.readyState < 2 ||
-			counter.current % 3 !== 0
-		) {
-			keypoints3D.current = null;
-			return;
-		}
-
+	function calculatePose() {
 		/**
 		 * in this async function,
 		 * 1. calculate `keypoints3D.current`
@@ -321,6 +320,8 @@ export default function DigitalTrainer() {
 			if (poseSyncVector.current) {
 				// compare the limbs vectors between pose and animation
 
+				// this is only for display, doesn't affect animtion
+				// draw different colors on the silhouette
 				const distances = poseSyncVector.current.compareCurrentPose(
 					keypoints3D.current,
 					figureParts.current
@@ -343,10 +344,18 @@ export default function DigitalTrainer() {
 			}
 			// ========= captured pose logic
 		})();
+	}
 
+	function applyAnimation() {
 		/**
 		 * current animation not finished
-		 * 		continue increment frame index
+		 *
+		 * 		pose compared result is good
+		 * 			apply animation
+		 * 			continue increment frame index
+		 * 		else
+		 * 			continue
+		 *
 		 * else
 		 * 		more round to do
 		 * 			reset frame index
@@ -361,6 +370,9 @@ export default function DigitalTrainer() {
 		 *				reset logest track
 		 *				reset round
 		 *
+		 *
+		 * `oseCompareResult.current` is the flag indicate whether animation should be going
+		 * it's the diffscore calculated by `poseSync.current.compareCurrentPose`
 		 *
 		 */
 		if (currentAnimationIndx.current < currentLongestTrack.current) {
@@ -384,8 +396,6 @@ export default function DigitalTrainer() {
 					// compare failed, pause animation
 				}
 			}
-
-			currentAnimationIndx.current += 1;
 		} else {
 			// the current animation finished
 
@@ -733,16 +743,39 @@ export default function DigitalTrainer() {
 						</Button>
 					)}
 				</div>
-				<div style={{ marginTop: "20px" }}>
-					<RangeSlider
-						className="single-thumb"
-						defaultValue={[0, 10]}
-						thumbsDisabled={[true, false]}
-						rangeSlideDisabled={true}
-						onInput={(values) => {
-							setposeSyncThreshold(values[1]);
+				<div
+					style={{
+						marginTop: "20px",
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<div
+						style={{
+							flexGrow: 1,
 						}}
-					/>
+					>
+						<RangeSlider
+							className="single-thumb"
+							defaultValue={[0, 10]}
+							thumbsDisabled={[true, false]}
+							rangeSlideDisabled={true}
+							onInput={(values) => {
+								setposeSyncThreshold(values[1]);
+							}}
+						/>
+					</div>
+					<div
+						style={{
+							marginLeft: "10px",
+						}}
+					>
+						<Badge pill bg="primary">
+							{poseSyncThreshold}
+						</Badge>
+					</div>
 				</div>
 			</div>
 		</div>
