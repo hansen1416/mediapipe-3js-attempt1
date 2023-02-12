@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { Sky } from "three/examples/jsm/objects/Sky";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
@@ -120,7 +121,7 @@ export default function DigitalTrainer() {
 	const resetTime = useRef(180);
 	// count down during rest
 	const restCountDown = useRef(0);
-
+	// when training finished
 	const [showCompleted, setshowCompleted] = useState(false);
 
 	useEffect(() => {
@@ -243,6 +244,13 @@ export default function DigitalTrainer() {
 			camera.current.add(light);
 
 			scene.current.add(camera.current);
+		}
+
+		{
+			const sky = new Sky();
+
+			sky.scale.setScalar(10000); // Specify the dimensions of the skybox
+			scene.current.add(sky); // Add the sky to our scene
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
