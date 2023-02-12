@@ -107,7 +107,7 @@ export default function DigitalTrainer() {
 	// number of round of the current exercise(animation)
 	const currentRound = useRef(0);
 
-	const [counterNumber, setcounterNumber] = useState(0);
+	const [counterNumber, setcounterNumber] = useState(-1);
 
 	// get ready count down
 	const getReadyCountDown = useRef(0);
@@ -279,6 +279,9 @@ export default function DigitalTrainer() {
 
 			return;
 		}
+
+		// hide counter
+		setcounterNumber(-1);
 
 		if (
 			videoRef.current &&
@@ -775,6 +778,7 @@ export default function DigitalTrainer() {
 
 									getReadyCountDown.current = 300;
 
+									setstartBtnShow(false);
 									setstopBtnShow(true);
 								}
 							}}
@@ -835,7 +839,9 @@ export default function DigitalTrainer() {
 				</div>
 			</div>
 
-			{counterNumber && <div className="counter">{counterNumber}</div>}
+			{counterNumber >= 0 && (
+				<div className="counter">{counterNumber}</div>
+			)}
 		</div>
 	);
 }
