@@ -114,8 +114,10 @@ export default function DigitalTrainer() {
 
 	// rest time in seconds, between exercises
 	const resetTime = useRef(180);
-
+	// count down during rest
 	const restCountDown = useRef(0);
+
+	const [showCompleted, setshowCompleted] = useState(false);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -449,7 +451,7 @@ export default function DigitalTrainer() {
 
 					initializeExercise();
 
-					// todo rest hook
+					// rest hook
 					restCountDown.current = resetTime.current;
 				} else {
 					// all animation played
@@ -463,7 +465,8 @@ export default function DigitalTrainer() {
 
 					setstopBtnShow(false);
 
-					// todo training complete hook
+					// training complete hook
+					setshowCompleted(true);
 				}
 			}
 		}
@@ -619,8 +622,6 @@ export default function DigitalTrainer() {
 				initializeExercise();
 
 				setstartBtnShow(true);
-
-				// training ready hook
 			});
 		}
 		// eslint-disable-next-line
@@ -839,6 +840,10 @@ export default function DigitalTrainer() {
 			</div>
 
 			{counterNumber >= 0 && <Counter number={counterNumber} />}
+
+			{showCompleted && (
+				<div className="congratulations">Congratulations</div>
+			)}
 		</div>
 	);
 }
