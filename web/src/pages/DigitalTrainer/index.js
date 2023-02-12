@@ -661,6 +661,8 @@ export default function DigitalTrainer() {
 
 		poseSync.current = new PoseSync(animation_data);
 		poseSyncVector.current = new PoseSyncVector(animation_data);
+
+		applyTransfer(figureParts.current, animation_data.tracks, 0);
 	}
 
 	return (
