@@ -645,7 +645,7 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			{/* // ========= captured pose logic */}
-			<div
+			{/* <div
 				style={{
 					width: "500px",
 					height: "400px",
@@ -660,7 +660,7 @@ export default function DigitalTrainer() {
 					height={400}
 					objects={capturedPose}
 				/>
-			</div>
+			</div> */}
 			{/* // ========= captured pose logic */}
 			{/* // ========= diff curve logic */}
 			{/* <div
@@ -703,7 +703,7 @@ export default function DigitalTrainer() {
 						{diffScore}
 					</span>
 				</div>
-				<div style={{ color: "#fff" }}>
+				{/* <div style={{ color: "#fff" }}>
 					{distacneSortIndex &&
 						distacneSortIndex.map((indx, i) => {
 							return (
@@ -715,7 +715,7 @@ export default function DigitalTrainer() {
 								</div>
 							);
 						})}
-				</div>
+				</div> */}
 				<div style={{ marginBottom: "40px" }}>
 					<ListGroup>
 						{trainingList &&
