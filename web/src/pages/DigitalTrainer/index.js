@@ -419,10 +419,10 @@ export default function DigitalTrainer() {
 
 					initializeExercise();
 
+					// todo rest hook
 					console.log("============== in rest", resetTime.current);
 				} else {
 					// all animation played
-					// todo all complete hook
 
 					inExercise.current = false;
 
@@ -433,7 +433,7 @@ export default function DigitalTrainer() {
 
 					setstopBtnShow(false);
 
-					// todo stop training hook
+					// todo training complete hook
 				}
 			}
 		}
@@ -590,7 +590,7 @@ export default function DigitalTrainer() {
 
 				setstartBtnShow(true);
 
-				// todo get ready state
+				// todo training ready hook
 			});
 		}
 		// eslint-disable-next-line
@@ -743,7 +743,7 @@ export default function DigitalTrainer() {
 
 									inExercise.current = true;
 
-									// todo count down loop. default 5 seconds
+									// todo count down loop hook. default 5 seconds
 
 									setstopBtnShow(true);
 								}
