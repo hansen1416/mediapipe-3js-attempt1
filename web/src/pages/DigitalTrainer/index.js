@@ -409,45 +409,15 @@ export default function DigitalTrainer() {
 			} else {
 				// all round done, switch to next exercise
 
-				if (exerciseQueueIndx.current < exerciseQueue.current.length) {
+				if (
+					exerciseQueueIndx.current <
+					exerciseQueue.current.length - 1
+				) {
 					// there are more animation in the queue
-					/**
-					 * 1. read animation data, set position, calculate longest track based on it
-					 * 2. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
-					 */
-
-					currentAnimationIndx.current = 0;
-					currentRound.current = parseInt(
-						exerciseQueue.current[exerciseQueueIndx.current].round
-					);
-
-					const animation_data =
-						animationJSONs.current[
-							exerciseQueue.current[exerciseQueueIndx.current]
-								.name
-						];
-
-					mannequinModel.current.position.set(
-						animation_data.position.x,
-						animation_data.position.y,
-						animation_data.position.z
-					);
-
-					mannequinModel.current.rotation.set(
-						animation_data.rotation.x,
-						animation_data.rotation.y,
-						animation_data.rotation.z
-					);
 
 					exerciseQueueIndx.current += 1;
 
-					currentLongestTrack.current =
-						calculateLongestTrackFromAnimation(
-							animation_data.tracks
-						);
-
-					poseSync.current = new PoseSync(animation_data);
-					poseSyncVector.current = new PoseSyncVector(animation_data);
+					initializeExercise();
 
 					console.log("============== in rest", resetTime.current);
 				} else {
@@ -460,6 +430,10 @@ export default function DigitalTrainer() {
 					currentAnimationIndx.current = 0;
 					currentLongestTrack.current = 0;
 					currentRound.current = 0;
+
+					setstopBtnShow(false);
+
+					// todo stop training hook
 				}
 			}
 		}
@@ -583,7 +557,7 @@ export default function DigitalTrainer() {
 		 */
 		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
 			const tasks = [];
-			const q = [];
+			const tmp_queue = [];
 
 			try {
 				resetTime.current = parseInt(
@@ -600,10 +574,10 @@ export default function DigitalTrainer() {
 					)
 				);
 
-				q.push(e);
+				tmp_queue.push(e);
 			}
 
-			exerciseQueue.current = q;
+			exerciseQueue.current = tmp_queue;
 
 			Promise.all(tasks).then((data) => {
 				for (const v of data) {
@@ -611,15 +585,52 @@ export default function DigitalTrainer() {
 				}
 
 				exerciseQueueIndx.current = 0;
-				currentAnimationIndx.current = 0;
-				currentLongestTrack.current = 0;
-				currentRound.current = 0;
+
+				initializeExercise();
 
 				setstartBtnShow(true);
+
+				// todo get ready state
 			});
 		}
 		// eslint-disable-next-line
 	}, [selectedTrainingIndx]);
+
+	/**
+	 * 1. read animation data, read round
+	 * 2. read animation data, set mode position, rotation, calculate longest track
+	 * 3. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
+	 */
+	function initializeExercise() {
+		currentAnimationIndx.current = 0;
+		currentRound.current = parseInt(
+			exerciseQueue.current[exerciseQueueIndx.current].round
+		);
+
+		const animation_data =
+			animationJSONs.current[
+				exerciseQueue.current[exerciseQueueIndx.current].name
+			];
+
+		mannequinModel.current.position.set(
+			animation_data.position.x,
+			animation_data.position.y,
+			animation_data.position.z
+		);
+
+		mannequinModel.current.rotation.set(
+			animation_data.rotation.x,
+			animation_data.rotation.y,
+			animation_data.rotation.z
+		);
+
+		currentLongestTrack.current = calculateLongestTrackFromAnimation(
+			animation_data.tracks
+		);
+
+		poseSync.current = new PoseSync(animation_data);
+		poseSyncVector.current = new PoseSyncVector(animation_data);
+	}
 
 	return (
 		<div className="digital-trainer">
@@ -731,6 +742,8 @@ export default function DigitalTrainer() {
 									startCamera(videoRef.current);
 
 									inExercise.current = true;
+
+									// todo count down loop. default 5 seconds
 
 									setstopBtnShow(true);
 								}
