@@ -14,6 +14,7 @@ import MotionInterpreter from "./pages/MotionInterpreter";
 import ExcerciseEditor from "./pages/ExcerciseEditor";
 import DigitalTrainer from "./pages/DigitalTrainer";
 import CloudRove from "./pages/CloudRove";
+import Register from "./pages/Auth/Register";
 
 const router = createBrowserRouter([
 	{
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
 			{
 				path: "/cloud-rove",
 				element: <CloudRove />,
+			},
+			{
+				path: "/register",
+				element: <Register />,
 			},
 		],
 	},
