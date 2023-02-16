@@ -1,17 +1,9 @@
 import { useEffect, useRef } from "react";
-
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
+import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
-
-function loadObj(url) {
-	return new Promise((resolve) => {
-		const loader = new OBJLoader();
-		loader.load(url, (fbx) => resolve(fbx));
-	});
-}
 
 export default function ParticlCloud() {
 	const canvasRef = useRef(null);
@@ -22,6 +14,8 @@ export default function ParticlCloud() {
 
 	const animationPointer = useRef(0);
 
+	const figure = useRef(null);
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -29,6 +23,10 @@ export default function ParticlCloud() {
 		_scene(documentWidth, documentHeight);
 
 		animate();
+
+		figure.current = new Figure(scene.current, [0, 0, 0]);
+
+		figure.current.init();
 
 		generateCloud();
 
@@ -58,7 +56,7 @@ export default function ParticlCloud() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 30);
+		camera.current.position.set(0, 0, 10);
 
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
@@ -77,11 +75,7 @@ export default function ParticlCloud() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
-	function generateCloud() {
-		loadObj(process.env.PUBLIC_URL + "/SimpleDummy.obj").then((item) => {
-			console.log(item);
-		});
-	}
+	function generateCloud() {}
 
 	return (
 		<div className="cloud-rove">
