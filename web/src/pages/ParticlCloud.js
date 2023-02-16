@@ -6,6 +6,13 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 import { tmppose } from "../components/mypose";
 
+function loadObj(url) {
+	return new Promise((resolve) => {
+		const loader = new OBJLoader();
+		loader.load(url, (fbx) => resolve(fbx));
+	});
+}
+
 export default function ParticlCloud() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -71,7 +78,9 @@ export default function ParticlCloud() {
 	}
 
 	function generateCloud() {
-		console.log(OBJLoader);
+		loadObj(process.env.PUBLIC_URL + "/SimpleDummy.obj").then((item) => {
+			console.log(item);
+		});
 	}
 
 	return (
