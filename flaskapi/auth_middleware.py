@@ -6,6 +6,8 @@ import models
 
 def token_required(f):
     """
+    verify JWT token
+    the first parameter of the decorated function will be current user info
     """
     @wraps(f)
     def decorated(*args, **kwargs):
