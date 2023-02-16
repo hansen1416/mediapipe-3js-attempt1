@@ -13,7 +13,7 @@ class User(db.Model):
     publickey=db.Column(db.String(128))
     nonce=db.Column(db.String(128))
 
-class Pofile(db.Model):
+class Profile(db.Model):
     """
     user detailes
     user_id, more_info
