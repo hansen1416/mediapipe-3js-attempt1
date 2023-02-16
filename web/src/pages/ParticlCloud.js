@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 import { tmppose } from "../components/mypose";
 
@@ -21,6 +22,8 @@ export default function ParticlCloud() {
 		_scene(documentWidth, documentHeight);
 
 		animate();
+
+		generateCloud();
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -67,7 +70,9 @@ export default function ParticlCloud() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
-	function generateCloud() {}
+	function generateCloud() {
+		console.log(OBJLoader);
+	}
 
 	return (
 		<div className="cloud-rove">
