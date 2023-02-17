@@ -5,7 +5,7 @@ import { POSE_LANDMARKS } from "@mediapipe/pose";
 import {
 	sleep,
 	loadFBX,
-	loadObj,
+	loadJSON,
 	traverseModel,
 	modelInheritGraph,
 	getUpVectors,
@@ -45,12 +45,12 @@ export default function MotionInterpreter(props) {
 	function interpretAnimation() {
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
-			// loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/AirSquat.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/Clapping.json"),
-			// loadObj(process.env.PUBLIC_URL + "/json/JumpingJacks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/Waving.json"),
+			// loadJSON(process.env.PUBLIC_URL + "/json/BicycleCrunch.json"),
+			// loadJSON(process.env.PUBLIC_URL + "/json/KettlebellSwing.json"),
+			// loadJSON(process.env.PUBLIC_URL + "/json/AirSquat.json"),
+			// loadJSON(process.env.PUBLIC_URL + "/json/Clapping.json"),
+			// loadJSON(process.env.PUBLIC_URL + "/json/JumpingJacks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/Waving.json"),
 		]).then((results) => {
 			const [model] = results;
 
@@ -204,7 +204,7 @@ export default function MotionInterpreter(props) {
 
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
-			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
 		]).then(([model, jsonObj]) => {
 			model.position.set(0, -100, 0);
 

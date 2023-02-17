@@ -15,7 +15,7 @@ import {
 	middlePosition,
 	posePointsToVector,
 	loadFBX,
-	loadObj,
+	loadJSON,
 	traverseModel,
 	applyTransfer,
 } from "./ropes";
@@ -48,14 +48,14 @@ export default function MotionSync(props) {
 	useEffect(() => {
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/YBot.fbx"),
-			loadObj(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/JumpingJacksTracks.json"),
-			loadObj(
+			loadJSON(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/JumpingJacksTracks.json"),
+			loadJSON(
 				process.env.PUBLIC_URL + "/json/KettlebellSwingTracks.json"
 			),
-			loadObj(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
 		]).then(
 			([
 				model,

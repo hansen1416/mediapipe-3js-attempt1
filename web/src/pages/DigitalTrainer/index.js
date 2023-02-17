@@ -21,7 +21,7 @@ import PoseSyncVector from "../../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
 	loadFBX,
-	loadObj,
+	loadJSON,
 	startCamera,
 	traverseModel,
 	applyTransfer,
@@ -661,7 +661,7 @@ export default function DigitalTrainer() {
 
 			for (const e of trainingList[selectedTrainingIndx].exercise) {
 				tasks.push(
-					loadObj(
+					loadJSON(
 						process.env.PUBLIC_URL + "/animjson/" + e.key + ".json"
 					)
 				);

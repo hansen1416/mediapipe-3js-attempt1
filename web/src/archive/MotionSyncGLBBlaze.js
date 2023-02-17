@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import {
 	loadGLTF,
-	loadObj,
+	loadJSON,
 	traverseModel,
 	applyTransfer,
 	startCamera,
@@ -94,15 +94,15 @@ export default function MotionSyncGLBBlaze(props) {
 				detectorConfig
 			),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/punch-walk.glb"),
-			loadObj(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/JumpingJacksTracks.json"),
-			loadObj(
+			loadJSON(process.env.PUBLIC_URL + "/json/AirSquatTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/ClappingTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/JumpingJacksTracks.json"),
+			loadJSON(
 				process.env.PUBLIC_URL + "/json/KettlebellSwingTracks.json"
 			),
-			loadObj(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
-			loadObj(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/WavingTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json"),
 		]).then(
 			([
 				detector,

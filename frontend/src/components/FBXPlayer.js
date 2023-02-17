@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-import { loadFBX, loadObj } from "./ropes";
+import { loadFBX, loadJSON } from "./ropes";
 // import { dumpObject } from "./ropes";
 
 export default function FBXPlayer(props) {
@@ -41,7 +41,7 @@ export default function FBXPlayer(props) {
 
 		for (let name of animations) {
 			animationsPromises.push(
-				loadObj(process.env.PUBLIC_URL + "/json/" + name + ".json")
+				loadJSON(process.env.PUBLIC_URL + "/json/" + name + ".json")
 			);
 		}
 

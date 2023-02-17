@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 
-import { loadFBX, loadObj } from "../../components/ropes";
+import { loadFBX, loadJSON } from "../../components/ropes";
 
 export default function Sider() {
 	const [animationList, setanimationList] = useState([]);
@@ -55,7 +55,7 @@ export default function Sider() {
 
 		Promise.all([
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-			loadObj(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/PunchWalk.json"),
 		]).then(([model, animationJSON]) => {
 			for (let key in sceneInfoList.current) {
 				const { scene, mixer } = sceneInfoList.current[key];

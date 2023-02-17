@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { cloneDeep } from "lodash";
 
-import { loadFBX, loadObj, muscleGroupsColors } from "../../components/ropes";
+import { loadFBX, loadJSON, muscleGroupsColors } from "../../components/ropes";
 
 export default function Motions({
 	training,
@@ -216,7 +216,7 @@ export default function Motions({
 
 		for (let name of animationList) {
 			tasks.push(
-				loadObj(process.env.PUBLIC_URL + "/animjson/" + name + ".json")
+				loadJSON(process.env.PUBLIC_URL + "/animjson/" + name + ".json")
 			);
 		}
 

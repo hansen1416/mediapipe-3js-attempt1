@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Group } from "three";
-import { loadObj } from "./ropes";
+import { loadJSON } from "./ropes";
 
 import { poseArr, leftThighTrack, rightThighTrack } from "./BicycleCrunchPose";
 
@@ -13,19 +13,19 @@ export default function MotionCompare(props) {
 	useEffect(() => {
 		// poseBasis();
 
-		loadObj(process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json").then(
-			(jsonObj) => {
-				for (let name in jsonObj) {
-					if (name === "mixamorigLeftUpLeg.quaternion") {
-						plotAnimation(jsonObj[name]["states"], 0xff0000);
-					}
+		loadJSON(
+			process.env.PUBLIC_URL + "/json/BicycleCrunchTracks.json"
+		).then((jsonObj) => {
+			for (let name in jsonObj) {
+				if (name === "mixamorigLeftUpLeg.quaternion") {
+					plotAnimation(jsonObj[name]["states"], 0xff0000);
+				}
 
-					if (name === "mixamorigRightUpLeg.quaternion") {
-						plotAnimation(jsonObj[name]["states"], 0x00ff00);
-					}
+				if (name === "mixamorigRightUpLeg.quaternion") {
+					plotAnimation(jsonObj[name]["states"], 0x00ff00);
 				}
 			}
-		);
+		});
 
 		// we need to wait for the contructor in `ThreeJsScene`
 		// cause `useRef`

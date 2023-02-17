@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { ObjectLoader } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
@@ -24,6 +25,8 @@ export default function ParticlCloud() {
 		_scene(documentWidth, documentHeight);
 
 		animate();
+
+		console.log(ObjectLoader);
 
 		figure.current = new Figure();
 

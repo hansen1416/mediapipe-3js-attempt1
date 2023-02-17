@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import {
 	loadGLTF,
-	loadObj,
+	loadJSON,
 	traverseModel,
 	applyTransfer,
 	startCamera,
@@ -81,7 +81,7 @@ export default function MotionSync(props) {
 				detectorConfig
 			),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/punch-walk.glb"),
-			loadObj(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json"),
+			loadJSON(process.env.PUBLIC_URL + "/json/PunchWalkTracks.json"),
 		]).then(([detector, gltf, PunchWalk]) => {
 			poseDetector.current = detector;
 

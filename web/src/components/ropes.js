@@ -361,7 +361,7 @@ export function loadFBX(url) {
 	});
 }
 
-export function loadObj(url) {
+export function loadJSON(url) {
 	return new Promise((resolve) => {
 		fetch(url).then((response) => resolve(response.json()));
 	});
