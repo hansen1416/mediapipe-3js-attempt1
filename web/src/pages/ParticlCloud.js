@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
+import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
 import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
@@ -79,15 +79,16 @@ export default function ParticlCloud() {
 	}
 
 	function generateCloud() {
-
 		// console.log(figure.current.limbs.LEFT_FOREARM.children[0].geometry)
 
-		const sampler = new MeshSurfaceSampler(figure.current.limbs.LEFT_FOREARM.children[0]).build();
+		const sampler = new MeshSurfaceSampler(
+			figure.current.limbs.LEFT_FOREARM.children[0]
+		).build();
 
 		// console.log(sampler)
 
 		const tempPosition = new THREE.Vector3();
-		const vertices = []
+		const vertices = [];
 
 		for (let i = 0; i < 150; i++) {
 			sampler.sample(tempPosition);
@@ -96,7 +97,10 @@ export default function ParticlCloud() {
 
 		/* Create a geometry from the coordinates */
 		const pointsGeometry = new THREE.BufferGeometry();
-		pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+		pointsGeometry.setAttribute(
+			"position",
+			new THREE.Float32BufferAttribute(vertices, 3)
+		);
 
 		/* Create a material */
 		const pointsMaterial = new THREE.PointsMaterial({
@@ -108,8 +112,7 @@ export default function ParticlCloud() {
 		/* Create a Points object */
 		const points = new THREE.Points(pointsGeometry, pointsMaterial);
 
-		figure.current.limbs.LEFT_FOREARM.add(points)
-
+		figure.current.limbs.LEFT_FOREARM.add(points);
 	}
 
 	return (

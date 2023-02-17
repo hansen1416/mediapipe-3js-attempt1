@@ -20,7 +20,6 @@ const limbs_arr = [
 	"RIGHT_CRUS",
 ];
 export class Figure {
-
 	constructor() {
 		this.bodyMaterial = new THREE.MeshBasicMaterial({
 			color: 0x44aa88,
