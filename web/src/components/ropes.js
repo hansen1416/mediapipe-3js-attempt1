@@ -241,25 +241,6 @@ export function modelInheritGraph(model, bodyParts) {
 	});
 }
 
-export const limbs = [
-	"LEFT_SHOULDER",
-	"RIGHT_SHOULDER",
-	"LEFT_ELBOW",
-	"RIGHT_ELBOW",
-	"LEFT_FOREARM",
-	"LEFT_UPPERARM",
-	"RIGHT_FOREARM",
-	"RIGHT_UPPERARM",
-	"LEFT_HIP",
-	"RIGHT_HIP",
-	"LEFT_THIGH",
-	"LEFT_CRUS",
-	"LEFT_KNEE",
-	"RIGHT_KNEE",
-	"RIGHT_THIGH",
-	"RIGHT_CRUS",
-];
-
 export function getLimbFromPose(limb_name, pose_landmark) {
 	let joint1 = "";
 	let joint2 = "";

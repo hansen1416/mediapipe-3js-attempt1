@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 
 import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
@@ -24,9 +25,11 @@ export default function ParticlCloud() {
 
 		animate();
 
-		figure.current = new Figure(scene.current, [0, 0, 0]);
+		figure.current = new Figure();
 
 		figure.current.init();
+
+		scene.current.add(figure.current.group);
 
 		generateCloud();
 
@@ -75,7 +78,39 @@ export default function ParticlCloud() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
-	function generateCloud() {}
+	function generateCloud() {
+
+		// console.log(figure.current.limbs.LEFT_FOREARM.children[0].geometry)
+
+		const sampler = new MeshSurfaceSampler(figure.current.limbs.LEFT_FOREARM.children[0]).build();
+
+		// console.log(sampler)
+
+		const tempPosition = new THREE.Vector3();
+		const vertices = []
+
+		for (let i = 0; i < 150; i++) {
+			sampler.sample(tempPosition);
+			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
+		}
+
+		/* Create a geometry from the coordinates */
+		const pointsGeometry = new THREE.BufferGeometry();
+		pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+		/* Create a material */
+		const pointsMaterial = new THREE.PointsMaterial({
+			color: 0x47b2f5,
+			size: 0.03,
+			// transparent: true,
+			// opacity: 0.5,
+		});
+		/* Create a Points object */
+		const points = new THREE.Points(pointsGeometry, pointsMaterial);
+
+		figure.current.limbs.LEFT_FOREARM.add(points)
+
+	}
 
 	return (
 		<div className="cloud-rove">

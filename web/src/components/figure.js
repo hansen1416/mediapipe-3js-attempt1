@@ -1,28 +1,40 @@
 import * as THREE from "three";
-import { quaternionFromVectors, limbs } from "./ropes";
+import { quaternionFromVectors } from "./ropes";
 
+const limbs_arr = [
+	"LEFT_SHOULDER",
+	"RIGHT_SHOULDER",
+	"LEFT_ELBOW",
+	"RIGHT_ELBOW",
+	"LEFT_FOREARM",
+	"LEFT_UPPERARM",
+	"RIGHT_FOREARM",
+	"RIGHT_UPPERARM",
+	"LEFT_HIP",
+	"RIGHT_HIP",
+	"LEFT_THIGH",
+	"LEFT_CRUS",
+	"LEFT_KNEE",
+	"RIGHT_KNEE",
+	"RIGHT_THIGH",
+	"RIGHT_CRUS",
+];
 export class Figure {
-	constructor(scene, figure_position, figure_rotation) {
+
+	constructor() {
 		this.bodyMaterial = new THREE.MeshBasicMaterial({
 			color: 0x44aa88,
+			transparent: true,
+			opacity: 0.5,
 		});
 		this.purpleMaterial = new THREE.MeshBasicMaterial({
-			color: 0x33eeb0,
+			// color: 0x33eeb0,
+			color: 0x44aa88,
+			transparent: true,
+			opacity: 0.5,
 		});
 
 		this.group = new THREE.Group();
-
-		scene.add(this.group);
-
-		if (figure_position) {
-			this.group.position.set(...figure_position);
-		}
-
-		if (figure_rotation) {
-			this.group.rotation.set(...figure_rotation);
-		}
-
-		// this.group.updateMatrix();
 
 		// the following parameters define the size of different parts of a body
 		this.unit = 0.1;
@@ -57,7 +69,7 @@ export class Figure {
 		this.limbs = {};
 		this.limb_rotation_vectors = {};
 
-		for (let l of limbs) {
+		for (let l of limbs_arr) {
 			this.limbs[l] = null;
 
 			this.limb_rotation_vectors[l] = new THREE.Vector3(0, -1, 0);
@@ -295,6 +307,14 @@ export class Figure {
 		this.createHead();
 		this.createArms();
 		this.createLegs();
+	}
+
+	setPosition(position) {
+		this.group.position.set(...position);
+	}
+
+	setRotation(rotation) {
+		this.group.rotation.set(...rotation);
 	}
 
 	limbRotate(limb_name, target_vector) {
