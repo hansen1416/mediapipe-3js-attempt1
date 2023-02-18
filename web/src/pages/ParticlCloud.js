@@ -5,6 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
 import { loadFBX } from "../components/ropes";
+import PoseToRotation from "../components/PoseToRotation";
 
 export default function ParticlCloud() {
 	const canvasRef = useRef(null);
@@ -43,6 +44,8 @@ export default function ParticlCloud() {
 		scene.current.add(figure.current.group);
 
 		generateCloud();
+
+		poseToRotation(tmppose);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -94,24 +97,62 @@ export default function ParticlCloud() {
 			figure.current.particleLimb(name);
 		}
 
-		figure.current.rotateLimb(
-			"RIGHT_SHOULDER",
-			new THREE.Vector3(0.1, -0.5, 0.3).normalize()
-		);
+		// figure.current.rotateLimb(
+		// 	"RIGHT_SHOULDER",
+		// 	new THREE.Vector3(0.1, -0.5, 0.3).normalize()
+		// );
 
-		figure.current.rotateLimb(
-			"RIGHT_ELBOW",
-			new THREE.Vector3(0.1, -0.5, 0.3).normalize()
-		);
+		// figure.current.rotateLimb(
+		// 	"RIGHT_ELBOW",
+		// 	new THREE.Vector3(0.1, -0.5, 0.3).normalize()
+		// );
 
-		figure.current.setTorsoRotation(
-			new THREE.Vector3(-1, 0, 0).normalize()
-		);
+		// figure.current.setTorsoRotation(
+		// 	new THREE.Vector3(-1, 0, 0).normalize()
+		// );
 	}
 
-	function poseToRotation(posedata) {}
-	{
-		const basisMatrix = null;
+	function poseToRotation(posedata) {
+		const ptr = new PoseToRotation();
+
+		const {
+			TORSO,
+			LEFT_SHOULDER,
+			LEFT_ELBOW,
+			RIGHT_SHOULDER,
+			RIGHT_ELBOW,
+			LEFT_HIP,
+			LEFT_KNEE,
+			RIGHT_HIP,
+			RIGHT_KNEE,
+		} = ptr.getRotations(posedata);
+
+		figure.current.group.setRotationFromMatrix(TORSO);
+		figure.current.limbs.LEFT_SHOULDER.group.setRotationFromQuaternion(
+			LEFT_SHOULDER
+		);
+		figure.current.limbs.LEFT_ELBOW.group.setRotationFromQuaternion(
+			LEFT_ELBOW
+		);
+		figure.current.limbs.RIGHT_SHOULDER.group.setRotationFromQuaternion(
+			RIGHT_SHOULDER
+		);
+		figure.current.limbs.RIGHT_ELBOW.group.setRotationFromQuaternion(
+			RIGHT_ELBOW
+		);
+		figure.current.limbs.LEFT_HIP.group.setRotationFromQuaternion(LEFT_HIP);
+
+		figure.current.limbs.LEFT_KNEE.group.setRotationFromQuaternion(
+			LEFT_KNEE
+		);
+
+		figure.current.limbs.RIGHT_HIP.group.setRotationFromQuaternion(
+			RIGHT_HIP
+		);
+
+		figure.current.limbs.RIGHT_KNEE.group.setRotationFromQuaternion(
+			RIGHT_KNEE
+		);
 	}
 
 	return (
