@@ -4,7 +4,6 @@ import { quaternionFromVectors } from "./ropes";
 const limbs_arr = [
 	"TORSO",
 	"HEAD",
-	"NECK",
 	"LEFT_UPPERARM",
 	"LEFT_FOREARM",
 	"LEFT_HAND",
@@ -61,7 +60,7 @@ export class Figure {
 		this.thigh_size = 10 * this.unit;
 		this.knee_radius = 2.4 * this.unit;
 
-		this.crus_size = 10 * this.unit;
+		this.calf_size = 10 * this.unit;
 		this.ankle_radius = 1.8 * this.unit;
 
 		this.limbs = {};
@@ -231,7 +230,7 @@ export class Figure {
 
 		const right_arm = this._buildArm(1);
 
-		this.limbs["RIGHT_SHOULDER"] = right_arm[0];
+		this.limbs["RIGHT_UPPERARM"] = right_arm[0];
 		this.limbs["RIGHT_FOREARM"] = right_arm[1];
 	}
 
@@ -246,29 +245,29 @@ export class Figure {
 
 		const knee_geo = new THREE.SphereGeometry(this.knee_radius);
 
-		const crus_geo = new THREE.CylinderGeometry(
+		const calf_geo = new THREE.CylinderGeometry(
 			this.knee_radius,
 			this.ankle_radius,
-			this.crus_size
+			this.calf_size
 		);
 
 		const thigh_group = new THREE.Group();
-		const crus_group = new THREE.Group();
+		const calf_group = new THREE.Group();
 
 		const hip = new THREE.Mesh(hip_geo, this.jointMaterial);
 		const thigh = new THREE.Mesh(thigh_geo, this.bodyMaterial);
 		const knee = new THREE.Mesh(knee_geo, this.jointMaterial);
-		const crus = new THREE.Mesh(crus_geo, this.bodyMaterial);
+		const calf = new THREE.Mesh(calf_geo, this.bodyMaterial);
 
 		thigh_group.add(hip);
 
 		thigh_group.add(thigh);
 
-		crus_group.add(knee);
+		calf_group.add(knee);
 
-		crus_group.add(crus);
+		calf_group.add(calf);
 
-		thigh_group.add(crus_group);
+		thigh_group.add(calf_group);
 
 		this.group.add(thigh_group);
 
@@ -282,31 +281,30 @@ export class Figure {
 		knee.position.y = 0;
 
 		// Translate the arm (not the group) downwards by half the height
-		crus.position.y = this.crus_size * -0.5;
-		// place crus under knee
-		crus_group.position.y = this.thigh_size * -1;
+		calf.position.y = this.calf_size * -0.5;
+		// place calf under knee
+		calf_group.position.y = this.thigh_size * -1;
 
 		// place thigh at hip
 		thigh_group.position.x = sign * this.thigh_radius;
 		thigh_group.position.y = (-1 / 3) * this.hip_radius;
 
-		return [hip, thigh_group, knee, crus_group];
+		return [
+			{ group: thigh_group, mesh: [hip, thigh] },
+			{ group: calf_group, mesh: [knee, calf] },
+		];
 	}
 
 	createLegs() {
 		const left_leg = this._buildLeg(-1);
 
-		this.limbs["LEFT_HIP"] = left_leg[0];
-		this.limbs["LEFT_THIGH"] = left_leg[1];
-		this.limbs["LEFT_KNEE"] = left_leg[2];
-		this.limbs["LEFT_CRUS"] = left_leg[3];
+		this.limbs["LEFT_THIGH"] = left_leg[0];
+		this.limbs["LEFT_CALF"] = left_leg[1];
 
 		const right_leg = this._buildLeg(1);
 
-		this.limbs["RIGHT_HIP"] = right_leg[0];
-		this.limbs["RIGHT_THIGH"] = right_leg[1];
-		this.limbs["RIGHT_KNEE"] = right_leg[2];
-		this.limbs["RIGHT_CRUS"] = right_leg[3];
+		this.limbs["RIGHT_THIGH"] = right_leg[0];
+		this.limbs["RIGHT_CALF"] = right_leg[1];
 	}
 
 	init() {
