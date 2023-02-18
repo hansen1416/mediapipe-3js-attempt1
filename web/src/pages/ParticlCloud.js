@@ -91,12 +91,31 @@ export default function ParticlCloud() {
 	}
 
 	function generateCloud() {
-		const vertices = sampleVertices(
-			figure.current.limbs.LEFT_UPPERARM.mesh[1],
-			1500
-		).concat(
-			sampleVertices(figure.current.limbs.LEFT_UPPERARM.mesh[0], 1500)
-		);
+		for (let name of figure.current.limbs_arr) {
+			particleLimb(name);
+		}
+	}
+
+	function particleLimb(limb_name) {
+		if (
+			!figure.current.limbs[limb_name] ||
+			!figure.current.limbs[limb_name].group ||
+			!figure.current.limbs[limb_name].mesh
+		) {
+			return;
+		}
+
+		const sampler = new MeshSurfaceSampler(
+			figure.current.limbs[limb_name].mesh
+		).build();
+
+		const tempPosition = new THREE.Vector3();
+		const vertices = [];
+
+		for (let i = 0; i < 15000; i++) {
+			sampler.sample(tempPosition);
+			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
+		}
 
 		/* Create a geometry from the coordinates */
 		const pointsGeometry = new THREE.BufferGeometry();
@@ -115,21 +134,7 @@ export default function ParticlCloud() {
 		/* Create a Points object */
 		const points = new THREE.Points(pointsGeometry, pointsMaterial);
 
-		figure.current.limbs.LEFT_UPPERARM.group.add(points);
-	}
-
-	function sampleVertices(mesh, n) {
-		const sampler = new MeshSurfaceSampler(mesh).build();
-
-		const tempPosition = new THREE.Vector3();
-		const vertices = [];
-
-		for (let i = 0; i < n; i++) {
-			sampler.sample(tempPosition);
-			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-		}
-
-		return vertices;
+		figure.current.limbs[limb_name].group.add(points);
 	}
 
 	// function generateCloud() {

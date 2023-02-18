@@ -1,24 +1,36 @@
 import * as THREE from "three";
 import { quaternionFromVectors } from "./ropes";
 
-const limbs_arr = [
-	"TORSO",
-	"HEAD",
-	"LEFT_UPPERARM",
-	"LEFT_FOREARM",
-	"LEFT_HAND",
-	"RIGHT_UPPERARM",
-	"RIGHT_FOREARM",
-	"RIGHT_HAND",
-	"LEFT_THIGH",
-	"LEFT_CALF",
-	"LEFT_FOOT",
-	"RIGHT_THIGH",
-	"RIGHT_CALF",
-	"RIGHT_FOOT",
-];
 export class Figure {
-	constructor() {
+	limbs_arr = [
+		"TORSO",
+		"HEAD",
+		"NECK",
+		"LEFT_SHOULDER",
+		"LEFT_UPPERARM",
+		"LEFT_ELBOW",
+		"LEFT_FOREARM",
+		"LEFT_HAND",
+		"RIGHT_SHOULDER",
+		"RIGHT_UPPERARM",
+		"RIGHT_ELBOW",
+		"RIGHT_FOREARM",
+		"RIGHT_HAND",
+		"LEFT_HIP",
+		"LEFT_THIGH",
+		"LEFT_KNEE",
+		"LEFT_CALF",
+		"LEFT_FOOT",
+		"RIGHT_HIP",
+		"RIGHT_THIGH",
+		"RIGHT_KNEE",
+		"RIGHT_CALF",
+		"RIGHT_FOOT",
+	];
+
+	constructor(show_mesh) {
+		this.show_mesh = !!show_mesh;
+
 		this.bodyMaterial = new THREE.MeshBasicMaterial({
 			color: 0x44aa88,
 			transparent: true,
@@ -66,7 +78,7 @@ export class Figure {
 		this.limbs = {};
 		this.limb_rotation_vectors = {};
 
-		for (let l of limbs_arr) {
+		for (let l of this.limbs_arr) {
 			this.limbs[l] = null;
 
 			this.limb_rotation_vectors[l] = new THREE.Vector3(0, -1, 0);
@@ -91,7 +103,9 @@ export class Figure {
 
 		const body = new THREE.Mesh(geometry, this.bodyMaterial);
 
-		body_group.add(body);
+		if (this.show_mesh) {
+			body_group.add(body);
+		}
 
 		this.group.add(body_group);
 
@@ -101,8 +115,8 @@ export class Figure {
 	}
 
 	createHead() {
-		// Create a new group for the head
-		const head_group = new THREE.Group();
+		// Create a new group for the neck
+		const neck_group = new THREE.Group();
 
 		const neck_geo = new THREE.CylinderGeometry(
 			this.neck_radius,
@@ -110,17 +124,26 @@ export class Figure {
 			this.neck_size
 		);
 		const neck_mesh = new THREE.Mesh(neck_geo, this.bodyMaterial);
+		if (this.show_mesh) {
+			neck_group.add(neck_mesh);
+		}
 
-		neck_mesh.position.y = this.spine_size + this.neck_size / 2;
+		neck_group.position.y = this.spine_size + this.neck_size / 2;
 
-		this.group.add(neck_mesh);
+		this.group.add(neck_group);
+
+		// Create a new group for the head
+		const head_group = new THREE.Group();
 
 		const head_geo = new THREE.SphereGeometry(this.head_radius);
 
 		// Create the main cube of the head and add to the group
 		// const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-		const headMesh = new THREE.Mesh(head_geo, this.bodyMaterial);
-		head_group.add(headMesh);
+		const head_mesh = new THREE.Mesh(head_geo, this.bodyMaterial);
+
+		if (this.show_mesh) {
+			head_group.add(head_mesh);
+		}
 
 		// Position the head group
 		head_group.position.y =
@@ -141,7 +164,9 @@ export class Figure {
 			const sign = i % 2 === 0 ? -1 : 1;
 
 			// Add the eye to the group
-			eyes.add(eye);
+			if (this.show_mesh) {
+				eyes.add(eye);
+			}
 
 			// Position the eye
 			eye.position.x = (sign * this.head_radius) / 3;
@@ -155,7 +180,8 @@ export class Figure {
 		// in createEyes()
 		head_group.add(eyes);
 
-		this.limbs["HEAD"] = { group: head_group, mesh: headMesh };
+		this.limbs["HEAD"] = { group: head_group, mesh: head_mesh };
+		this.limbs["NECK"] = { group: neck_group, mesh: neck_mesh };
 	}
 
 	_buildArm(sign) {
@@ -176,7 +202,9 @@ export class Figure {
 		);
 
 		const bigarm_group = new THREE.Group();
+		const bigarm_sub_group = new THREE.Group();
 		const smallarm_group = new THREE.Group();
+		const smallarm_sub_group = new THREE.Group();
 
 		const shoulder = new THREE.Mesh(shoulder_geo, this.jointMaterial);
 		const bigarm = new THREE.Mesh(bigarm_geo, this.bodyMaterial);
@@ -185,11 +213,15 @@ export class Figure {
 
 		bigarm_group.add(shoulder);
 
-		bigarm_group.add(bigarm);
+		bigarm_sub_group.add(bigarm);
+
+		bigarm_group.add(bigarm_sub_group);
 
 		smallarm_group.add(elbow);
 
-		smallarm_group.add(smallarm);
+		smallarm_sub_group.add(smallarm);
+
+		smallarm_group.add(smallarm_sub_group);
 
 		bigarm_group.add(smallarm_group);
 
@@ -199,7 +231,7 @@ export class Figure {
 		shoulder.position.y = 0;
 		// Translate the arm (not the group) downwards by half the height
 		// so the group rotates at the shoulder
-		bigarm.position.y = this.bigarm_size * -0.5;
+		bigarm_sub_group.position.y = this.bigarm_size * -0.5;
 
 		// bigarm at each side of the body
 		bigarm_group.position.x =
@@ -210,13 +242,15 @@ export class Figure {
 		// place elbow at top of smallarm
 		elbow.position.y = 0;
 		// Translate the arm (not the group) downwards by half the height
-		smallarm.position.y = this.smallarm_size * -0.5;
+		smallarm_sub_group.position.y = this.smallarm_size * -0.5;
 		// place small arms under elbow
 		smallarm_group.position.y = this.bigarm_size * -1;
 
 		return [
-			{ group: bigarm_group, mesh: [shoulder, bigarm] },
-			{ group: smallarm_group, mesh: [elbow, smallarm] },
+			{ group: bigarm_group, mesh: shoulder },
+			{ group: bigarm_sub_group, mesh: bigarm },
+			{ group: smallarm_group, mesh: elbow },
+			{ group: smallarm_sub_group, mesh: smallarm },
 		];
 	}
 
@@ -225,13 +259,17 @@ export class Figure {
 
 		const left_arm = this._buildArm(-1);
 
-		this.limbs["LEFT_UPPERARM"] = left_arm[0];
-		this.limbs["LEFT_FOREARM"] = left_arm[1];
+		this.limbs["LEFT_SHOULDER"] = left_arm[0];
+		this.limbs["LEFT_UPPERARM"] = left_arm[1];
+		this.limbs["LEFT_ELBOW"] = left_arm[2];
+		this.limbs["LEFT_FOREARM"] = left_arm[3];
 
 		const right_arm = this._buildArm(1);
 
-		this.limbs["RIGHT_UPPERARM"] = right_arm[0];
-		this.limbs["RIGHT_FOREARM"] = right_arm[1];
+		this.limbs["RIGHT_SHOULDER"] = right_arm[0];
+		this.limbs["RIGHT_UPPERARM"] = right_arm[1];
+		this.limbs["RIGHT_ELBOW"] = right_arm[2];
+		this.limbs["RIGHT_FOREARM"] = right_arm[3];
 	}
 
 	_buildLeg(sign) {
@@ -252,7 +290,9 @@ export class Figure {
 		);
 
 		const thigh_group = new THREE.Group();
+		const thigh_sub_group = new THREE.Group();
 		const calf_group = new THREE.Group();
+		const calf_sub_group = new THREE.Group();
 
 		const hip = new THREE.Mesh(hip_geo, this.jointMaterial);
 		const thigh = new THREE.Mesh(thigh_geo, this.bodyMaterial);
@@ -261,11 +301,15 @@ export class Figure {
 
 		thigh_group.add(hip);
 
-		thigh_group.add(thigh);
+		thigh_sub_group.add(thigh);
+
+		thigh_group.add(thigh_sub_group);
 
 		calf_group.add(knee);
 
-		calf_group.add(calf);
+		calf_sub_group.add(calf);
+
+		calf_group.add(calf_sub_group);
 
 		thigh_group.add(calf_group);
 
@@ -276,12 +320,12 @@ export class Figure {
 
 		// Translate the arm (not the group) downwards by half the height
 		// so the group rotates at the shoulder
-		thigh.position.y = this.thigh_size * -0.5;
+		thigh_sub_group.position.y = this.thigh_size * -0.5;
 		// place knee at top of calf thigh
 		knee.position.y = 0;
 
 		// Translate the arm (not the group) downwards by half the height
-		calf.position.y = this.calf_size * -0.5;
+		calf_sub_group.position.y = this.calf_size * -0.5;
 		// place calf under knee
 		calf_group.position.y = this.thigh_size * -1;
 
@@ -290,21 +334,27 @@ export class Figure {
 		thigh_group.position.y = (-1 / 3) * this.hip_radius;
 
 		return [
-			{ group: thigh_group, mesh: [hip, thigh] },
-			{ group: calf_group, mesh: [knee, calf] },
+			{ group: thigh_group, mesh: hip },
+			{ group: thigh_sub_group, mesh: thigh },
+			{ group: calf_group, mesh: knee },
+			{ group: calf_sub_group, mesh: calf },
 		];
 	}
 
 	createLegs() {
 		const left_leg = this._buildLeg(-1);
 
-		this.limbs["LEFT_THIGH"] = left_leg[0];
-		this.limbs["LEFT_CALF"] = left_leg[1];
+		this.limbs["LEFT_HIP"] = left_leg[0];
+		this.limbs["LEFT_THIGH"] = left_leg[1];
+		this.limbs["LEFT_KNEE"] = left_leg[2];
+		this.limbs["LEFT_CALF"] = left_leg[3];
 
 		const right_leg = this._buildLeg(1);
 
-		this.limbs["RIGHT_THIGH"] = right_leg[0];
-		this.limbs["RIGHT_CALF"] = right_leg[1];
+		this.limbs["RIGHT_HIP"] = right_leg[0];
+		this.limbs["RIGHT_THIGH"] = right_leg[1];
+		this.limbs["RIGHT_KNEE"] = right_leg[2];
+		this.limbs["RIGHT_CALF"] = right_leg[3];
 	}
 
 	init() {
