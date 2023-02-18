@@ -91,7 +91,45 @@ export default function ParticlCloud() {
 	}
 
 	function generateCloud() {
-		console.log(figure.current);
+		const vertices = sampleVertices(
+			figure.current.limbs.LEFT_UPPERARM.mesh[1],
+			1500
+		).concat(
+			sampleVertices(figure.current.limbs.LEFT_UPPERARM.mesh[0], 1500)
+		);
+
+		/* Create a geometry from the coordinates */
+		const pointsGeometry = new THREE.BufferGeometry();
+		pointsGeometry.setAttribute(
+			"position",
+			new THREE.Float32BufferAttribute(vertices, 3)
+		);
+
+		/* Create a material */
+		const pointsMaterial = new THREE.PointsMaterial({
+			color: 0x47b2f5,
+			size: 0.1,
+			// transparent: true,
+			// opacity: 0.5,
+		});
+		/* Create a Points object */
+		const points = new THREE.Points(pointsGeometry, pointsMaterial);
+
+		figure.current.limbs.LEFT_UPPERARM.group.add(points);
+	}
+
+	function sampleVertices(mesh, n) {
+		const sampler = new MeshSurfaceSampler(mesh).build();
+
+		const tempPosition = new THREE.Vector3();
+		const vertices = [];
+
+		for (let i = 0; i < n; i++) {
+			sampler.sample(tempPosition);
+			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
+		}
+
+		return vertices;
 	}
 
 	// function generateCloud() {
