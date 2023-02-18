@@ -2,6 +2,9 @@ import * as THREE from "three";
 import { quaternionFromVectors } from "./ropes";
 
 const limbs_arr = [
+	"TORSO",
+	"HEAD",
+	"NECK",
 	"LEFT_SHOULDER",
 	"RIGHT_SHOULDER",
 	"LEFT_ELBOW",
@@ -26,7 +29,7 @@ export class Figure {
 			transparent: true,
 			opacity: 0.5,
 		});
-		this.purpleMaterial = new THREE.MeshBasicMaterial({
+		this.jointMaterial = new THREE.MeshBasicMaterial({
 			// color: 0x33eeb0,
 			color: 0x44aa88,
 			transparent: true,
@@ -36,7 +39,7 @@ export class Figure {
 		this.group = new THREE.Group();
 
 		// the following parameters define the size of different parts of a body
-		this.unit = 0.1;
+		this.unit = 1;
 
 		this.head_radius = 4 * this.unit;
 		this.eye_radius = 1 * this.unit;
@@ -89,11 +92,17 @@ export class Figure {
 			radialSegments
 		);
 
-		this.body = new THREE.Mesh(geometry, this.bodyMaterial);
+		const body_group = new THREE.Group();
 
-		this.body.position.y = this.spine_size / 2;
+		const body = new THREE.Mesh(geometry, this.bodyMaterial);
 
-		this.group.add(this.body);
+		body_group.add(body);
+
+		this.group.add(body_group);
+
+		body_group.position.y = this.spine_size / 2;
+
+		this.limbs["TORSO"] = body_group;
 	}
 
 	createHead() {
@@ -105,7 +114,7 @@ export class Figure {
 			this.neck_radius,
 			this.neck_size
 		);
-		const neck_mesh = new THREE.Mesh(neck_geo, this.purpleMaterial);
+		const neck_mesh = new THREE.Mesh(neck_geo, this.bodyMaterial);
 
 		neck_mesh.position.y = this.spine_size + this.neck_size / 2;
 
@@ -172,9 +181,9 @@ export class Figure {
 		const bigarm_group = new THREE.Group();
 		const smallarm_group = new THREE.Group();
 
-		const shoulder = new THREE.Mesh(shoulder_geo, this.purpleMaterial);
+		const shoulder = new THREE.Mesh(shoulder_geo, this.jointMaterial);
 		const bigarm = new THREE.Mesh(bigarm_geo, this.bodyMaterial);
-		const elbow = new THREE.Mesh(elbow_geo, this.purpleMaterial);
+		const elbow = new THREE.Mesh(elbow_geo, this.jointMaterial);
 		const smallarm = new THREE.Mesh(smallarm_geo, this.bodyMaterial);
 
 		bigarm_group.add(shoulder);
@@ -247,9 +256,9 @@ export class Figure {
 		const thigh_group = new THREE.Group();
 		const crus_group = new THREE.Group();
 
-		const hip = new THREE.Mesh(hip_geo, this.purpleMaterial);
+		const hip = new THREE.Mesh(hip_geo, this.jointMaterial);
 		const thigh = new THREE.Mesh(thigh_geo, this.bodyMaterial);
-		const knee = new THREE.Mesh(knee_geo, this.purpleMaterial);
+		const knee = new THREE.Mesh(knee_geo, this.jointMaterial);
 		const crus = new THREE.Mesh(crus_geo, this.bodyMaterial);
 
 		thigh_group.add(hip);

@@ -16,8 +16,8 @@ export default function ParticlCloud() {
 
 	const animationPointer = useRef(0);
 
-	// const figure = useRef(null);
-	const fbxmodel = useRef(null);
+	const figure = useRef(null);
+	// const fbxmodel = useRef(null);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -27,20 +27,23 @@ export default function ParticlCloud() {
 
 		animate();
 
-		loadFBX(process.env.PUBLIC_URL + "/Mannequin_Animation.FBX").then(
-			(model) => {
-				fbxmodel.current = model;
-				scene.current.add(model);
+		loadFBX(process.env.PUBLIC_URL + "/Mannequin_Animation.FBX")
+			.then
+			// (model) => {
+			// 	fbxmodel.current = model;
+			// 	// scene.current.add(model);
 
-				generateCloud();
-			}
-		);
+			// 	generateCloud();
+			// }
+			();
 
-		// figure.current = new Figure();
+		figure.current = new Figure();
 
-		// figure.current.init();
+		figure.current.init();
 
-		// scene.current.add(figure.current.group);
+		scene.current.add(figure.current.group);
+
+		generateCloud();
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -88,51 +91,57 @@ export default function ParticlCloud() {
 	}
 
 	function generateCloud() {
-		// console.log(figure.current.limbs.LEFT_FOREARM.children[0].geometry)
-
-		const sampler = new MeshSurfaceSampler(
-			// figure.current.limbs.LEFT_FOREARM.children[0]
-			fbxmodel.current.children[0]
-		).build();
-
-		// console.log(sampler)
-
-		const tempPosition = new THREE.Vector3();
-		const vertices = [];
-
-		for (let i = 0; i < 15000; i++) {
-			sampler.sample(tempPosition);
-			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-		}
-
-		/* Create a geometry from the coordinates */
-		const pointsGeometry = new THREE.BufferGeometry();
-		pointsGeometry.setAttribute(
-			"position",
-			new THREE.Float32BufferAttribute(vertices, 3)
-		);
-
-		/* Create a material */
-		const pointsMaterial = new THREE.PointsMaterial({
-			color: 0x47b2f5,
-			size: 0.03,
-			// transparent: true,
-			// opacity: 0.5,
-		});
-		/* Create a Points object */
-		const points = new THREE.Points(pointsGeometry, pointsMaterial);
-
-		// fbxmodel.current .current.limbs.LEFT_FOREARM.add(points);
-
-		const group = new THREE.Group();
-
-		group.add(points);
-
-		// scene.current.add(points);
-		fbxmodel.current.add(points);
-
-		console.log(fbxmodel.current);
+		console.log(figure.current);
 	}
+
+	// function generateCloud() {
+	// 	// console.log(figure.current.limbs.LEFT_FOREARM.children[0].geometry)
+
+	// 	const sampler = new MeshSurfaceSampler(
+	// 		// figure.current.limbs.LEFT_FOREARM.children[0]
+	// 		fbxmodel.current.children[0]
+	// 	).build();
+
+	// 	// console.log(sampler)
+
+	// 	const tempPosition = new THREE.Vector3();
+	// 	const vertices = [];
+
+	// 	for (let i = 0; i < 15000; i++) {
+	// 		sampler.sample(tempPosition);
+	// 		vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
+	// 	}
+
+	// 	/* Create a geometry from the coordinates */
+	// 	const pointsGeometry = new THREE.BufferGeometry();
+	// 	pointsGeometry.setAttribute(
+	// 		"position",
+	// 		new THREE.Float32BufferAttribute(vertices, 3)
+	// 	);
+
+	// 	/* Create a material */
+	// 	const pointsMaterial = new THREE.PointsMaterial({
+	// 		color: 0x47b2f5,
+	// 		size: 0.1,
+	// 		// transparent: true,
+	// 		// opacity: 0.5,
+	// 	});
+	// 	/* Create a Points object */
+	// 	const points = new THREE.Points(pointsGeometry, pointsMaterial);
+
+	// 	const group = new THREE.Group();
+
+	// 	group.add(points);
+
+	// 	scene.current.add(group);
+
+	// 	// the mesh quaternion, apply it to particle group
+	// 	const meshQ = fbxmodel.current.children[0].quaternion;
+
+	// 	group.applyQuaternion(meshQ);
+
+	// 	console.log(fbxmodel.current);
+	// }
 
 	return (
 		<div className="cloud-rove">
