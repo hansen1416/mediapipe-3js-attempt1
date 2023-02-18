@@ -783,8 +783,8 @@ export function drawPoseKeypoints(keypoints, z_value) {
 
 	const visibleparts = {};
 
-	for (let point of keypoints) {
-		if (point.score > 0.5) {
+	for (const point of keypoints) {
+		if (point.score > 0.5 || point.visibility > 0.5) {
 			const d = box(0.01);
 
 			const z = z_value ? z_value : point.z;

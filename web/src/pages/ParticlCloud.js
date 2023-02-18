@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+import SubThreeJsScene from "../components/SubThreeJsScene";
 import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
-import { loadFBX } from "../components/ropes";
+import { loadFBX, drawPoseKeypoints } from "../components/ropes";
 import PoseToRotation from "../components/PoseToRotation";
 
 export default function ParticlCloud() {
@@ -19,23 +20,27 @@ export default function ParticlCloud() {
 	const figure = useRef(null);
 	// const fbxmodel = useRef(null);
 
+	// ========= captured pose logic
+	const [capturedPose, setcapturedPose] = useState();
+	const counter = useRef(0);
+	const poseIndx = useRef(0);
+	const poseDataArr = useRef([tmppose]);
+	// ========= captured pose logic
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
 		_scene(documentWidth, documentHeight);
 
-		animate();
+		// loadFBX(process.env.PUBLIC_URL + "/Mannequin_Animation.FBX").then(
+		// 	(model) => {
+		// 		fbxmodel.current = model;
+		// 		// scene.current.add(model);
 
-		loadFBX(process.env.PUBLIC_URL + "/Mannequin_Animation.FBX")
-			.then
-			// (model) => {
-			// 	fbxmodel.current = model;
-			// 	// scene.current.add(model);
-
-			// 	generateCloud();
-			// }
-			();
+		// 		generateCloud();
+		// 	}
+		// );
 
 		figure.current = new Figure();
 
@@ -43,9 +48,19 @@ export default function ParticlCloud() {
 
 		scene.current.add(figure.current.group);
 
+		for (const pd of poseDataArr.current) {
+			for (const v of pd) {
+				v["x"] *= -1;
+				v["y"] *= -1;
+				v["z"] *= -1;
+			}
+		}
+
 		generateCloud();
 
 		poseToRotation(tmppose);
+
+		animate();
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -53,6 +68,28 @@ export default function ParticlCloud() {
 	}, []);
 
 	function animate() {
+		// ========= captured pose logic
+		if (counter.current % 6 === 0) {
+			// draw the pose as dots and lines on the sub scene
+
+			const data = poseDataArr.current[poseIndx.current];
+
+			const g = drawPoseKeypoints(data);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+
+			poseIndx.current += 1;
+
+			if (poseIndx.current >= poseDataArr.current.length) {
+				poseIndx.current = 0;
+			}
+		}
+
+		counter.current += 1;
+		// ========= captured pose logic
+
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
@@ -158,6 +195,24 @@ export default function ParticlCloud() {
 	return (
 		<div className="cloud-rove">
 			<canvas ref={canvasRef} />
+			{/* // ========= captured pose logic */}
+			<div
+				style={{
+					width: "500px",
+					height: "400px",
+					position: "absolute",
+					top: 0,
+					left: 0,
+					border: "1px solid #fff",
+				}}
+			>
+				<SubThreeJsScene
+					width={500}
+					height={400}
+					objects={capturedPose}
+				/>
+			</div>
+			{/* // ========= captured pose logic */}
 		</div>
 	);
 }
