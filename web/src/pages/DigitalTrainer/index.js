@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Sky } from "three/examples/jsm/objects/Sky";
+// import { Sky } from "three/examples/jsm/objects/Sky";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
@@ -13,7 +13,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
 import "../../styles/css/DigitalTrainer.css";
 
-import SubThreeJsScene from "../../components/SubThreeJsScene";
+// import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette from "./Silhouette";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
@@ -60,18 +60,18 @@ export default function DigitalTrainer() {
 
 	const poseSyncVector = useRef(null);
 	const [vectorDistances, setvectorDistances] = useState([]);
-	const [distanceNames] = useState([
-		"chest",
-		"leftupperarm",
-		"leftforearm",
-		"rightupperarm",
-		"rightforearm",
-		"abdominal",
-		"leftthigh",
-		"leftcalf",
-		"rightthigh",
-		"rightcalf",
-	]);
+	// const [distanceNames] = useState([
+	// 	"chest",
+	// 	"leftupperarm",
+	// 	"leftforearm",
+	// 	"rightupperarm",
+	// 	"rightforearm",
+	// 	"abdominal",
+	// 	"leftthigh",
+	// 	"leftcalf",
+	// 	"rightthigh",
+	// 	"rightcalf",
+	// ]);
 	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
 	// ========= diff curve logic

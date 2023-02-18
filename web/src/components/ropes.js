@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Group, Vector3, Matrix4, MathUtils } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { POSE_LANDMARKS } from "@mediapipe/pose";
 import { Quaternion } from "three";
 
@@ -364,6 +365,13 @@ export function loadFBX(url) {
 export function loadJSON(url) {
 	return new Promise((resolve) => {
 		fetch(url).then((response) => resolve(response.json()));
+	});
+}
+
+export function loadObj(url) {
+	return new Promise((resolve) => {
+		const loader = new OBJLoader();
+		loader.load(url, (fbx) => resolve(fbx));
 	});
 }
 

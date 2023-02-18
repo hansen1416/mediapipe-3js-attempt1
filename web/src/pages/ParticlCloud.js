@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { ObjectLoader } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
 import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
+import { loadFBX } from "../components/ropes";
 
 export default function ParticlCloud() {
 	const canvasRef = useRef(null);
@@ -16,7 +16,8 @@ export default function ParticlCloud() {
 
 	const animationPointer = useRef(0);
 
-	const figure = useRef(null);
+	// const figure = useRef(null);
+	const fbxmodel = useRef(null);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -26,15 +27,20 @@ export default function ParticlCloud() {
 
 		animate();
 
-		console.log(ObjectLoader);
+		loadFBX(process.env.PUBLIC_URL + "/Mannequin_Animation.FBX").then(
+			(model) => {
+				fbxmodel.current = model;
+				scene.current.add(model);
 
-		figure.current = new Figure();
+				generateCloud();
+			}
+		);
 
-		figure.current.init();
+		// figure.current = new Figure();
 
-		scene.current.add(figure.current.group);
+		// figure.current.init();
 
-		generateCloud();
+		// scene.current.add(figure.current.group);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -62,7 +68,7 @@ export default function ParticlCloud() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 10);
+		camera.current.position.set(0, 0, 100);
 
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
@@ -85,7 +91,8 @@ export default function ParticlCloud() {
 		// console.log(figure.current.limbs.LEFT_FOREARM.children[0].geometry)
 
 		const sampler = new MeshSurfaceSampler(
-			figure.current.limbs.LEFT_FOREARM.children[0]
+			// figure.current.limbs.LEFT_FOREARM.children[0]
+			fbxmodel.current.children[0]
 		).build();
 
 		// console.log(sampler)
@@ -93,7 +100,7 @@ export default function ParticlCloud() {
 		const tempPosition = new THREE.Vector3();
 		const vertices = [];
 
-		for (let i = 0; i < 150; i++) {
+		for (let i = 0; i < 15000; i++) {
 			sampler.sample(tempPosition);
 			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
 		}
@@ -115,7 +122,16 @@ export default function ParticlCloud() {
 		/* Create a Points object */
 		const points = new THREE.Points(pointsGeometry, pointsMaterial);
 
-		figure.current.limbs.LEFT_FOREARM.add(points);
+		// fbxmodel.current .current.limbs.LEFT_FOREARM.add(points);
+
+		const group = new THREE.Group();
+
+		group.add(points);
+
+		// scene.current.add(points);
+		fbxmodel.current.add(points);
+
+		console.log(fbxmodel.current);
 	}
 
 	return (
