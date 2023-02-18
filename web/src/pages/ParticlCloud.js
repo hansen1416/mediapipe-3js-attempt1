@@ -93,56 +93,26 @@ export default function ParticlCloud() {
 		for (let name of figure.current.limbs_arr) {
 			figure.current.particleLimb(name);
 		}
+
+		figure.current.rotateLimb(
+			"RIGHT_SHOULDER",
+			new THREE.Vector3(0.1, -0.5, 0.3).normalize()
+		);
+
+		figure.current.rotateLimb(
+			"RIGHT_ELBOW",
+			new THREE.Vector3(0.1, -0.5, 0.3).normalize()
+		);
+
+		figure.current.setTorsoRotation(
+			new THREE.Vector3(-1, 0, 0).normalize()
+		);
 	}
 
-	// function generateCloud() {
-	// 	// console.log(figure.current.limbs.LEFT_FOREARM.children[0].geometry)
-
-	// 	const sampler = new MeshSurfaceSampler(
-	// 		// figure.current.limbs.LEFT_FOREARM.children[0]
-	// 		fbxmodel.current.children[0]
-	// 	).build();
-
-	// 	// console.log(sampler)
-
-	// 	const tempPosition = new THREE.Vector3();
-	// 	const vertices = [];
-
-	// 	for (let i = 0; i < 15000; i++) {
-	// 		sampler.sample(tempPosition);
-	// 		vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-	// 	}
-
-	// 	/* Create a geometry from the coordinates */
-	// 	const pointsGeometry = new THREE.BufferGeometry();
-	// 	pointsGeometry.setAttribute(
-	// 		"position",
-	// 		new THREE.Float32BufferAttribute(vertices, 3)
-	// 	);
-
-	// 	/* Create a material */
-	// 	const pointsMaterial = new THREE.PointsMaterial({
-	// 		color: 0x47b2f5,
-	// 		size: 0.1,
-	// 		// transparent: true,
-	// 		// opacity: 0.5,
-	// 	});
-	// 	/* Create a Points object */
-	// 	const points = new THREE.Points(pointsGeometry, pointsMaterial);
-
-	// 	const group = new THREE.Group();
-
-	// 	group.add(points);
-
-	// 	scene.current.add(group);
-
-	// 	// the mesh quaternion, apply it to particle group
-	// 	const meshQ = fbxmodel.current.children[0].quaternion;
-
-	// 	group.applyQuaternion(meshQ);
-
-	// 	console.log(fbxmodel.current);
-	// }
+	function poseToRotation(posedata) {}
+	{
+		const basisMatrix = null;
+	}
 
 	return (
 		<div className="cloud-rove">

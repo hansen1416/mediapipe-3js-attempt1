@@ -30,6 +30,17 @@ export class Figure {
 		"RIGHT_FOOT",
 	];
 
+	limb_rotation_base = {
+		LEFT_SHOULDER: new THREE.Vector3(0, -1, 0),
+		LEFT_ELBOW: new THREE.Vector3(0, -1, 0),
+		RIGHT_SHOULDER: new THREE.Vector3(0, -1, 0),
+		RIGHT_ELBOW: new THREE.Vector3(0, -1, 0),
+		LEFT_HIP: new THREE.Vector3(0, -1, 0),
+		LEFT_KNEE: new THREE.Vector3(0, -1, 0),
+		RIGHT_HIP: new THREE.Vector3(0, -1, 0),
+		RIGHT_KNEE: new THREE.Vector3(0, -1, 0),
+	};
+
 	constructor(show_mesh) {
 		this.show_mesh = !!show_mesh;
 
@@ -78,12 +89,9 @@ export class Figure {
 		this.ankle_radius = 1.8 * this.unit;
 
 		this.limbs = {};
-		this.limb_rotation_vectors = {};
 
 		for (let l of this.limbs_arr) {
 			this.limbs[l] = null;
-
-			this.limb_rotation_vectors[l] = new THREE.Vector3(0, -1, 0);
 		}
 	}
 
@@ -370,19 +378,22 @@ export class Figure {
 		this.group.position.set(...position);
 	}
 
-	setRotation(rotation) {
-		this.group.rotation.set(...rotation);
-	}
-
-	limbRotate(limb_name, target_vector) {
+	setTorsoRotation(target_vector) {
 		const quaternion = quaternionFromVectors(
-			this.limb_rotation_vectors[limb_name],
+			new THREE.Vector3(0, 1, 0),
 			target_vector
 		);
 
-		this.limbs[limb_name].applyQuaternion(quaternion);
+		this.group.setRotationFromQuaternion(quaternion);
+	}
 
-		this.limb_rotation_vectors[limb_name] = target_vector;
+	rotateLimb(limb_name, target_vector) {
+		const quaternion = quaternionFromVectors(
+			this.limb_rotation_base[limb_name],
+			target_vector
+		);
+
+		this.limbs[limb_name].group.setRotationFromQuaternion(quaternion);
 	}
 
 	particleLimb(limb_name) {
@@ -401,7 +412,7 @@ export class Figure {
 		const tempPosition = new THREE.Vector3();
 		const vertices = [];
 
-		for (let i = 0; i < 15000; i++) {
+		for (let i = 0; i < 30000; i++) {
 			sampler.sample(tempPosition);
 			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
 		}
