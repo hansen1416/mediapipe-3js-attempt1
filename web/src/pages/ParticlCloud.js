@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
 import { Figure } from "../components/figure";
 import { tmppose } from "../components/mypose";
@@ -92,49 +91,8 @@ export default function ParticlCloud() {
 
 	function generateCloud() {
 		for (let name of figure.current.limbs_arr) {
-			particleLimb(name);
+			figure.current.particleLimb(name);
 		}
-	}
-
-	function particleLimb(limb_name) {
-		if (
-			!figure.current.limbs[limb_name] ||
-			!figure.current.limbs[limb_name].group ||
-			!figure.current.limbs[limb_name].mesh
-		) {
-			return;
-		}
-
-		const sampler = new MeshSurfaceSampler(
-			figure.current.limbs[limb_name].mesh
-		).build();
-
-		const tempPosition = new THREE.Vector3();
-		const vertices = [];
-
-		for (let i = 0; i < 15000; i++) {
-			sampler.sample(tempPosition);
-			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-		}
-
-		/* Create a geometry from the coordinates */
-		const pointsGeometry = new THREE.BufferGeometry();
-		pointsGeometry.setAttribute(
-			"position",
-			new THREE.Float32BufferAttribute(vertices, 3)
-		);
-
-		/* Create a material */
-		const pointsMaterial = new THREE.PointsMaterial({
-			color: 0x47b2f5,
-			size: 0.1,
-			// transparent: true,
-			// opacity: 0.5,
-		});
-		/* Create a Points object */
-		const points = new THREE.Points(pointsGeometry, pointsMaterial);
-
-		figure.current.limbs[limb_name].group.add(points);
 	}
 
 	// function generateCloud() {

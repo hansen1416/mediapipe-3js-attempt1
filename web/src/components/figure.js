@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
+
 import { quaternionFromVectors } from "./ropes";
 
 export class Figure {
@@ -381,5 +383,46 @@ export class Figure {
 		this.limbs[limb_name].applyQuaternion(quaternion);
 
 		this.limb_rotation_vectors[limb_name] = target_vector;
+	}
+
+	particleLimb(limb_name) {
+		if (
+			!this.limbs[limb_name] ||
+			!this.limbs[limb_name].group ||
+			!this.limbs[limb_name].mesh
+		) {
+			return;
+		}
+
+		const sampler = new MeshSurfaceSampler(
+			this.limbs[limb_name].mesh
+		).build();
+
+		const tempPosition = new THREE.Vector3();
+		const vertices = [];
+
+		for (let i = 0; i < 15000; i++) {
+			sampler.sample(tempPosition);
+			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
+		}
+
+		/* Create a geometry from the coordinates */
+		const pointsGeometry = new THREE.BufferGeometry();
+		pointsGeometry.setAttribute(
+			"position",
+			new THREE.Float32BufferAttribute(vertices, 3)
+		);
+
+		/* Create a material */
+		const pointsMaterial = new THREE.PointsMaterial({
+			color: 0x47b2f5,
+			size: 0.1,
+			// transparent: true,
+			// opacity: 0.5,
+		});
+		/* Create a Points object */
+		const points = new THREE.Points(pointsGeometry, pointsMaterial);
+
+		this.limbs[limb_name].group.add(points);
 	}
 }
