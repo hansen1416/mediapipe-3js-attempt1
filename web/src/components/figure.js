@@ -5,22 +5,18 @@ const limbs_arr = [
 	"TORSO",
 	"HEAD",
 	"NECK",
-	"LEFT_SHOULDER",
-	"RIGHT_SHOULDER",
-	"LEFT_ELBOW",
-	"RIGHT_ELBOW",
-	"LEFT_FOREARM",
 	"LEFT_UPPERARM",
-	"RIGHT_FOREARM",
+	"LEFT_FOREARM",
+	"LEFT_HAND",
 	"RIGHT_UPPERARM",
-	"LEFT_HIP",
-	"RIGHT_HIP",
+	"RIGHT_FOREARM",
+	"RIGHT_HAND",
 	"LEFT_THIGH",
-	"LEFT_CRUS",
-	"LEFT_KNEE",
-	"RIGHT_KNEE",
+	"LEFT_CALF",
+	"LEFT_FOOT",
 	"RIGHT_THIGH",
-	"RIGHT_CRUS",
+	"RIGHT_CALF",
+	"RIGHT_FOOT",
 ];
 export class Figure {
 	constructor() {
@@ -102,12 +98,12 @@ export class Figure {
 
 		body_group.position.y = this.spine_size / 2;
 
-		this.limbs["TORSO"] = body_group;
+		this.limbs["TORSO"] = { group: body_group, mesh: body };
 	}
 
 	createHead() {
 		// Create a new group for the head
-		this.head = new THREE.Group();
+		const head_group = new THREE.Group();
 
 		const neck_geo = new THREE.CylinderGeometry(
 			this.neck_radius,
@@ -125,14 +121,14 @@ export class Figure {
 		// Create the main cube of the head and add to the group
 		// const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
 		const headMesh = new THREE.Mesh(head_geo, this.bodyMaterial);
-		this.head.add(headMesh);
+		head_group.add(headMesh);
 
 		// Position the head group
-		this.head.position.y =
+		head_group.position.y =
 			this.spine_size + this.head_radius + this.neck_size;
 
 		// Add the head group to the figure
-		this.group.add(this.head);
+		this.group.add(head_group);
 
 		// Add the eyes by calling the function we already made
 		const eyes = new THREE.Group();
@@ -158,7 +154,9 @@ export class Figure {
 		eyes.position.z = this.head_radius;
 
 		// in createEyes()
-		this.head.add(eyes);
+		head_group.add(eyes);
+
+		this.limbs["HEAD"] = { group: head_group, mesh: headMesh };
 	}
 
 	_buildArm(sign) {
@@ -190,7 +188,7 @@ export class Figure {
 
 		bigarm_group.add(bigarm);
 
-		bigarm_group.add(elbow);
+		smallarm_group.add(elbow);
 
 		smallarm_group.add(smallarm);
 
@@ -203,19 +201,24 @@ export class Figure {
 		// Translate the arm (not the group) downwards by half the height
 		// so the group rotates at the shoulder
 		bigarm.position.y = this.bigarm_size * -0.5;
-		// place elbow under bigarm
-		elbow.position.y = this.bigarm_size * -1;
+
 		// bigarm at each side of the body
 		bigarm_group.position.x =
 			sign * (this.shoulder_size / 2 + this.deltoid_radius * 2);
 		// bigarm a bit lower than spine
 		bigarm_group.position.y = this.spine_size - this.shoulder_radius;
+
+		// place elbow at top of smallarm
+		elbow.position.y = 0;
 		// Translate the arm (not the group) downwards by half the height
 		smallarm.position.y = this.smallarm_size * -0.5;
 		// place small arms under elbow
 		smallarm_group.position.y = this.bigarm_size * -1;
 
-		return [shoulder, bigarm_group, elbow, smallarm_group];
+		return [
+			{ group: bigarm_group, mesh: [shoulder, bigarm] },
+			{ group: smallarm_group, mesh: [elbow, smallarm] },
+		];
 	}
 
 	createArms() {
@@ -223,17 +226,13 @@ export class Figure {
 
 		const left_arm = this._buildArm(-1);
 
-		this.limbs["LEFT_SHOULDER"] = left_arm[0];
-		this.limbs["LEFT_UPPERARM"] = left_arm[1];
-		this.limbs["LEFT_ELBOW"] = left_arm[2];
-		this.limbs["LEFT_FOREARM"] = left_arm[3];
+		this.limbs["LEFT_UPPERARM"] = left_arm[0];
+		this.limbs["LEFT_FOREARM"] = left_arm[1];
 
 		const right_arm = this._buildArm(1);
 
 		this.limbs["RIGHT_SHOULDER"] = right_arm[0];
-		this.limbs["RIGHT_UPPERARM"] = right_arm[1];
-		this.limbs["RIGHT_ELBOW"] = right_arm[2];
-		this.limbs["RIGHT_FOREARM"] = right_arm[3];
+		this.limbs["RIGHT_FOREARM"] = right_arm[1];
 	}
 
 	_buildLeg(sign) {
@@ -265,7 +264,7 @@ export class Figure {
 
 		thigh_group.add(thigh);
 
-		thigh_group.add(knee);
+		crus_group.add(knee);
 
 		crus_group.add(crus);
 
@@ -279,8 +278,8 @@ export class Figure {
 		// Translate the arm (not the group) downwards by half the height
 		// so the group rotates at the shoulder
 		thigh.position.y = this.thigh_size * -0.5;
-		// place knee under thigh
-		knee.position.y = this.thigh_size * -1;
+		// place knee at top of calf thigh
+		knee.position.y = 0;
 
 		// Translate the arm (not the group) downwards by half the height
 		crus.position.y = this.crus_size * -0.5;
