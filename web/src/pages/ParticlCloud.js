@@ -58,8 +58,6 @@ export default function ParticlCloud() {
 
 		generateCloud();
 
-		poseToRotation(tmppose);
-
 		animate();
 
 		return () => {
@@ -69,10 +67,15 @@ export default function ParticlCloud() {
 
 	function animate() {
 		// ========= captured pose logic
-		if (counter.current % 6 === 0) {
+		if (
+			counter.current % 6 === 0 &&
+			poseIndx.current < poseDataArr.current.length
+		) {
 			// draw the pose as dots and lines on the sub scene
 
 			const data = poseDataArr.current[poseIndx.current];
+
+			poseToRotation(data);
 
 			const g = drawPoseKeypoints(data);
 
@@ -165,18 +168,23 @@ export default function ParticlCloud() {
 		} = ptr.getRotations(posedata);
 
 		figure.current.group.setRotationFromMatrix(TORSO);
+
 		figure.current.limbs.LEFT_SHOULDER.group.setRotationFromQuaternion(
 			LEFT_SHOULDER
 		);
+
 		figure.current.limbs.LEFT_ELBOW.group.setRotationFromQuaternion(
 			LEFT_ELBOW
 		);
+
 		figure.current.limbs.RIGHT_SHOULDER.group.setRotationFromQuaternion(
 			RIGHT_SHOULDER
 		);
+
 		figure.current.limbs.RIGHT_ELBOW.group.setRotationFromQuaternion(
 			RIGHT_ELBOW
 		);
+
 		figure.current.limbs.LEFT_HIP.group.setRotationFromQuaternion(LEFT_HIP);
 
 		figure.current.limbs.LEFT_KNEE.group.setRotationFromQuaternion(

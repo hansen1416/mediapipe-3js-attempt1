@@ -88,6 +88,7 @@ export default class PoseToRotation {
 			left_elbow,
 			left_shoulder
 		);
+
 		const leftForeArmOrientation = posePointsToVector(
 			left_wrist,
 			left_elbow
@@ -102,27 +103,27 @@ export default class PoseToRotation {
 			right_elbow
 		);
 
-		const leftThighOrientation = posePointsToVector(left_hip, left_knee);
-		const leftCalfOrientation = posePointsToVector(left_knee, left_ankle);
+		const leftThighOrientation = posePointsToVector(left_knee, left_hip);
+		const leftCalfOrientation = posePointsToVector(left_ankle, left_knee);
 
-		const rightThighOrientation = posePointsToVector(right_hip, right_knee);
+		const rightThighOrientation = posePointsToVector(right_knee, right_hip);
 		const rightCalfOrientation = posePointsToVector(
-			right_knee,
-			right_ankle
+			right_ankle,
+			right_knee
 		);
 
 		const torsoMatrix = this.poseTorsoMatrix(pose3D);
 
 		const basisMatrix = torsoMatrix.invert();
 
-		leftArmOrientation.applyMatrix4(basisMatrix);
-		leftForeArmOrientation.applyMatrix4(basisMatrix);
-		rightArmOrientation.applyMatrix4(basisMatrix);
-		rightForeArmOrientation.applyMatrix4(basisMatrix);
-		leftThighOrientation.applyMatrix4(basisMatrix);
-		leftCalfOrientation.applyMatrix4(basisMatrix);
-		rightThighOrientation.applyMatrix4(basisMatrix);
-		rightCalfOrientation.applyMatrix4(basisMatrix);
+		// leftArmOrientation.applyMatrix4(torsoMatrix);
+		// leftForeArmOrientation.applyMatrix4(torsoMatrix);
+		// rightArmOrientation.applyMatrix4(torsoMatrix);
+		// rightForeArmOrientation.applyMatrix4(torsoMatrix);
+		// leftThighOrientation.applyMatrix4(torsoMatrix);
+		// leftCalfOrientation.applyMatrix4(torsoMatrix);
+		// rightThighOrientation.applyMatrix4(torsoMatrix);
+		// rightCalfOrientation.applyMatrix4(torsoMatrix);
 
 		const leftArmQuaternion = quaternionFromVectors(
 			new THREE.Vector3(0, -1, 0),
@@ -134,7 +135,7 @@ export default class PoseToRotation {
 			leftForeArmOrientation
 		);
 
-		const ightArmQuaternion = quaternionFromVectors(
+		const rightArmQuaternion = quaternionFromVectors(
 			new THREE.Vector3(0, -1, 0),
 			rightArmOrientation
 		);
@@ -168,7 +169,7 @@ export default class PoseToRotation {
 			TORSO: torsoMatrix,
 			LEFT_SHOULDER: leftArmQuaternion,
 			LEFT_ELBOW: leftForeArmQuaternion,
-			RIGHT_SHOULDER: ightArmQuaternion,
+			RIGHT_SHOULDER: rightArmQuaternion,
 			RIGHT_ELBOW: rightForeArmQuaternion,
 			LEFT_HIP: leftThighQuaternion,
 			LEFT_KNEE: leftCalfQuaternion,
