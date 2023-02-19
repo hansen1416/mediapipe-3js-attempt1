@@ -118,7 +118,13 @@ export default function ParticlCloud() {
 
 				const res = PoseSolver.solve(
 					poses[0]["keypoints3D"],
-					poses[0]["keypoints"]
+					poses[0]["keypoints"],
+					{
+						runtime: "tfjs",
+						video: null,
+						imageSize: { width: 640, height: 480 },
+						enableLegs: true,
+					}
 				);
 
 				console.log(res);
