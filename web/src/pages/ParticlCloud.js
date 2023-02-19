@@ -41,19 +41,19 @@ export default function ParticlCloud() {
 		// 	}
 		// );
 
-		loadJSON(process.env.PUBLIC_URL + "/posejson/wlm0-300.json").then(
-			(data) => {
-				for (const p of data) {
-					for (const v of p) {
-						v["x"] *= -1;
-						v["y"] *= -1;
-						v["z"] *= -1;
-					}
+		loadJSON(
+			process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+		).then((data) => {
+			for (const p of data) {
+				for (const v of p) {
+					v["x"] *= -1;
+					v["y"] *= -1;
+					v["z"] *= -1;
 				}
-
-				poseDataArr.current = data;
 			}
-		);
+
+			poseDataArr.current = data;
+		});
 
 		figure.current = new Figure();
 
@@ -172,7 +172,7 @@ export default function ParticlCloud() {
 			RIGHT_KNEE,
 		} = ptr.getRotations(posedata);
 
-		figure.current.group.setRotationFromMatrix(TORSO);
+		// figure.current.group.setRotationFromMatrix(TORSO);
 
 		figure.current.limbs.LEFT_SHOULDER.group.setRotationFromQuaternion(
 			LEFT_SHOULDER
