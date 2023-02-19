@@ -4,8 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
 import { Figure } from "../components/figure";
-import { tmppose } from "../components/mypose";
-import { loadFBX, drawPoseKeypoints } from "../components/ropes";
+import { drawPoseKeypoints, loadJSON } from "../components/ropes";
 import PoseToRotation from "../components/PoseToRotation";
 
 export default function ParticlCloud() {
@@ -24,7 +23,7 @@ export default function ParticlCloud() {
 	const [capturedPose, setcapturedPose] = useState();
 	const counter = useRef(0);
 	const poseIndx = useRef(0);
-	const poseDataArr = useRef([tmppose]);
+	const poseDataArr = useRef([]);
 	// ========= captured pose logic
 
 	useEffect(() => {
@@ -42,19 +41,25 @@ export default function ParticlCloud() {
 		// 	}
 		// );
 
+		loadJSON(process.env.PUBLIC_URL + "/posejson/wlm0-300.json").then(
+			(data) => {
+				for (const p of data) {
+					for (const v of p) {
+						v["x"] *= -1;
+						v["y"] *= -1;
+						v["z"] *= -1;
+					}
+				}
+
+				poseDataArr.current = data;
+			}
+		);
+
 		figure.current = new Figure();
 
 		figure.current.init();
 
 		scene.current.add(figure.current.group);
-
-		for (const pd of poseDataArr.current) {
-			for (const v of pd) {
-				v["x"] *= -1;
-				v["y"] *= -1;
-				v["z"] *= -1;
-			}
-		}
 
 		generateCloud();
 
