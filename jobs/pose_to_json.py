@@ -6,9 +6,16 @@ import numpy as np
 
 if __name__ == "__main__":
 
-    for fnname in ['wlm0-3000.npy', 'wlm800-900.npy', 'wlm1500-1600.npy', 'wlm2300-2400.npy']:
+    files = ['wlm0-3000.npy', 'wlm800-900.npy',
+             'wlm1500-1600.npy', 'wlm2300-2400.npy']
+    files = ['lm3960-4200.npy']
 
-        pose_result_file = os.path.join('tmp', fnname)
+    dirname = 'tmp'
+    dirname = 'pose_data'
+
+    for fnname in files:
+
+        pose_result_file = os.path.join(dirname, fnname)
 
         pose_results = np.load(pose_result_file, allow_pickle=True)
 

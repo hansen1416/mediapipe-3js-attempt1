@@ -122,6 +122,7 @@ class VideoProcesser():
                         pose_world_landmarks.append(
                             self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
 
+                        # print(results.pose_world_landmarks)
                         pose_landmarks.append(
                             self.read_points_from_landmarks(results.pose_landmarks.landmark))
 
@@ -243,6 +244,8 @@ if __name__ == "__main__":
                         help="End time when extract poses from video, in seconds")
 
     args = parser.parse_args()
+
+    os.environ["FLASK_DEBUG"] = "1"
 
     vp = VideoProcesser(args.filename, args.start, args.end)
 
