@@ -54,7 +54,7 @@ class VideoProcesser():
             self.end_frame = min(round(end_time * fps), total_frames)
 
         self.start_frame = round(start_time * fps)
-        
+
         assert self.start_frame < self.end_frame, "End time must be bigger than start time"
 
     def __del__(self):
@@ -74,7 +74,8 @@ class VideoProcesser():
             # print(v.name)
             # print(v.value)
             # data.append(landmarks[v.value])
-            data.append([landmarks[v.value].x, landmarks[v.value].y, landmarks[v.value].z, landmarks[v.value].visibility])
+            data.append([landmarks[v.value].x, landmarks[v.value].y,
+                        landmarks[v.value].z, landmarks[v.value].visibility])
 
         # print(np.array(data).shape)
         # exit()
@@ -88,13 +89,15 @@ class VideoProcesser():
 
     def save_video_poses(self):
 
-        logger.info('Saving pose from frame {} to {}'.format(self.start_frame, self.end_frame))
+        logger.info('Saving pose from frame {} to {}'.format(
+            self.start_frame, self.end_frame))
 
         count = self.start_frame
 
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_frame)
 
         pose_world_landmarks = []
+        pose_landmarks = []
 
         with mp_pose.Pose(static_image_mode=False,
                           model_complexity=2,
@@ -112,20 +115,29 @@ class VideoProcesser():
                     if not results.pose_landmarks:
 
                         pose_world_landmarks.append(np.zeros((33, 4)))
+                        pose_landmarks.append(np.zeros((33, 4)))
 
                     else:
 
                         pose_world_landmarks.append(
                             self.read_points_from_landmarks(results.pose_world_landmarks.landmark))
 
+                        pose_landmarks.append(
+                            self.read_points_from_landmarks(results.pose_landmarks.landmark))
+
                     if count >= self.end_frame and len(pose_world_landmarks):
 
                         # frame_start_end = str(count - count % 300) + '-' + str(count)
-                        frame_start_end = str(self.start_frame) + '-' + str(self.end_frame)
+                        frame_start_end = str(
+                            self.start_frame) + '-' + str(self.end_frame)
 
-                        self._save_data_file(pose_world_landmarks, frame_start_end)
+                        self._save_data_file(
+                            pose_world_landmarks, frame_start_end)
+
+                        self._save_data_file2(pose_landmarks, frame_start_end)
 
                         pose_world_landmarks = []
+                        pose_landmarks = []
 
                         logger.info(
                             "Save pose world landmark for {}".format(frame_start_end))
@@ -148,7 +160,7 @@ class VideoProcesser():
                     count += 1
 
                     # if count % 100 == 0:
-                        # logger.info(count)
+                    # logger.info(count)
 
                 # else:
                 #     # when video finished
@@ -180,13 +192,38 @@ class VideoProcesser():
             # with open(os.path.join(data_dir, 'wlm{}.pkl'.format(frame_start_end)), 'wb') as f:
             #     pickle.dump(pose_world_landmarks, f)
 
-            np.save(os.path.join(data_dir, 'wlm{}.npy'.format(frame_start_end)), pose_world_landmarks)
+            np.save(os.path.join(data_dir, 'wlm{}.npy'.format(
+                frame_start_end)), pose_world_landmarks)
         else:
             with NamedTemporaryFile() as tf:
                 # pickle.dump(pose_world_landmarks, tf)
                 np.save(tf, pose_world_landmarks)
 
-                self.oss_svc.simple_upload(tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
+                self.oss_svc.simple_upload(
+                    tf, self.oss_key + '/wlm{}.npy'.format(frame_start_end))
+
+    def _save_data_file2(self, pose_landmarks, frame_start_end):
+
+        if self.oss_svc is None:
+
+            dirname = os.path.dirname(os.path.abspath(__file__))
+            data_dir = os.path.join(dirname, 'pose_data')
+
+            if not os.path.isdir(data_dir):
+                os.makedirs(data_dir)
+
+            # with open(os.path.join(data_dir, 'wlm{}.pkl'.format(frame_start_end)), 'wb') as f:
+            #     pickle.dump(pose_world_landmarks, f)
+
+            np.save(os.path.join(data_dir, 'lm{}.npy'.format(
+                frame_start_end)), pose_landmarks)
+        else:
+            with NamedTemporaryFile() as tf:
+                # pickle.dump(pose_world_landmarks, tf)
+                np.save(tf, pose_landmarks)
+
+                self.oss_svc.simple_upload(
+                    tf, self.oss_key + '/lm{}.npy'.format(frame_start_end))
 
 
 if __name__ == "__main__":
@@ -194,20 +231,22 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-                    prog = 'Save Video Pose',
-                    description = 'Extract face/pose/hand data from video',
-                    epilog = 'end===================')
+        prog='Save Video Pose',
+        description='Extract face/pose/hand data from video',
+        epilog='end===================')
 
-    parser.add_argument('filename', type=str, help="Path of a video file, could be an oss file key or local file path")
-    parser.add_argument("-s", "--start", default="1", type=int, metavar="start time", help="Start time when extract poses from video, in seconds")
-    parser.add_argument("-e", "--end", default="-1", type=int, metavar="end time", help="End time when extract poses from video, in seconds")
+    parser.add_argument(
+        'filename', type=str, help="Path of a video file, could be an oss file key or local file path")
+    parser.add_argument("-s", "--start", default="1", type=int, metavar="start time",
+                        help="Start time when extract poses from video, in seconds")
+    parser.add_argument("-e", "--end", default="-1", type=int, metavar="end time",
+                        help="End time when extract poses from video, in seconds")
 
     args = parser.parse_args()
 
     vp = VideoProcesser(args.filename, args.start, args.end)
 
     vp.save_video_poses()
-
 
     # redis_key = os.getenv('VIDEO_TO_PROCESS_REDIS_KEY',
     #                       default='video_to_process')
