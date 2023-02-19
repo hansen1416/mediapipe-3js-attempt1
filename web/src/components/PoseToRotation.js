@@ -11,7 +11,25 @@ import {
 export default class PoseToRotation {
 	constructor() {}
 
+	matrixBasisFromPoints(a, b, c) {
+		const x_basis = posePointsToVector(a, b);
+
+		const y_tmp = posePointsToVector(c, a);
+		const z_basis = new THREE.Vector3()
+			.crossVectors(y_tmp, x_basis)
+			.normalize();
+
+		const y_basis = new THREE.Vector3()
+			.crossVectors(z_basis, x_basis)
+			.normalize();
+
+		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
+
+		return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis);
+	}
+
 	poseTorsoMatrix(pose3D) {
+		// use left/shoulder and pelvis to define a plane
 		const rightshoulder = poseToVector(
 			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
 		);
@@ -27,22 +45,33 @@ export default class PoseToRotation {
 		);
 
 		const pelvis = middlePosition(lefthip, righthip, false);
+		// the torso basis, so all the limbs are position relative to the torso
+		const torsoBasis = this.matrixBasisFromPoints(
+			leftshoulder,
+			rightshoulder,
+			pelvis
+		);
+		// the original basis, same as man stand up straight
+		const originalBaiss = this.matrixBasisFromPoints(
+			new THREE.Vector3(1, 0, 0),
+			new THREE.Vector3(-1, 0, 0),
+			new THREE.Vector3(0, -1, 0)
+		);
 
-		const x_basis = posePointsToVector(leftshoulder, rightshoulder);
-		const y_tmp = posePointsToVector(leftshoulder, pelvis);
-		const z_basis = new THREE.Vector3()
-			.crossVectors(x_basis, y_tmp)
-			.normalize();
-
-		const y_basis = new THREE.Vector3()
-			.crossVectors(x_basis, z_basis)
-			.normalize();
-
-		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
-
-		return new THREE.Matrix4().makeBasis(x_basis, y_basis, z_basis);
+		// transfor limbs vector from original basis to the torso basis
+		return torsoBasis.invert().multiply(originalBaiss);
 	}
 
+	/**
+	 * pose to rotation of limbs
+	 *
+	 * 1. get position of joints
+	 * 2. calculate vector of limbs by minus joints position
+	 * 3. calcualte quaternion from (0,-1,0) or parent limb
+	 *
+	 * @param {object} pose3D
+	 * @returns
+	 */
 	getRotations(pose3D) {
 		const left_shoulder = poseToVector(
 			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
@@ -114,16 +143,16 @@ export default class PoseToRotation {
 
 		const torsoMatrix = this.poseTorsoMatrix(pose3D);
 
-		const basisMatrix = torsoMatrix.invert();
+		// console.log(torsoMatrix);
 
-		// leftArmOrientation.applyMatrix4(torsoMatrix);
-		// leftForeArmOrientation.applyMatrix4(torsoMatrix);
-		// rightArmOrientation.applyMatrix4(torsoMatrix);
-		// rightForeArmOrientation.applyMatrix4(torsoMatrix);
-		// leftThighOrientation.applyMatrix4(torsoMatrix);
-		// leftCalfOrientation.applyMatrix4(torsoMatrix);
-		// rightThighOrientation.applyMatrix4(torsoMatrix);
-		// rightCalfOrientation.applyMatrix4(torsoMatrix);
+		leftArmOrientation.applyMatrix4(torsoMatrix);
+		leftForeArmOrientation.applyMatrix4(torsoMatrix);
+		rightArmOrientation.applyMatrix4(torsoMatrix);
+		rightForeArmOrientation.applyMatrix4(torsoMatrix);
+		leftThighOrientation.applyMatrix4(torsoMatrix);
+		leftCalfOrientation.applyMatrix4(torsoMatrix);
+		rightThighOrientation.applyMatrix4(torsoMatrix);
+		rightCalfOrientation.applyMatrix4(torsoMatrix);
 
 		const leftArmQuaternion = quaternionFromVectors(
 			new THREE.Vector3(0, -1, 0),
