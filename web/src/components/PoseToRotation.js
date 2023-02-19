@@ -8,6 +8,10 @@ import {
 	quaternionFromVectors,
 } from "./ropes";
 
+/**
+ * How to transfer joints 3d position to quaternions for limbs
+ */
+
 export default class PoseToRotation {
 	constructor() {}
 
