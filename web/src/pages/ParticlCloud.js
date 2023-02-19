@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
 import * as poseDetection from "@tensorflow-models/pose-detection";
+import { cloneDeep } from "lodash";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
 import { Figure } from "../components/figure";
@@ -14,6 +15,11 @@ import {
 } from "../components/ropes";
 import PoseToRotation from "../components/PoseToRotation";
 import { PoseSolver } from "../kalido/PoseSolver";
+
+/**
+ * https://nimb.ws/YdEVQT
+ * @returns
+ */
 
 export default function ParticlCloud() {
 	const canvasRef = useRef(null);
@@ -116,6 +122,22 @@ export default function ParticlCloud() {
 					return;
 				}
 
+				{
+					const drawdata = cloneDeep(poses[0]["keypoints3D"]);
+
+					for (let v of drawdata) {
+						v["x"] *= -1;
+						v["y"] *= -1;
+						v["z"] *= -1;
+					}
+
+					const g = drawPoseKeypoints(drawdata);
+
+					g.scale.set(8, 8, 8);
+
+					setcapturedPose(g);
+				}
+
 				const res = PoseSolver.solve(
 					poses[0]["keypoints3D"],
 					poses[0]["keypoints"],
@@ -127,7 +149,46 @@ export default function ParticlCloud() {
 					}
 				);
 
-				console.log(res);
+				/**
+				 * 
+					LeftLowerArm
+					LeftUpperArm
+					RightLowerArm
+					RightUpperArm
+				 */
+
+				// console.log(res);
+
+				figure.current.limbs.LEFT_SHOULDER.group.setRotationFromEuler(
+					new THREE.Euler(
+						res.RightUpperArm.x,
+						res.RightUpperArm.y,
+						res.RightUpperArm.z
+					)
+				);
+				figure.current.limbs.LEFT_ELBOW.group.setRotationFromEuler(
+					new THREE.Euler(
+						res.RightLowerArm.x,
+						res.RightLowerArm.y,
+						res.RightLowerArm.z
+					)
+				);
+
+				figure.current.limbs.RIGHT_SHOULDER.group.setRotationFromEuler(
+					new THREE.Euler(
+						res.LeftUpperArm.x,
+						res.LeftUpperArm.y,
+						res.LeftUpperArm.z
+					)
+				);
+
+				figure.current.limbs.RIGHT_ELBOW.group.setRotationFromEuler(
+					new THREE.Euler(
+						res.LeftLowerArm.x,
+						res.LeftLowerArm.y,
+						res.LeftLowerArm.z
+					)
+				);
 			})();
 
 			// draw the pose as dots and lines on the sub scene
@@ -135,12 +196,6 @@ export default function ParticlCloud() {
 			// const data = poseDataArr.current[poseIndx.current];
 
 			// poseToRotation(data);
-
-			// const g = drawPoseKeypoints(data);
-
-			// g.scale.set(8, 8, 8);
-
-			// setcapturedPose(g);
 
 			// poseIndx.current += 1;
 
