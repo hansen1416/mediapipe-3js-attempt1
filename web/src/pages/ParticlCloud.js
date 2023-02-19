@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Button from "react-bootstrap/Button";
+import * as poseDetection from "@tensorflow-models/pose-detection";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
 import { Figure } from "../components/figure";
-import { drawPoseKeypoints, loadJSON } from "../components/ropes";
+import {
+	BlazePoseConfig,
+	drawPoseKeypoints,
+	// loadJSON,
+	startCamera,
+} from "../components/ropes";
 import PoseToRotation from "../components/PoseToRotation";
+import { PoseSolver } from "../kalido/PoseSolver";
 
 export default function ParticlCloud() {
 	const canvasRef = useRef(null);
@@ -26,6 +34,13 @@ export default function ParticlCloud() {
 	const poseDataArr = useRef([]);
 	// ========= captured pose logic
 
+	const poseDetector = useRef(null);
+
+	const videoRef = useRef(null);
+
+	const [startBtnShow, setstartBtnShow] = useState(true);
+	const [stopBtnShow, setstopBtnShow] = useState(false);
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -41,19 +56,28 @@ export default function ParticlCloud() {
 		// 	}
 		// );
 
-		loadJSON(
-			process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
-		).then((data) => {
-			for (const p of data) {
-				for (const v of p) {
-					v["x"] *= -1;
-					v["y"] *= -1;
-					v["z"] *= -1;
-				}
-			}
-
-			poseDataArr.current = data;
+		Promise.all([
+			poseDetection.createDetector(
+				poseDetection.SupportedModels.BlazePose,
+				BlazePoseConfig
+			),
+		]).then(([detector]) => {
+			poseDetector.current = detector;
 		});
+
+		// loadJSON(
+		// 	process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+		// ).then((data) => {
+		// 	// for (const p of data) {
+		// 	// 	for (const v of p) {
+		// 	// 		v["x"] *= -1;
+		// 	// 		v["y"] *= -1;
+		// 	// 		v["z"] *= -1;
+		// 	// 	}
+		// 	// }
+
+		// 	poseDataArr.current = data;
+		// });
 
 		figure.current = new Figure();
 
@@ -73,26 +97,50 @@ export default function ParticlCloud() {
 	function animate() {
 		// ========= captured pose logic
 		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
 			counter.current % 6 === 0 &&
-			poseIndx.current < poseDataArr.current.length
+			poseDetector.current
 		) {
+			(async () => {
+				const poses = await poseDetector.current.estimatePoses(
+					videoRef.current
+				);
+
+				if (
+					!poses ||
+					!poses[0] ||
+					!poses[0]["keypoints"] ||
+					!poses[0]["keypoints3D"]
+				) {
+					return;
+				}
+
+				const res = PoseSolver.solve(
+					poses[0]["keypoints3D"],
+					poses[0]["keypoints"]
+				);
+
+				console.log(res);
+			})();
+
 			// draw the pose as dots and lines on the sub scene
 
-			const data = poseDataArr.current[poseIndx.current];
+			// const data = poseDataArr.current[poseIndx.current];
 
-			poseToRotation(data);
+			// poseToRotation(data);
 
-			const g = drawPoseKeypoints(data);
+			// const g = drawPoseKeypoints(data);
 
-			g.scale.set(8, 8, 8);
+			// g.scale.set(8, 8, 8);
 
-			setcapturedPose(g);
+			// setcapturedPose(g);
 
-			poseIndx.current += 1;
+			// poseIndx.current += 1;
 
-			if (poseIndx.current >= poseDataArr.current.length) {
-				poseIndx.current = 0;
-			}
+			// if (poseIndx.current >= poseDataArr.current.length) {
+			// 	poseIndx.current = 0;
+			// }
 		}
 
 		counter.current += 1;
@@ -206,7 +254,15 @@ export default function ParticlCloud() {
 	}
 
 	return (
-		<div className="cloud-rove">
+		<div className="digital-trainer">
+			<video
+				ref={videoRef}
+				autoPlay={true}
+				width="640px"
+				height="480px"
+				style={{ display: "none" }}
+			></video>
+
 			<canvas ref={canvasRef} />
 			{/* // ========= captured pose logic */}
 			<div
@@ -226,6 +282,41 @@ export default function ParticlCloud() {
 				/>
 			</div>
 			{/* // ========= captured pose logic */}
+			<div className="controls">
+				<div style={{ marginBottom: "40px" }}>
+					{startBtnShow && (
+						<Button
+							variant="primary"
+							onClick={() => {
+								if (videoRef.current) {
+									startCamera(videoRef.current);
+
+									// count down loop hook. default 5 seconds
+
+									setstartBtnShow(false);
+									setstopBtnShow(true);
+								}
+							}}
+						>
+							Start
+						</Button>
+					)}
+					{stopBtnShow && (
+						<Button
+							variant="secondary"
+							onClick={() => {
+								if (videoRef.current) {
+									videoRef.current.srcObject = null;
+
+									setstopBtnShow(false);
+								}
+							}}
+						>
+							Stop
+						</Button>
+					)}
+				</div>
+			</div>
 		</div>
 	);
 }

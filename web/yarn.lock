@@ -1739,10 +1739,10 @@
   "resolved" "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz"
   "version" "2.0.4"
 
-"@mediapipe/pose@~0.4.0":
-  "integrity" "sha512-tD89b08CE6tF3lNNFfFTd8o4E9iOD4uKqQ++AbDv9GOImnUx5iMkMWnadQjav2sYGJ1V3qUtiHLLKfmUAW6WBg=="
-  "resolved" "https://registry.npmjs.org/@mediapipe/pose/-/pose-0.4.1633558788.tgz"
-  "version" "0.4.1633558788"
+"@mediapipe/pose@^0.5.1675469404", "@mediapipe/pose@~0.4.0":
+  "integrity" "sha512-DFZsNWTsSphRIZppnUCuunzBiHP2FdJXR9ehc7mMi4KG+oPaOH0Em3d6kr7Py+TSyTXC1doH88KcF28k2sBxsQ=="
+  "resolved" "https://registry.npmjs.org/@mediapipe/pose/-/pose-0.5.1675469404.tgz"
+  "version" "0.5.1675469404"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   "integrity" "sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg=="
