@@ -2,4 +2,5 @@ mediapipe/
 models
 anims
 animjson
+posejson
 *.mp4

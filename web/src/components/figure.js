@@ -221,15 +221,23 @@ export class Figure {
 		const elbow = new THREE.Mesh(elbow_geo, this.jointMaterial);
 		const smallarm = new THREE.Mesh(smallarm_geo, this.bodyMaterial);
 
-		bigarm_group.add(shoulder);
+		if (this.show_mesh) {
+			bigarm_group.add(shoulder);
+		}
 
-		bigarm_sub_group.add(bigarm);
+		if (this.show_mesh) {
+			bigarm_sub_group.add(bigarm);
+		}
 
 		bigarm_group.add(bigarm_sub_group);
 
-		smallarm_group.add(elbow);
+		if (this.show_mesh) {
+			smallarm_group.add(elbow);
+		}
 
-		smallarm_sub_group.add(smallarm);
+		if (this.show_mesh) {
+			smallarm_sub_group.add(smallarm);
+		}
 
 		smallarm_group.add(smallarm_sub_group);
 
@@ -309,15 +317,23 @@ export class Figure {
 		const knee = new THREE.Mesh(knee_geo, this.jointMaterial);
 		const calf = new THREE.Mesh(calf_geo, this.bodyMaterial);
 
-		thigh_group.add(hip);
+		if (this.show_mesh) {
+			thigh_group.add(hip);
+		}
 
-		thigh_sub_group.add(thigh);
+		if (this.show_mesh) {
+			thigh_sub_group.add(thigh);
+		}
 
 		thigh_group.add(thigh_sub_group);
 
-		calf_group.add(knee);
+		if (this.show_mesh) {
+			calf_group.add(knee);
+		}
 
-		calf_sub_group.add(calf);
+		if (this.show_mesh) {
+			calf_sub_group.add(calf);
+		}
 
 		calf_group.add(calf_sub_group);
 
@@ -412,7 +428,7 @@ export class Figure {
 		const tempPosition = new THREE.Vector3();
 		const vertices = [];
 
-		for (let i = 0; i < 30000; i++) {
+		for (let i = 0; i < 1000; i++) {
 			sampler.sample(tempPosition);
 			vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
 		}
