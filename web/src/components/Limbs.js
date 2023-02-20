@@ -124,7 +124,7 @@ export class Limbs {
 				this.head_sub.add(this.head_mesh);
 			}
 
-			this.head_sub.position.x = -this.head_radius;
+			this.head_sub.position.x = 0; //this.head_radius;
 			this.head_sub.position.y = this.head_radius;
 			this.head_sub.position.z = -this.head_radius;
 
@@ -137,12 +137,12 @@ export class Limbs {
 			this.torso_sub = new THREE.Group();
 
 			this.torso_mesh = this.getTorsoMesh([
-				new THREE.Vector3(0, 0, 1),
-				new THREE.Vector3(0, 0, 1),
-				new THREE.Vector3(0, 0, 1),
-				new THREE.Vector3(0, 0, 1),
-				new THREE.Vector3(0, 0, 1),
-				new THREE.Vector3(0, 0, 1),
+				new THREE.Vector3(-10, 10, 0),
+				new THREE.Vector3(0, 0, 0),
+				new THREE.Vector3(0, 10, 0),
+				new THREE.Vector3(-10, 10, 0),
+				new THREE.Vector3(-10, 0, 0),
+				new THREE.Vector3(0, 0, 0),
 			]);
 
 			if (this.add_mesh) {
@@ -169,7 +169,7 @@ export class Limbs {
 
 			this.upperarm_l.add(this.upperarm_l_sub);
 
-			this.upperarm_l_sub.position.x = -this.deltoid_radius;
+			this.upperarm_l_sub.position.x = this.deltoid_radius / 2;
 			this.upperarm_l_sub.position.y = this.bigarm_size / -2;
 		}
 
@@ -190,7 +190,7 @@ export class Limbs {
 
 			this.forearm_l.add(this.forearm_l_sub);
 
-			this.forearm_l_sub.position.x = -this.elbow_radius;
+			this.forearm_l_sub.position.x = this.elbow_radius / 2;
 			this.forearm_l_sub.position.y = this.smallarm_size / -2;
 		}
 
@@ -211,7 +211,7 @@ export class Limbs {
 
 			this.upperarm_r.add(this.upperarm_r_sub);
 
-			this.upperarm_r_sub.position.x = -this.deltoid_radius;
+			this.upperarm_r_sub.position.x = -this.deltoid_radius / 2;
 			this.upperarm_r_sub.position.y = this.bigarm_size / -2;
 		}
 
@@ -232,7 +232,7 @@ export class Limbs {
 
 			this.forearm_r.add(this.forearm_r_sub);
 
-			this.forearm_r_sub.position.x = -this.elbow_radius;
+			this.forearm_r_sub.position.x = -this.elbow_radius / 2;
 			this.forearm_r_sub.position.y = this.smallarm_size / -2;
 		}
 
@@ -433,7 +433,7 @@ export class Limbs {
 
 			let i = 0;
 
-			for (const l in [
+			for (const l of [
 				shoulder_pose_l,
 				hip_pose_r,
 				shoulder_pose_r,
@@ -441,17 +441,10 @@ export class Limbs {
 				hip_pose_l,
 				hip_pose_r,
 			]) {
-				torso_geo[i++] = l.position.x;
-				torso_geo[i++] = l.position.y;
-				torso_geo[i++] = l.position.z;
+				torso_geo[i++] = l.x;
+				torso_geo[i++] = l.y;
+				torso_geo[i++] = l.z;
 			}
-			// for (const l in []) var i = 0;
-			// p[i++] = vertex1.position.x;
-			// p[i++] = vertex1.position.y;
-			// p[i++] = vertex1.position.z;
-			// p[i++] = vertex2.position.x;
-			// p[i++] = vertex2.position.y;
-			// p[i] = vertex2.position.z;
 
 			this.torso_mesh.geometry.attributes.position.needsUpdate = true;
 		}
