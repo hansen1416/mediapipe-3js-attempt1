@@ -115,6 +115,9 @@ export default function ParticleFigure() {
 
 					setcapturedPose(g);
 
+					if (counter.current % 60 === 0) {
+						figure.current.resize(drawdata)
+					}
 
 					figure.current.applyPose(drawdata)
 				}
