@@ -1,8 +1,8 @@
 import * as THREE from "three";
-import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
+// import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
 import { BlazePoseKeypointsValues, posePointsToVector, quaternionFromVectors } from "./ropes";
-import MeshLineMaterial from "./MeshLineMaterial";
+// import MeshLineMaterial from "./MeshLineMaterial";
 
 export class Limbs {
     limbs_arr = [
@@ -88,6 +88,7 @@ export class Limbs {
 
 			this.upperarm_l.add(this.upperarm_l_sub);
 
+			this.upperarm_l_sub.position.x = -this.deltoid_radius;
 			this.upperarm_l_sub.position.y = this.bigarm_size / -2;
 		}
 
@@ -104,6 +105,7 @@ export class Limbs {
 
 			this.forearm_l.add(this.forearm_l_sub)
 
+			this.forearm_l_sub.position.x = -this.elbow_radius;
 			this.forearm_l_sub.position.y = this.smallarm_size / -2;
 		}
 
@@ -120,6 +122,7 @@ export class Limbs {
 
 			this.upperarm_r.add(this.upperarm_r_sub)
 
+			this.upperarm_r_sub.position.x = -this.deltoid_radius;
 			this.upperarm_r_sub.position.y = this.bigarm_size / -2;
 		}
 
@@ -136,6 +139,7 @@ export class Limbs {
 
 			this.forearm_r.add(this.forearm_r_sub)
 
+			this.forearm_r_sub.position.x = -this.elbow_radius;
 			this.forearm_r_sub.position.y = this.smallarm_size / -2;
 		}
 
