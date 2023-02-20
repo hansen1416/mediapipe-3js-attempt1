@@ -30,6 +30,7 @@
 	"scripts": {
 		"start": "react-scripts start",
 		"dev": "GENERATE_SOURCEMAP=false concurrently --kill-others \"less-watch-compiler src/styles/less src/styles/css --config less-watcher.config.json\" \"react-scripts start\"",
+		"devwin": "concurrently --kill-others \"less-watch-compiler src/styles/less src/styles/css --config less-watcher.config.json\" \"react-scripts start\"",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"

@@ -15,7 +15,7 @@ import ExcerciseEditor from "./pages/ExcerciseEditor";
 import DigitalTrainer from "./pages/DigitalTrainer";
 import CloudRove from "./pages/CloudRove";
 import Register from "./pages/Auth/Register";
-import ParticlCloud from "./pages/ParticlCloud";
+import ParticleFigure from "./pages/ParticleFigure";
 
 const router = createBrowserRouter([
 	{
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/cloud",
-				element: <ParticlCloud />,
+				element: <ParticleFigure />,
 			},
 		],
 	},

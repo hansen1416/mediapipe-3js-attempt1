@@ -21,7 +21,7 @@ import { PoseSolver } from "../kalido/PoseSolver";
  * @returns
  */
 
-export default function ParticlCloud() {
+export default function ParticleFigure() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);

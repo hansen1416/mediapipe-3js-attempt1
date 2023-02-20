@@ -5,23 +5,22 @@ import Button from "react-bootstrap/Button";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 
-import SubThreeJsScene from "../components/SubThreeJsScene";
-import { Figure } from "../components/figure";
+import SubThreeJsScene from "../../components/SubThreeJsScene";
+import { Limbs } from "../../components/Limbs";
 import {
 	BlazePoseConfig,
 	drawPoseKeypoints,
 	// loadJSON,
 	startCamera,
-} from "../components/ropes";
-import PoseToRotation from "../components/PoseToRotation";
-import { PoseSolver } from "../kalido/PoseSolver";
+} from "../../components/ropes";
+
 
 /**
  * https://nimb.ws/YdEVQT
  * @returns
  */
 
-export default function ParticlCloud() {
+export default function ParticleFigure() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
@@ -36,13 +35,13 @@ export default function ParticlCloud() {
 	// ========= captured pose logic
 	const [capturedPose, setcapturedPose] = useState();
 	const counter = useRef(0);
-	const poseIndx = useRef(0);
-	const poseDataArr = useRef([]);
 	// ========= captured pose logic
 
 	const poseDetector = useRef(null);
 
 	const videoRef = useRef(null);
+	const [subsceneWidth, setsubsceneWidth] = useState(334);
+	const [subsceneHeight, setsubsceneHeight] = useState(250);
 
 	const [startBtnShow, setstartBtnShow] = useState(true);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
@@ -51,16 +50,10 @@ export default function ParticlCloud() {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
+		// setsubsceneWidth(documentWidth * 0.3)
+		// setsubsceneHeight(documentWidth * 0.3 * 480 / 640)
+
 		_scene(documentWidth, documentHeight);
-
-		// loadFBX(process.env.PUBLIC_URL + "/Mannequin_Animation.FBX").then(
-		// 	(model) => {
-		// 		fbxmodel.current = model;
-		// 		// scene.current.add(model);
-
-		// 		generateCloud();
-		// 	}
-		// );
 
 		Promise.all([
 			poseDetection.createDetector(
@@ -71,27 +64,13 @@ export default function ParticlCloud() {
 			poseDetector.current = detector;
 		});
 
-		// loadJSON(
-		// 	process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
-		// ).then((data) => {
-		// 	// for (const p of data) {
-		// 	// 	for (const v of p) {
-		// 	// 		v["x"] *= -1;
-		// 	// 		v["y"] *= -1;
-		// 	// 		v["z"] *= -1;
-		// 	// 	}
-		// 	// }
+		figure.current = new Limbs();
 
-		// 	poseDataArr.current = data;
-		// });
+		const limbs = figure.current.init();
 
-		figure.current = new Figure();
-
-		figure.current.init();
-
-		scene.current.add(figure.current.group);
-
-		generateCloud();
+		for (const l of limbs) {
+			scene.current.add(l);
+		}
 
 		animate();
 
@@ -105,8 +84,7 @@ export default function ParticlCloud() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 6 === 0 &&
-			poseDetector.current
+			counter.current % 6 === 0
 		) {
 			(async () => {
 				const poses = await poseDetector.current.estimatePoses(
@@ -136,72 +114,15 @@ export default function ParticlCloud() {
 					g.scale.set(8, 8, 8);
 
 					setcapturedPose(g);
+
+
+					figure.current.applyPose(drawdata)
 				}
 
-				const res = PoseSolver.solve(
-					poses[0]["keypoints3D"],
-					poses[0]["keypoints"],
-					{
-						runtime: "tfjs",
-						video: null,
-						imageSize: { width: 640, height: 480 },
-						enableLegs: true,
-					}
-				);
+				
 
-				/**
-				 * 
-					LeftLowerArm
-					LeftUpperArm
-					RightLowerArm
-					RightUpperArm
-				 */
-
-				// console.log(res);
-
-				figure.current.limbs.LEFT_SHOULDER.group.setRotationFromEuler(
-					new THREE.Euler(
-						res.RightUpperArm.x,
-						res.RightUpperArm.y,
-						res.RightUpperArm.z
-					)
-				);
-				figure.current.limbs.LEFT_ELBOW.group.setRotationFromEuler(
-					new THREE.Euler(
-						res.RightLowerArm.x,
-						res.RightLowerArm.y,
-						res.RightLowerArm.z
-					)
-				);
-
-				figure.current.limbs.RIGHT_SHOULDER.group.setRotationFromEuler(
-					new THREE.Euler(
-						res.LeftUpperArm.x,
-						res.LeftUpperArm.y,
-						res.LeftUpperArm.z
-					)
-				);
-
-				figure.current.limbs.RIGHT_ELBOW.group.setRotationFromEuler(
-					new THREE.Euler(
-						res.LeftLowerArm.x,
-						res.LeftLowerArm.y,
-						res.LeftLowerArm.z
-					)
-				);
 			})();
 
-			// draw the pose as dots and lines on the sub scene
-
-			// const data = poseDataArr.current[poseIndx.current];
-
-			// poseToRotation(data);
-
-			// poseIndx.current += 1;
-
-			// if (poseIndx.current >= poseDataArr.current.length) {
-			// 	poseIndx.current = 0;
-			// }
 		}
 
 		counter.current += 1;
@@ -246,81 +167,13 @@ export default function ParticlCloud() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
-	function generateCloud() {
-		for (let name of figure.current.limbs_arr) {
-			figure.current.particleLimb(name);
-		}
-
-		// figure.current.rotateLimb(
-		// 	"RIGHT_SHOULDER",
-		// 	new THREE.Vector3(0.1, -0.5, 0.3).normalize()
-		// );
-
-		// figure.current.rotateLimb(
-		// 	"RIGHT_ELBOW",
-		// 	new THREE.Vector3(0.1, -0.5, 0.3).normalize()
-		// );
-
-		// figure.current.setTorsoRotation(
-		// 	new THREE.Vector3(-1, 0, 0).normalize()
-		// );
-	}
-
-	function poseToRotation(posedata) {
-		const ptr = new PoseToRotation();
-
-		const {
-			TORSO,
-			LEFT_SHOULDER,
-			LEFT_ELBOW,
-			RIGHT_SHOULDER,
-			RIGHT_ELBOW,
-			LEFT_HIP,
-			LEFT_KNEE,
-			RIGHT_HIP,
-			RIGHT_KNEE,
-		} = ptr.getRotations(posedata);
-
-		// figure.current.group.setRotationFromMatrix(TORSO);
-
-		figure.current.limbs.LEFT_SHOULDER.group.setRotationFromQuaternion(
-			LEFT_SHOULDER
-		);
-
-		figure.current.limbs.LEFT_ELBOW.group.setRotationFromQuaternion(
-			LEFT_ELBOW
-		);
-
-		figure.current.limbs.RIGHT_SHOULDER.group.setRotationFromQuaternion(
-			RIGHT_SHOULDER
-		);
-
-		figure.current.limbs.RIGHT_ELBOW.group.setRotationFromQuaternion(
-			RIGHT_ELBOW
-		);
-
-		figure.current.limbs.LEFT_HIP.group.setRotationFromQuaternion(LEFT_HIP);
-
-		figure.current.limbs.LEFT_KNEE.group.setRotationFromQuaternion(
-			LEFT_KNEE
-		);
-
-		figure.current.limbs.RIGHT_HIP.group.setRotationFromQuaternion(
-			RIGHT_HIP
-		);
-
-		figure.current.limbs.RIGHT_KNEE.group.setRotationFromQuaternion(
-			RIGHT_KNEE
-		);
-	}
-
 	return (
 		<div className="digital-trainer">
 			<video
 				ref={videoRef}
 				autoPlay={true}
-				width="640px"
-				height="480px"
+				width={subsceneWidth + "px"}
+				height={subsceneHeight + "px"}
 				style={{ display: "none" }}
 			></video>
 
@@ -328,8 +181,8 @@ export default function ParticlCloud() {
 			{/* // ========= captured pose logic */}
 			<div
 				style={{
-					width: "500px",
-					height: "400px",
+					width: subsceneWidth + "px",
+					height: subsceneHeight + "px",
 					position: "absolute",
 					top: 0,
 					left: 0,
@@ -337,8 +190,8 @@ export default function ParticlCloud() {
 				}}
 			>
 				<SubThreeJsScene
-					width={500}
-					height={400}
+					width={subsceneWidth}
+					height={subsceneHeight}
 					objects={capturedPose}
 				/>
 			</div>
