@@ -14,7 +14,6 @@ import {
 	startCamera,
 } from "../../components/ropes";
 
-
 /**
  * https://nimb.ws/YdEVQT
  * @returns
@@ -116,16 +115,12 @@ export default function ParticleFigure() {
 					setcapturedPose(g);
 
 					if (counter.current % 60 === 0) {
-						figure.current.resize(drawdata)
+						figure.current.resize(drawdata);
 					}
 
-					figure.current.applyPose(drawdata)
+					figure.current.applyPose(drawdata);
 				}
-
-				
-
 			})();
-
 		}
 
 		counter.current += 1;
