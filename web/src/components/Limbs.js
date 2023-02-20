@@ -52,6 +52,8 @@ export class Limbs {
 		// the pose position is between 0-1.
 		// scale it up to make the limbs on proper position
 		this.distance_ratio = 30;
+
+		this.add_mesh = true;
     }
 
 	getMesh(radiusTop, radiusBottom, height, radialSegments=8) {
@@ -80,7 +82,9 @@ export class Limbs {
 
 			this.upperarm_l_mesh = this.getMesh(this.deltoid_radius, this.elbow_radius, this.bigarm_size);
 
+			if (this.add_mesh) {
 			this.upperarm_l_sub.add(this.upperarm_l_mesh);
+			}
 
 			this.upperarm_l.add(this.upperarm_l_sub);
 
@@ -94,7 +98,9 @@ export class Limbs {
 
 			this.forearm_l_mesh = this.getMesh(this.elbow_radius, this.wrist_size, this.smallarm_size);
 
+			if (this.add_mesh) {
 			this.forearm_l_sub.add(this.forearm_l_mesh);
+			}
 
 			this.forearm_l.add(this.forearm_l_sub)
 
@@ -108,7 +114,9 @@ export class Limbs {
 
 			this.upperarm_r_mesh = this.getMesh(this.deltoid_radius, this.elbow_radius, this.bigarm_size);
 
+			if (this.add_mesh) {
 			this.upperarm_r_sub.add(this.upperarm_r_mesh);
+			}
 
 			this.upperarm_r.add(this.upperarm_r_sub)
 
@@ -122,7 +130,9 @@ export class Limbs {
 
 			this.forearm_r_mesh = this.getMesh(this.elbow_radius, this.wrist_size, this.smallarm_size);
 
+			if (this.add_mesh) {
 			this.forearm_r_sub.add(this.forearm_r_mesh);
+			}
 
 			this.forearm_r.add(this.forearm_r_sub)
 
@@ -138,33 +148,40 @@ export class Limbs {
 		+ (a.z*this.distance_ratio - b.z*this.distance_ratio) ** 2);
 	}
 
-	meshToLine(mesh) {
-		const sampler = new MeshSurfaceSampler(mesh).build();
+	// meshToLine(mesh) {
+	// 	const sampler = new MeshSurfaceSampler(mesh).build();
 
-		const tempPosition = new THREE.Vector3();
+	// 	const tempPosition = new THREE.Vector3();
 
-		const points = []
+	// 	const points = []
 
-		for (let i = 0; i < 30; i++) {
-			sampler.sample(tempPosition);
-			points.push(tempPosition.clone())
-		}
+	// 	for (let i = 0; i < 500; i++) {
+	// 		sampler.sample(tempPosition);
+	// 		points.push(tempPosition.clone())
+	// 	}
 
-		const curve = new THREE.CatmullRomCurve3(points).getPoints(1000);
+	// 	// const curve = new THREE.CatmullRomCurve3(points).getPoints(100);
 
-		const geometry = new THREE.BufferGeometry().setFromPoints( curve );
+	// 	const geometry = new THREE.BufferGeometry().setFromPoints( points );
 
-		const material = new MeshLineMaterial( {
-			transparent: true,
-			depthTest:false,
-			lineWidth:0.5,
-			color: 0xffcc12,
-			dashArray:4,
-			dashRatio:0.95,
-		} );
+	// 	// const material = new MeshLineMaterial( {
+	// 	// 	transparent: true,
+	// 	// 	depthTest:false,
+	// 	// 	lineWidth:0.5,
+	// 	// 	color: 0xffcc12,
+	// 	// 	dashArray:4,
+	// 	// 	dashRatio:0.95,
+	// 	// } );
 
-		return new THREE.Line( geometry, material );
-	}
+	// 	const material = new THREE.PointsMaterial({
+	// 		color: 0x47b2f5,
+	// 		size: 0.1,
+	// 		// transparent: true,
+	// 		// opacity: 0.5,
+	// 	});
+
+	// 	return new THREE.Points( geometry, material );
+	// }
 
 	resize(pose3D) {
 		const shoulder_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
@@ -181,17 +198,17 @@ export class Limbs {
 		this.forearm_l_mesh.scale.y = this.jointsDistance(wrist_pose_l, elbow_pose_l) / this.smallarm_size
 		this.forearm_r_mesh.scale.y = this.jointsDistance(wrist_pose_r, elbow_pose_r) / this.smallarm_size
 
-		this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
-		this.upperarm_l_sub.add(this.upperarm_l_line)
+		// this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
+		// this.upperarm_l_sub.add(this.upperarm_l_line)
 
-		this.upperarm_r_line = this.meshToLine(this.upperarm_r_mesh)
-		this.upperarm_r_sub.add(this.upperarm_r_line)
+		// this.upperarm_r_line = this.meshToLine(this.upperarm_r_mesh)
+		// this.upperarm_r_sub.add(this.upperarm_r_line)
 
-		this.forearm_l_line = this.meshToLine(this.forearm_l_mesh)
-		this.forearm_l_sub.add(this.forearm_l_line)
+		// this.forearm_l_line = this.meshToLine(this.forearm_l_mesh)
+		// this.forearm_l_sub.add(this.forearm_l_line)
 
-		this.forearm_r_line = this.meshToLine(this.forearm_r_mesh)
-		this.forearm_r_sub.add(this.forearm_r_line)
+		// this.forearm_r_line = this.meshToLine(this.forearm_r_mesh)
+		// this.forearm_r_sub.add(this.forearm_r_line)
 		
 	}
 
