@@ -5,6 +5,7 @@ import {
 	BlazePoseKeypointsValues,
 	posePointsToVector,
 	quaternionFromVectors,
+	middlePosition,
 } from "./ropes";
 // import MeshLineMaterial from "./MeshLineMaterial";
 
@@ -59,14 +60,47 @@ export class Limbs {
 		this.add_mesh = true;
 	}
 
-	getMesh(radiusTop, radiusBottom, height, radialSegments = 8) {
+	getMesh(
+		radiusTop,
+		radiusBottom,
+		height,
+		radialSegments = 8,
+		heightSegments = 1
+	) {
 		const geometry = new THREE.CylinderGeometry(
 			radiusTop,
 			radiusBottom,
 			height,
-			// radialSegments
-			4,
-			1
+			radialSegments,
+			heightSegments
+		);
+
+		const material = new THREE.MeshBasicMaterial({
+			color: 0x44aa88,
+			transparent: true,
+			opacity: 0.5,
+		});
+
+		return new THREE.Mesh(geometry, material);
+	}
+
+	getTorsoMesh(points) {
+		const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+		const material = new THREE.MeshBasicMaterial({
+			color: 0x44aa88,
+			transparent: true,
+			opacity: 0.5,
+		});
+
+		return new THREE.Mesh(geometry, material);
+	}
+
+	getHeadMesh(radius, widthSegments = 8, heightSegments = 8) {
+		const geometry = new THREE.SphereGeometry(
+			radius,
+			widthSegments,
+			heightSegments
 		);
 
 		const material = new THREE.MeshBasicMaterial({
@@ -79,6 +113,45 @@ export class Limbs {
 	}
 
 	init() {
+		{
+			this.head = new THREE.Group();
+
+			this.head_sub = new THREE.Group();
+
+			this.head_mesh = this.getHeadMesh(this.head_radius);
+
+			if (this.add_mesh) {
+				this.head_sub.add(this.head_mesh);
+			}
+
+			this.head_sub.position.x = -this.head_radius;
+			this.head_sub.position.y = this.head_radius;
+			this.head_sub.position.z = -this.head_radius;
+
+			this.head.add(this.head_sub);
+		}
+
+		{
+			this.torso = new THREE.Group();
+
+			this.torso_sub = new THREE.Group();
+
+			this.torso_mesh = this.getTorsoMesh([
+				new THREE.Vector3(0, 0, 1),
+				new THREE.Vector3(0, 0, 1),
+				new THREE.Vector3(0, 0, 1),
+				new THREE.Vector3(0, 0, 1),
+				new THREE.Vector3(0, 0, 1),
+				new THREE.Vector3(0, 0, 1),
+			]);
+
+			if (this.add_mesh) {
+				this.torso_sub.add(this.torso_mesh);
+			}
+
+			this.torso.add(this.torso_sub);
+		}
+
 		{
 			this.upperarm_l = new THREE.Group();
 
@@ -164,6 +237,8 @@ export class Limbs {
 		}
 
 		return [
+			this.head,
+			this.torso,
 			this.upperarm_l,
 			this.forearm_l,
 			this.upperarm_r,
@@ -252,37 +327,67 @@ export class Limbs {
 		// this.forearm_r_sub.add(this.forearm_r_line)
 	}
 
-	applyPose(pose3D) {
-		const shoulder_pose_l =
-			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
-		const elbow_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]];
-		const wrist_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]];
+	getPosePosition(pose) {
+		return new THREE.Vector3(
+			pose.x * this.distance_ratio,
+			pose.y * this.distance_ratio,
+			pose.z * this.distance_ratio
+		);
+	}
 
-		const shoulder_pose_r =
-			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
-		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
-		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
+	applyPose(pose3D) {
+		const nose = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["NOSE"]]
+		);
+
+		const shoulder_pose_l = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+		);
+		const elbow_pose_l = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+		);
+		const wrist_pose_l = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]]
+		);
+		const hip_pose_l = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+		);
+
+		const shoulder_pose_r = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+		);
+		const elbow_pose_r = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
+		);
+		const wrist_pose_r = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
+		);
+		const hip_pose_r = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+		);
+
+		this.head.position.set(nose.x, nose.y, nose.z);
 
 		this.upperarm_l.position.set(
-			shoulder_pose_l.x * this.distance_ratio,
-			shoulder_pose_l.y * this.distance_ratio,
-			shoulder_pose_l.z * this.distance_ratio
+			shoulder_pose_l.x,
+			shoulder_pose_l.y,
+			shoulder_pose_l.z
 		);
 		this.forearm_l.position.set(
-			elbow_pose_l.x * this.distance_ratio,
-			elbow_pose_l.y * this.distance_ratio,
-			elbow_pose_l.z * this.distance_ratio
+			elbow_pose_l.x,
+			elbow_pose_l.y,
+			elbow_pose_l.z
 		);
 
 		this.upperarm_r.position.set(
-			shoulder_pose_r.x * this.distance_ratio,
-			shoulder_pose_r.y * this.distance_ratio,
-			shoulder_pose_r.z * this.distance_ratio
+			shoulder_pose_r.x,
+			shoulder_pose_r.y,
+			shoulder_pose_r.z
 		);
 		this.forearm_r.position.set(
-			elbow_pose_r.x * this.distance_ratio,
-			elbow_pose_r.y * this.distance_ratio,
-			elbow_pose_r.z * this.distance_ratio
+			elbow_pose_r.x,
+			elbow_pose_r.y,
+			elbow_pose_r.z
 		);
 
 		const upperarm_l_target = posePointsToVector(
@@ -320,5 +425,35 @@ export class Limbs {
 
 		this.upperarm_r.setRotationFromQuaternion(upperarm_r_q);
 		this.forearm_r.setRotationFromQuaternion(forearm_r_q);
+
+		// update torso geometry
+		{
+			const torso_geo =
+				this.torso_mesh.geometry.attributes.position.array;
+
+			let i = 0;
+
+			for (const l in [
+				shoulder_pose_l,
+				hip_pose_r,
+				shoulder_pose_r,
+				shoulder_pose_l,
+				hip_pose_l,
+				hip_pose_r,
+			]) {
+				torso_geo[i++] = l.position.x;
+				torso_geo[i++] = l.position.y;
+				torso_geo[i++] = l.position.z;
+			}
+			// for (const l in []) var i = 0;
+			// p[i++] = vertex1.position.x;
+			// p[i++] = vertex1.position.y;
+			// p[i++] = vertex1.position.z;
+			// p[i++] = vertex2.position.x;
+			// p[i++] = vertex2.position.y;
+			// p[i] = vertex2.position.z;
+
+			this.torso_mesh.geometry.attributes.position.needsUpdate = true;
+		}
 	}
 }
