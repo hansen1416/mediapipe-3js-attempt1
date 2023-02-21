@@ -9,7 +9,7 @@ import {
 } from "./ropes";
 // import MeshLineMaterial from "./MeshLineMaterial";
 
-export class Limbs {
+export default class Limbs {
 	limbs_arr = [
 		"TORSO",
 		"HEAD",

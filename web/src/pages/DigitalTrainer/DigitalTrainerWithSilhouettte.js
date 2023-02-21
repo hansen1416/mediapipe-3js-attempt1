@@ -13,7 +13,8 @@ import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
 import "../../styles/css/DigitalTrainer.css";
 
-import Silhouette3D from "./Silhouette3D";
+// import SubThreeJsScene from "../../components/SubThreeJsScene";
+import Silhouette from "./Silhouette";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
@@ -24,6 +25,8 @@ import {
 	startCamera,
 	traverseModel,
 	applyTransfer,
+	drawPoseKeypoints,
+	srotIndex,
 	BlazePoseKeypointsValues,
 	radianGradientColor,
 } from "../../components/ropes";
@@ -56,8 +59,31 @@ export default function DigitalTrainer() {
 	const poseCompareResult = useRef(null);
 
 	const poseSyncVector = useRef(null);
+	const [vectorDistances, setvectorDistances] = useState([]);
+	// const [distanceNames] = useState([
+	// 	"chest",
+	// 	"leftupperarm",
+	// 	"leftforearm",
+	// 	"rightupperarm",
+	// 	"rightforearm",
+	// 	"abdominal",
+	// 	"leftthigh",
+	// 	"leftcalf",
+	// 	"rightthigh",
+	// 	"rightcalf",
+	// ]);
+	const [distacneSortIndex, setdistacneSortIndex] = useState([]);
 
-	const [blazePose3D, setblazePose3D] = useState(null);
+	// ========= diff curve logic
+	// const [poseCurve, setposeCurve] = useState(null);
+	// const poseCurveRef = useRef(null);
+	// const [boneCurve, setboneCurve] = useState(null);
+	// const boneCurveRef = useRef(null);
+	// ========= diff curve logic
+
+	// ========= captured pose logic
+	const [capturedPose, setcapturedPose] = useState();
+	// ========= captured pose logic
 
 	const [startBtnShow, setstartBtnShow] = useState(false);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
@@ -66,8 +92,7 @@ export default function DigitalTrainer() {
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
 
-	const [silhouetteWidth, setsilhouetteWidth] = useState(334);
-	const [silhouetteHeight, setsilhouetteHeight] = useState(250);
+	const [silhouetteSize, setsilhouetteSize] = useState(100);
 	const [silhouetteColors, setsilhouetteColors] = useState({});
 
 	// store the actual animation data, in a name=>value format
@@ -123,6 +148,37 @@ export default function DigitalTrainer() {
 
 			scene.current.add(mannequinModel.current);
 
+			// ========= diff curve logic
+			// {
+			// 	const geometry = new THREE.BufferGeometry().setFromPoints([
+			// 		new THREE.Vector2(0, 0),
+			// 		new THREE.Vector2(100, 0),
+			// 	]);
+
+			// 	poseCurveRef.current = new THREE.Line(
+			// 		geometry.clone(),
+			// 		new THREE.LineBasicMaterial({
+			// 			color: 0xff0000,
+			// 		})
+			// 	);
+
+			// 	boneCurveRef.current = new THREE.Line(
+			// 		geometry.clone(),
+			// 		new THREE.LineBasicMaterial({
+			// 			color: 0x00ff00,
+			// 		})
+			// 	);
+
+			// 	poseCurveRef.current.position.set(-100, -50, 0);
+			// 	boneCurveRef.current.position.set(-100, -50, 0);
+
+			// 	scene.current.add(poseCurveRef.current);
+			// 	scene.current.add(boneCurveRef.current);
+
+			// 	setposeCurve(poseCurveRef.current);
+			// 	setboneCurve(boneCurveRef.current);
+			// } // ========= diff curve logic
+
 			animate();
 		});
 
@@ -136,6 +192,12 @@ export default function DigitalTrainer() {
 		// eslint-disable-next-line
 	}, []);
 
+	useEffect(() => {
+		if (vectorDistances && vectorDistances.length) {
+			setdistacneSortIndex(srotIndex(vectorDistances));
+		}
+		// eslint-disable-next-line
+	}, [vectorDistances]);
 
 	useEffect(() => {
 		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
@@ -332,6 +394,14 @@ export default function DigitalTrainer() {
 
 				setdiffScore(parseInt(poseSync.current.diffScore));
 
+				// ========= diff curve logic
+				// poseCurveRef.current.geometry.setFromPoints(
+				// 	poseSync.current.poseSpline.getPoints(50)
+				// );
+				// boneCurveRef.current.geometry.setFromPoints(
+				// 	poseSync.current.boneSpline.getPoints(50)
+				// );
+				// ========= diff curve logic
 				// compare the distance curve between animation and pose
 			}
 
@@ -345,10 +415,22 @@ export default function DigitalTrainer() {
 					figureParts.current
 				);
 
+				setvectorDistances(distances);
+
 				// watch keypoints3d and vectorDistances,
 				calculateSilhouetteColors(distances, keypoints3D.current);
 			}
 
+			// ========= captured pose logic
+			if (keypoints3D.current) {
+				// draw the pose as dots and lines on the sub scene
+				const g = drawPoseKeypoints(keypoints3D.current);
+
+				g.scale.set(8, 8, 8);
+
+				setcapturedPose(g);
+			}
+			// ========= captured pose logic
 		})();
 	}
 
@@ -662,21 +744,57 @@ export default function DigitalTrainer() {
 
 			<canvas ref={canvasRef} />
 
-			<div
+			{/* // ========= captured pose logic */}
+			{/* <div
 				style={{
-					width: silhouetteWidth + "px",
-					height: silhouetteHeight + "px",
+					width: "500px",
+					height: "400px",
 					position: "absolute",
 					top: 0,
 					left: 0,
 					border: "1px solid #fff",
 				}}
 			>
-				<Silhouette3D
+				<SubThreeJsScene
 					width={500}
 					height={400}
-					blazePose3D={blazePose3D}
-					// objects={capturedPose}
+					objects={capturedPose}
+				/>
+			</div> */}
+			{/* // ========= captured pose logic */}
+			{/* // ========= diff curve logic */}
+			{/* <div
+				style={{
+					width: "500px",
+					height: "400px",
+					position: "absolute",
+					bottom: 0,
+					left: 0,
+					border: "1px solid #fff",
+				}}
+			>
+				<SubThreeJsScene
+					width={500}
+					height={400}
+					objects={poseCurve}
+					objects1={boneCurve}
+					cameraZ={200}
+				/>
+			</div> */}
+			{/* // ========= diff curve logic */}
+			<div
+				style={{
+					width: silhouetteSize + "px",
+					height: silhouetteSize + "px",
+					position: "absolute",
+					bottom: 0.3 * silhouetteSize + "px",
+					left: 0,
+				}}
+			>
+				<Silhouette
+					width={silhouetteSize}
+					height={silhouetteSize}
+					colors={silhouetteColors}
 				/>
 			</div>
 			<div className="controls">

@@ -6,7 +6,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
-import { Limbs } from "../../components/Limbs";
+import Limbs from "../../components/Limbs";
 import {
 	BlazePoseConfig,
 	drawPoseKeypoints,
