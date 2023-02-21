@@ -30,7 +30,7 @@ export class Limbs {
 	constructor() {
 		this.unit = 1;
 
-		this.head_radius = 4 * this.unit;
+		this.head_radius = 2 * this.unit;
 		this.neck_radius = 1.6 * this.unit;
 		this.neck_size = 2 * this.unit;
 
@@ -289,7 +289,15 @@ export class Limbs {
 	// 	return new THREE.Points( geometry, material );
 	// }
 
-	resize(pose3D) {
+	scaleLimb(mesh, joint1, joint2, initial_size) {
+		if (joint1.score > 0.5 && joint2.score > 0.5) {
+			mesh.scale.y = this.jointsDistance(joint1, joint2) / initial_size;
+		} else {
+			mesh.scale.y = 0
+		}
+	}
+
+	resize(pose3D, c) {
 		const shoulder_pose_l =
 			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
 		const elbow_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]];
@@ -300,19 +308,13 @@ export class Limbs {
 		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
 		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
 
-		this.upperarm_l_mesh.scale.y =
-			this.jointsDistance(shoulder_pose_l, elbow_pose_l) /
-			this.bigarm_size;
-		this.upperarm_r_mesh.scale.y =
-			this.jointsDistance(shoulder_pose_r, elbow_pose_r) /
-			this.bigarm_size;
+		scaleLimb(this.upperarm_l_mesh, shoulder_pose_l, elbow_pose_l, this.bigarm_size);
 
-		this.forearm_l_mesh.scale.y =
-			this.jointsDistance(wrist_pose_l, elbow_pose_l) /
-			this.smallarm_size;
-		this.forearm_r_mesh.scale.y =
-			this.jointsDistance(wrist_pose_r, elbow_pose_r) /
-			this.smallarm_size;
+		scaleLimb(this.forearm_l_mesh, wrist_pose_l, elbow_pose_l, this.smallarm_size);
+
+		scaleLimb(this.upperarm_r_mesh, shoulder_pose_r, elbow_pose_r, this.bigarm_size);
+
+		scaleLimb(this.forearm_r_mesh, wrist_pose_r, elbow_pose_r, this.smallarm_size);
 
 		// this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
 		// this.upperarm_l_sub.add(this.upperarm_l_line)
