@@ -328,6 +328,9 @@ export default class Limbs {
 
 		this.upperarm_l_mesh.scale.y = 1;
 
+		this.upperarm_l_mesh.matrixAutoUpdate = true;
+		this.upperarm_l_mesh.updateMatrix();
+
 		console.log(this.upperarm_l_mesh.scale);
 
 		this.scaleLimb(
