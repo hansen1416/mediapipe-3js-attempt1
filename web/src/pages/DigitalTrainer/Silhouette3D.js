@@ -1,10 +1,16 @@
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import Limbs from "../../components/Limbs";
 
-export default function Silhouette3D({width, height, blazePose3D, vectorDistances}) {
-
-    const canvasRef = useRef(null);
+export default function Silhouette3D({
+	width,
+	height,
+	blazePose3D,
+	vectorDistances,
+}) {
+	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
@@ -13,12 +19,12 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 
 	const animationPointer = useRef(0);
 
-    const figure = useRef(null);
+	const figure = useRef(null);
 
 	useEffect(() => {
 		_scene();
 
-        figure.current = new Limbs();
+		figure.current = new Limbs();
 
 		const limbs = figure.current.init();
 
@@ -37,13 +43,11 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 		// eslint-disable-next-line
 	}, []);
 
-    useEffect(() => {
-        figure.current.applyPose(blazePose3D);
-    }, [blazePose3D])
+	useEffect(() => {
+		figure.current.applyPose(blazePose3D);
+	}, [blazePose3D]);
 
-    useEffect(() => {
-
-    }, [vectorDistances])
+	useEffect(() => {}, [vectorDistances]);
 
 	function _scene() {
 		const backgroundColor = 0x22244;
@@ -60,11 +64,11 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 
 		camera.current.position.set(0, 0, 100);
 
-        {
-            const color = 0xffffff;
-            const amblight = new THREE.AmbientLight(color, 1);
-            scene.current.add(amblight);
-        }
+		{
+			const color = 0xffffff;
+			const amblight = new THREE.AmbientLight(color, 1);
+			scene.current.add(amblight);
+		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,

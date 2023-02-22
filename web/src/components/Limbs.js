@@ -293,7 +293,7 @@ export default class Limbs {
 		if (joint1.score > 0.5 && joint2.score > 0.5) {
 			mesh.scale.y = this.jointsDistance(joint1, joint2) / initial_size;
 		} else {
-			mesh.scale.y = 0
+			mesh.scale.y = 0;
 		}
 	}
 
@@ -308,13 +308,33 @@ export default class Limbs {
 		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
 		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
 
-		scaleLimb(this.upperarm_l_mesh, shoulder_pose_l, elbow_pose_l, this.bigarm_size);
+		this.scaleLimb(
+			this.upperarm_l_mesh,
+			shoulder_pose_l,
+			elbow_pose_l,
+			this.bigarm_size
+		);
 
-		scaleLimb(this.forearm_l_mesh, wrist_pose_l, elbow_pose_l, this.smallarm_size);
+		this.scaleLimb(
+			this.forearm_l_mesh,
+			wrist_pose_l,
+			elbow_pose_l,
+			this.smallarm_size
+		);
 
-		scaleLimb(this.upperarm_r_mesh, shoulder_pose_r, elbow_pose_r, this.bigarm_size);
+		this.scaleLimb(
+			this.upperarm_r_mesh,
+			shoulder_pose_r,
+			elbow_pose_r,
+			this.bigarm_size
+		);
 
-		scaleLimb(this.forearm_r_mesh, wrist_pose_r, elbow_pose_r, this.smallarm_size);
+		this.scaleLimb(
+			this.forearm_r_mesh,
+			wrist_pose_r,
+			elbow_pose_r,
+			this.smallarm_size
+		);
 
 		// this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
 		// this.upperarm_l_sub.add(this.upperarm_l_line)
