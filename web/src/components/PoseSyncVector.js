@@ -140,6 +140,7 @@ export default class PoseSyncVector {
 
 		const basisMatrix = this.poseTorso(pose3D);
 
+		// todo, test the math here
 		chestOrientation.applyMatrix4(basisMatrix);
 		leftArmOrientation.applyMatrix4(basisMatrix);
 		leftForeArmOrientation.applyMatrix4(basisMatrix);
