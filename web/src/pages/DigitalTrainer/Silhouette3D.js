@@ -44,6 +44,18 @@ export default function Silhouette3D({
 	}, []);
 
 	useEffect(() => {
+		if (!width || !height) {
+			return;
+		}
+
+		camera.current.aspect = width / height;
+		camera.current.updateProjectionMatrix();
+		renderer.current.setSize(width, height);
+	}, [width, height]);
+
+	useEffect(() => {
+		figure.current.resize(blazePose3D);
+
 		figure.current.applyPose(blazePose3D);
 	}, [blazePose3D]);
 
@@ -62,7 +74,7 @@ export default function Silhouette3D({
 			1000
 		);
 
-		camera.current.position.set(0, 0, 100);
+		camera.current.position.set(0, 0, 50);
 
 		{
 			const color = 0xffffff;
@@ -76,7 +88,7 @@ export default function Silhouette3D({
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
-		renderer.current.setSize(width, height);
+		// renderer.current.setSize(width, height);
 	}
 
 	function animate() {

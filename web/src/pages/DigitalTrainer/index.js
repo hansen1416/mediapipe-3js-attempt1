@@ -103,7 +103,10 @@ export default function DigitalTrainer() {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
-		setsilhouetteSize(0.2 * documentHeight);
+		setsilhouetteWidth(documentWidth / 4);
+		setsilhouetteHeight(((documentWidth / 4) * 480) / 640);
+
+		// setsilhouetteSize(0.2 * documentHeight);
 
 		Promise.all([
 			poseDetection.createDetector(
@@ -135,7 +138,6 @@ export default function DigitalTrainer() {
 
 		// eslint-disable-next-line
 	}, []);
-
 
 	useEffect(() => {
 		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
@@ -322,6 +324,8 @@ export default function DigitalTrainer() {
 				v["z"] *= -1;
 			}
 
+			setblazePose3D(keypoints3D.current);
+
 			if (poseSync.current) {
 				// compare the distance curve between animation and pose
 				poseCompareResult.current = poseSync.current.compareCurrentPose(
@@ -348,7 +352,6 @@ export default function DigitalTrainer() {
 				// watch keypoints3d and vectorDistances,
 				calculateSilhouetteColors(distances, keypoints3D.current);
 			}
-
 		})();
 	}
 
@@ -667,14 +670,14 @@ export default function DigitalTrainer() {
 					width: silhouetteWidth + "px",
 					height: silhouetteHeight + "px",
 					position: "absolute",
-					top: 0,
+					bottom: 0,
 					left: 0,
-					border: "1px solid #fff",
+					// border: "1px solid #fff",
 				}}
 			>
 				<Silhouette3D
-					width={500}
-					height={400}
+					width={silhouetteWidth}
+					height={silhouetteHeight}
 					blazePose3D={blazePose3D}
 					// objects={capturedPose}
 				/>
