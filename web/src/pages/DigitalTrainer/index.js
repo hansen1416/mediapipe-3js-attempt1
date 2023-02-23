@@ -126,10 +126,10 @@ export default function DigitalTrainer() {
 
 		creatMainScene(documentWidth, documentHeight);
 
-		setsubsceneWidth(documentHeight * 0.25)
-		setsubsceneHeight(documentHeight * 0.25 * 480 / 640)
+		setsubsceneHeight(documentHeight * 0.25);
+		setsubsceneWidth((documentHeight * 0.25 * 640) / 480);
 
-		createSubScene()
+		createSubScene();
 
 		// setsilhouetteSize(0.2 * documentHeight);
 
@@ -154,7 +154,7 @@ export default function DigitalTrainer() {
 			silhouette.current = new Limbs();
 
 			const limbs = silhouette.current.init();
-	
+
 			for (const l of limbs) {
 				sceneSub.current.add(l);
 			}
@@ -225,26 +225,28 @@ export default function DigitalTrainer() {
 	}
 
 	function createSubScene() {
-
 		sceneSub.current = new THREE.Scene();
 		sceneSub.current.background = new THREE.Color(0x22244);
 
 		cameraSub.current = new THREE.PerspectiveCamera(
 			75,
-			640/480,
+			640 / 480,
 			0.1,
 			1000
 		);
 
-		cameraSub.current.position.set(0, 0, 30);
+		cameraSub.current.position.set(0, 0, 100);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
-		
+
 		rendererSub.current = new THREE.WebGLRenderer({
 			canvas: canvasRefSub.current,
 		});
 
-		controlsSub.current = new OrbitControls(cameraSub.current, canvasRefSub.current);
+		controlsSub.current = new OrbitControls(
+			cameraSub.current,
+			canvasRefSub.current
+		);
 	}
 
 	useEffect(() => {
@@ -258,7 +260,6 @@ export default function DigitalTrainer() {
 
 		subsceneWidthRef.current = subsceneWidth;
 		subsceneHeightRef.current = subsceneHeight;
-
 	}, [subsceneWidth, subsceneHeight]);
 
 	function animate() {
@@ -268,7 +269,7 @@ export default function DigitalTrainer() {
 			doingTraining();
 		}
 
-		if (keypoints3D.current){
+		if (keypoints3D.current) {
 			silhouette.current.applyPose(keypoints3D.current, true);
 		}
 
@@ -347,9 +348,17 @@ export default function DigitalTrainer() {
 			keypoints3D.current = poses[0]["keypoints3D"];
 
 			for (let v of keypoints3D.current) {
-				v["x"] *= -subsceneWidthRef.current;
-				v["y"] *= -subsceneHeightRef.current;
-				v["z"] *= -subsceneWidthRef.current;
+				// v["x"] =
+				// 	subsceneWidthRef.current * v["x"] -
+				// 	subsceneWidthRef.current / 2;
+				// v["y"] =
+				// 	subsceneHeightRef.current * v["y"] -
+				// 	subsceneHeightRef.current / 2;
+				// v["z"] *= -subsceneWidthRef.current;
+
+				v["x"] *= -1;
+				v["y"] *= -1;
+				v["z"] *= -1;
 			}
 
 			if (poseSync.current) {

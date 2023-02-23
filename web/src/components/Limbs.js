@@ -54,11 +54,11 @@ export default class Limbs {
 		this.init_vector = new THREE.Vector3(0, -1, 0);
 		// the pose position is between 0-1.
 		// scale it up to make the limbs on proper position
-		this.distance_ratio = 1;
+		this.distance_ratio = 30;
 
 		this.add_mesh = true;
 
-		this.init_scale = new THREE.Vector3(0,0,0);
+		this.init_scale = new THREE.Vector3(0.3, 0.3, 0.3);
 	}
 
 	getMesh(
@@ -129,7 +129,11 @@ export default class Limbs {
 		this.head_sub.position.y = this.head_radius;
 		this.head_sub.position.z = -this.head_radius;
 
-		this.head_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+		this.head_mesh.scale.set(
+			this.init_scale.x,
+			this.init_scale.y,
+			this.init_scale.z
+		);
 
 		this.head.add(this.head_sub);
 
@@ -151,7 +155,11 @@ export default class Limbs {
 			this.torso_sub.add(this.torso_mesh);
 		}
 
-		this.torso_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+		this.torso_mesh.scale.set(
+			this.init_scale.x,
+			this.init_scale.y,
+			this.init_scale.z
+		);
 
 		this.torso.add(this.torso_sub);
 
@@ -170,7 +178,11 @@ export default class Limbs {
 			this.upperarm_l_sub.add(this.upperarm_l_mesh);
 		}
 
-		this.upperarm_l_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+		this.upperarm_l_mesh.scale.set(
+			this.init_scale.x,
+			this.init_scale.y,
+			this.init_scale.z
+		);
 
 		this.upperarm_l.add(this.upperarm_l_sub);
 
@@ -192,7 +204,11 @@ export default class Limbs {
 			this.forearm_l_sub.add(this.forearm_l_mesh);
 		}
 
-		this.forearm_l_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+		this.forearm_l_mesh.scale.set(
+			this.init_scale.x,
+			this.init_scale.y,
+			this.init_scale.z
+		);
 
 		this.forearm_l.add(this.forearm_l_sub);
 
@@ -214,7 +230,11 @@ export default class Limbs {
 			this.upperarm_r_sub.add(this.upperarm_r_mesh);
 		}
 
-		this.upperarm_r_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+		this.upperarm_r_mesh.scale.set(
+			this.init_scale.x,
+			this.init_scale.y,
+			this.init_scale.z
+		);
 
 		this.upperarm_r.add(this.upperarm_r_sub);
 
@@ -236,7 +256,11 @@ export default class Limbs {
 			this.forearm_r_sub.add(this.forearm_r_mesh);
 		}
 
-		this.forearm_r_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+		this.forearm_r_mesh.scale.set(
+			this.init_scale.x,
+			this.init_scale.y,
+			this.init_scale.z
+		);
 
 		this.forearm_r.add(this.forearm_r_sub);
 
@@ -255,35 +279,36 @@ export default class Limbs {
 
 	jointsDistance(a, b) {
 		return Math.sqrt(
-			(a.x  - b.x ) ** 2 +
-				(a.y  - b.y ) ** 2 +
-				(a.z  - b.z ) ** 2
+			(a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2
 		);
-
-		// return Math.sqrt(
-		// 	(a.x * this.distance_ratio - b.x * this.distance_ratio) ** 2 +
-		// 		(a.y * this.distance_ratio - b.y * this.distance_ratio) ** 2 +
-		// 		(a.z * this.distance_ratio - b.z * this.distance_ratio) ** 2
-		// );
 	}
 
 	scaleLimb(mesh, joint1, joint2, initial_size) {
 		if (joint1.score > 0.1 && joint2.score > 0.1) {
-			mesh.scale.set(1, this.jointsDistance(joint1, joint2) / initial_size, 1);
+			mesh.scale.set(
+				1,
+				this.jointsDistance(joint1, joint2) / initial_size,
+				1
+			);
 		} else {
-			mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
+			mesh.scale.set(
+				this.init_scale.x,
+				this.init_scale.y,
+				this.init_scale.z
+			);
 		}
 	}
 
 	getPosePosition(joint_position) {
-		joint_position.x *= this.distance_ratio;
-		joint_position.y *= this.distance_ratio;
-		joint_position.z *= this.distance_ratio;
-
-		return joint_position
+		return {
+			x: joint_position.x * this.distance_ratio,
+			y: joint_position.y * this.distance_ratio,
+			z: joint_position.z * this.distance_ratio,
+			score: joint_position.score,
+		};
 	}
 
-	applyPose(pose3D, resize=false) {
+	applyPose(pose3D, resize = false) {
 		if (!pose3D || !pose3D.length) {
 			return;
 		}
@@ -409,21 +434,21 @@ export default class Limbs {
 				elbow_pose_l,
 				this.bigarm_size
 			);
-	
+
 			this.scaleLimb(
 				this.forearm_l_mesh,
 				wrist_pose_l,
 				elbow_pose_l,
 				this.smallarm_size
 			);
-	
+
 			this.scaleLimb(
 				this.upperarm_r_mesh,
 				shoulder_pose_r,
 				elbow_pose_r,
 				this.bigarm_size
 			);
-	
+
 			this.scaleLimb(
 				this.forearm_r_mesh,
 				wrist_pose_r,
@@ -431,9 +456,14 @@ export default class Limbs {
 				this.smallarm_size
 			);
 
-			console.log('upperarm_l_mesh', this.upperarm_l_mesh.scale, 'upperarm_r_mesh', this.upperarm_r_mesh.scale)
-	
-			this.head_mesh.scale.set(1,1,1);
+			console.log(
+				"upperarm_l_mesh",
+				this.upperarm_l_mesh.scale,
+				"upperarm_r_mesh",
+				this.upperarm_r_mesh.scale
+			);
+
+			this.head_mesh.scale.set(1, 1, 1);
 		}
 	}
 
