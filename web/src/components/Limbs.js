@@ -57,6 +57,8 @@ export default class Limbs {
 		this.distance_ratio = 30;
 
 		this.add_mesh = true;
+
+		this.init_scale = new THREE.Vector3(0,0,0);
 	}
 
 	getMesh(
@@ -127,7 +129,7 @@ export default class Limbs {
 		this.head_sub.position.y = this.head_radius;
 		this.head_sub.position.z = -this.head_radius;
 
-		this.head_sub.scale.y = 0;
+		this.head_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 
 		this.head.add(this.head_sub);
 
@@ -149,7 +151,7 @@ export default class Limbs {
 			this.torso_sub.add(this.torso_mesh);
 		}
 
-		this.torso_sub.scale.y = 0;
+		this.torso_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 
 		this.torso.add(this.torso_sub);
 
@@ -168,7 +170,7 @@ export default class Limbs {
 			this.upperarm_l_sub.add(this.upperarm_l_mesh);
 		}
 
-		this.upperarm_l_sub.scale.y = 0;
+		this.upperarm_l_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 
 		this.upperarm_l.add(this.upperarm_l_sub);
 
@@ -190,7 +192,7 @@ export default class Limbs {
 			this.forearm_l_sub.add(this.forearm_l_mesh);
 		}
 
-		this.forearm_l_sub.scale.y = 0;
+		this.forearm_l_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 
 		this.forearm_l.add(this.forearm_l_sub);
 
@@ -212,7 +214,7 @@ export default class Limbs {
 			this.upperarm_r_sub.add(this.upperarm_r_mesh);
 		}
 
-		this.upperarm_r_sub.scale.y = 0;
+		this.upperarm_r_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 
 		this.upperarm_r.add(this.upperarm_r_sub);
 
@@ -234,7 +236,7 @@ export default class Limbs {
 			this.forearm_r_sub.add(this.forearm_r_mesh);
 		}
 
-		this.forearm_r_sub.scale.y = 0;
+		this.forearm_r_mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 
 		this.forearm_r.add(this.forearm_r_sub);
 
@@ -253,54 +255,23 @@ export default class Limbs {
 
 	jointsDistance(a, b) {
 		return Math.sqrt(
-			(a.x * this.distance_ratio - b.x * this.distance_ratio) ** 2 +
-				(a.y * this.distance_ratio - b.y * this.distance_ratio) ** 2 +
-				(a.z * this.distance_ratio - b.z * this.distance_ratio) ** 2
+			(a.x  - b.x ) ** 2 +
+				(a.y  - b.y ) ** 2 +
+				(a.z  - b.z ) ** 2
 		);
+
+		// return Math.sqrt(
+		// 	(a.x * this.distance_ratio - b.x * this.distance_ratio) ** 2 +
+		// 		(a.y * this.distance_ratio - b.y * this.distance_ratio) ** 2 +
+		// 		(a.z * this.distance_ratio - b.z * this.distance_ratio) ** 2
+		// );
 	}
 
-	// meshToLine(mesh) {
-	// 	const sampler = new MeshSurfaceSampler(mesh).build();
-
-	// 	const tempPosition = new THREE.Vector3();
-
-	// 	const points = []
-
-	// 	for (let i = 0; i < 500; i++) {
-	// 		sampler.sample(tempPosition);
-	// 		points.push(tempPosition.clone())
-	// 	}
-
-	// 	// const curve = new THREE.CatmullRomCurve3(points).getPoints(100);
-
-	// 	const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-	// 	// const material = new MeshLineMaterial( {
-	// 	// 	transparent: true,
-	// 	// 	depthTest:false,
-	// 	// 	lineWidth:0.5,
-	// 	// 	color: 0xffcc12,
-	// 	// 	dashArray:4,
-	// 	// 	dashRatio:0.95,
-	// 	// } );
-
-	// 	const material = new THREE.PointsMaterial({
-	// 		color: 0x47b2f5,
-	// 		size: 0.1,
-	// 		// transparent: true,
-	// 		// opacity: 0.5,
-	// 	});
-
-	// 	return new THREE.Points( geometry, material );
-	// }
-
 	scaleLimb(mesh, joint1, joint2, initial_size) {
-		if (joint1.score > 0.5 && joint2.score > 0.5) {
-			mesh.scale.y = this.jointsDistance(joint1, joint2) / initial_size;
-
-			console.log(mesh.scale.y);
+		if (joint1.score > 0.1 && joint2.score > 0.1) {
+			mesh.scale.set(1, this.jointsDistance(joint1, joint2) / initial_size, 1);
 		} else {
-			mesh.scale.y = 0;
+			mesh.scale.set(this.init_scale.x, this.init_scale.y, this.init_scale.z);
 		}
 	}
 
@@ -326,13 +297,6 @@ export default class Limbs {
 			this.bigarm_size
 		);
 
-		this.upperarm_l_mesh.scale.y = 1;
-
-		this.upperarm_l_mesh.matrixAutoUpdate = true;
-		this.upperarm_l_mesh.updateMatrix();
-
-		console.log(this.upperarm_l_mesh.scale);
-
 		this.scaleLimb(
 			this.forearm_l_mesh,
 			wrist_pose_l,
@@ -353,6 +317,8 @@ export default class Limbs {
 			elbow_pose_r,
 			this.smallarm_size
 		);
+
+		this.head_mesh.scale.set(1,1,1);
 
 		// this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
 		// this.upperarm_l_sub.add(this.upperarm_l_line)
@@ -375,7 +341,7 @@ export default class Limbs {
 		);
 	}
 
-	applyPose(pose3D) {
+	applyPose(pose3D, resize=false) {
 		if (!pose3D || !pose3D.length) {
 			return;
 		}
@@ -471,6 +437,7 @@ export default class Limbs {
 		this.forearm_r.setRotationFromQuaternion(forearm_r_q);
 
 		// update torso geometry
+		// it's a plane, defined by 4 points. left/right shoulder, left/right hip
 		{
 			const torso_geo =
 				this.torso_mesh.geometry.attributes.position.array;
@@ -492,5 +459,44 @@ export default class Limbs {
 
 			this.torso_mesh.geometry.attributes.position.needsUpdate = true;
 		}
+
+		if (resize) {
+			
+		}
 	}
+
+	// meshToLine(mesh) {
+	// 	const sampler = new MeshSurfaceSampler(mesh).build();
+
+	// 	const tempPosition = new THREE.Vector3();
+
+	// 	const points = []
+
+	// 	for (let i = 0; i < 500; i++) {
+	// 		sampler.sample(tempPosition);
+	// 		points.push(tempPosition.clone())
+	// 	}
+
+	// 	// const curve = new THREE.CatmullRomCurve3(points).getPoints(100);
+
+	// 	const geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+	// 	// const material = new MeshLineMaterial( {
+	// 	// 	transparent: true,
+	// 	// 	depthTest:false,
+	// 	// 	lineWidth:0.5,
+	// 	// 	color: 0xffcc12,
+	// 	// 	dashArray:4,
+	// 	// 	dashRatio:0.95,
+	// 	// } );
+
+	// 	const material = new THREE.PointsMaterial({
+	// 		color: 0x47b2f5,
+	// 		size: 0.1,
+	// 		// transparent: true,
+	// 		// opacity: 0.5,
+	// 	});
+
+	// 	return new THREE.Points( geometry, material );
+	// }
 }

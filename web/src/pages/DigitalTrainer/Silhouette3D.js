@@ -54,9 +54,9 @@ export default function Silhouette3D({
 	}, [width, height]);
 
 	useEffect(() => {
-		figure.current.resize(blazePose3D);
-
 		figure.current.applyPose(blazePose3D);
+
+		// figure.current.resize(blazePose3D);
 	}, [blazePose3D]);
 
 	useEffect(() => {}, [vectorDistances]);
@@ -74,7 +74,7 @@ export default function Silhouette3D({
 			1000
 		);
 
-		camera.current.position.set(0, 0, 50);
+		camera.current.position.set(0, 0, 30);
 
 		{
 			const color = 0xffffff;

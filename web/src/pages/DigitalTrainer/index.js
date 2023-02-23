@@ -184,54 +184,6 @@ export default function DigitalTrainer() {
 			scene.current.add(camera.current);
 		}
 
-		// {
-		// 	const sky = new Sky();
-
-		// 	sky.scale.setScalar(450000); // Specify the dimensions of the skybox
-
-		// 	const sun = new THREE.Vector3();
-
-		// 	/// GUI
-
-		// 	const effectController = {
-		// 		turbidity: 10,
-		// 		rayleigh: 3,
-		// 		mieCoefficient: 0.005,
-		// 		mieDirectionalG: 0.7,
-		// 		elevation: 2,
-		// 		azimuth: 180,
-		// 		exposure: 0.5,
-		// 	};
-
-		// 	const uniforms = sky.material.uniforms;
-		// 	uniforms["turbidity"].value = effectController.turbidity;
-		// 	uniforms["rayleigh"].value = effectController.rayleigh;
-		// 	uniforms["mieCoefficient"].value = effectController.mieCoefficient;
-		// 	uniforms["mieDirectionalG"].value =
-		// 		effectController.mieDirectionalG;
-
-		// 	const phi = THREE.MathUtils.degToRad(
-		// 		90 - effectController.elevation
-		// 	);
-		// 	const theta = THREE.MathUtils.degToRad(effectController.azimuth);
-
-		// 	sun.setFromSphericalCoords(1, phi, theta);
-
-		// 	uniforms["sunPosition"].value.copy(sun);
-
-		// 	scene.current.add(sky); // Add the sky to our scene
-		// }
-
-		// {
-		// 	const geometry = new THREE.CylinderGeometry(500, 5, 20, 32);
-		// 	const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-		// 	const cylinder = new THREE.Mesh(geometry, material);
-
-		// 	cylinder.position.set(0, -110, 0);
-
-		// 	scene.current.add(cylinder);
-		// }
-
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
 		});
