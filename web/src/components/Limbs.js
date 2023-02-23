@@ -450,13 +450,6 @@ export default class Limbs {
 				this.smallarm_size
 			);
 
-			console.log(
-				"upperarm_l_mesh",
-				this.upperarm_l_mesh.scale,
-				"upperarm_r_mesh",
-				this.upperarm_r_mesh.scale
-			);
-
 			this.head_mesh.scale.set(1, 1, 1);
 		}
 	}

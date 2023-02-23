@@ -263,6 +263,16 @@ export default function DigitalTrainer() {
 	}, [subsceneWidth, subsceneHeight]);
 
 	function animate() {
+		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 3 === 0
+		) {
+			capturePose();
+		} else {
+			keypoints3D.current = null;
+		}
+
 		if (inExercise.current) {
 			counter.current += 1;
 
@@ -282,9 +292,48 @@ export default function DigitalTrainer() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	useEffect(() => {
-		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
-	}, [poseSyncThreshold]);
+	/**
+	 * when video is ready, we can capture the pose
+	 *
+	 * calculate `keypoints3D.current`
+	 */
+	function capturePose() {
+		(async () => {
+			const poses = await poseDetector.current.estimatePoses(
+				videoRef.current
+				// { flipHorizontal: false }
+				// timestamp
+			);
+
+			if (
+				!poses ||
+				!poses[0] ||
+				!poses[0]["keypoints3D"] ||
+				!poseSync.current
+			) {
+				keypoints3D.current = null;
+				return;
+			}
+
+			keypoints3D.current = poses[0]["keypoints3D"];
+
+			for (let v of keypoints3D.current) {
+				// todo, figure out how to transfer x,y,z to pixel distance
+
+				// v["x"] =
+				// 	subsceneWidthRef.current * v["x"] -
+				// 	subsceneWidthRef.current / 2;
+				// v["y"] =
+				// 	subsceneHeightRef.current * v["y"] -
+				// 	subsceneHeightRef.current / 2;
+				// v["z"] *= -subsceneWidthRef.current;
+
+				v["x"] *= -1;
+				v["y"] *= -1;
+				v["z"] *= -1;
+			}
+		})();
+	}
 
 	function doingTraining() {
 		if (getReadyCountDown.current > 0) {
@@ -306,88 +355,51 @@ export default function DigitalTrainer() {
 		// hide counter
 		setcounterNumber(-1);
 
-		if (
-			videoRef.current &&
-			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0
-		) {
-			calculatePose();
-		} else {
-			keypoints3D.current = null;
-		}
-
+		// play animation at 30fps
 		if (counter.current % 2 === 0) {
+			comparePose();
+
 			applyAnimation();
 		}
 	}
 
-	function calculatePose() {
-		/**
-		 * in this async function,
-		 * 1. calculate `keypoints3D.current`
-		 * 2. calculate different of distance among different joints
-		 * 3. calculate different of vectors between limbs
-		 * 4. draw pose on the sub-scene
-		 */
-		(async () => {
-			const poses = await poseDetector.current.estimatePoses(
-				videoRef.current
-				// { flipHorizontal: false }
-				// timestamp
+	/**
+	 * in this async function,
+	 * 1. calculate different of distance among different joints
+	 * 2. calculate different of vectors between limbs
+	 * 3. draw pose on the sub-scene
+	 */
+	function comparePose() {
+		if (!keypoints3D.current) {
+			return;
+		}
+
+		if (poseSync.current) {
+			// compare the distance curve between animation and pose
+			poseCompareResult.current = poseSync.current.compareCurrentPose(
+				keypoints3D.current,
+				figureParts.current,
+				poseSyncThresholdRef.current
 			);
 
-			if (
-				!poses ||
-				!poses[0] ||
-				!poses[0]["keypoints3D"] ||
-				!poseSync.current
-			) {
-				return;
-			}
+			setdiffScore(parseInt(poseSync.current.diffScore));
 
-			keypoints3D.current = poses[0]["keypoints3D"];
+			// compare the distance curve between animation and pose
+		}
 
-			for (let v of keypoints3D.current) {
-				// v["x"] =
-				// 	subsceneWidthRef.current * v["x"] -
-				// 	subsceneWidthRef.current / 2;
-				// v["y"] =
-				// 	subsceneHeightRef.current * v["y"] -
-				// 	subsceneHeightRef.current / 2;
-				// v["z"] *= -subsceneWidthRef.current;
+		if (poseSyncVector.current) {
+			// compare the limbs vectors between pose and animation
 
-				v["x"] *= -1;
-				v["y"] *= -1;
-				v["z"] *= -1;
-			}
+			// this is only for display, doesn't affect animtion
+			// draw different colors on the silhouette
+			const distances = poseSyncVector.current.compareCurrentPose(
+				keypoints3D.current,
+				figureParts.current
+			);
 
-			if (poseSync.current) {
-				// compare the distance curve between animation and pose
-				poseCompareResult.current = poseSync.current.compareCurrentPose(
-					keypoints3D.current,
-					figureParts.current,
-					poseSyncThresholdRef.current
-				);
-
-				setdiffScore(parseInt(poseSync.current.diffScore));
-
-				// compare the distance curve between animation and pose
-			}
-
-			if (poseSyncVector.current) {
-				// compare the limbs vectors between pose and animation
-
-				// this is only for display, doesn't affect animtion
-				// draw different colors on the silhouette
-				const distances = poseSyncVector.current.compareCurrentPose(
-					keypoints3D.current,
-					figureParts.current
-				);
-
-				// watch keypoints3d and vectorDistances,
-				calculateSilhouetteColors(distances, keypoints3D.current);
-			}
-		})();
+			// watch keypoints3d and vectorDistances,
+			calculateSilhouetteColors(distances, keypoints3D.current);
+		}
 	}
 
 	function applyAnimation() {
@@ -486,6 +498,10 @@ export default function DigitalTrainer() {
 			}
 		}
 	}
+
+	useEffect(() => {
+		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
+	}, [poseSyncThreshold]);
 
 	/**
 	 * get the number of longest track from the animation
