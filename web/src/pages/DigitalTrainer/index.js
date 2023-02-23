@@ -13,7 +13,8 @@ import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
 import "../../styles/css/DigitalTrainer.css";
 
-import Silhouette3D from "./Silhouette3D";
+// import Silhouette3D from "./Silhouette3D";
+import Limbs from "../../components/Limbs";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
@@ -44,31 +45,47 @@ export default function DigitalTrainer() {
 
 	const videoRef = useRef(null);
 
-	const poseDetector = useRef(null);
+	// ======== main scene 3d model start
 	const mannequinModel = useRef(null);
 	const figureParts = useRef({});
-	const keypoints3D = useRef(null);
+	// ======== main scene 3d model end
 
+	// ======== for comparing start
+	// blazepose pose model
+	const poseDetector = useRef(null);
+	// landmarks of human joints
+	const keypoints3D = useRef(null);
+	// compare by joints distances
 	const poseSync = useRef(null);
 	const [poseSyncThreshold, setposeSyncThreshold] = useState(10);
 	const poseSyncThresholdRef = useRef(0);
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
-
 	const poseSyncVector = useRef(null);
+	// ======== for comparing end
 
-	const [blazePose3D, setblazePose3D] = useState(null);
+	// ======== sub scene start
+	const canvasRefSub = useRef(null);
+	const sceneSub = useRef(null);
+	const cameraSub = useRef(null);
+	const rendererSub = useRef(null);
+	const controlsSub = useRef(null);
 
+	const [subsceneWidth, setsubsceneWidth] = useState(0);
+	const [subsceneHeight, setsubsceneHeight] = useState(0);
+
+	const silhouette = useRef(null);
+
+	const [silhouetteColors, setsilhouetteColors] = useState({});
+	// ======== sub scene end
+
+	// ======== training process related start
 	const [startBtnShow, setstartBtnShow] = useState(false);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
 	const inExercise = useRef(false);
 
 	const [trainingList, settrainingList] = useState([]);
 	const [selectedTrainingIndx, setselectedTrainingIndx] = useState(-1);
-
-	const [silhouetteWidth, setsilhouetteWidth] = useState(334);
-	const [silhouetteHeight, setsilhouetteHeight] = useState(250);
-	const [silhouetteColors, setsilhouetteColors] = useState({});
 
 	// store the actual animation data, in a name=>value format
 	const animationJSONs = useRef({});
@@ -98,13 +115,18 @@ export default function DigitalTrainer() {
 	const restCountDown = useRef(0);
 	// when training finished
 	const [showCompleted, setshowCompleted] = useState(false);
+	// ======== training process related end
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
-		setsilhouetteWidth(documentWidth / 4);
-		setsilhouetteHeight(((documentWidth / 4) * 480) / 640);
+		creatMainScene(documentWidth, documentHeight);
+
+		setsubsceneWidth(documentHeight * 0.25)
+		setsubsceneHeight(documentHeight * 0.25 * 480 / 640)
+
+		createSubScene()
 
 		// setsilhouetteSize(0.2 * documentHeight);
 
@@ -116,15 +138,23 @@ export default function DigitalTrainer() {
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([detector, model]) => {
 			poseDetector.current = detector;
+
+			// add 3d model to main scene
 			mannequinModel.current = model;
-
-			_scene(documentWidth, documentHeight);
-
 			mannequinModel.current.position.set(0, -100, 0);
-
+			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
 
 			scene.current.add(mannequinModel.current);
+
+			// add silhouette to subscene
+			silhouette.current = new Limbs();
+
+			const limbs = silhouette.current.init();
+	
+			for (const l of limbs) {
+				sceneSub.current.add(l);
+			}
 
 			animate();
 		});
@@ -138,10 +168,6 @@ export default function DigitalTrainer() {
 
 		// eslint-disable-next-line
 	}, []);
-
-	useEffect(() => {
-		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
-	}, [poseSyncThreshold]);
 
 	function loadTrainingList() {
 		new Promise((resolve) => {
@@ -163,7 +189,7 @@ export default function DigitalTrainer() {
 		});
 	}
 
-	function _scene(viewWidth, viewHeight) {
+	function creatMainScene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(0x022244);
 
@@ -195,6 +221,39 @@ export default function DigitalTrainer() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
+	function createSubScene() {
+
+		sceneSub.current = new THREE.Scene();
+		sceneSub.current.background = new THREE.Color(0x22244);
+
+		cameraSub.current = new THREE.PerspectiveCamera(
+			75,
+			640/480,
+			0.1,
+			1000
+		);
+
+		cameraSub.current.position.set(0, 0, 30);
+
+		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
+		
+		rendererSub.current = new THREE.WebGLRenderer({
+			canvas: canvasRefSub.current,
+		});
+
+		controlsSub.current = new OrbitControls(cameraSub.current, canvasRefSub.current);
+	}
+
+	useEffect(() => {
+		if (!subsceneWidth || !subsceneHeight) {
+			return;
+		}
+
+		cameraSub.current.aspect = subsceneWidth / subsceneHeight;
+		cameraSub.current.updateProjectionMatrix();
+		rendererSub.current.setSize(subsceneWidth, subsceneHeight);
+	}, [subsceneWidth, subsceneHeight]);
+
 	function animate() {
 		if (inExercise.current) {
 			counter.current += 1;
@@ -202,12 +261,22 @@ export default function DigitalTrainer() {
 			doingTraining();
 		}
 
-		controls.current.update();
+		if (keypoints3D.current){
+			silhouette.current.applyPose(keypoints3D.current, true);
+		}
 
+		controls.current.update();
 		renderer.current.render(scene.current, camera.current);
+
+		controlsSub.current.update();
+		rendererSub.current.render(sceneSub.current, cameraSub.current);
 
 		animationPointer.current = requestAnimationFrame(animate);
 	}
+
+	useEffect(() => {
+		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
+	}, [poseSyncThreshold]);
 
 	function doingTraining() {
 		if (getReadyCountDown.current > 0) {
@@ -275,8 +344,6 @@ export default function DigitalTrainer() {
 				v["y"] *= -1;
 				v["z"] *= -1;
 			}
-
-			setblazePose3D(keypoints3D.current);
 
 			if (poseSync.current) {
 				// compare the distance curve between animation and pose
@@ -610,8 +677,8 @@ export default function DigitalTrainer() {
 			<video
 				ref={videoRef}
 				autoPlay={true}
-				width="640px"
-				height="480px"
+				width={subsceneWidth + "px"}
+				height={subsceneHeight + "px"}
 				style={{ display: "none" }}
 			></video>
 
@@ -619,20 +686,17 @@ export default function DigitalTrainer() {
 
 			<div
 				style={{
-					width: silhouetteWidth + "px",
-					height: silhouetteHeight + "px",
+					width: subsceneWidth + "px",
+					height: subsceneHeight + "px",
 					position: "absolute",
 					bottom: 0,
 					left: 0,
 					// border: "1px solid #fff",
 				}}
 			>
-				<Silhouette3D
-					width={silhouetteWidth}
-					height={silhouetteHeight}
-					blazePose3D={blazePose3D}
-					// objects={capturedPose}
-				/>
+				<div className="sub-scene">
+					<canvas ref={canvasRefSub}></canvas>
+				</div>
 			</div>
 			<div className="controls">
 				<div>

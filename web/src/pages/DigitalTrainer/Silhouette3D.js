@@ -53,11 +53,9 @@ export default function Silhouette3D({
 		renderer.current.setSize(width, height);
 	}, [width, height]);
 
-	useEffect(() => {
-		figure.current.applyPose(blazePose3D);
-
-		// figure.current.resize(blazePose3D);
-	}, [blazePose3D]);
+	// useEffect(() => {
+	// 	figure.current.applyPose(blazePose3D, true);
+	// }, [blazePose3D]);
 
 	useEffect(() => {}, [vectorDistances]);
 
@@ -92,6 +90,10 @@ export default function Silhouette3D({
 	}
 
 	function animate() {
+
+		// console.log(blazePose3D)
+		figure.current.applyPose(blazePose3D, true);
+
 		animationPointer.current = requestAnimationFrame(animate);
 		// trackball controls needs to be updated in the animation loop before it will work
 		controls.current.update();

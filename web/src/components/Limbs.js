@@ -54,7 +54,7 @@ export default class Limbs {
 		this.init_vector = new THREE.Vector3(0, -1, 0);
 		// the pose position is between 0-1.
 		// scale it up to make the limbs on proper position
-		this.distance_ratio = 30;
+		this.distance_ratio = 1;
 
 		this.add_mesh = true;
 
@@ -275,70 +275,12 @@ export default class Limbs {
 		}
 	}
 
-	resize(pose3D) {
-		if (!pose3D || !pose3D.length) {
-			return;
-		}
+	getPosePosition(joint_position) {
+		joint_position.x *= this.distance_ratio;
+		joint_position.y *= this.distance_ratio;
+		joint_position.z *= this.distance_ratio;
 
-		const shoulder_pose_l =
-			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
-		const elbow_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]];
-		const wrist_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]];
-
-		const shoulder_pose_r =
-			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
-		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
-		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
-
-		this.scaleLimb(
-			this.upperarm_l_mesh,
-			shoulder_pose_l,
-			elbow_pose_l,
-			this.bigarm_size
-		);
-
-		this.scaleLimb(
-			this.forearm_l_mesh,
-			wrist_pose_l,
-			elbow_pose_l,
-			this.smallarm_size
-		);
-
-		this.scaleLimb(
-			this.upperarm_r_mesh,
-			shoulder_pose_r,
-			elbow_pose_r,
-			this.bigarm_size
-		);
-
-		this.scaleLimb(
-			this.forearm_r_mesh,
-			wrist_pose_r,
-			elbow_pose_r,
-			this.smallarm_size
-		);
-
-		this.head_mesh.scale.set(1,1,1);
-
-		// this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
-		// this.upperarm_l_sub.add(this.upperarm_l_line)
-
-		// this.upperarm_r_line = this.meshToLine(this.upperarm_r_mesh)
-		// this.upperarm_r_sub.add(this.upperarm_r_line)
-
-		// this.forearm_l_line = this.meshToLine(this.forearm_l_mesh)
-		// this.forearm_l_sub.add(this.forearm_l_line)
-
-		// this.forearm_r_line = this.meshToLine(this.forearm_r_mesh)
-		// this.forearm_r_sub.add(this.forearm_r_line)
-	}
-
-	getPosePosition(pose) {
-		return new THREE.Vector3(
-			pose.x * this.distance_ratio,
-			pose.y * this.distance_ratio,
-			pose.z * this.distance_ratio
-		);
+		return joint_position
 	}
 
 	applyPose(pose3D, resize=false) {
@@ -461,7 +403,37 @@ export default class Limbs {
 		}
 
 		if (resize) {
-			
+			this.scaleLimb(
+				this.upperarm_l_mesh,
+				shoulder_pose_l,
+				elbow_pose_l,
+				this.bigarm_size
+			);
+	
+			this.scaleLimb(
+				this.forearm_l_mesh,
+				wrist_pose_l,
+				elbow_pose_l,
+				this.smallarm_size
+			);
+	
+			this.scaleLimb(
+				this.upperarm_r_mesh,
+				shoulder_pose_r,
+				elbow_pose_r,
+				this.bigarm_size
+			);
+	
+			this.scaleLimb(
+				this.forearm_r_mesh,
+				wrist_pose_r,
+				elbow_pose_r,
+				this.smallarm_size
+			);
+
+			console.log('upperarm_l_mesh', this.upperarm_l_mesh.scale, 'upperarm_r_mesh', this.upperarm_r_mesh.scale)
+	
+			this.head_mesh.scale.set(1,1,1);
 		}
 	}
 
