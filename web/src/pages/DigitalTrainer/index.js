@@ -163,16 +163,7 @@ export default function DigitalTrainer() {
 		});
 
 		// we can load training list separately
-		loadTrainingList();
-
-		return () => {
-			cancelAnimationFrame(animationPointer.current);
-		};
-
-		// eslint-disable-next-line
-	}, []);
-
-	function loadTrainingList() {
+		// todo, use API for this feature
 		new Promise((resolve) => {
 			resolve([
 				{
@@ -190,9 +181,90 @@ export default function DigitalTrainer() {
 		}).then((data) => {
 			settrainingList(data);
 		});
-	}
+
+		return () => {
+			cancelAnimationFrame(animationPointer.current);
+		};
+
+		// eslint-disable-next-line
+	}, []);
+
+	useEffect(() => {
+		/**
+		 * update subscene size
+		 */
+		if (!subsceneWidth || !subsceneHeight) {
+			return;
+		}
+
+		cameraSub.current.aspect = subsceneWidth / subsceneHeight;
+		cameraSub.current.updateProjectionMatrix();
+		rendererSub.current.setSize(subsceneWidth, subsceneHeight);
+
+		subsceneWidthRef.current = subsceneWidth;
+		subsceneHeightRef.current = subsceneHeight;
+	}, [subsceneWidth, subsceneHeight]);
+
+	useEffect(() => {
+		/**
+		 * when select one of the training
+		 * load all of the animation jsons `animationJSONs`
+		 * add then add all names to `exerciseQueue`
+		 * in `animate`, we consume `exerciseQueue`
+		 */
+		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
+			const tasks = [];
+			const tmp_queue = [];
+
+			try {
+				resetTime.current = parseInt(
+					trainingList[selectedTrainingIndx].rest
+				);
+			} catch (e) {
+				console.error(e);
+			}
+
+			for (const e of trainingList[selectedTrainingIndx].exercise) {
+				tasks.push(
+					loadJSON(
+						process.env.PUBLIC_URL + "/animjson/" + e.key + ".json"
+					)
+				);
+
+				tmp_queue.push(e);
+			}
+
+			exerciseQueue.current = tmp_queue;
+
+			Promise.all(tasks).then((data) => {
+				for (const v of data) {
+					animationJSONs.current[v.name] = v;
+				}
+
+				exerciseQueueIndx.current = 0;
+
+				initializeExercise();
+
+				setstartBtnShow(true);
+			});
+		}
+		// eslint-disable-next-line
+	}, [selectedTrainingIndx]);
+
+	useEffect(() => {
+		/**
+		 * user tunning the threshold
+		 * it affect how strict user should follow the animation
+		 */
+		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
+	}, [poseSyncThreshold]);
 
 	function creatMainScene(viewWidth, viewHeight) {
+		/**
+		 * main scene, which plays exercise animation
+		 * @param {number} viewWidth
+		 * @param {number} viewHeight
+		 */
 		scene.current = new THREE.Scene();
 		scene.current.background = new THREE.Color(0x022244);
 
@@ -225,15 +297,15 @@ export default function DigitalTrainer() {
 	}
 
 	function createSubScene() {
+		/**
+		 * subscene, play the silhouette
+		 * an mapping from pose3d data
+		 */
+
 		sceneSub.current = new THREE.Scene();
 		sceneSub.current.background = new THREE.Color(0x22244);
 
-		cameraSub.current = new THREE.PerspectiveCamera(
-			75,
-			640 / 480,
-			0.1,
-			1000
-		);
+		cameraSub.current = new THREE.PerspectiveCamera(75, 0.5, 0.1, 1000);
 
 		cameraSub.current.position.set(0, 0, 60);
 
@@ -249,20 +321,13 @@ export default function DigitalTrainer() {
 		);
 	}
 
-	useEffect(() => {
-		if (!subsceneWidth || !subsceneHeight) {
-			return;
-		}
-
-		cameraSub.current.aspect = subsceneWidth / subsceneHeight;
-		cameraSub.current.updateProjectionMatrix();
-		rendererSub.current.setSize(subsceneWidth, subsceneHeight);
-
-		subsceneWidthRef.current = subsceneWidth;
-		subsceneHeightRef.current = subsceneHeight;
-	}, [subsceneWidth, subsceneHeight]);
-
 	function animate() {
+		/**
+		 * animation loop, both main scene and sub scene updated
+		 * predict 3d pose
+		 * also play training sequence
+		 * update 3d silhouette
+		 */
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
@@ -292,12 +357,14 @@ export default function DigitalTrainer() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	/**
-	 * when video is ready, we can capture the pose
-	 *
-	 * calculate `keypoints3D.current`
-	 */
 	function capturePose() {
+		/**
+		 * when video is ready, we can capture the pose
+		 *
+		 * calculate `keypoints3D.current`
+		 *
+		 * maybe we can do calculation in async then, since the other place will check `keypoints3D.current`
+		 */
 		(async () => {
 			const poses = await poseDetector.current.estimatePoses(
 				videoRef.current
@@ -332,6 +399,9 @@ export default function DigitalTrainer() {
 				v["y"] *= -1;
 				v["z"] *= -1;
 			}
+
+			// todo, pass keypoints3d data to w worker, so it can analysis the persons kinethmatic data
+			// decide its amplitude, speed
 		})();
 	}
 
@@ -363,13 +433,13 @@ export default function DigitalTrainer() {
 		}
 	}
 
-	/**
-	 * in this async function,
-	 * 1. calculate different of distance among different joints
-	 * 2. calculate different of vectors between limbs
-	 * 3. draw pose on the sub-scene
-	 */
 	function comparePose() {
+		/**
+		 * in this async function,
+		 * 1. calculate different of distance among different joints
+		 * 2. calculate different of vectors between limbs
+		 * 3. draw pose on the sub-scene
+		 */
 		if (!keypoints3D.current) {
 			return;
 		}
@@ -499,16 +569,12 @@ export default function DigitalTrainer() {
 		}
 	}
 
-	useEffect(() => {
-		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
-	}, [poseSyncThreshold]);
-
-	/**
-	 * get the number of longest track from the animation
-	 * @param {Array} animation_tracks
-	 * @returns
-	 */
 	function calculateLongestTrackFromAnimation(animation_tracks) {
+		/**
+		 * get the number of longest track from the animation
+		 * @param {Array} animation_tracks
+		 * @returns
+		 */
 		let longest = 0;
 
 		for (const v of animation_tracks) {
@@ -612,58 +678,12 @@ export default function DigitalTrainer() {
 		setsilhouetteColors(colors);
 	}
 
-	useEffect(() => {
-		/**
-		 * when select one of the training
-		 * load all of the animation jsons `animationJSONs`
-		 * add then add all names to `exerciseQueue`
-		 * in `animate`, we consume `exerciseQueue`
-		 */
-		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
-			const tasks = [];
-			const tmp_queue = [];
-
-			try {
-				resetTime.current = parseInt(
-					trainingList[selectedTrainingIndx].rest
-				);
-			} catch (e) {
-				console.error(e);
-			}
-
-			for (const e of trainingList[selectedTrainingIndx].exercise) {
-				tasks.push(
-					loadJSON(
-						process.env.PUBLIC_URL + "/animjson/" + e.key + ".json"
-					)
-				);
-
-				tmp_queue.push(e);
-			}
-
-			exerciseQueue.current = tmp_queue;
-
-			Promise.all(tasks).then((data) => {
-				for (const v of data) {
-					animationJSONs.current[v.name] = v;
-				}
-
-				exerciseQueueIndx.current = 0;
-
-				initializeExercise();
-
-				setstartBtnShow(true);
-			});
-		}
-		// eslint-disable-next-line
-	}, [selectedTrainingIndx]);
-
-	/**
-	 * 1. read animation data, read round
-	 * 2. read animation data, set mode position, rotation, calculate longest track
-	 * 3. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
-	 */
 	function initializeExercise() {
+		/**
+		 * 1. read animation data, read round
+		 * 2. read animation data, set mode position, rotation, calculate longest track
+		 * 3. initialize `PoseSync`, `PoseSyncVector`, used to compare pose pose and animation
+		 */
 		currentAnimationIndx.current = 0;
 		currentRound.current = parseInt(
 			exerciseQueue.current[exerciseQueueIndx.current].round

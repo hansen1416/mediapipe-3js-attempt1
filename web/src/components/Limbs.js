@@ -11,9 +11,11 @@ import {
 export default class Limbs {
 	/**
 	 * todo, work out the math for a proper position of landmark
-	 * it should be in godd proportion and can change as camera distance change
+	 * it should be in good proportion and can change as camera distance change
 	 *
-	 * also, do a fade in for limbs
+	 * use particle for limbs
+	 *
+	 *
 	 */
 
 	limbs_arr = [
