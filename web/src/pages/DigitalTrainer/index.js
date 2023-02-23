@@ -235,7 +235,7 @@ export default function DigitalTrainer() {
 			1000
 		);
 
-		cameraSub.current.position.set(0, 0, 100);
+		cameraSub.current.position.set(0, 0, 30);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 

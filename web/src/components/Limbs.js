@@ -155,12 +155,6 @@ export default class Limbs {
 			this.torso_sub.add(this.torso_mesh);
 		}
 
-		this.torso_mesh.scale.set(
-			this.init_scale.x,
-			this.init_scale.y,
-			this.init_scale.z
-		);
-
 		this.torso.add(this.torso_sub);
 
 		// left upperarm
