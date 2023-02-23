@@ -1,10 +1,16 @@
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import Limbs from "../../components/Limbs";
 
-export default function Silhouette3D({width, height, blazePose3D, vectorDistances}) {
-
-    const canvasRef = useRef(null);
+export default function Silhouette3D({
+	width,
+	height,
+	blazePose3D,
+	vectorDistances,
+}) {
+	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
@@ -13,12 +19,12 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 
 	const animationPointer = useRef(0);
 
-    const figure = useRef(null);
+	const figure = useRef(null);
 
 	useEffect(() => {
 		_scene();
 
-        figure.current = new Limbs();
+		figure.current = new Limbs();
 
 		const limbs = figure.current.init();
 
@@ -37,13 +43,23 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 		// eslint-disable-next-line
 	}, []);
 
-    useEffect(() => {
-        figure.current.applyPose(blazePose3D);
-    }, [blazePose3D])
+	useEffect(() => {
+		if (!width || !height) {
+			return;
+		}
 
-    useEffect(() => {
+		camera.current.aspect = width / height;
+		camera.current.updateProjectionMatrix();
+		renderer.current.setSize(width, height);
+	}, [width, height]);
 
-    }, [vectorDistances])
+	useEffect(() => {
+		figure.current.resize(blazePose3D);
+
+		figure.current.applyPose(blazePose3D);
+	}, [blazePose3D]);
+
+	useEffect(() => {}, [vectorDistances]);
 
 	function _scene() {
 		const backgroundColor = 0x22244;
@@ -58,13 +74,13 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 			1000
 		);
 
-		camera.current.position.set(0, 0, 100);
+		camera.current.position.set(0, 0, 50);
 
-        {
-            const color = 0xffffff;
-            const amblight = new THREE.AmbientLight(color, 1);
-            scene.current.add(amblight);
-        }
+		{
+			const color = 0xffffff;
+			const amblight = new THREE.AmbientLight(color, 1);
+			scene.current.add(amblight);
+		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -72,7 +88,7 @@ export default function Silhouette3D({width, height, blazePose3D, vectorDistance
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
-		renderer.current.setSize(width, height);
+		// renderer.current.setSize(width, height);
 	}
 
 	function animate() {

@@ -5,7 +5,6 @@ import {
 	BlazePoseKeypointsValues,
 	posePointsToVector,
 	quaternionFromVectors,
-	middlePosition,
 } from "./ropes";
 // import MeshLineMaterial from "./MeshLineMaterial";
 
@@ -113,128 +112,134 @@ export default class Limbs {
 	}
 
 	init() {
-		{
-			this.head = new THREE.Group();
+		// head
+		this.head = new THREE.Group();
 
-			this.head_sub = new THREE.Group();
+		this.head_sub = new THREE.Group();
 
-			this.head_mesh = this.getHeadMesh(this.head_radius);
+		this.head_mesh = this.getHeadMesh(this.head_radius);
 
-			if (this.add_mesh) {
-				this.head_sub.add(this.head_mesh);
-			}
-
-			this.head_sub.position.x = 0; //this.head_radius;
-			this.head_sub.position.y = this.head_radius;
-			this.head_sub.position.z = -this.head_radius;
-
-			this.head.add(this.head_sub);
+		if (this.add_mesh) {
+			this.head_sub.add(this.head_mesh);
 		}
 
-		{
-			this.torso = new THREE.Group();
+		this.head_sub.position.x = 0; //this.head_radius;
+		this.head_sub.position.y = this.head_radius;
+		this.head_sub.position.z = -this.head_radius;
 
-			this.torso_sub = new THREE.Group();
+		this.head_sub.scale.y = 0;
 
-			this.torso_mesh = this.getTorsoMesh([
-				new THREE.Vector3(-10, 10, 0),
-				new THREE.Vector3(0, 0, 0),
-				new THREE.Vector3(0, 10, 0),
-				new THREE.Vector3(-10, 10, 0),
-				new THREE.Vector3(-10, 0, 0),
-				new THREE.Vector3(0, 0, 0),
-			]);
+		this.head.add(this.head_sub);
 
-			if (this.add_mesh) {
-				this.torso_sub.add(this.torso_mesh);
-			}
+		// torso
+		this.torso = new THREE.Group();
 
-			this.torso.add(this.torso_sub);
+		this.torso_sub = new THREE.Group();
+
+		this.torso_mesh = this.getTorsoMesh([
+			new THREE.Vector3(-10, 10, 0),
+			new THREE.Vector3(0, 0, 0),
+			new THREE.Vector3(0, 10, 0),
+			new THREE.Vector3(-10, 10, 0),
+			new THREE.Vector3(-10, 0, 0),
+			new THREE.Vector3(0, 0, 0),
+		]);
+
+		if (this.add_mesh) {
+			this.torso_sub.add(this.torso_mesh);
 		}
 
-		{
-			this.upperarm_l = new THREE.Group();
+		this.torso_sub.scale.y = 0;
 
-			this.upperarm_l_sub = new THREE.Group();
+		this.torso.add(this.torso_sub);
 
-			this.upperarm_l_mesh = this.getMesh(
-				this.deltoid_radius,
-				this.elbow_radius,
-				this.bigarm_size
-			);
+		// left upperarm
+		this.upperarm_l = new THREE.Group();
 
-			if (this.add_mesh) {
-				this.upperarm_l_sub.add(this.upperarm_l_mesh);
-			}
+		this.upperarm_l_sub = new THREE.Group();
 
-			this.upperarm_l.add(this.upperarm_l_sub);
+		this.upperarm_l_mesh = this.getMesh(
+			this.deltoid_radius,
+			this.elbow_radius,
+			this.bigarm_size
+		);
 
-			this.upperarm_l_sub.position.x = this.deltoid_radius / 2;
-			this.upperarm_l_sub.position.y = this.bigarm_size / -2;
+		if (this.add_mesh) {
+			this.upperarm_l_sub.add(this.upperarm_l_mesh);
 		}
 
-		{
-			this.forearm_l = new THREE.Group();
+		this.upperarm_l_sub.scale.y = 0;
 
-			this.forearm_l_sub = new THREE.Group();
+		this.upperarm_l.add(this.upperarm_l_sub);
 
-			this.forearm_l_mesh = this.getMesh(
-				this.elbow_radius,
-				this.wrist_size,
-				this.smallarm_size
-			);
+		this.upperarm_l_sub.position.x = this.deltoid_radius / 2;
+		this.upperarm_l_sub.position.y = this.bigarm_size / -2;
 
-			if (this.add_mesh) {
-				this.forearm_l_sub.add(this.forearm_l_mesh);
-			}
+		// left forearm
+		this.forearm_l = new THREE.Group();
 
-			this.forearm_l.add(this.forearm_l_sub);
+		this.forearm_l_sub = new THREE.Group();
 
-			this.forearm_l_sub.position.x = this.elbow_radius / 2;
-			this.forearm_l_sub.position.y = this.smallarm_size / -2;
+		this.forearm_l_mesh = this.getMesh(
+			this.elbow_radius,
+			this.wrist_size,
+			this.smallarm_size
+		);
+
+		if (this.add_mesh) {
+			this.forearm_l_sub.add(this.forearm_l_mesh);
 		}
 
-		{
-			this.upperarm_r = new THREE.Group();
+		this.forearm_l_sub.scale.y = 0;
 
-			this.upperarm_r_sub = new THREE.Group();
+		this.forearm_l.add(this.forearm_l_sub);
 
-			this.upperarm_r_mesh = this.getMesh(
-				this.deltoid_radius,
-				this.elbow_radius,
-				this.bigarm_size
-			);
+		this.forearm_l_sub.position.x = this.elbow_radius / 2;
+		this.forearm_l_sub.position.y = this.smallarm_size / -2;
 
-			if (this.add_mesh) {
-				this.upperarm_r_sub.add(this.upperarm_r_mesh);
-			}
+		// right upperarm
+		this.upperarm_r = new THREE.Group();
 
-			this.upperarm_r.add(this.upperarm_r_sub);
+		this.upperarm_r_sub = new THREE.Group();
 
-			this.upperarm_r_sub.position.x = -this.deltoid_radius / 2;
-			this.upperarm_r_sub.position.y = this.bigarm_size / -2;
+		this.upperarm_r_mesh = this.getMesh(
+			this.deltoid_radius,
+			this.elbow_radius,
+			this.bigarm_size
+		);
+
+		if (this.add_mesh) {
+			this.upperarm_r_sub.add(this.upperarm_r_mesh);
 		}
 
-		{
-			this.forearm_r = new THREE.Group();
+		this.upperarm_r_sub.scale.y = 0;
 
-			this.forearm_r_sub = new THREE.Group();
+		this.upperarm_r.add(this.upperarm_r_sub);
 
-			this.forearm_r_mesh = this.getMesh(
-				this.elbow_radius,
-				this.wrist_size,
-				this.smallarm_size
-			);
+		this.upperarm_r_sub.position.x = -this.deltoid_radius / 2;
+		this.upperarm_r_sub.position.y = this.bigarm_size / -2;
 
-			if (this.add_mesh) {
-				this.forearm_r_sub.add(this.forearm_r_mesh);
-			}
+		// right forearm
+		this.forearm_r = new THREE.Group();
 
-			this.forearm_r.add(this.forearm_r_sub);
+		this.forearm_r_sub = new THREE.Group();
 
-			this.forearm_r_sub.position.x = -this.elbow_radius / 2;
-			this.forearm_r_sub.position.y = this.smallarm_size / -2;
+		this.forearm_r_mesh = this.getMesh(
+			this.elbow_radius,
+			this.wrist_size,
+			this.smallarm_size
+		);
+
+		if (this.add_mesh) {
+			this.forearm_r_sub.add(this.forearm_r_mesh);
 		}
+
+		this.forearm_r_sub.scale.y = 0;
+
+		this.forearm_r.add(this.forearm_r_sub);
+
+		this.forearm_r_sub.position.x = -this.elbow_radius / 2;
+		this.forearm_r_sub.position.y = this.smallarm_size / -2;
 
 		return [
 			this.head,
@@ -292,12 +297,18 @@ export default class Limbs {
 	scaleLimb(mesh, joint1, joint2, initial_size) {
 		if (joint1.score > 0.5 && joint2.score > 0.5) {
 			mesh.scale.y = this.jointsDistance(joint1, joint2) / initial_size;
+
+			console.log(mesh.scale.y);
 		} else {
-			mesh.scale.y = 0
+			mesh.scale.y = 0;
 		}
 	}
 
-	resize(pose3D, c) {
+	resize(pose3D) {
+		if (!pose3D || !pose3D.length) {
+			return;
+		}
+
 		const shoulder_pose_l =
 			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
 		const elbow_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]];
@@ -308,13 +319,40 @@ export default class Limbs {
 		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
 		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
 
-		scaleLimb(this.upperarm_l_mesh, shoulder_pose_l, elbow_pose_l, this.bigarm_size);
+		this.scaleLimb(
+			this.upperarm_l_mesh,
+			shoulder_pose_l,
+			elbow_pose_l,
+			this.bigarm_size
+		);
 
-		scaleLimb(this.forearm_l_mesh, wrist_pose_l, elbow_pose_l, this.smallarm_size);
+		this.upperarm_l_mesh.scale.y = 1;
 
-		scaleLimb(this.upperarm_r_mesh, shoulder_pose_r, elbow_pose_r, this.bigarm_size);
+		this.upperarm_l_mesh.matrixAutoUpdate = true;
+		this.upperarm_l_mesh.updateMatrix();
 
-		scaleLimb(this.forearm_r_mesh, wrist_pose_r, elbow_pose_r, this.smallarm_size);
+		console.log(this.upperarm_l_mesh.scale);
+
+		this.scaleLimb(
+			this.forearm_l_mesh,
+			wrist_pose_l,
+			elbow_pose_l,
+			this.smallarm_size
+		);
+
+		this.scaleLimb(
+			this.upperarm_r_mesh,
+			shoulder_pose_r,
+			elbow_pose_r,
+			this.bigarm_size
+		);
+
+		this.scaleLimb(
+			this.forearm_r_mesh,
+			wrist_pose_r,
+			elbow_pose_r,
+			this.smallarm_size
+		);
 
 		// this.upperarm_l_line = this.meshToLine(this.upperarm_l_mesh)
 		// this.upperarm_l_sub.add(this.upperarm_l_line)
@@ -338,6 +376,10 @@ export default class Limbs {
 	}
 
 	applyPose(pose3D) {
+		if (!pose3D || !pose3D.length) {
+			return;
+		}
+
 		const nose = this.getPosePosition(
 			pose3D[BlazePoseKeypointsValues["NOSE"]]
 		);
