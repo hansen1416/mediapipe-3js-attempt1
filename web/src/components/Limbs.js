@@ -9,6 +9,13 @@ import {
 // import MeshLineMaterial from "./MeshLineMaterial";
 
 export default class Limbs {
+	/**
+	 * todo, work out the math for a proper position of landmark
+	 * it should be in godd proportion and can change as camera distance change
+	 *
+	 * also, do a fade in for limbs
+	 */
+
 	limbs_arr = [
 		"TORSO",
 		"HEAD",
