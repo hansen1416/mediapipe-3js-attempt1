@@ -70,9 +70,12 @@ export default function DigitalTrainer() {
 	const cameraSub = useRef(null);
 	const rendererSub = useRef(null);
 	const controlsSub = useRef(null);
-
+	// subscen size
 	const [subsceneWidth, setsubsceneWidth] = useState(0);
 	const [subsceneHeight, setsubsceneHeight] = useState(0);
+	// subscen size ref, used as magnitude for keypoints
+	const subsceneWidthRef = useRef(0);
+	const subsceneHeightRef = useRef(0);
 
 	const silhouette = useRef(null);
 
@@ -252,6 +255,10 @@ export default function DigitalTrainer() {
 		cameraSub.current.aspect = subsceneWidth / subsceneHeight;
 		cameraSub.current.updateProjectionMatrix();
 		rendererSub.current.setSize(subsceneWidth, subsceneHeight);
+
+		subsceneWidthRef.current = subsceneWidth;
+		subsceneHeightRef.current = subsceneHeight;
+
 	}, [subsceneWidth, subsceneHeight]);
 
 	function animate() {
@@ -340,9 +347,9 @@ export default function DigitalTrainer() {
 			keypoints3D.current = poses[0]["keypoints3D"];
 
 			for (let v of keypoints3D.current) {
-				v["x"] *= -1;
-				v["y"] *= -1;
-				v["z"] *= -1;
+				v["x"] *= -subsceneWidthRef.current;
+				v["y"] *= -subsceneHeightRef.current;
+				v["z"] *= -subsceneWidthRef.current;
 			}
 
 			if (poseSync.current) {
