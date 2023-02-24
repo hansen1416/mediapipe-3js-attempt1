@@ -76,6 +76,8 @@ export default function DigitalTrainer() {
 	// subscen size ref, used as magnitude for keypoints
 	const subsceneWidthRef = useRef(0);
 	const subsceneHeightRef = useRef(0);
+	// this is the size in threejs world
+	const subsceneSize = useRef(0);
 
 	const silhouette = useRef(null);
 
@@ -127,7 +129,8 @@ export default function DigitalTrainer() {
 		creatMainScene(documentWidth, documentHeight);
 
 		setsubsceneHeight(documentHeight * 0.25);
-		setsubsceneWidth((documentHeight * 0.25 * 640) / 480);
+		setsubsceneWidth(documentHeight * 0.25);
+		// setsubsceneWidth((documentHeight * 0.25 * 640) / 480);
 
 		createSubScene();
 
@@ -300,14 +303,29 @@ export default function DigitalTrainer() {
 		/**
 		 * subscene, play the silhouette
 		 * an mapping from pose3d data
+		 * 
+		 * assume sqaure canvas, aspect = 1
+		 * visible_x / (tan(fov/2)) = object_z + camera_z
+		 * visible_x = (object_z + camera_z) * tan(fov/2)
+		 * 
+		 * so for pose,
+		 * assume x=0.6, the actual x position of pos should be 0.6*visible_x, same for y, since we're using square canvas
+		 * can we apply this to z as well?
+		 * 
+		 * 
 		 */
 
 		sceneSub.current = new THREE.Scene();
 		sceneSub.current.background = new THREE.Color(0x22244);
 
-		cameraSub.current = new THREE.PerspectiveCamera(75, 0.5, 0.1, 1000);
+		const fov = 90
+		const camera_z = 100
 
-		cameraSub.current.position.set(0, 0, 60);
+		subsceneSize.current = camera_z * Math.tan(fov / 2)
+
+		cameraSub.current = new THREE.PerspectiveCamera(fov, 1, 0.1, 1000);
+
+		cameraSub.current.position.set(0, 0, camera_z);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 
