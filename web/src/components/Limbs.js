@@ -431,6 +431,7 @@ export default class Limbs {
 		}
 
 		if (resize) {
+			// todo also adjust the radius of cylinder here
 			this.scaleLimb(
 				this.upperarm_l_mesh,
 				shoulder_pose_l,

@@ -14,6 +14,7 @@ import "react-range-slider-input/dist/style.css";
 import "../../styles/css/DigitalTrainer.css";
 
 // import Silhouette3D from "./Silhouette3D";
+import {SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z,SUB_SCENE_SIZE} from "config"
 import Limbs from "../../components/Limbs";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
@@ -318,14 +319,9 @@ export default function DigitalTrainer() {
 		sceneSub.current = new THREE.Scene();
 		sceneSub.current.background = new THREE.Color(0x22244);
 
-		const fov = 90
-		const camera_z = 100
+		cameraSub.current = new THREE.PerspectiveCamera(SUB_SCENE_FOV, 1, 0.1, 1000);
 
-		subsceneSize.current = camera_z * Math.tan(fov / 2)
-
-		cameraSub.current = new THREE.PerspectiveCamera(fov, 1, 0.1, 1000);
-
-		cameraSub.current.position.set(0, 0, camera_z);
+		cameraSub.current.position.set(0, 0, SUB_SCENE_CAMERA_Z);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 
@@ -413,9 +409,9 @@ export default function DigitalTrainer() {
 				// 	subsceneHeightRef.current / 2;
 				// v["z"] *= -subsceneWidthRef.current;
 
-				v["x"] *= -1;
-				v["y"] *= -1;
-				v["z"] *= -1;
+				v["x"] *= -SUB_SCENE_SIZE;
+				v["y"] *= -SUB_SCENE_SIZE;
+				v["z"] *= -SUB_SCENE_SIZE;
 			}
 
 			// todo, pass keypoints3d data to w worker, so it can analysis the persons kinethmatic data
