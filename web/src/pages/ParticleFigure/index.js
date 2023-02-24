@@ -39,8 +39,9 @@ export default function ParticleFigure() {
 	const poseDetector = useRef(null);
 
 	const videoRef = useRef(null);
-	const [subsceneWidth, setsubsceneWidth] = useState(334);
-	const [subsceneHeight, setsubsceneHeight] = useState(250);
+	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
+	const [subsceneWidth] = useState(334);
+	const [subsceneHeight] = useState(250);
 
 	const [startBtnShow, setstartBtnShow] = useState(true);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
@@ -103,9 +104,9 @@ export default function ParticleFigure() {
 					const drawdata = cloneDeep(poses[0]["keypoints3D"]);
 
 					for (let v of drawdata) {
-						v["x"] *= -1;
-						v["y"] *= -1;
-						v["z"] *= -1;
+						v["x"] *= -30;
+						v["y"] *= -30;
+						v["z"] *= -30;
 					}
 
 					const g = drawPoseKeypoints(drawdata);
@@ -114,11 +115,7 @@ export default function ParticleFigure() {
 
 					setcapturedPose(g);
 
-					if (counter.current % 60 === 0) {
-						figure.current.resize(drawdata);
-					}
-
-					figure.current.applyPose(drawdata);
+					figure.current.applyPose(drawdata, true);
 				}
 			})();
 		}
@@ -140,7 +137,7 @@ export default function ParticleFigure() {
 		scene.current.background = new THREE.Color(backgroundColor);
 
 		camera.current = new THREE.PerspectiveCamera(
-			75,
+			90,
 			viewWidth / viewHeight,
 			0.1,
 			1000
@@ -191,6 +188,7 @@ export default function ParticleFigure() {
 					width={subsceneWidth}
 					height={subsceneHeight}
 					objects={capturedPose}
+					cameraZ={200}
 				/>
 			</div>
 			{/* // ========= captured pose logic */}

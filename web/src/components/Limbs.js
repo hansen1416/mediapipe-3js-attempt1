@@ -67,7 +67,8 @@ export default class Limbs {
 
 		this.add_mesh = true;
 
-		this.init_scale = new THREE.Vector3(0.3, 0.3, 0.3);
+		// this.init_scale = new THREE.Vector3(0.3, 0.3, 0.3);
+		this.init_scale = new THREE.Vector3(1, 1, 1);
 	}
 
 	getMesh(
