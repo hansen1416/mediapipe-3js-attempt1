@@ -57,7 +57,7 @@ export default function SubThreeJsScene({
 		scene.current.background = new THREE.Color(backgroundColor);
 
 		camera.current = new THREE.PerspectiveCamera(
-			75,
+			90,
 			width / height,
 			0.1,
 			1000
@@ -71,7 +71,7 @@ export default function SubThreeJsScene({
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
-		renderer.current.setSize(width, height);
+		// renderer.current.setSize(width, height);
 	}
 
 	function _light() {
@@ -91,6 +91,16 @@ export default function SubThreeJsScene({
 
 		renderer.current.render(scene.current, camera.current);
 	}
+
+	useEffect(() => {
+		if (!width || !height) {
+			return;
+		}
+
+		camera.current.aspect = width / height;
+		camera.current.updateProjectionMatrix();
+		renderer.current.setSize(width, height);
+	}, [width, height]);
 
 	return (
 		<div className="scene" ref={containerRef}>

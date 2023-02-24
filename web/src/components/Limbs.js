@@ -63,7 +63,7 @@ export default class Limbs {
 		this.init_vector = new THREE.Vector3(0, -1, 0);
 		// the pose position is between 0-1.
 		// scale it up to make the limbs on proper position
-		this.distance_ratio = 30;
+		this.distance_ratio = 1;
 
 		this.add_mesh = true;
 

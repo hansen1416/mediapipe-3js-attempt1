@@ -13,8 +13,9 @@ import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
 import "../../styles/css/DigitalTrainer.css";
 
+import SubThreeJsScene from "../../components/SubThreeJsScene";
 // import Silhouette3D from "./Silhouette3D";
-import {SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z,SUB_SCENE_SIZE} from "config"
+import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
 import Limbs from "../../components/Limbs";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
@@ -28,7 +29,9 @@ import {
 	applyTransfer,
 	BlazePoseKeypointsValues,
 	radianGradientColor,
+	drawPoseKeypoints,
 } from "../../components/ropes";
+import { cloneDeep } from "lodash";
 
 /**
  * BE SUCCESSFUL!!
@@ -122,6 +125,10 @@ export default function DigitalTrainer() {
 	// when training finished
 	const [showCompleted, setshowCompleted] = useState(false);
 	// ======== training process related end
+
+	// ========= captured pose logic
+	const [capturedPose, setcapturedPose] = useState();
+	// ========= captured pose logic
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -304,22 +311,27 @@ export default function DigitalTrainer() {
 		/**
 		 * subscene, play the silhouette
 		 * an mapping from pose3d data
-		 * 
+		 *
 		 * assume sqaure canvas, aspect = 1
 		 * visible_x / (tan(fov/2)) = object_z + camera_z
 		 * visible_x = (object_z + camera_z) * tan(fov/2)
-		 * 
+		 *
 		 * so for pose,
 		 * assume x=0.6, the actual x position of pos should be 0.6*visible_x, same for y, since we're using square canvas
 		 * can we apply this to z as well?
-		 * 
-		 * 
+		 *
+		 *
 		 */
 
 		sceneSub.current = new THREE.Scene();
 		sceneSub.current.background = new THREE.Color(0x22244);
 
-		cameraSub.current = new THREE.PerspectiveCamera(SUB_SCENE_FOV, 1, 0.1, 1000);
+		cameraSub.current = new THREE.PerspectiveCamera(
+			SUB_SCENE_FOV,
+			1,
+			0.1,
+			1000
+		);
 
 		cameraSub.current.position.set(0, 0, SUB_SCENE_CAMERA_Z);
 
@@ -351,6 +363,17 @@ export default function DigitalTrainer() {
 		} else {
 			keypoints3D.current = null;
 		}
+
+		// ========= captured pose logic
+		if (keypoints3D.current) {
+			// draw the pose as dots and lines on the sub scene
+			const g = drawPoseKeypoints(keypoints3D.current);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+		}
+		// ========= captured pose logic
 
 		if (inExercise.current) {
 			counter.current += 1;
@@ -401,18 +424,16 @@ export default function DigitalTrainer() {
 			for (let v of keypoints3D.current) {
 				// todo, figure out how to transfer x,y,z to pixel distance
 
-				// v["x"] =
-				// 	subsceneWidthRef.current * v["x"] -
-				// 	subsceneWidthRef.current / 2;
-				// v["y"] =
-				// 	subsceneHeightRef.current * v["y"] -
-				// 	subsceneHeightRef.current / 2;
-				// v["z"] *= -subsceneWidthRef.current;
+				v["x"] *= -1;
+				v["y"] *= -1;
+				v["z"] *= -1;
 
-				v["x"] *= -SUB_SCENE_SIZE;
-				v["y"] *= -SUB_SCENE_SIZE;
-				v["z"] *= -SUB_SCENE_SIZE;
+				// v["x"] *= -SUB_SCENE_SIZE / 4;
+				// v["y"] *= -SUB_SCENE_SIZE / 4;
+				// v["z"] *= -SUB_SCENE_SIZE / 4;
 			}
+
+			console.log(keypoints3D.current);
 
 			// todo, pass keypoints3d data to w worker, so it can analysis the persons kinethmatic data
 			// decide its amplitude, speed
@@ -458,32 +479,32 @@ export default function DigitalTrainer() {
 			return;
 		}
 
-		if (poseSync.current) {
-			// compare the distance curve between animation and pose
-			poseCompareResult.current = poseSync.current.compareCurrentPose(
-				keypoints3D.current,
-				figureParts.current,
-				poseSyncThresholdRef.current
-			);
+		// if (poseSync.current) {
+		// 	// compare the distance curve between animation and pose
+		// 	poseCompareResult.current = poseSync.current.compareCurrentPose(
+		// 		keypoints3D.current,
+		// 		figureParts.current,
+		// 		poseSyncThresholdRef.current
+		// 	);
 
-			setdiffScore(parseInt(poseSync.current.diffScore));
+		// 	setdiffScore(parseInt(poseSync.current.diffScore));
 
-			// compare the distance curve between animation and pose
-		}
+		// 	// compare the distance curve between animation and pose
+		// }
 
-		if (poseSyncVector.current) {
-			// compare the limbs vectors between pose and animation
+		// if (poseSyncVector.current) {
+		// 	// compare the limbs vectors between pose and animation
 
-			// this is only for display, doesn't affect animtion
-			// draw different colors on the silhouette
-			const distances = poseSyncVector.current.compareCurrentPose(
-				keypoints3D.current,
-				figureParts.current
-			);
+		// 	// this is only for display, doesn't affect animtion
+		// 	// draw different colors on the silhouette
+		// 	const distances = poseSyncVector.current.compareCurrentPose(
+		// 		keypoints3D.current,
+		// 		figureParts.current
+		// 	);
 
-			// watch keypoints3d and vectorDistances,
-			calculateSilhouetteColors(distances, keypoints3D.current);
-		}
+		// 	// watch keypoints3d and vectorDistances,
+		// 	calculateSilhouetteColors(distances, keypoints3D.current);
+		// }
 	}
 
 	function applyAnimation() {
@@ -745,10 +766,37 @@ export default function DigitalTrainer() {
 				autoPlay={true}
 				width={subsceneWidth + "px"}
 				height={subsceneHeight + "px"}
-				style={{ display: "none" }}
+				// style={{
+				// 	display: "none",
+				// }}
+				style={{
+					display: "block",
+					position: "absolute",
+					top: 0,
+					left: subsceneWidth + "px",
+				}}
 			></video>
 
 			<canvas ref={canvasRef} />
+
+			{/* // ========= captured pose logic */}
+			<div
+				style={{
+					width: subsceneWidth + "px",
+					height: subsceneHeight + "px",
+					position: "absolute",
+					top: 0,
+					left: 0,
+				}}
+			>
+				<SubThreeJsScene
+					width={subsceneWidth}
+					height={subsceneHeight}
+					objects={capturedPose}
+					cameraZ={10}
+				/>
+			</div>
+			{/* // ========= captured pose logic */}
 
 			<div
 				style={{
