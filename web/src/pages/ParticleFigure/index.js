@@ -66,11 +66,9 @@ export default function ParticleFigure() {
 
 		figure.current = new Limbs();
 
-		const limbs = figure.current.init();
+		const body = figure.current.init();
 
-		for (const l of limbs) {
-			scene.current.add(l);
-		}
+		scene.current.add(body);
 
 		animate();
 

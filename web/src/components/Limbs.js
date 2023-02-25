@@ -142,6 +142,8 @@ export default class Limbs {
 		 * todo add hands and foot
 		 */
 
+		this.body = new THREE.Group();
+
 		// head
 		this.head = new THREE.Group();
 
@@ -150,6 +152,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.head.add(this.head_mesh);
 		}
+		this.body.add(this.head);
 
 		// torso
 		this.torso = new THREE.Group();
@@ -166,6 +169,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.torso.add(this.torso_mesh);
 		}
+		this.body.add(this.torso);
 
 		// left upperarm
 		this.upperarm_l = new THREE.Group();
@@ -179,6 +183,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.upperarm_l.add(this.upperarm_l_mesh);
 		}
+		this.body.add(this.upperarm_l);
 
 		// left forearm
 		this.forearm_l = new THREE.Group();
@@ -192,6 +197,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.forearm_l.add(this.forearm_l_mesh);
 		}
+		this.body.add(this.forearm_l);
 
 		// right upperarm
 		this.upperarm_r = new THREE.Group();
@@ -205,7 +211,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.upperarm_r.add(this.upperarm_r_mesh);
 		}
-
+		this.body.add(this.upperarm_r);
 		// right forearm
 		this.forearm_r = new THREE.Group();
 
@@ -218,6 +224,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.forearm_r.add(this.forearm_r_mesh);
 		}
+		this.body.add(this.forearm_r);
 
 		// left thigh
 		this.thigh_l = new THREE.Group();
@@ -231,7 +238,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.thigh_l.add(this.thigh_l_mesh);
 		}
-
+		this.body.add(this.thigh_l);
 		// right thigh
 		this.thigh_r = new THREE.Group();
 
@@ -244,7 +251,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.thigh_r.add(this.thigh_r_mesh);
 		}
-
+		this.body.add(this.thigh_r);
 		// left calf
 		this.calf_l = new THREE.Group();
 
@@ -257,7 +264,7 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.calf_l.add(this.calf_l_mesh);
 		}
-
+		this.body.add(this.calf_l);
 		// right calf
 		this.calf_r = new THREE.Group();
 
@@ -270,19 +277,21 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.calf_r.add(this.calf_r_mesh);
 		}
+		this.body.add(this.calf_r);
+		// return [
+		// 	this.head,
+		// 	this.torso,
+		// 	this.upperarm_l,
+		// 	this.forearm_l,
+		// 	this.upperarm_r,
+		// 	this.forearm_r,
+		// 	this.thigh_l,
+		// 	this.thigh_r,
+		// 	this.calf_l,
+		// 	this.calf_r,
+		// ];
 
-		return [
-			this.head,
-			this.torso,
-			this.upperarm_l,
-			this.forearm_l,
-			this.upperarm_r,
-			this.forearm_r,
-			this.thigh_l,
-			this.thigh_r,
-			this.calf_l,
-			this.calf_r,
-		];
+		return this.body;
 	}
 
 	scaleLimb(mesh, joint1, joint2, is_left) {
