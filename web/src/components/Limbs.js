@@ -145,7 +145,7 @@ export default class Limbs {
 
 		this.head_sub.position.x = 0; //this.head_radius;
 		this.head_sub.position.y = this.head_radius;
-		this.head_sub.position.z = -this.head_radius;
+		this.head_sub.position.z = this.head_radius * -2;
 
 		this.head.add(this.head_sub);
 
@@ -226,7 +226,7 @@ export default class Limbs {
 
 		this.upperarm_r.add(this.upperarm_r_sub);
 
-		this.upperarm_r_sub.position.x = -this.deltoid_radius / 2;
+		this.upperarm_r_sub.position.x = this.deltoid_radius / -2;
 		this.upperarm_r_sub.position.y = this.bigarm_size / -2;
 
 		// right forearm
@@ -246,8 +246,88 @@ export default class Limbs {
 
 		this.forearm_r.add(this.forearm_r_sub);
 
-		this.forearm_r_sub.position.x = -this.elbow_radius / 2;
+		this.forearm_r_sub.position.x = this.elbow_radius / -2;
 		this.forearm_r_sub.position.y = this.smallarm_size / -2;
+
+		// left thigh
+		this.thigh_l = new THREE.Group();
+
+		this.thigh_l_sub = new THREE.Group();
+
+		this.thigh_l_mesh = this.getLimbMesh(
+			this.thigh_radius,
+			this.knee_radius,
+			this.thigh_size
+		);
+
+		if (this.add_mesh) {
+			this.thigh_l_sub.add(this.thigh_l_mesh);
+		}
+
+		this.thigh_l.add(this.thigh_l_sub);
+
+		this.thigh_l_sub.position.x = this.thigh_radius / 2;
+		this.thigh_l_sub.position.y = this.thigh_size / -2;
+
+		// right thigh
+		this.thigh_r = new THREE.Group();
+
+		this.thigh_r_sub = new THREE.Group();
+
+		this.thigh_r_mesh = this.getLimbMesh(
+			this.thigh_radius,
+			this.knee_radius,
+			this.thigh_size
+		);
+
+		if (this.add_mesh) {
+			this.thigh_r_sub.add(this.thigh_r_mesh);
+		}
+
+		this.thigh_r.add(this.thigh_r_sub);
+
+		this.thigh_r_sub.position.x = this.thigh_radius / -2;
+		this.thigh_r_sub.position.y = this.thigh_size / -2;
+
+		// left calf
+		this.calf_l = new THREE.Group();
+
+		this.calf_l_sub = new THREE.Group();
+
+		this.calf_l_mesh = this.getLimbMesh(
+			this.knee_radius,
+			this.ankle_radius,
+			this.calf_size
+		);
+
+		if (this.add_mesh) {
+			this.calf_l_sub.add(this.calf_l_mesh);
+		}
+
+		this.calf_l.add(this.calf_l_sub);
+
+		this.calf_l_sub.position.x = this.knee_radius / 2;
+		this.calf_l_sub.position.y = this.calf_size / -2;
+
+		// right calf
+		this.calf_r = new THREE.Group();
+
+		this.calf_r_sub = new THREE.Group();
+
+		this.calf_r_mesh = this.getLimbMesh(
+			this.knee_radius,
+			this.ankle_radius,
+			this.calf_size
+		);
+
+		if (this.add_mesh) {
+			this.calf_r_sub.add(this.calf_r_mesh);
+		}
+
+		this.calf_r.add(this.calf_r_sub);
+
+		this.calf_r_sub.position.x = this.knee_radius / -2;
+		this.calf_r_sub.position.y = this.calf_size / -2;
 
 		return [
 			this.head,
@@ -256,6 +336,10 @@ export default class Limbs {
 			this.forearm_l,
 			this.upperarm_r,
 			this.forearm_r,
+			this.thigh_l,
+			this.thigh_r,
+			this.calf_l,
+			this.calf_r,
 		];
 	}
 
@@ -315,6 +399,7 @@ export default class Limbs {
 			return;
 		}
 
+		// get position of joints
 		const nose = this.getPosePosition(
 			pose3D[BlazePoseKeypointsValues["NOSE"]]
 		);
@@ -331,6 +416,12 @@ export default class Limbs {
 		const hip_pose_l = this.getPosePosition(
 			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
 		);
+		const knee_pose_l = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]
+		);
+		const ankle_pose_l = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]
+		);
 
 		const shoulder_pose_r = this.getPosePosition(
 			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
@@ -344,7 +435,14 @@ export default class Limbs {
 		const hip_pose_r = this.getPosePosition(
 			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
 		);
+		const knee_pose_r = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]
+		);
+		const ankle_pose_r = this.getPosePosition(
+			pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
+		);
 
+		// set limbs positions
 		this.head.position.set(nose.x, nose.y, nose.z);
 
 		this.upperarm_l.position.set(
@@ -357,6 +455,8 @@ export default class Limbs {
 			elbow_pose_l.y,
 			elbow_pose_l.z
 		);
+		this.thigh_l.position.set(hip_pose_l.x, hip_pose_l.y, hip_pose_l.z);
+		this.calf_l.position.set(knee_pose_l.x, knee_pose_l.y, knee_pose_l.z);
 
 		this.upperarm_r.position.set(
 			shoulder_pose_r.x,
@@ -368,19 +468,27 @@ export default class Limbs {
 			elbow_pose_r.y,
 			elbow_pose_r.z
 		);
+		this.thigh_r.position.set(hip_pose_r.x, hip_pose_r.y, hip_pose_r.z);
+		this.calf_r.position.set(knee_pose_r.x, knee_pose_r.y, knee_pose_r.z);
 
+		// calculate the target vectors for limbs
 		const upperarm_l_target = posePointsToVector(
 			elbow_pose_l,
 			shoulder_pose_l
 		);
 		const forearm_l_target = posePointsToVector(wrist_pose_l, elbow_pose_l);
+		const thigh_l_target = posePointsToVector(knee_pose_l, hip_pose_l);
+		const calf_l_target = posePointsToVector(ankle_pose_l, knee_pose_l);
 
 		const upperarm_r_target = posePointsToVector(
 			elbow_pose_r,
 			shoulder_pose_r
 		);
 		const forearm_r_target = posePointsToVector(wrist_pose_r, elbow_pose_r);
+		const thigh_r_target = posePointsToVector(knee_pose_r, hip_pose_r);
+		const calf_r_target = posePointsToVector(ankle_pose_r, knee_pose_r);
 
+		// calculate quaternions for limbs
 		const upperarm_l_q = quaternionFromVectors(
 			this.init_vector,
 			upperarm_l_target
@@ -389,6 +497,11 @@ export default class Limbs {
 			this.init_vector,
 			forearm_l_target
 		);
+		const thigh_l_q = quaternionFromVectors(
+			this.init_vector,
+			thigh_l_target
+		);
+		const calf_l_q = quaternionFromVectors(this.init_vector, calf_l_target);
 
 		const upperarm_r_q = quaternionFromVectors(
 			this.init_vector,
@@ -398,12 +511,21 @@ export default class Limbs {
 			this.init_vector,
 			forearm_r_target
 		);
+		const thigh_r_q = quaternionFromVectors(
+			this.init_vector,
+			thigh_r_target
+		);
+		const calf_r_q = quaternionFromVectors(this.init_vector, calf_r_target);
 
 		this.upperarm_l.setRotationFromQuaternion(upperarm_l_q);
 		this.forearm_l.setRotationFromQuaternion(forearm_l_q);
+		this.thigh_l.setRotationFromQuaternion(thigh_l_q);
+		this.calf_l.setRotationFromQuaternion(calf_l_q);
 
 		this.upperarm_r.setRotationFromQuaternion(upperarm_r_q);
 		this.forearm_r.setRotationFromQuaternion(forearm_r_q);
+		this.thigh_r.setRotationFromQuaternion(thigh_r_q);
+		this.calf_r.setRotationFromQuaternion(calf_r_q);
 
 		// update torso geometry
 		// it's a plane, defined by 4 points. left/right shoulder, left/right hip
@@ -445,12 +567,14 @@ export default class Limbs {
 		if (resize) {
 			// todo also adjust the radius of cylinder here
 			this.scaleLimb(this.upperarm_l_mesh, shoulder_pose_l, elbow_pose_l);
-
 			this.scaleLimb(this.forearm_l_mesh, wrist_pose_l, elbow_pose_l);
+			this.scaleLimb(this.thigh_l_mesh, knee_pose_l, hip_pose_l);
+			this.scaleLimb(this.calf_l_mesh, ankle_pose_l, knee_pose_l);
 
 			this.scaleLimb(this.upperarm_r_mesh, shoulder_pose_r, elbow_pose_r);
-
 			this.scaleLimb(this.forearm_r_mesh, wrist_pose_r, elbow_pose_r);
+			this.scaleLimb(this.thigh_r_mesh, knee_pose_r, hip_pose_r);
+			this.scaleLimb(this.calf_r_mesh, ankle_pose_r, knee_pose_r);
 
 			if (nose.score > 0.5) {
 				this.head_mesh.material.opacity = 0.5;
