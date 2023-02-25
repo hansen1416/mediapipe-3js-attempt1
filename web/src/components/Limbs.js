@@ -70,19 +70,11 @@ export default class Limbs {
 
 		this.color = 0x44aa88;
 
+		// opacity of material, when pose score is lower/higher then 0.5
 		this.invisible_opacity = 0.1;
 		this.visible_opacity = 0.5;
 	}
 
-	/**
-	 * the cylinder for limbs
-	 * @param {number} radiusTop
-	 * @param {number} radiusBottom
-	 * @param {number} height
-	 * @param {number} radialSegments
-	 * @param {number} heightSegments
-	 * @returns
-	 */
 	getLimbMesh(
 		radiusTop,
 		radiusBottom,
@@ -90,6 +82,15 @@ export default class Limbs {
 		radialSegments = 8,
 		heightSegments = 1
 	) {
+		/**
+		 * the cylinder for limbs
+		 * @param {number} radiusTop
+		 * @param {number} radiusBottom
+		 * @param {number} height
+		 * @param {number} radialSegments
+		 * @param {number} heightSegments
+		 * @returns
+		 */
 		const geometry = new THREE.CylinderGeometry(
 			radiusTop,
 			radiusBottom,
@@ -108,6 +109,9 @@ export default class Limbs {
 	}
 
 	getTorsoMesh(points) {
+		/**
+		 * torso plane
+		 */
 		const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
 		const material = new THREE.MeshBasicMaterial({
@@ -121,6 +125,9 @@ export default class Limbs {
 	}
 
 	getHeadMesh(radius, widthSegments = 8, heightSegments = 8) {
+		/**
+		 * head sphere
+		 */
 		const geometry = new THREE.SphereGeometry(
 			radius,
 			widthSegments,
@@ -278,26 +285,14 @@ export default class Limbs {
 			this.calf_r.add(this.calf_r_mesh);
 		}
 		this.body.add(this.calf_r);
-		// return [
-		// 	this.head,
-		// 	this.torso,
-		// 	this.upperarm_l,
-		// 	this.forearm_l,
-		// 	this.upperarm_r,
-		// 	this.forearm_r,
-		// 	this.thigh_l,
-		// 	this.thigh_r,
-		// 	this.calf_l,
-		// 	this.calf_r,
-		// ];
 
 		return this.body;
 	}
 
 	scaleLimb(mesh, joint1, joint2, is_left) {
 		/**
-		 * scale limbs
-		 * set position
+		 * scale limbs size
+		 * set limbs position
 		 * set material opacity
 		 */
 		if (joint1.score < 0.5 || joint2.score < 0.5) {
