@@ -271,7 +271,9 @@ export default class Limbs {
 		this.thigh_l.add(this.thigh_l_sub);
 
 		this.thigh_l_sub.position.x = this.thigh_radius / 2;
-		this.thigh_l_sub.position.y = this.thigh_size / -2;
+		this.thigh_l_sub.position.y =
+			this.thigh_size / -2 + this.thigh_radius / -2;
+		this.thigh_l_sub.position.z = this.thigh_radius / -2;
 
 		// right thigh
 		this.thigh_r = new THREE.Group();
@@ -291,7 +293,9 @@ export default class Limbs {
 		this.thigh_r.add(this.thigh_r_sub);
 
 		this.thigh_r_sub.position.x = this.thigh_radius / -2;
-		this.thigh_r_sub.position.y = this.thigh_size / -2;
+		this.thigh_r_sub.position.y =
+			this.thigh_size / -2 + this.thigh_radius / -2;
+		this.thigh_r_sub.position.z = this.thigh_radius / -2;
 
 		// left calf
 		this.calf_l = new THREE.Group();
@@ -311,7 +315,10 @@ export default class Limbs {
 		this.calf_l.add(this.calf_l_sub);
 
 		this.calf_l_sub.position.x = this.knee_radius / 2;
-		this.calf_l_sub.position.y = this.calf_size / -2;
+		// adjust y a little to make it look more nature
+		this.calf_l_sub.position.y =
+			this.calf_size / -2 + this.knee_radius / -2;
+		this.calf_l_sub.position.z = this.knee_radius / -2;
 
 		// right calf
 		this.calf_r = new THREE.Group();
@@ -331,7 +338,9 @@ export default class Limbs {
 		this.calf_r.add(this.calf_r_sub);
 
 		this.calf_r_sub.position.x = this.knee_radius / -2;
-		this.calf_r_sub.position.y = this.calf_size / -2;
+		this.calf_r_sub.position.y =
+			this.calf_size / -2 + this.knee_radius / -2;
+		this.calf_r_sub.position.z = this.knee_radius / -2;
 
 		return [
 			this.head,
