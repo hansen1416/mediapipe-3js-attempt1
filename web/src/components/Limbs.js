@@ -114,6 +114,7 @@ export default class Limbs {
 			color: this.color,
 			transparent: true,
 			opacity: 0,
+			side: THREE.DoubleSide,
 		});
 
 		return new THREE.Mesh(geometry, material);
@@ -139,24 +140,14 @@ export default class Limbs {
 		// head
 		this.head = new THREE.Group();
 
-		this.head_sub = new THREE.Group();
-
 		this.head_mesh = this.getHeadMesh(this.head_radius);
 
 		if (this.add_mesh) {
-			this.head_sub.add(this.head_mesh);
+			this.head.add(this.head_mesh);
 		}
-
-		this.head_sub.position.x = 0; //this.head_radius;
-		this.head_sub.position.y = this.head_radius;
-		this.head_sub.position.z = this.head_radius * -2;
-
-		this.head.add(this.head_sub);
 
 		// torso
 		this.torso = new THREE.Group();
-
-		this.torso_sub = new THREE.Group();
 
 		this.torso_mesh = this.getTorsoMesh([
 			new THREE.Vector3(-1, 1, 0),
@@ -168,10 +159,8 @@ export default class Limbs {
 		]);
 
 		if (this.add_mesh) {
-			this.torso_sub.add(this.torso_mesh);
+			this.torso.add(this.torso_mesh);
 		}
-
-		this.torso.add(this.torso_sub);
 
 		// left upperarm
 		this.upperarm_l = new THREE.Group();
@@ -187,7 +176,7 @@ export default class Limbs {
 		}
 
 		this.upperarm_l_mesh.position.x = this.deltoid_radius / 2;
-		this.upperarm_l_mesh.position.y = this.bigarm_size / -2;
+		// this.upperarm_l_mesh.position.y = this.bigarm_size / -2;
 
 		// left forearm
 		this.forearm_l = new THREE.Group();
@@ -203,7 +192,7 @@ export default class Limbs {
 		}
 
 		this.forearm_l_mesh.position.x = this.elbow_radius / 2;
-		this.forearm_l_mesh.position.y = this.smallarm_size / -2;
+		// this.forearm_l_mesh.position.y = this.smallarm_size / -2;
 
 		// right upperarm
 		this.upperarm_r = new THREE.Group();
@@ -219,7 +208,7 @@ export default class Limbs {
 		}
 
 		this.upperarm_r_mesh.position.x = this.deltoid_radius / -2;
-		this.upperarm_r_mesh.position.y = this.bigarm_size / -2;
+		// this.upperarm_r_mesh.position.y = this.bigarm_size / -2;
 
 		// right forearm
 		this.forearm_r = new THREE.Group();
@@ -235,7 +224,7 @@ export default class Limbs {
 		}
 
 		this.forearm_r_mesh.position.x = this.elbow_radius / -2;
-		this.forearm_r_mesh.position.y = this.smallarm_size / -2;
+		// this.forearm_r_mesh.position.y = this.smallarm_size / -2;
 
 		// left thigh
 		this.thigh_l = new THREE.Group();
@@ -251,8 +240,8 @@ export default class Limbs {
 		}
 
 		this.thigh_l_mesh.position.x = this.thigh_radius / 2;
-		this.thigh_l_mesh.position.y =
-			this.thigh_size / -2 + this.thigh_radius / -2;
+		// this.thigh_l_mesh.position.y =
+		// 	this.thigh_size / -2 + this.thigh_radius / -2;
 		this.thigh_l_mesh.position.z = this.thigh_radius / -2;
 
 		// right thigh
@@ -269,8 +258,8 @@ export default class Limbs {
 		}
 
 		this.thigh_r_mesh.position.x = this.thigh_radius / -2;
-		this.thigh_r_mesh.position.y =
-			this.thigh_size / -2 + this.thigh_radius / -2;
+		// this.thigh_r_mesh.position.y =
+		// 	this.thigh_size / -2 + this.thigh_radius / -2;
 		this.thigh_r_mesh.position.z = this.thigh_radius / -2;
 
 		// left calf
@@ -288,14 +277,12 @@ export default class Limbs {
 
 		this.calf_l_mesh.position.x = this.knee_radius / 2;
 		// adjust y a little to make it look more nature
-		this.calf_l_mesh.position.y =
-			this.calf_size / -2 + this.knee_radius / -2;
+		// this.calf_l_mesh.position.y =
+		// 	this.calf_size / -2 + this.knee_radius / -2;
 		this.calf_l_mesh.position.z = this.knee_radius / -2;
 
 		// right calf
 		this.calf_r = new THREE.Group();
-
-		this.calf_r_sub = new THREE.Group();
 
 		this.calf_r_mesh = this.getLimbMesh(
 			this.knee_radius,
@@ -304,15 +291,13 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.calf_r_sub.add(this.calf_r_mesh);
+			this.calf_r.add(this.calf_r_mesh);
 		}
 
-		this.calf_r.add(this.calf_r_sub);
-
-		this.calf_r_sub.position.x = this.knee_radius / -2;
-		this.calf_r_sub.position.y =
-			this.calf_size / -2 + this.knee_radius / -2;
-		this.calf_r_sub.position.z = this.knee_radius / -2;
+		this.calf_r_mesh.position.x = this.knee_radius / -2;
+		// this.calf_r_mesh.position.y =
+		// 	this.calf_size / -2 + this.knee_radius / -2;
+		this.calf_r_mesh.position.z = this.knee_radius / -2;
 
 		return [
 			this.head,
@@ -359,6 +344,8 @@ export default class Limbs {
 			size / mesh.geometry.parameters.height,
 			width_scale
 		);
+
+		mesh.position.set(0, size / -2, 0);
 
 		mesh.material.opacity = this.visible_opacity;
 	}
@@ -514,39 +501,37 @@ export default class Limbs {
 
 		// update torso geometry
 		// it's a plane, defined by 4 points. left/right shoulder, left/right hip
-		{
-			const torso_geo =
-				this.torso_mesh.geometry.attributes.position.array;
 
-			let i = 0;
+		const torso_geo = this.torso_mesh.geometry.attributes.position.array;
 
-			for (const l of [
-				shoulder_pose_l,
-				hip_pose_r,
-				shoulder_pose_r,
-				shoulder_pose_l,
-				hip_pose_l,
-				hip_pose_r,
-			]) {
-				torso_geo[i++] = l.x;
-				torso_geo[i++] = l.y;
-				torso_geo[i++] = l.z;
-			}
+		let i = 0;
 
-			this.torso_mesh.geometry.attributes.position.needsUpdate = true;
+		for (const l of [
+			shoulder_pose_l,
+			hip_pose_r,
+			shoulder_pose_r,
+			shoulder_pose_l,
+			hip_pose_l,
+			hip_pose_r,
+		]) {
+			torso_geo[i++] = l.x;
+			torso_geo[i++] = l.y;
+			torso_geo[i++] = l.z;
+		}
 
-			const valid_score = [
-				shoulder_pose_l.score,
-				shoulder_pose_r.score,
-				hip_pose_l.score,
-				hip_pose_r.score,
-			].filter((s) => s > 0.5);
+		this.torso_mesh.geometry.attributes.position.needsUpdate = true;
 
-			if (valid_score.length > 2) {
-				this.torso_mesh.material.opacity = this.visible_opacity;
-			} else {
-				this.torso_mesh.material.opacity = this.invisible_opacity;
-			}
+		const valid_score = [
+			shoulder_pose_l.score,
+			shoulder_pose_r.score,
+			hip_pose_l.score,
+			hip_pose_r.score,
+		].filter((s) => s > 0.5);
+
+		if (valid_score.length > 2) {
+			this.torso_mesh.material.opacity = this.visible_opacity;
+		} else {
+			this.torso_mesh.material.opacity = this.invisible_opacity;
 		}
 
 		if (resize) {
@@ -568,19 +553,28 @@ export default class Limbs {
 					shoulder_pose_l.score > 0.5 &&
 					shoulder_pose_r.score > 0.5
 				) {
-					const head_scale =
+					const head_size =
 						distanceBetweenPoints(
 							shoulder_pose_l,
 							shoulder_pose_r
-						) /
-						4 /
-						this.head_mesh.geometry.parameters.radius;
+						) / 4;
+
+					const head_scale =
+						head_size / this.head_mesh.geometry.parameters.radius;
 
 					this.head_mesh.scale.set(
 						head_scale,
 						head_scale,
 						head_scale
 					);
+
+					// todo we need to first rotate head to same orientation pf torso,
+					// then adjust the position
+					// this.head_mesh.position.set(
+					// 	head_size / -2,
+					// 	head_size / -2,
+					// 	head_size * -1
+					// );
 				}
 			} else {
 				this.head_mesh.material.opacity = this.invisible_opacity;
