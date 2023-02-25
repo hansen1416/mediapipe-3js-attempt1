@@ -137,6 +137,11 @@ export default class Limbs {
 	}
 
 	init() {
+		/**
+		 * initialize body parts
+		 * todo add hands and foot
+		 */
+
 		// head
 		this.head = new THREE.Group();
 
@@ -175,9 +180,6 @@ export default class Limbs {
 			this.upperarm_l.add(this.upperarm_l_mesh);
 		}
 
-		this.upperarm_l_mesh.position.x = this.deltoid_radius / 2;
-		// this.upperarm_l_mesh.position.y = this.bigarm_size / -2;
-
 		// left forearm
 		this.forearm_l = new THREE.Group();
 
@@ -190,9 +192,6 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.forearm_l.add(this.forearm_l_mesh);
 		}
-
-		this.forearm_l_mesh.position.x = this.elbow_radius / 2;
-		// this.forearm_l_mesh.position.y = this.smallarm_size / -2;
 
 		// right upperarm
 		this.upperarm_r = new THREE.Group();
@@ -207,9 +206,6 @@ export default class Limbs {
 			this.upperarm_r.add(this.upperarm_r_mesh);
 		}
 
-		this.upperarm_r_mesh.position.x = this.deltoid_radius / -2;
-		// this.upperarm_r_mesh.position.y = this.bigarm_size / -2;
-
 		// right forearm
 		this.forearm_r = new THREE.Group();
 
@@ -222,9 +218,6 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.forearm_r.add(this.forearm_r_mesh);
 		}
-
-		this.forearm_r_mesh.position.x = this.elbow_radius / -2;
-		// this.forearm_r_mesh.position.y = this.smallarm_size / -2;
 
 		// left thigh
 		this.thigh_l = new THREE.Group();
@@ -239,11 +232,6 @@ export default class Limbs {
 			this.thigh_l.add(this.thigh_l_mesh);
 		}
 
-		this.thigh_l_mesh.position.x = this.thigh_radius / 2;
-		// this.thigh_l_mesh.position.y =
-		// 	this.thigh_size / -2 + this.thigh_radius / -2;
-		this.thigh_l_mesh.position.z = this.thigh_radius / -2;
-
 		// right thigh
 		this.thigh_r = new THREE.Group();
 
@@ -256,11 +244,6 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.thigh_r.add(this.thigh_r_mesh);
 		}
-
-		this.thigh_r_mesh.position.x = this.thigh_radius / -2;
-		// this.thigh_r_mesh.position.y =
-		// 	this.thigh_size / -2 + this.thigh_radius / -2;
-		this.thigh_r_mesh.position.z = this.thigh_radius / -2;
 
 		// left calf
 		this.calf_l = new THREE.Group();
@@ -275,12 +258,6 @@ export default class Limbs {
 			this.calf_l.add(this.calf_l_mesh);
 		}
 
-		this.calf_l_mesh.position.x = this.knee_radius / 2;
-		// adjust y a little to make it look more nature
-		// this.calf_l_mesh.position.y =
-		// 	this.calf_size / -2 + this.knee_radius / -2;
-		this.calf_l_mesh.position.z = this.knee_radius / -2;
-
 		// right calf
 		this.calf_r = new THREE.Group();
 
@@ -293,11 +270,6 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.calf_r.add(this.calf_r_mesh);
 		}
-
-		this.calf_r_mesh.position.x = this.knee_radius / -2;
-		// this.calf_r_mesh.position.y =
-		// 	this.calf_size / -2 + this.knee_radius / -2;
-		this.calf_r_mesh.position.z = this.knee_radius / -2;
 
 		return [
 			this.head,
@@ -313,7 +285,7 @@ export default class Limbs {
 		];
 	}
 
-	scaleLimb(mesh, joint1, joint2) {
+	scaleLimb(mesh, joint1, joint2, is_left) {
 		if (joint1.score < 0.5 || joint2.score < 0.5) {
 			mesh.material.opacity = this.invisible_opacity;
 
@@ -332,87 +304,55 @@ export default class Limbs {
 		thetaLength
 		thetaStart
 		 */
-		const size = distanceBetweenPoints(joint1, joint2);
+		const height = distanceBetweenPoints(joint1, joint2);
+		const width = height / 3;
 		const width_scale =
-			size /
-			3 /
+			width /
 			(mesh.geometry.parameters.radiusTop +
 				mesh.geometry.parameters.radiusBottom);
 
 		mesh.scale.set(
 			width_scale,
-			size / mesh.geometry.parameters.height,
+			height / mesh.geometry.parameters.height,
 			width_scale
 		);
 
-		mesh.position.set(0, size / -2, 0);
+		// no need to set z, cause i'm not adjust the orientation
+		if (is_left) {
+			mesh.position.set(width / 2, height / -2, 0);
+		} else {
+			mesh.position.set(width / -2, height / -2, 0);
+		}
 
 		mesh.material.opacity = this.visible_opacity;
 	}
 
-	/**
-	 * todo, remove this function when i'm absolutely sure
-	 * @param {object} joint_position
-	 * @returns
-	 */
-	getPosePosition(joint_position) {
-		return joint_position;
-
-		// return {
-		// 	x: joint_position.x * this.distance_ratio,
-		// 	y: joint_position.y * this.distance_ratio,
-		// 	z: joint_position.z * this.distance_ratio,
-		// 	score: joint_position.score,
-		// };
-	}
-
 	applyPose(pose3D, resize = false) {
+		/**
+		 * apply pose to mesh, adjust it's position and scale
+		 */
 		if (!pose3D || !pose3D.length) {
 			return;
 		}
 
 		// get position of joints
-		const nose = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["NOSE"]]
-		);
+		const nose = pose3D[BlazePoseKeypointsValues["NOSE"]];
 
-		const shoulder_pose_l = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-		);
-		const elbow_pose_l = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
-		);
-		const wrist_pose_l = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]]
-		);
-		const hip_pose_l = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
-		);
-		const knee_pose_l = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]
-		);
-		const ankle_pose_l = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]
-		);
+		const shoulder_pose_l =
+			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
+		const elbow_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]];
+		const wrist_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]];
+		const hip_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
+		const knee_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
+		const ankle_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]];
 
-		const shoulder_pose_r = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
-		);
-		const elbow_pose_r = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
-		);
-		const wrist_pose_r = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
-		);
-		const hip_pose_r = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
-		);
-		const knee_pose_r = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]
-		);
-		const ankle_pose_r = this.getPosePosition(
-			pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
-		);
+		const shoulder_pose_r =
+			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
+		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
+		const hip_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]];
+		const knee_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
+		const ankle_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]];
 
 		// set limbs positions
 		this.head.position.set(nose.x, nose.y, nose.z);
@@ -501,7 +441,6 @@ export default class Limbs {
 
 		// update torso geometry
 		// it's a plane, defined by 4 points. left/right shoulder, left/right hip
-
 		const torso_geo = this.torso_mesh.geometry.attributes.position.array;
 
 		let i = 0;
@@ -534,17 +473,38 @@ export default class Limbs {
 			this.torso_mesh.material.opacity = this.invisible_opacity;
 		}
 
+		// resize, adjust mesh size to fit the pose
 		if (resize) {
 			// todo also adjust the radius of cylinder here
-			this.scaleLimb(this.upperarm_l_mesh, shoulder_pose_l, elbow_pose_l);
-			this.scaleLimb(this.forearm_l_mesh, wrist_pose_l, elbow_pose_l);
-			this.scaleLimb(this.thigh_l_mesh, knee_pose_l, hip_pose_l);
-			this.scaleLimb(this.calf_l_mesh, ankle_pose_l, knee_pose_l);
+			this.scaleLimb(
+				this.upperarm_l_mesh,
+				shoulder_pose_l,
+				elbow_pose_l,
+				true
+			);
+			this.scaleLimb(
+				this.forearm_l_mesh,
+				wrist_pose_l,
+				elbow_pose_l,
+				true
+			);
+			this.scaleLimb(this.thigh_l_mesh, knee_pose_l, hip_pose_l, true);
+			this.scaleLimb(this.calf_l_mesh, ankle_pose_l, knee_pose_l, true);
 
-			this.scaleLimb(this.upperarm_r_mesh, shoulder_pose_r, elbow_pose_r);
-			this.scaleLimb(this.forearm_r_mesh, wrist_pose_r, elbow_pose_r);
-			this.scaleLimb(this.thigh_r_mesh, knee_pose_r, hip_pose_r);
-			this.scaleLimb(this.calf_r_mesh, ankle_pose_r, knee_pose_r);
+			this.scaleLimb(
+				this.upperarm_r_mesh,
+				shoulder_pose_r,
+				elbow_pose_r,
+				false
+			);
+			this.scaleLimb(
+				this.forearm_r_mesh,
+				wrist_pose_r,
+				elbow_pose_r,
+				false
+			);
+			this.scaleLimb(this.thigh_r_mesh, knee_pose_r, hip_pose_r, false);
+			this.scaleLimb(this.calf_r_mesh, ankle_pose_r, knee_pose_r, false);
 
 			if (nose.score > 0.5) {
 				this.head_mesh.material.opacity = this.visible_opacity;
