@@ -266,11 +266,29 @@ export default class Limbs {
 			return;
 		}
 
+		/**
+		 * cylinder geometry parameters
+		 * 
+		height
+		heightSegments
+		openEnded
+		radialSegments
+		radiusBottom
+		radiusTop
+		thetaLength
+		thetaStart
+		 */
+		const size = distanceBetweenPoints(joint1, joint2);
+		const width_scale =
+			size /
+			3 /
+			(mesh.geometry.parameters.radiusTop +
+				mesh.geometry.parameters.radiusBottom);
+
 		mesh.scale.set(
-			1,
-			distanceBetweenPoints(joint1, joint2) /
-				mesh.geometry.parameters.height,
-			1
+			width_scale,
+			size / mesh.geometry.parameters.height,
+			width_scale
 		);
 
 		mesh.material.opacity = 0.5;
@@ -436,6 +454,25 @@ export default class Limbs {
 
 			if (nose.score > 0.5) {
 				this.head_mesh.material.opacity = 0.5;
+
+				if (
+					shoulder_pose_l.score > 0.5 &&
+					shoulder_pose_r.score > 0.5
+				) {
+					const head_scale =
+						distanceBetweenPoints(
+							shoulder_pose_l,
+							shoulder_pose_r
+						) /
+						4 /
+						this.head_mesh.geometry.parameters.radius;
+
+					this.head_mesh.scale.set(
+						head_scale,
+						head_scale,
+						head_scale
+					);
+				}
 			} else {
 				this.head_mesh.material.opacity = 0.1;
 			}
