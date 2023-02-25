@@ -289,7 +289,7 @@ export default class Limbs {
 		return this.body;
 	}
 
-	scaleLimb(mesh, joint1, joint2, is_left) {
+	scaleLimb(mesh, joint1, joint2, is_left, color = this.color) {
 		/**
 		 * scale limbs size
 		 * set limbs position
@@ -334,6 +334,8 @@ export default class Limbs {
 		}
 
 		mesh.material.opacity = this.visible_opacity;
+
+		mesh.material.color.setHex(color);
 	}
 
 	applyPose(pose3D, resize = false) {
