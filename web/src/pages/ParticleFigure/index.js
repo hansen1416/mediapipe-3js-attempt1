@@ -40,8 +40,8 @@ export default function ParticleFigure() {
 
 	const videoRef = useRef(null);
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
-	const [subsceneWidth] = useState(334);
-	const [subsceneHeight] = useState(250);
+	const [subsceneWidth, setsubsceneWidth] = useState(334);
+	const [subsceneHeight, setsubsceneHeight] = useState(250);
 
 	const [startBtnShow, setstartBtnShow] = useState(true);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
@@ -50,8 +50,8 @@ export default function ParticleFigure() {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
-		// setsubsceneWidth(documentWidth * 0.3)
-		// setsubsceneHeight(documentWidth * 0.3 * 480 / 640)
+		setsubsceneWidth(documentWidth * 0.25);
+		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
 
 		_scene(documentWidth, documentHeight);
 
@@ -103,10 +103,14 @@ export default function ParticleFigure() {
 				{
 					const drawdata = cloneDeep(poses[0]["keypoints3D"]);
 
+					const width_ratio = 30;
+					const height_ratio = (width_ratio * 480) / 640;
+
+					// multiply x,y by differnt factor
 					for (let v of drawdata) {
-						v["x"] *= -30;
-						v["y"] *= -30;
-						v["z"] *= -30;
+						v["x"] *= -width_ratio;
+						v["y"] *= -height_ratio;
+						v["z"] *= -width_ratio;
 					}
 
 					const g = drawPoseKeypoints(drawdata);

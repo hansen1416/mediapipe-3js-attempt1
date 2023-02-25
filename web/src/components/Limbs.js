@@ -56,10 +56,10 @@ export default class Limbs {
 
 		this.thigh_radius = 2.8 * this.unit;
 		this.thigh_size = 10 * this.unit;
-		this.knee_radius = 2.4 * this.unit;
+		this.knee_radius = 2.0 * this.unit;
 
 		this.calf_size = 10 * this.unit;
-		this.ankle_radius = 1.8 * this.unit;
+		this.ankle_radius = 1.6 * this.unit;
 
 		// the initial vector of limbs
 		this.init_vector = new THREE.Vector3(0, -1, 0);
@@ -286,6 +286,11 @@ export default class Limbs {
 	}
 
 	scaleLimb(mesh, joint1, joint2, is_left) {
+		/**
+		 * scale limbs
+		 * set position
+		 * set material opacity
+		 */
 		if (joint1.score < 0.5 || joint2.score < 0.5) {
 			mesh.material.opacity = this.invisible_opacity;
 
