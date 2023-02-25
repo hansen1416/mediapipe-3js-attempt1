@@ -77,11 +77,6 @@ export default function DigitalTrainer() {
 	// subscen size
 	const [subsceneWidth, setsubsceneWidth] = useState(0);
 	const [subsceneHeight, setsubsceneHeight] = useState(0);
-	// subscen size ref, used as magnitude for keypoints
-	const subsceneWidthRef = useRef(0);
-	const subsceneHeightRef = useRef(0);
-	// this is the size in threejs world
-	const subsceneSize = useRef(0);
 
 	const silhouette = useRef(null);
 
@@ -136,9 +131,8 @@ export default function DigitalTrainer() {
 
 		creatMainScene(documentWidth, documentHeight);
 
-		setsubsceneHeight(documentHeight * 0.25);
 		setsubsceneWidth(documentHeight * 0.25);
-		// setsubsceneWidth((documentHeight * 0.25 * 640) / 480);
+		setsubsceneHeight((documentHeight * 0.25 * 480) / 640);
 
 		createSubScene();
 
@@ -164,11 +158,9 @@ export default function DigitalTrainer() {
 			// add silhouette to subscene
 			silhouette.current = new Limbs();
 
-			const limbs = silhouette.current.init();
+			const body = silhouette.current.init();
 
-			for (const l of limbs) {
-				sceneSub.current.add(l);
-			}
+			sceneSub.current.add(body);
 
 			animate();
 		});
@@ -211,9 +203,6 @@ export default function DigitalTrainer() {
 		cameraSub.current.aspect = subsceneWidth / subsceneHeight;
 		cameraSub.current.updateProjectionMatrix();
 		rendererSub.current.setSize(subsceneWidth, subsceneHeight);
-
-		subsceneWidthRef.current = subsceneWidth;
-		subsceneHeightRef.current = subsceneHeight;
 	}, [subsceneWidth, subsceneHeight]);
 
 	useEffect(() => {
@@ -421,19 +410,17 @@ export default function DigitalTrainer() {
 
 			keypoints3D.current = poses[0]["keypoints3D"];
 
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
 			for (let v of keypoints3D.current) {
-				// todo, figure out how to transfer x,y,z to pixel distance
-
-				v["x"] *= -1;
-				v["y"] *= -1;
-				v["z"] *= -1;
-
-				// v["x"] *= -SUB_SCENE_SIZE / 4;
-				// v["y"] *= -SUB_SCENE_SIZE / 4;
-				// v["z"] *= -SUB_SCENE_SIZE / 4;
+				v["x"] *= -width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
 			}
 
-			console.log(keypoints3D.current);
+			// console.log(keypoints3D.current);
 
 			// todo, pass keypoints3d data to w worker, so it can analysis the persons kinethmatic data
 			// decide its amplitude, speed
@@ -479,32 +466,32 @@ export default function DigitalTrainer() {
 			return;
 		}
 
-		// if (poseSync.current) {
-		// 	// compare the distance curve between animation and pose
-		// 	poseCompareResult.current = poseSync.current.compareCurrentPose(
-		// 		keypoints3D.current,
-		// 		figureParts.current,
-		// 		poseSyncThresholdRef.current
-		// 	);
+		if (poseSync.current) {
+			// compare the distance curve between animation and pose
+			poseCompareResult.current = poseSync.current.compareCurrentPose(
+				keypoints3D.current,
+				figureParts.current,
+				poseSyncThresholdRef.current
+			);
 
-		// 	setdiffScore(parseInt(poseSync.current.diffScore));
+			setdiffScore(parseInt(poseSync.current.diffScore));
 
-		// 	// compare the distance curve between animation and pose
-		// }
+			// compare the distance curve between animation and pose
+		}
 
-		// if (poseSyncVector.current) {
-		// 	// compare the limbs vectors between pose and animation
+		if (poseSyncVector.current) {
+			// compare the limbs vectors between pose and animation
 
-		// 	// this is only for display, doesn't affect animtion
-		// 	// draw different colors on the silhouette
-		// 	const distances = poseSyncVector.current.compareCurrentPose(
-		// 		keypoints3D.current,
-		// 		figureParts.current
-		// 	);
+			// this is only for display, doesn't affect animtion
+			// draw different colors on the silhouette
+			const distances = poseSyncVector.current.compareCurrentPose(
+				keypoints3D.current,
+				figureParts.current
+			);
 
-		// 	// watch keypoints3d and vectorDistances,
-		// 	calculateSilhouetteColors(distances, keypoints3D.current);
-		// }
+			// watch keypoints3d and vectorDistances,
+			calculateSilhouetteColors(distances, keypoints3D.current);
+		}
 	}
 
 	function applyAnimation() {
@@ -766,15 +753,15 @@ export default function DigitalTrainer() {
 				autoPlay={true}
 				width={subsceneWidth + "px"}
 				height={subsceneHeight + "px"}
-				// style={{
-				// 	display: "none",
-				// }}
 				style={{
-					display: "block",
-					position: "absolute",
-					top: 0,
-					left: subsceneWidth + "px",
+					display: "none",
 				}}
+				// style={{
+				// 	display: "block",
+				// 	position: "absolute",
+				// 	top: 0,
+				// 	left: subsceneWidth + "px",
+				// }}
 			></video>
 
 			<canvas ref={canvasRef} />
@@ -793,7 +780,7 @@ export default function DigitalTrainer() {
 					width={subsceneWidth}
 					height={subsceneHeight}
 					objects={capturedPose}
-					cameraZ={10}
+					cameraZ={200}
 				/>
 			</div>
 			{/* // ========= captured pose logic */}
