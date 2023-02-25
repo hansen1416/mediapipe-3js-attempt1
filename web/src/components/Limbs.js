@@ -70,7 +70,16 @@ export default class Limbs {
 		this.color = 0x44aa88;
 	}
 
-	getMesh(
+	/**
+	 * the cylinder for limbs
+	 * @param {number} radiusTop
+	 * @param {number} radiusBottom
+	 * @param {number} height
+	 * @param {number} radialSegments
+	 * @param {number} heightSegments
+	 * @returns
+	 */
+	getLimbMesh(
 		radiusTop,
 		radiusBottom,
 		height,
@@ -146,11 +155,11 @@ export default class Limbs {
 		this.torso_sub = new THREE.Group();
 
 		this.torso_mesh = this.getTorsoMesh([
-			new THREE.Vector3(-10, 10, 0),
+			new THREE.Vector3(-1, 1, 0),
 			new THREE.Vector3(0, 0, 0),
-			new THREE.Vector3(0, 10, 0),
-			new THREE.Vector3(-10, 10, 0),
-			new THREE.Vector3(-10, 0, 0),
+			new THREE.Vector3(0, 1, 0),
+			new THREE.Vector3(-1, 1, 0),
+			new THREE.Vector3(-1, 0, 0),
 			new THREE.Vector3(0, 0, 0),
 		]);
 
@@ -165,7 +174,7 @@ export default class Limbs {
 
 		this.upperarm_l_sub = new THREE.Group();
 
-		this.upperarm_l_mesh = this.getMesh(
+		this.upperarm_l_mesh = this.getLimbMesh(
 			this.deltoid_radius,
 			this.elbow_radius,
 			this.bigarm_size
@@ -185,7 +194,7 @@ export default class Limbs {
 
 		this.forearm_l_sub = new THREE.Group();
 
-		this.forearm_l_mesh = this.getMesh(
+		this.forearm_l_mesh = this.getLimbMesh(
 			this.elbow_radius,
 			this.wrist_size,
 			this.smallarm_size
@@ -205,7 +214,7 @@ export default class Limbs {
 
 		this.upperarm_r_sub = new THREE.Group();
 
-		this.upperarm_r_mesh = this.getMesh(
+		this.upperarm_r_mesh = this.getLimbMesh(
 			this.deltoid_radius,
 			this.elbow_radius,
 			this.bigarm_size
@@ -225,7 +234,7 @@ export default class Limbs {
 
 		this.forearm_r_sub = new THREE.Group();
 
-		this.forearm_r_mesh = this.getMesh(
+		this.forearm_r_mesh = this.getLimbMesh(
 			this.elbow_radius,
 			this.wrist_size,
 			this.smallarm_size
@@ -250,7 +259,7 @@ export default class Limbs {
 		];
 	}
 
-	scaleLimb(mesh, joint1, joint2, initial_size) {
+	scaleLimb(mesh, joint1, joint2) {
 		if (joint1.score < 0.5 || joint2.score < 0.5) {
 			mesh.material.opacity = 0.1;
 
@@ -259,7 +268,8 @@ export default class Limbs {
 
 		mesh.scale.set(
 			1,
-			distanceBetweenPoints(joint1, joint2) / initial_size,
+			distanceBetweenPoints(joint1, joint2) /
+				mesh.geometry.parameters.height,
 			1
 		);
 
@@ -416,33 +426,13 @@ export default class Limbs {
 
 		if (resize) {
 			// todo also adjust the radius of cylinder here
-			this.scaleLimb(
-				this.upperarm_l_mesh,
-				shoulder_pose_l,
-				elbow_pose_l,
-				this.bigarm_size
-			);
+			this.scaleLimb(this.upperarm_l_mesh, shoulder_pose_l, elbow_pose_l);
 
-			this.scaleLimb(
-				this.forearm_l_mesh,
-				wrist_pose_l,
-				elbow_pose_l,
-				this.smallarm_size
-			);
+			this.scaleLimb(this.forearm_l_mesh, wrist_pose_l, elbow_pose_l);
 
-			this.scaleLimb(
-				this.upperarm_r_mesh,
-				shoulder_pose_r,
-				elbow_pose_r,
-				this.bigarm_size
-			);
+			this.scaleLimb(this.upperarm_r_mesh, shoulder_pose_r, elbow_pose_r);
 
-			this.scaleLimb(
-				this.forearm_r_mesh,
-				wrist_pose_r,
-				elbow_pose_r,
-				this.smallarm_size
-			);
+			this.scaleLimb(this.forearm_r_mesh, wrist_pose_r, elbow_pose_r);
 
 			if (nose.score > 0.5) {
 				this.head_mesh.material.opacity = 0.5;
