@@ -785,7 +785,7 @@ export function drawPoseKeypoints(keypoints, z_value) {
 
 	for (const point of keypoints) {
 		if (point.score > 0.5 || point.visibility > 0.5) {
-			const d = box(0.01);
+			const d = box(0.3);
 
 			const z = z_value ? z_value : point.z;
 
@@ -803,8 +803,14 @@ export function drawPoseKeypoints(keypoints, z_value) {
 		["left_shoulder", "right_shoulder"],
 		["left_shoulder", "left_elbow"],
 		["left_elbow", "left_wrist"],
+		["left_wrist", "left_thumb"],
+		["left_wrist", "left_index"],
+		["left_wrist", "left_pinky"],
 		["right_shoulder", "right_elbow"],
 		["right_elbow", "right_wrist"],
+		["right_wrist", "right_thumb"],
+		["right_wrist", "right_index"],
+		["right_wrist", "right_pinky"],
 		["left_shoulder", "left_hip"],
 		["right_shoulder", "right_hip"],
 		["left_hip", "right_hip"],

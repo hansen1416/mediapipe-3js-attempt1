@@ -61,6 +61,7 @@ export default class Limbs {
 		this.calf_size = 10 * this.unit;
 		this.ankle_radius = 1.8 * this.unit;
 
+		// the initial vector of limbs
 		this.init_vector = new THREE.Vector3(0, -1, 0);
 
 		// todo remove this property when i'm sure
@@ -68,6 +69,9 @@ export default class Limbs {
 		this.add_mesh = true;
 
 		this.color = 0x44aa88;
+
+		this.invisible_opacity = 0.1;
+		this.visible_opacity = 0.5;
 	}
 
 	/**
@@ -345,7 +349,7 @@ export default class Limbs {
 
 	scaleLimb(mesh, joint1, joint2) {
 		if (joint1.score < 0.5 || joint2.score < 0.5) {
-			mesh.material.opacity = 0.1;
+			mesh.material.opacity = this.invisible_opacity;
 
 			return;
 		}
@@ -375,12 +379,12 @@ export default class Limbs {
 			width_scale
 		);
 
-		mesh.material.opacity = 0.5;
+		mesh.material.opacity = this.visible_opacity;
 	}
 
 	/**
 	 * todo, remove this function when i'm absolutely sure
-	 * @param {*} joint_position
+	 * @param {object} joint_position
 	 * @returns
 	 */
 	getPosePosition(joint_position) {
@@ -558,9 +562,9 @@ export default class Limbs {
 			].filter((s) => s > 0.5);
 
 			if (valid_score.length > 2) {
-				this.torso_mesh.material.opacity = 0.5;
+				this.torso_mesh.material.opacity = this.visible_opacity;
 			} else {
-				this.torso_mesh.material.opacity = 0.1;
+				this.torso_mesh.material.opacity = this.invisible_opacity;
 			}
 		}
 
@@ -577,7 +581,7 @@ export default class Limbs {
 			this.scaleLimb(this.calf_r_mesh, ankle_pose_r, knee_pose_r);
 
 			if (nose.score > 0.5) {
-				this.head_mesh.material.opacity = 0.5;
+				this.head_mesh.material.opacity = this.visible_opacity;
 
 				if (
 					shoulder_pose_l.score > 0.5 &&
@@ -598,7 +602,7 @@ export default class Limbs {
 					);
 				}
 			} else {
-				this.head_mesh.material.opacity = 0.1;
+				this.head_mesh.material.opacity = this.invisible_opacity;
 			}
 		}
 	}
