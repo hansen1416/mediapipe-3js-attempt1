@@ -131,8 +131,8 @@ export default function DigitalTrainer() {
 
 		creatMainScene(documentWidth, documentHeight);
 
-		setsubsceneWidth(documentHeight * 0.25);
-		setsubsceneHeight((documentHeight * 0.25 * 480) / 640);
+		setsubsceneWidth(documentWidth * 0.25);
+		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
 
 		createSubScene();
 
@@ -322,7 +322,7 @@ export default function DigitalTrainer() {
 			1000
 		);
 
-		cameraSub.current.position.set(0, 0, SUB_SCENE_CAMERA_Z);
+		cameraSub.current.position.set(0, 0, 30);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 
