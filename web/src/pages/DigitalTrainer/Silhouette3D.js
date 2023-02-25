@@ -90,7 +90,6 @@ export default function Silhouette3D({
 	}
 
 	function animate() {
-
 		// console.log(blazePose3D)
 		figure.current.applyPose(blazePose3D, true);
 

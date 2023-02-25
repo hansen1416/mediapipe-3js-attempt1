@@ -5,6 +5,7 @@ import {
 	BlazePoseKeypointsValues,
 	posePointsToVector,
 	quaternionFromVectors,
+	distanceBetweenPoints,
 } from "./ropes";
 // import MeshLineMaterial from "./MeshLineMaterial";
 
@@ -61,14 +62,12 @@ export default class Limbs {
 		this.ankle_radius = 1.8 * this.unit;
 
 		this.init_vector = new THREE.Vector3(0, -1, 0);
-		// the pose position is between 0-1.
-		// scale it up to make the limbs on proper position
-		this.distance_ratio = 1;
 
+		// todo remove this property when i'm sure
+		// replace mesh by particles
 		this.add_mesh = true;
 
-		// this.init_scale = new THREE.Vector3(0.3, 0.3, 0.3);
-		this.init_scale = new THREE.Vector3(1, 1, 1);
+		this.color = 0x44aa88;
 	}
 
 	getMesh(
@@ -87,9 +86,9 @@ export default class Limbs {
 		);
 
 		const material = new THREE.MeshBasicMaterial({
-			color: 0x44aa88,
+			color: this.color,
 			transparent: true,
-			opacity: 0.5,
+			opacity: 0,
 		});
 
 		return new THREE.Mesh(geometry, material);
@@ -99,9 +98,9 @@ export default class Limbs {
 		const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
 		const material = new THREE.MeshBasicMaterial({
-			color: 0x44aa88,
+			color: this.color,
 			transparent: true,
-			opacity: 0.5,
+			opacity: 0,
 		});
 
 		return new THREE.Mesh(geometry, material);
@@ -115,9 +114,9 @@ export default class Limbs {
 		);
 
 		const material = new THREE.MeshBasicMaterial({
-			color: 0x44aa88,
+			color: this.color,
 			transparent: true,
-			opacity: 0.5,
+			opacity: 0,
 		});
 
 		return new THREE.Mesh(geometry, material);
@@ -138,12 +137,6 @@ export default class Limbs {
 		this.head_sub.position.x = 0; //this.head_radius;
 		this.head_sub.position.y = this.head_radius;
 		this.head_sub.position.z = -this.head_radius;
-
-		this.head_mesh.scale.set(
-			this.init_scale.x,
-			this.init_scale.y,
-			this.init_scale.z
-		);
 
 		this.head.add(this.head_sub);
 
@@ -182,12 +175,6 @@ export default class Limbs {
 			this.upperarm_l_sub.add(this.upperarm_l_mesh);
 		}
 
-		this.upperarm_l_mesh.scale.set(
-			this.init_scale.x,
-			this.init_scale.y,
-			this.init_scale.z
-		);
-
 		this.upperarm_l.add(this.upperarm_l_sub);
 
 		this.upperarm_l_sub.position.x = this.deltoid_radius / 2;
@@ -207,12 +194,6 @@ export default class Limbs {
 		if (this.add_mesh) {
 			this.forearm_l_sub.add(this.forearm_l_mesh);
 		}
-
-		this.forearm_l_mesh.scale.set(
-			this.init_scale.x,
-			this.init_scale.y,
-			this.init_scale.z
-		);
 
 		this.forearm_l.add(this.forearm_l_sub);
 
@@ -234,12 +215,6 @@ export default class Limbs {
 			this.upperarm_r_sub.add(this.upperarm_r_mesh);
 		}
 
-		this.upperarm_r_mesh.scale.set(
-			this.init_scale.x,
-			this.init_scale.y,
-			this.init_scale.z
-		);
-
 		this.upperarm_r.add(this.upperarm_r_sub);
 
 		this.upperarm_r_sub.position.x = -this.deltoid_radius / 2;
@@ -260,12 +235,6 @@ export default class Limbs {
 			this.forearm_r_sub.add(this.forearm_r_mesh);
 		}
 
-		this.forearm_r_mesh.scale.set(
-			this.init_scale.x,
-			this.init_scale.y,
-			this.init_scale.z
-		);
-
 		this.forearm_r.add(this.forearm_r_sub);
 
 		this.forearm_r_sub.position.x = -this.elbow_radius / 2;
@@ -281,35 +250,36 @@ export default class Limbs {
 		];
 	}
 
-	jointsDistance(a, b) {
-		return Math.sqrt(
-			(a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2
-		);
-	}
-
 	scaleLimb(mesh, joint1, joint2, initial_size) {
-		if (joint1.score > 0.1 && joint2.score > 0.1) {
-			mesh.scale.set(
-				1,
-				this.jointsDistance(joint1, joint2) / initial_size,
-				1
-			);
-		} else {
-			mesh.scale.set(
-				this.init_scale.x,
-				this.init_scale.y,
-				this.init_scale.z
-			);
+		if (joint1.score < 0.5 || joint2.score < 0.5) {
+			mesh.material.opacity = 0.1;
+
+			return;
 		}
+
+		mesh.scale.set(
+			1,
+			distanceBetweenPoints(joint1, joint2) / initial_size,
+			1
+		);
+
+		mesh.material.opacity = 0.5;
 	}
 
+	/**
+	 * todo, remove this function when i'm absolutely sure
+	 * @param {*} joint_position
+	 * @returns
+	 */
 	getPosePosition(joint_position) {
-		return {
-			x: joint_position.x * this.distance_ratio,
-			y: joint_position.y * this.distance_ratio,
-			z: joint_position.z * this.distance_ratio,
-			score: joint_position.score,
-		};
+		return joint_position;
+
+		// return {
+		// 	x: joint_position.x * this.distance_ratio,
+		// 	y: joint_position.y * this.distance_ratio,
+		// 	z: joint_position.z * this.distance_ratio,
+		// 	score: joint_position.score,
+		// };
 	}
 
 	applyPose(pose3D, resize = false) {
@@ -429,6 +399,19 @@ export default class Limbs {
 			}
 
 			this.torso_mesh.geometry.attributes.position.needsUpdate = true;
+
+			const valid_score = [
+				shoulder_pose_l.score,
+				shoulder_pose_r.score,
+				hip_pose_l.score,
+				hip_pose_r.score,
+			].filter((s) => s > 0.5);
+
+			if (valid_score.length > 2) {
+				this.torso_mesh.material.opacity = 0.5;
+			} else {
+				this.torso_mesh.material.opacity = 0.1;
+			}
 		}
 
 		if (resize) {
@@ -461,7 +444,11 @@ export default class Limbs {
 				this.smallarm_size
 			);
 
-			this.head_mesh.scale.set(1, 1, 1);
+			if (nose.score > 0.5) {
+				this.head_mesh.material.opacity = 0.5;
+			} else {
+				this.head_mesh.material.opacity = 0.1;
+			}
 		}
 	}
 

@@ -169,7 +169,15 @@ export default function ParticleFigure() {
 				autoPlay={true}
 				width={subsceneWidth + "px"}
 				height={subsceneHeight + "px"}
-				style={{ display: "none" }}
+				style={{
+					display: "none",
+				}}
+				// style={{
+				// 	display: "block",
+				// 	position: "absolute",
+				// 	top: 0,
+				// 	left: subsceneWidth + "px",
+				// }}
 			></video>
 
 			<canvas ref={canvasRef} />
@@ -181,7 +189,6 @@ export default function ParticleFigure() {
 					position: "absolute",
 					top: 0,
 					left: 0,
-					border: "1px solid #fff",
 				}}
 			>
 				<SubThreeJsScene
