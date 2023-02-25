@@ -176,8 +176,6 @@ export default class Limbs {
 		// left upperarm
 		this.upperarm_l = new THREE.Group();
 
-		this.upperarm_l_sub = new THREE.Group();
-
 		this.upperarm_l_mesh = this.getLimbMesh(
 			this.deltoid_radius,
 			this.elbow_radius,
@@ -185,18 +183,14 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.upperarm_l_sub.add(this.upperarm_l_mesh);
+			this.upperarm_l.add(this.upperarm_l_mesh);
 		}
 
-		this.upperarm_l.add(this.upperarm_l_sub);
-
-		this.upperarm_l_sub.position.x = this.deltoid_radius / 2;
-		this.upperarm_l_sub.position.y = this.bigarm_size / -2;
+		this.upperarm_l_mesh.position.x = this.deltoid_radius / 2;
+		this.upperarm_l_mesh.position.y = this.bigarm_size / -2;
 
 		// left forearm
 		this.forearm_l = new THREE.Group();
-
-		this.forearm_l_sub = new THREE.Group();
 
 		this.forearm_l_mesh = this.getLimbMesh(
 			this.elbow_radius,
@@ -205,18 +199,14 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.forearm_l_sub.add(this.forearm_l_mesh);
+			this.forearm_l.add(this.forearm_l_mesh);
 		}
 
-		this.forearm_l.add(this.forearm_l_sub);
-
-		this.forearm_l_sub.position.x = this.elbow_radius / 2;
-		this.forearm_l_sub.position.y = this.smallarm_size / -2;
+		this.forearm_l_mesh.position.x = this.elbow_radius / 2;
+		this.forearm_l_mesh.position.y = this.smallarm_size / -2;
 
 		// right upperarm
 		this.upperarm_r = new THREE.Group();
-
-		this.upperarm_r_sub = new THREE.Group();
 
 		this.upperarm_r_mesh = this.getLimbMesh(
 			this.deltoid_radius,
@@ -225,18 +215,14 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.upperarm_r_sub.add(this.upperarm_r_mesh);
+			this.upperarm_r.add(this.upperarm_r_mesh);
 		}
 
-		this.upperarm_r.add(this.upperarm_r_sub);
-
-		this.upperarm_r_sub.position.x = this.deltoid_radius / -2;
-		this.upperarm_r_sub.position.y = this.bigarm_size / -2;
+		this.upperarm_r_mesh.position.x = this.deltoid_radius / -2;
+		this.upperarm_r_mesh.position.y = this.bigarm_size / -2;
 
 		// right forearm
 		this.forearm_r = new THREE.Group();
-
-		this.forearm_r_sub = new THREE.Group();
 
 		this.forearm_r_mesh = this.getLimbMesh(
 			this.elbow_radius,
@@ -245,18 +231,14 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.forearm_r_sub.add(this.forearm_r_mesh);
+			this.forearm_r.add(this.forearm_r_mesh);
 		}
 
-		this.forearm_r.add(this.forearm_r_sub);
-
-		this.forearm_r_sub.position.x = this.elbow_radius / -2;
-		this.forearm_r_sub.position.y = this.smallarm_size / -2;
+		this.forearm_r_mesh.position.x = this.elbow_radius / -2;
+		this.forearm_r_mesh.position.y = this.smallarm_size / -2;
 
 		// left thigh
 		this.thigh_l = new THREE.Group();
-
-		this.thigh_l_sub = new THREE.Group();
 
 		this.thigh_l_mesh = this.getLimbMesh(
 			this.thigh_radius,
@@ -265,20 +247,16 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.thigh_l_sub.add(this.thigh_l_mesh);
+			this.thigh_l.add(this.thigh_l_mesh);
 		}
 
-		this.thigh_l.add(this.thigh_l_sub);
-
-		this.thigh_l_sub.position.x = this.thigh_radius / 2;
-		this.thigh_l_sub.position.y =
+		this.thigh_l_mesh.position.x = this.thigh_radius / 2;
+		this.thigh_l_mesh.position.y =
 			this.thigh_size / -2 + this.thigh_radius / -2;
-		this.thigh_l_sub.position.z = this.thigh_radius / -2;
+		this.thigh_l_mesh.position.z = this.thigh_radius / -2;
 
 		// right thigh
 		this.thigh_r = new THREE.Group();
-
-		this.thigh_r_sub = new THREE.Group();
 
 		this.thigh_r_mesh = this.getLimbMesh(
 			this.thigh_radius,
@@ -287,20 +265,16 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.thigh_r_sub.add(this.thigh_r_mesh);
+			this.thigh_r.add(this.thigh_r_mesh);
 		}
 
-		this.thigh_r.add(this.thigh_r_sub);
-
-		this.thigh_r_sub.position.x = this.thigh_radius / -2;
-		this.thigh_r_sub.position.y =
+		this.thigh_r_mesh.position.x = this.thigh_radius / -2;
+		this.thigh_r_mesh.position.y =
 			this.thigh_size / -2 + this.thigh_radius / -2;
-		this.thigh_r_sub.position.z = this.thigh_radius / -2;
+		this.thigh_r_mesh.position.z = this.thigh_radius / -2;
 
 		// left calf
 		this.calf_l = new THREE.Group();
-
-		this.calf_l_sub = new THREE.Group();
 
 		this.calf_l_mesh = this.getLimbMesh(
 			this.knee_radius,
@@ -309,16 +283,14 @@ export default class Limbs {
 		);
 
 		if (this.add_mesh) {
-			this.calf_l_sub.add(this.calf_l_mesh);
+			this.calf_l.add(this.calf_l_mesh);
 		}
 
-		this.calf_l.add(this.calf_l_sub);
-
-		this.calf_l_sub.position.x = this.knee_radius / 2;
+		this.calf_l_mesh.position.x = this.knee_radius / 2;
 		// adjust y a little to make it look more nature
-		this.calf_l_sub.position.y =
+		this.calf_l_mesh.position.y =
 			this.calf_size / -2 + this.knee_radius / -2;
-		this.calf_l_sub.position.z = this.knee_radius / -2;
+		this.calf_l_mesh.position.z = this.knee_radius / -2;
 
 		// right calf
 		this.calf_r = new THREE.Group();
