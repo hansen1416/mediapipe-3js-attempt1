@@ -12,11 +12,10 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
 
-// import Silhouette3D from "./Silhouette3D";
 // import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
 import "../../styles/css/DigitalTrainer.css";
 import SubThreeJsScene from "../../components/SubThreeJsScene";
-import Limbs from "../../components/Limbs";
+import Silhouette3D from "../../components/Silhouette3D";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
 import PoseSyncVector from "../../components/PoseSyncVector";
@@ -154,7 +153,7 @@ export default function DigitalTrainer() {
 			scene.current.add(mannequinModel.current);
 
 			// add silhouette to subscene
-			silhouette.current = new Limbs();
+			silhouette.current = new Silhouette3D();
 
 			const body = silhouette.current.init();
 
@@ -343,13 +342,13 @@ export default function DigitalTrainer() {
 			capturePose();
 
 			comparePose();
+
+			// draw 3d silhouette
+			if (keypoints3D.current) {
+				silhouette.current.applyPose(keypoints3D.current, true);
+			}
 		} else {
 			keypoints3D.current = null;
-		}
-
-		// draw 3d silhouette
-		if (keypoints3D.current) {
-			silhouette.current.applyPose(keypoints3D.current, true);
 		}
 
 		// ========= captured pose logic

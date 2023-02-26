@@ -9,7 +9,7 @@ import {
 } from "./ropes";
 // import MeshLineMaterial from "./MeshLineMaterial";
 
-export default class Limbs {
+export default class Silhouette3D {
 	/**
 	 * todo, work out the math for a proper position of landmark
 	 * it should be in good proportion and can change as camera distance change
