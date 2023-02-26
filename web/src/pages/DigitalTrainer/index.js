@@ -457,7 +457,12 @@ export default function DigitalTrainer() {
 			);
 
 			// watch keypoints3d and vectorDistances,
-			calculateSilhouetteColors(distances, keypoints3D.current);
+			const colors = calculateSilhouetteColors(
+				distances,
+				keypoints3D.current
+			);
+
+			silhouette.current.applyColor(colors);
 		}
 	}
 

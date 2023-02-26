@@ -30,6 +30,10 @@ export default class PoseSyncVector {
 	}
 
 	poseTorso(pose3D) {
+		/**
+		 * matrix that transfer the torso plane to original basis
+		 * so that torso is plane formed by x,y axis and facing +z axis
+		 */
 		const rightshoulder = poseToVector(
 			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
 		);
@@ -64,6 +68,9 @@ export default class PoseSyncVector {
 	}
 
 	pose3dlimbs(pose3D) {
+		/**
+		 * transfer joints positions to limbs vectors
+		 */
 		const left_shoulder = poseToVector(
 			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
 		);
@@ -248,5 +255,4 @@ export default class PoseSyncVector {
 
 		return res;
 	}
-
 }

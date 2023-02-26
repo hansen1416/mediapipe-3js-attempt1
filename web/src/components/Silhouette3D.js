@@ -334,8 +334,6 @@ export default class Silhouette3D {
 		}
 
 		mesh.material.opacity = this.visible_opacity;
-
-		mesh.material.color.setHex(color);
 	}
 
 	applyPose(pose3D, resize = false) {
@@ -550,6 +548,16 @@ export default class Silhouette3D {
 			} else {
 				this.head_mesh.material.opacity = this.invisible_opacity;
 			}
+		}
+	}
+
+	applyColor(colors) {
+		/**
+		 * apply color to mesh
+		 */
+
+		for (let name in colors) {
+			this[name + "_mesh"].material.color.setRGB(...colors[name]);
 		}
 	}
 

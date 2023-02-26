@@ -494,22 +494,18 @@ export function radianGradientColor(radian) {
 	radian = cap - radian;
 
 	if (radian < 0) {
-		return "rgba(250, 190, 179, 0.5)";
+		return [250, 190, 179];
 	}
 
 	const startColour = { r: 250, g: 190, b: 179 };
 	const endColour = { r: 248, g: 37, b: 0 };
 	const percent = radian / cap;
 
-	return (
-		"rgba(" +
-		Math.floor(startColour.r * (1 - percent) + endColour.r * percent) +
-		"," +
-		Math.floor(startColour.g * (1 - percent) + endColour.g * percent) +
-		"," +
-		Math.floor(startColour.b * (1 - percent) + endColour.b * percent) +
-		", 0.5)"
-	);
+	return [
+		Math.floor(startColour.r * (1 - percent) + endColour.r * percent),
+		Math.floor(startColour.g * (1 - percent) + endColour.g * percent),
+		Math.floor(startColour.b * (1 - percent) + endColour.b * percent),
+	];
 }
 
 export function calculateSilhouetteColors(vectorDistances, keypoints3D) {
@@ -528,16 +524,16 @@ export function calculateSilhouetteColors(vectorDistances, keypoints3D) {
 		rightcalf,
 	] = vectorDistances;
 
-	colors["chest"] = radianGradientColor(chest);
-	colors["leftupperarm"] = radianGradientColor(leftupperarm);
-	colors["leftforearm"] = radianGradientColor(leftforearm);
-	colors["rightupperarm"] = radianGradientColor(rightupperarm);
-	colors["rightforearm"] = radianGradientColor(rightforearm);
-	colors["abdominal"] = radianGradientColor(abdominal);
-	colors["leftthigh"] = radianGradientColor(leftthigh);
-	colors["leftcalf"] = radianGradientColor(leftcalf);
-	colors["rightthigh"] = radianGradientColor(rightthigh);
-	colors["rightcalf"] = radianGradientColor(rightcalf);
+	colors["torso"] = radianGradientColor(chest);
+	colors["upperarm_l"] = radianGradientColor(leftupperarm);
+	colors["forearm_l"] = radianGradientColor(leftforearm);
+	colors["upperarm_r"] = radianGradientColor(rightupperarm);
+	colors["forearm_r"] = radianGradientColor(rightforearm);
+	// colors["abdominal"] = radianGradientColor(abdominal);
+	colors["thigh_l"] = radianGradientColor(leftthigh);
+	colors["calf_l"] = radianGradientColor(leftcalf);
+	colors["thigh_r"] = radianGradientColor(rightthigh);
+	colors["calf_r"] = radianGradientColor(rightcalf);
 
 	return colors;
 }

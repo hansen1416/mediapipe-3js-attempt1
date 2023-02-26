@@ -28,7 +28,6 @@ import {
 	drawPoseKeypoints,
 	srotIndex,
 	BlazePoseKeypointsValues,
-	radianGradientColor,
 } from "../../components/ropes";
 
 /**
@@ -546,6 +545,30 @@ export default function DigitalTrainer() {
 		}
 
 		return longest;
+	}
+
+	function radianGradientColor(radian) {
+		const cap = Math.PI / 2;
+
+		radian = cap - radian;
+
+		if (radian < 0) {
+			return "rgba(250, 190, 179, 0.5)";
+		}
+
+		const startColour = { r: 250, g: 190, b: 179 };
+		const endColour = { r: 248, g: 37, b: 0 };
+		const percent = radian / cap;
+
+		return (
+			"rgba(" +
+			Math.floor(startColour.r * (1 - percent) + endColour.r * percent) +
+			"," +
+			Math.floor(startColour.g * (1 - percent) + endColour.g * percent) +
+			"," +
+			Math.floor(startColour.b * (1 - percent) + endColour.b * percent) +
+			", 0.5)"
+		);
 	}
 
 	function calculateSilhouetteColors(vectorDistances, keypoints3D) {
