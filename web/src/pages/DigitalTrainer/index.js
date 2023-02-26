@@ -15,7 +15,7 @@ import "../../styles/css/DigitalTrainer.css";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 // import Silhouette3D from "./Silhouette3D";
-import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
+// import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
 import Limbs from "../../components/Limbs";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
@@ -31,7 +31,7 @@ import {
 	radianGradientColor,
 	drawPoseKeypoints,
 } from "../../components/ropes";
-import { cloneDeep } from "lodash";
+// import { cloneDeep } from "lodash";
 
 /**
  * BE SUCCESSFUL!!
@@ -308,19 +308,12 @@ export default function DigitalTrainer() {
 		 * so for pose,
 		 * assume x=0.6, the actual x position of pos should be 0.6*visible_x, same for y, since we're using square canvas
 		 * can we apply this to z as well?
-		 *
-		 *
 		 */
 
 		sceneSub.current = new THREE.Scene();
 		sceneSub.current.background = new THREE.Color(0x22244);
 
-		cameraSub.current = new THREE.PerspectiveCamera(
-			SUB_SCENE_FOV,
-			1,
-			0.1,
-			1000
-		);
+		cameraSub.current = new THREE.PerspectiveCamera(90, 1, 0.1, 1000);
 
 		cameraSub.current.position.set(0, 0, 30);
 
