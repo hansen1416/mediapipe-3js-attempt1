@@ -11,11 +11,11 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import "react-range-slider-input/dist/style.css";
-import "../../styles/css/DigitalTrainer.css";
 
-import SubThreeJsScene from "../../components/SubThreeJsScene";
 // import Silhouette3D from "./Silhouette3D";
 // import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
+import "../../styles/css/DigitalTrainer.css";
+import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Limbs from "../../components/Limbs";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
@@ -26,10 +26,10 @@ import {
 	loadJSON,
 	startCamera,
 	traverseModel,
-	applyTransfer,
-	BlazePoseKeypointsValues,
-	radianGradientColor,
 	drawPoseKeypoints,
+	calculateLongestTrackFromAnimation,
+	calculateSilhouetteColors,
+	applyTransfer,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
 
@@ -79,8 +79,6 @@ export default function DigitalTrainer() {
 	const [subsceneHeight, setsubsceneHeight] = useState(0);
 
 	const silhouette = useRef(null);
-
-	const [silhouetteColors, setsilhouetteColors] = useState({});
 	// ======== sub scene end
 
 	// ======== training process related start
@@ -590,115 +588,6 @@ export default function DigitalTrainer() {
 				}
 			}
 		}
-	}
-
-	function calculateLongestTrackFromAnimation(animation_tracks) {
-		/**
-		 * get the number of longest track from the animation
-		 * @param {Array} animation_tracks
-		 * @returns
-		 */
-		let longest = 0;
-
-		for (const v of animation_tracks) {
-			if (v.type === "quaternion" && v.quaternions.length > longest) {
-				longest = v.quaternions.length;
-			}
-		}
-
-		return longest;
-	}
-
-	function calculateSilhouetteColors(vectorDistances, keypoints3D) {
-		const colors = {};
-
-		const [
-			chest,
-			leftupperarm,
-			leftforearm,
-			rightupperarm,
-			rightforearm,
-			abdominal,
-			leftthigh,
-			leftcalf,
-			rightthigh,
-			rightcalf,
-		] = vectorDistances;
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]].score >
-				0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].score > 0.5
-		) {
-			colors["chest"] = radianGradientColor(chest);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]].score >
-				0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].score > 0.5
-		) {
-			colors["leftupperarm"] = radianGradientColor(leftupperarm);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["LEFT_ELBOW"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["LEFT_WRIST"]].score > 0.5
-		) {
-			colors["leftforearm"] = radianGradientColor(leftforearm);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].score >
-				0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]].score > 0.5
-		) {
-			colors["rightupperarm"] = radianGradientColor(rightupperarm);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_WRIST"]].score > 0.5
-		) {
-			colors["rightforearm"] = radianGradientColor(rightforearm);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["LEFT_HIP"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_HIP"]].score > 0.5
-		) {
-			colors["abdominal"] = radianGradientColor(abdominal);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["LEFT_HIP"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["LEFT_KNEE"]].score > 0.5
-		) {
-			colors["leftthigh"] = radianGradientColor(leftthigh);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["LEFT_KNEE"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["LEFT_ANKLE"]].score > 0.5
-		) {
-			colors["leftcalf"] = radianGradientColor(leftcalf);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_HIP"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_KNEE"]].score > 0.5
-		) {
-			colors["rightthigh"] = radianGradientColor(rightthigh);
-		}
-
-		if (
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_KNEE"]].score > 0.5 &&
-			keypoints3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]].score > 0.5
-		) {
-			colors["rightcalf"] = radianGradientColor(rightcalf);
-		}
-
-		setsilhouetteColors(colors);
 	}
 
 	function initializeExercise() {

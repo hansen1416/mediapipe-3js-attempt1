@@ -465,6 +465,24 @@ export function unitline(a, b, color = 0xffffff) {
 	return line;
 }
 
+export function calculateLongestTrackFromAnimation(animation_tracks) {
+	/**
+	 * get the number of longest track from the animation
+	 * used by apply animation frame by frame
+	 * @param {Array} animation_tracks
+	 * @returns
+	 */
+	let longest = 0;
+
+	for (const v of animation_tracks) {
+		if (v.type === "quaternion" && v.quaternions.length > longest) {
+			longest = v.quaternions.length;
+		}
+	}
+
+	return longest;
+}
+
 /**
  * convert radian to a color, gradiently
  * @param {number} radian
@@ -492,6 +510,36 @@ export function radianGradientColor(radian) {
 		Math.floor(startColour.b * (1 - percent) + endColour.b * percent) +
 		", 0.5)"
 	);
+}
+
+export function calculateSilhouetteColors(vectorDistances, keypoints3D) {
+	const colors = {};
+
+	const [
+		chest,
+		leftupperarm,
+		leftforearm,
+		rightupperarm,
+		rightforearm,
+		abdominal,
+		leftthigh,
+		leftcalf,
+		rightthigh,
+		rightcalf,
+	] = vectorDistances;
+
+	colors["chest"] = radianGradientColor(chest);
+	colors["leftupperarm"] = radianGradientColor(leftupperarm);
+	colors["leftforearm"] = radianGradientColor(leftforearm);
+	colors["rightupperarm"] = radianGradientColor(rightupperarm);
+	colors["rightforearm"] = radianGradientColor(rightforearm);
+	colors["abdominal"] = radianGradientColor(abdominal);
+	colors["leftthigh"] = radianGradientColor(leftthigh);
+	colors["leftcalf"] = radianGradientColor(leftcalf);
+	colors["rightthigh"] = radianGradientColor(rightthigh);
+	colors["rightcalf"] = radianGradientColor(rightcalf);
+
+	return colors;
 }
 
 /**
