@@ -28,7 +28,7 @@ export default function ParticleFigure() {
 
 	const animationPointer = useRef(0);
 
-	const figure = useRef(null);
+	const figure = useRef([]);
 	// const fbxmodel = useRef(null);
 
 	// ========= captured pose logic
@@ -64,8 +64,26 @@ export default function ParticleFigure() {
 			poseDetector.current = detector;
 		});
 
-		figure.current = new Silhouette3D();
+		// const arr = Array(50)
+		// 	.fill(0)
+		// 	.map((item, idx) => {
+		// 		return item + idx - 12;
+		// 	});
 
+		// for (let i of arr) {
+		// 	for (let j of arr) {
+		// 		const tmp = new Silhouette3D();
+		// 		const body = tmp.init();
+
+		// 		body.position.set(i * 20, j * 20, 0);
+
+		// 		scene.current.add(body);
+
+		// 		figures.current.push(tmp);
+		// 	}
+		// }
+
+		figure.current = new Silhouette3D();
 		const body = figure.current.init();
 
 		scene.current.add(body);
@@ -116,6 +134,10 @@ export default function ParticleFigure() {
 					g.scale.set(8, 8, 8);
 
 					setcapturedPose(g);
+
+					// for (let i in figures.current) {
+					// 	figures.current[i].applyPose(drawdata, true);
+					// }
 
 					figure.current.applyPose(drawdata, true);
 				}

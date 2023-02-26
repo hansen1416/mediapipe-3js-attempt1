@@ -17,7 +17,7 @@ function App() {
 						excercise editor
 					</Nav.Link>
 					<Nav.Link href="/digital-trainer">digital trainer</Nav.Link>
-					<Nav.Link href="/cloud-rove">cloud rove</Nav.Link>
+					<Nav.Link href="/cloud">figures</Nav.Link>
 				</Nav>
 			</div>
 		</div>
