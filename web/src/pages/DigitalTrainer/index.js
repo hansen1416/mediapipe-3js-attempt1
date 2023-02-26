@@ -170,7 +170,7 @@ export default function DigitalTrainer() {
 					name: "default training",
 					rest: 180,
 					exercise: [
-						{ round: 2, key: "punch-walk" },
+						{ round: 50, key: "punch-walk" },
 						{ round: 2, key: "basic-crunch" },
 						{ round: 2, key: "curl-up" },
 						{ round: 2, key: "leg-scissors" },
@@ -462,7 +462,7 @@ export default function DigitalTrainer() {
 				keypoints3D.current
 			);
 
-			silhouette.current.applyColor(colors);
+			// silhouette.current.applyColor(colors);
 		}
 	}
 

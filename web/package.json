@@ -3,7 +3,6 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
-		"@mediapipe/pose": "^0.5.1675469404",
 		"@shopify/react-web-worker": "^5.0.7",
 		"@tensorflow-models/pose-detection": "^2.0.0",
 		"@tensorflow/tfjs-backend-webgl": "^3.21.0",
