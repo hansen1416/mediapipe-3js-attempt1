@@ -332,9 +332,10 @@ export default function DigitalTrainer() {
 	function animate() {
 		/**
 		 * animation loop, both main scene and sub scene updated
-		 * predict 3d pose
-		 * also play training sequence
-		 * update 3d silhouette
+		 * 1.predict 3d pose
+		 * 2.compare pose with animation
+		 * 3.update 3d silhouette
+		 * 4.play training sequence
 		 */
 		if (
 			videoRef.current &&
@@ -342,8 +343,15 @@ export default function DigitalTrainer() {
 			counter.current % 3 === 0
 		) {
 			capturePose();
+
+			comparePose();
 		} else {
 			keypoints3D.current = null;
+		}
+
+		// draw 3d silhouette
+		if (keypoints3D.current) {
+			silhouette.current.applyPose(keypoints3D.current, true);
 		}
 
 		// ========= captured pose logic
@@ -361,10 +369,10 @@ export default function DigitalTrainer() {
 			counter.current += 1;
 
 			doingTraining();
-		}
 
-		if (keypoints3D.current) {
-			silhouette.current.applyPose(keypoints3D.current, true);
+			// todo, pass keypoints3d data to web worker,
+			// so it can analysis the user's kinematics data
+			// decide its amplitude, speed
 		}
 
 		controls.current.update();
@@ -414,38 +422,7 @@ export default function DigitalTrainer() {
 			}
 
 			// console.log(keypoints3D.current);
-
-			// todo, pass keypoints3d data to w worker, so it can analysis the persons kinethmatic data
-			// decide its amplitude, speed
 		})();
-	}
-
-	function doingTraining() {
-		if (getReadyCountDown.current > 0) {
-			getReadyCountDown.current -= 1;
-
-			setcounterNumber(parseInt(getReadyCountDown.current / 60));
-
-			return;
-		}
-
-		if (restCountDown.current > 0) {
-			restCountDown.current -= 1;
-
-			setcounterNumber(parseInt(restCountDown.current / 60));
-
-			return;
-		}
-
-		// hide counter
-		setcounterNumber(-1);
-
-		// play animation at 30fps
-		if (counter.current % 2 === 0) {
-			comparePose();
-
-			applyAnimation();
-		}
 	}
 
 	function comparePose() {
@@ -484,6 +461,37 @@ export default function DigitalTrainer() {
 
 			// watch keypoints3d and vectorDistances,
 			calculateSilhouetteColors(distances, keypoints3D.current);
+		}
+	}
+
+	function doingTraining() {
+		/**
+		 * in the training process
+		 * 1. do count down
+		 * 2. apply animation
+		 */
+		if (getReadyCountDown.current > 0) {
+			getReadyCountDown.current -= 1;
+
+			setcounterNumber(parseInt(getReadyCountDown.current / 60));
+
+			return;
+		}
+
+		if (restCountDown.current > 0) {
+			restCountDown.current -= 1;
+
+			setcounterNumber(parseInt(restCountDown.current / 60));
+
+			return;
+		}
+
+		// hide counter
+		setcounterNumber(-1);
+
+		// play animation at 30fps
+		if (counter.current % 2 === 0) {
+			applyAnimation();
 		}
 	}
 
