@@ -24,6 +24,7 @@ yarn-error.log*
 
 __pycache__
 venv
+virenv
 node_modules
 media
 
