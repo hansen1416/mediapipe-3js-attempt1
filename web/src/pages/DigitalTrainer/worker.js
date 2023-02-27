@@ -1,26 +1,25 @@
+// import { loadJSON } from "../../components/ropes";
 
-import { loadJSON } from "../../components/ropes";
+let animationData = null;
 
-const animationData = null
+export function fetchAnimationData(animation_data) {
+	// loadJSON(
+	// 	process.env.PUBLIC_URL + "/animjson/" + animation_filename + ".json"
+	// ).then((data) => {
+	// 	animationData = data;
+	// });
 
-function fetchAnimationData(animation_filename) {
-    loadJSON(
-        process.env.PUBLIC_URL + "/animjson/" + animation_filename + ".json"
-    ).then((data) => {
-        animationData = data;
-    })
+	animationData = animation_data;
+
+	return "Animation data received";
 }
 
-export function analyzePose(data, animation_name) {
+export function analyzePose(data) {
+	if (!animationData) {
+		return "";
+	}
 
-    fetchAnimationData(animation_name);
-
-    if (!animationData) {
-        return "";
-    }
-
-
-    if (data && data.length) {
-        return `data length is, ${data.length}`;
-    }
+	if (data && data.length) {
+		return `name is, ${animationData.name}`;
+	}
 }

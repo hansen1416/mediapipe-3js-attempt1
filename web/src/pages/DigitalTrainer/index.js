@@ -10,7 +10,7 @@ import RangeSlider from "react-range-slider-input";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
-import {createWorkerFactory, useWorker} from '@shopify/react-web-worker';
+import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 import "react-range-slider-input/dist/style.css";
 
 // import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
@@ -33,7 +33,7 @@ import {
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
 
-const createWorker = createWorkerFactory(() => import('./worker'));
+const createWorker = createWorkerFactory(() => import("./worker"));
 
 /**
  * BE SUCCESSFUL!!
@@ -127,7 +127,7 @@ export default function DigitalTrainer() {
 
 	const worker = useWorker(createWorker);
 
-	const workerAvailable = useRef(false);
+	const workerAvailable = useRef(true);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -177,7 +177,7 @@ export default function DigitalTrainer() {
 					name: "default training",
 					rest: 180,
 					exercise: [
-						{ round: 50, key: "punch-walk" },
+						{ round: 2, key: "punch-walk" },
 						{ round: 2, key: "basic-crunch" },
 						{ round: 2, key: "curl-up" },
 						{ round: 2, key: "leg-scissors" },
@@ -359,15 +359,13 @@ export default function DigitalTrainer() {
 				// decide its amplitude, speed
 
 				if (workerAvailable.current) {
+					workerAvailable.current = false;
 
-					workerAvailable.current = false
+					worker.analyzePose(keypoints3D.current).then((msg) => {
+						console.log(msg);
 
-					worker.analyzePose(keypoints3D.current, animation_name)
-					.then((msg) => {
-						console.log(msg)
-
-						workerAvailable.current = true
-					})
+						workerAvailable.current = true;
+					});
 				}
 			}
 		} else {
@@ -628,6 +626,12 @@ export default function DigitalTrainer() {
 			animationJSONs.current[
 				exerciseQueue.current[exerciseQueueIndx.current].key
 			];
+
+		// send animation data to worker, reserved for future analysis
+		// maybe do this sync
+		worker.fetchAnimationData(animation_data).then((msg) => {
+			console.info(msg);
+		});
 
 		mannequinModel.current.position.set(
 			animation_data.position.x,

@@ -173,6 +173,7 @@ export default function MotionInterpreter() {
 
 		// read attributes from the model
 		traverseModel(model.current, parts);
+		// get initial vector from the model
 		getUpVectors(model.current, upVectors);
 
 		(async () => {
@@ -228,11 +229,18 @@ export default function MotionInterpreter() {
 				}
 			}
 
+			// at least three points that form the torso,
+			// so that we havea base plane
+			// the other limbs vector will be relative to this plane
+			const torso_positions = [];
+
 			// play the animation, observe the vectors of differnt parts
 			for (let i = 0; i < longestTrack; i++) {
 				applyTransfer(parts, tracks, i);
 
-				const matrix = getBasisFromModel(parts);
+				// const matrix = getBasisFromModel(parts);
+
+				torso_positions.push(getTorseBasis(parts));
 
 				for (let name in parts) {
 					if (
@@ -248,7 +256,7 @@ export default function MotionInterpreter() {
 					parts[name].getWorldQuaternion(q);
 
 					v.applyQuaternion(q);
-					v.applyMatrix4(matrix);
+					// v.applyMatrix4(matrix);
 
 					tracks[name + ".quaternion"]["states"].push(v);
 				}
@@ -264,13 +272,14 @@ export default function MotionInterpreter() {
 			animation["position"] = modelPosition;
 			animation["key_parts"] = keyParts;
 			animation["muscle_groups"] = muscleGroups;
+			animation["torso_positions"] = torso_positions;
 
 			// todo, use API to save this animation to json file
 			console.log(animation["name"], animation);
 		})();
 	}
 
-	function getBasisFromModel(bones) {
+	function getTorseBasis(bones) {
 		const leftshoulder = new THREE.Vector3();
 
 		bones["upperarm_l"].getWorldPosition(leftshoulder);
@@ -283,25 +292,41 @@ export default function MotionInterpreter() {
 
 		bones["pelvis"].getWorldPosition(pelvis);
 
-		const x_basis = rightshoulder.sub(leftshoulder);
-		const y_tmp = pelvis.sub(leftshoulder);
-		const z_basis = new THREE.Vector3()
-			.crossVectors(x_basis, y_tmp)
-			.normalize();
-
-		const y_basis = new THREE.Vector3()
-			.crossVectors(x_basis, z_basis)
-			.normalize();
-
-		return new THREE.Matrix4()
-			.makeBasis(x_basis, y_basis, z_basis)
-			.invert();
+		return [leftshoulder, rightshoulder, pelvis];
 	}
+
+	// function getBasisFromModel(bones) {
+	// 	const leftshoulder = new THREE.Vector3();
+
+	// 	bones["upperarm_l"].getWorldPosition(leftshoulder);
+
+	// 	const rightshoulder = new THREE.Vector3();
+
+	// 	bones["upperarm_r"].getWorldPosition(rightshoulder);
+
+	// 	const pelvis = new THREE.Vector3();
+
+	// 	bones["pelvis"].getWorldPosition(pelvis);
+
+	// 	const x_basis = rightshoulder.sub(leftshoulder);
+	// 	const y_tmp = pelvis.sub(leftshoulder);
+	// 	const z_basis = new THREE.Vector3()
+	// 		.crossVectors(x_basis, y_tmp)
+	// 		.normalize();
+
+	// 	const y_basis = new THREE.Vector3()
+	// 		.crossVectors(x_basis, z_basis)
+	// 		.normalize();
+
+	// 	return new THREE.Matrix4()
+	// 		.makeBasis(x_basis, y_basis, z_basis)
+	// 		.invert();
+	// }
 
 	return (
 		<div className="scene" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-			<div className="btn-box">
+			<div className="btn-box" style={{ color: "#fff" }}>
 				<div>
 					<label>
 						file:
