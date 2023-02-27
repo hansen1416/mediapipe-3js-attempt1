@@ -10,6 +10,7 @@ import RangeSlider from "react-range-slider-input";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
+import {createWorkerFactory, useWorker} from '@shopify/react-web-worker';
 import "react-range-slider-input/dist/style.css";
 
 // import { SUB_SCENE_FOV, SUB_SCENE_CAMERA_Z, SUB_SCENE_SIZE } from "./config";
@@ -18,7 +19,7 @@ import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette3D from "../../components/Silhouette3D";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
-import PoseSyncVector from "../../components/PoseSyncVector";
+// import PoseSyncVector from "../../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
 	loadFBX,
@@ -27,10 +28,12 @@ import {
 	traverseModel,
 	drawPoseKeypoints,
 	calculateLongestTrackFromAnimation,
-	calculateSilhouetteColors,
+	// calculateSilhouetteColors,
 	applyTransfer,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
+
+const createWorker = createWorkerFactory(() => import('./worker'));
 
 /**
  * BE SUCCESSFUL!!
@@ -64,7 +67,7 @@ export default function DigitalTrainer() {
 	const poseSyncThresholdRef = useRef(0);
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
-	const poseSyncVector = useRef(null);
+	// const poseSyncVector = useRef(null);
 	// ======== for comparing end
 
 	// ======== sub scene start
@@ -121,6 +124,10 @@ export default function DigitalTrainer() {
 	// ========= captured pose logic
 	const [capturedPose, setcapturedPose] = useState();
 	// ========= captured pose logic
+
+	const worker = useWorker(createWorker);
+
+	const workerAvailable = useRef(false);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -346,6 +353,22 @@ export default function DigitalTrainer() {
 			// draw 3d silhouette
 			if (keypoints3D.current) {
 				silhouette.current.applyPose(keypoints3D.current, true);
+
+				// todo, pass keypoints3d data to web worker,
+				// so it can analysis the user's kinematics data
+				// decide its amplitude, speed
+
+				if (workerAvailable.current) {
+
+					workerAvailable.current = false
+
+					worker.analyzePose(keypoints3D.current, animation_name)
+					.then((msg) => {
+						console.log(msg)
+
+						workerAvailable.current = true
+					})
+				}
 			}
 		} else {
 			keypoints3D.current = null;
@@ -366,10 +389,6 @@ export default function DigitalTrainer() {
 			counter.current += 1;
 
 			doingTraining();
-
-			// todo, pass keypoints3d data to web worker,
-			// so it can analysis the user's kinematics data
-			// decide its amplitude, speed
 		}
 
 		controls.current.update();
@@ -446,24 +465,24 @@ export default function DigitalTrainer() {
 			// compare the distance curve between animation and pose
 		}
 
-		if (poseSyncVector.current) {
-			// compare the limbs vectors between pose and animation
+		// if (poseSyncVector.current) {
+		// 	// compare the limbs vectors between pose and animation
 
-			// this is only for display, doesn't affect animtion
-			// draw different colors on the silhouette
-			const distances = poseSyncVector.current.compareCurrentPose(
-				keypoints3D.current,
-				figureParts.current
-			);
+		// 	// this is only for display, doesn't affect animtion
+		// 	// draw different colors on the silhouette
+		// 	const distances = poseSyncVector.current.compareCurrentPose(
+		// 		keypoints3D.current,
+		// 		figureParts.current
+		// 	);
 
-			// watch keypoints3d and vectorDistances,
-			const colors = calculateSilhouetteColors(
-				distances,
-				keypoints3D.current
-			);
+		// 	// watch keypoints3d and vectorDistances,
+		// 	const colors = calculateSilhouetteColors(
+		// 		distances,
+		// 		keypoints3D.current
+		// 	);
 
-			// silhouette.current.applyColor(colors);
-		}
+		// 	// silhouette.current.applyColor(colors);
+		// }
 	}
 
 	function doingTraining() {
@@ -627,7 +646,7 @@ export default function DigitalTrainer() {
 		);
 
 		poseSync.current = new PoseSync(animation_data);
-		poseSyncVector.current = new PoseSyncVector(animation_data);
+		// poseSyncVector.current = new PoseSyncVector(animation_data);
 
 		applyTransfer(figureParts.current, animation_data.tracks, 0);
 
