@@ -1,6 +1,6 @@
 // import { loadJSON } from "../../components/ropes";
 
-let animationData = null;
+let animation_states = null;
 
 export function fetchAnimationData(animation_data) {
 	// loadJSON(
@@ -9,13 +9,15 @@ export function fetchAnimationData(animation_data) {
 	// 	animationData = data;
 	// });
 
-	animationData = animation_data;
+	animation_states = animation_data;
+
+	console.log(animation_states);
 
 	return "Animation data received";
 }
 
 export function analyzePose(data) {
-	if (!animationData) {
+	if (!animation_states) {
 		return "";
 	}
 
@@ -23,6 +25,6 @@ export function analyzePose(data) {
 	// todo define a function to abstract limbs position from animations
 
 	if (data && data.length) {
-		return `name is, ${animationData.name}`;
+		return `name is, 112312313`;
 	}
 }

@@ -28,7 +28,7 @@ export default function MotionInterpreter() {
 	const [modelRotation, setmodelRotation] = useState({ x: 0, y: 0, z: 0 });
 
 	const allParts = [
-		"torso",
+		"pelvis",
 		"upperarm_l",
 		"lowerarm_l",
 		"upperarm_r",
@@ -229,10 +229,8 @@ export default function MotionInterpreter() {
 				}
 			}
 
-			// at least three points that form the torso,
-			// so that we havea base plane
-			// the other limbs vector will be relative to this plane
-			const torso_positions = [];
+			// get joints positions, for later analysis
+			const joints_position = {};
 
 			// play the animation, observe the vectors of differnt parts
 			for (let i = 0; i < longestTrack; i++) {
@@ -240,7 +238,7 @@ export default function MotionInterpreter() {
 
 				// const matrix = getBasisFromModel(parts);
 
-				torso_positions.push(getTorseBasis(parts));
+				// torso_positions.push(getTorseBasis(parts));
 
 				for (let name in parts) {
 					if (
@@ -250,15 +248,25 @@ export default function MotionInterpreter() {
 						continue;
 					}
 
-					const q = new THREE.Quaternion();
-					const v = upVectors[name].clone();
+					// const q = new THREE.Quaternion();
+					// const v = upVectors[name].clone();
 
-					parts[name].getWorldQuaternion(q);
+					// parts[name].getWorldQuaternion(q);
 
-					v.applyQuaternion(q);
-					// v.applyMatrix4(matrix);
+					// v.applyQuaternion(q);
+					// // v.applyMatrix4(matrix);
 
-					tracks[name + ".quaternion"]["states"].push(v);
+					// tracks[name + ".quaternion"]["states"].push(v);
+
+					const v = new THREE.Vector3();
+
+					parts[name].getWorldPosition(v);
+
+					if (!joints_position[name]) {
+						joints_position[name] = [];
+					}
+
+					joints_position[name].push([v.x, v.y, v.z]);
 				}
 
 				await sleep(16);
@@ -272,28 +280,30 @@ export default function MotionInterpreter() {
 			animation["position"] = modelPosition;
 			animation["key_parts"] = keyParts;
 			animation["muscle_groups"] = muscleGroups;
-			animation["torso_positions"] = torso_positions;
+			animation["joints_position"] = joints_position;
 
 			// todo, use API to save this animation to json file
 			console.log(animation["name"], animation);
 		})();
 	}
 
-	function getTorseBasis(bones) {
-		const leftshoulder = new THREE.Vector3();
+	/***************** */
+	// function getTorseBasis(bones) {
+	// 	const leftshoulder = new THREE.Vector3();
 
-		bones["upperarm_l"].getWorldPosition(leftshoulder);
+	// 	bones["upperarm_l"].getWorldPosition(leftshoulder);
 
-		const rightshoulder = new THREE.Vector3();
+	// 	const rightshoulder = new THREE.Vector3();
 
-		bones["upperarm_r"].getWorldPosition(rightshoulder);
+	// 	bones["upperarm_r"].getWorldPosition(rightshoulder);
 
-		const pelvis = new THREE.Vector3();
+	// 	const pelvis = new THREE.Vector3();
 
-		bones["pelvis"].getWorldPosition(pelvis);
+	// 	bones["pelvis"].getWorldPosition(pelvis);
 
-		return [leftshoulder, rightshoulder, pelvis];
-	}
+	// 	return [leftshoulder, rightshoulder, pelvis];
+	// }
+	/***************** */
 
 	// function getBasisFromModel(bones) {
 	// 	const leftshoulder = new THREE.Vector3();

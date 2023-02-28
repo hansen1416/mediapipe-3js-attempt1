@@ -28,7 +28,6 @@ import {
 	traverseModel,
 	drawPoseKeypoints,
 	calculateLongestTrackFromAnimation,
-	// calculateSilhouetteColors,
 	applyTransfer,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
@@ -629,9 +628,11 @@ export default function DigitalTrainer() {
 
 		// send animation data to worker, reserved for future analysis
 		// maybe do this sync
-		worker.fetchAnimationData(animation_data).then((msg) => {
-			console.info(msg);
-		});
+		worker
+			.fetchAnimationData(animation_data.joints_position)
+			.then((msg) => {
+				console.info(msg);
+			});
 
 		mannequinModel.current.position.set(
 			animation_data.position.x,
