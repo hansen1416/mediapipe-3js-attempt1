@@ -19,6 +19,9 @@ export function analyzePose(data) {
 		return "";
 	}
 
+	// compare current pose with all frames from the animation
+	// todo define a function to abstract limbs position from animations
+
 	if (data && data.length) {
 		return `name is, ${animationData.name}`;
 	}
