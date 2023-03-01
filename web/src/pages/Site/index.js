@@ -61,7 +61,7 @@ export default function Site() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 16);
+		camera.current.position.set(0, 0, 10);
 
 		{
 			// const light = new THREE.PointLight(0xffffff, 1);
@@ -84,6 +84,13 @@ export default function Site() {
 		renderer.current.setClearColor(0x000000, 0);
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
+
+		controls.current.enablePan = false;
+		controls.current.minPolarAngle = THREE.MathUtils.degToRad(45);
+		controls.current.maxPolarAngle = THREE.MathUtils.degToRad(75);
+		controls.current.minDistance = 10;
+		controls.current.maxDistance = 30;
+		controls.current.enableDamping = true;
 
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
