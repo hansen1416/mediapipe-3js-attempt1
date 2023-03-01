@@ -17,6 +17,32 @@ export default function Site() {
 
 		mainScene(documentWidth, documentHeight);
 
+		for (let i = 0; i < 100; i++) {
+			let box = new THREE.Mesh(
+				new THREE.BoxGeometry().translate(0, 0.51, 0),
+				new THREE.MeshLambertMaterial({ color: "pink" })
+			);
+			box.position.setFromCylindricalCoords(
+				Math.random() * 10,
+				Math.random() * Math.PI * 2,
+				0
+			);
+			let distRatio = 1 - Math.hypot(box.position.x, box.position.z) / 10;
+			box.scale.y = 1 + distRatio * distRatio * distRatio * 5;
+			scene.current.add(box);
+		}
+
+		const ground = new THREE.Mesh(
+			new THREE.PlaneGeometry(300, 300).rotateX(-Math.PI * 0.5),
+			// new THREE.MeshBasicMaterial({
+			// 	color: new THREE.Color(0x442288).multiplyScalar(1.5),
+			// })
+			new THREE.MeshToonMaterial({
+				color: new THREE.Color(0x442288).multiplyScalar(1.5),
+			})
+		);
+		scene.current.add(ground);
+
 		animate();
 
 		return () => {
@@ -25,10 +51,8 @@ export default function Site() {
 	}, []);
 
 	function mainScene(viewWidth, viewHeight) {
-		const backgroundColor = 0x022244;
-
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(backgroundColor);
+		// scene.current.background = new THREE.Color(0x022244);
 
 		camera.current = new THREE.PerspectiveCamera(
 			90,
@@ -37,19 +61,27 @@ export default function Site() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 100);
+		camera.current.position.set(0, 0, 16);
 
 		{
-			const light = new THREE.PointLight(0xffffff, 1);
-			// light.position.set(10, 10, 10);
-			camera.current.add(light);
+			// const light = new THREE.PointLight(0xffffff, 1);
+			// // light.position.set(10, 10, 10);
+			// camera.current.add(light);
 
-			scene.current.add(camera.current);
+			// scene.current.add(camera.current);
+
+			let light = new THREE.DirectionalLight(0xffffff, 0.5);
+			light.position.set(3, 5, 8);
+			scene.current.add(light, new THREE.AmbientLight(0xffffff, 0.5));
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
+			alpha: true,
+			antialias: true,
 		});
+
+		renderer.current.setClearColor(0x000000, 0);
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
@@ -65,7 +97,15 @@ export default function Site() {
 	}
 
 	return (
-		<div className="site">
+		<div
+			className="site"
+			style={{
+				overflow: "hidden",
+				margin: 0,
+				background:
+					"linear-gradient(0deg, #face8d 50%, aquamarine 100%)",
+			}}
+		>
 			<canvas ref={canvasRef} />
 		</div>
 	);
