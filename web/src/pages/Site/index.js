@@ -41,6 +41,9 @@ export default function Site() {
 				color: new THREE.Color(0x442288).multiplyScalar(1.5),
 			})
 		);
+
+		ground.position.set(0, 0, 0);
+
 		scene.current.add(ground);
 
 		animate();
@@ -61,7 +64,7 @@ export default function Site() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 10);
+		camera.current.position.set(0, 1, 20);
 
 		{
 			// const light = new THREE.PointLight(0xffffff, 1);
@@ -87,7 +90,7 @@ export default function Site() {
 
 		controls.current.enablePan = false;
 		controls.current.minPolarAngle = THREE.MathUtils.degToRad(45);
-		controls.current.maxPolarAngle = THREE.MathUtils.degToRad(75);
+		controls.current.maxPolarAngle = THREE.MathUtils.degToRad(85);
 		controls.current.minDistance = 10;
 		controls.current.maxDistance = 30;
 		controls.current.enableDamping = true;
