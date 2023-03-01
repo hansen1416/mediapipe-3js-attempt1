@@ -33,7 +33,7 @@ export default function Site() {
 		}
 
 		const ground = new THREE.Mesh(
-			new THREE.PlaneGeometry(300, 300).rotateX(-Math.PI * 0.5),
+			new THREE.PlaneGeometry(1000, 1000).rotateX(-Math.PI * 0.5),
 			// new THREE.MeshBasicMaterial({
 			// 	color: new THREE.Color(0x442288).multiplyScalar(1.5),
 			// })
