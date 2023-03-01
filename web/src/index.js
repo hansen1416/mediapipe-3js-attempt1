@@ -16,6 +16,7 @@ import DigitalTrainer from "./pages/DigitalTrainer";
 import CloudRove from "./pages/CloudRove";
 import Register from "./pages/Auth/Register";
 import ParticleFigure from "./pages/ParticleFigure";
+import Site from "./pages/Site";
 
 const router = createBrowserRouter([
 	{
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
 			{
 				path: "/cloud",
 				element: <ParticleFigure />,
+			},
+			{
+				path: "/site",
+				element: <Site />,
 			},
 		],
 	},

@@ -18,6 +18,7 @@ function App() {
 					</Nav.Link>
 					<Nav.Link href="/digital-trainer">digital trainer</Nav.Link>
 					<Nav.Link href="/cloud">figures</Nav.Link>
+					<Nav.Link href="/site">site</Nav.Link>
 				</Nav>
 			</div>
 		</div>
