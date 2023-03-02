@@ -360,9 +360,14 @@ export default function DigitalTrainer() {
 				if (workerAvailable.current) {
 					workerAvailable.current = false;
 
-					worker.analyzePose(keypoints3D.current, currentAnimationIndx.current).then((msg) => {
-						workerAvailable.current = true;
-					});
+					worker
+						.analyzePose(
+							keypoints3D.current,
+							currentAnimationIndx.current
+						)
+						.then((msg) => {
+							workerAvailable.current = true;
+						});
 				}
 			}
 		} else {
