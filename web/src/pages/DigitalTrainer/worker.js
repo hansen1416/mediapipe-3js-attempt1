@@ -1,5 +1,3 @@
-// import { loadJSON } from "../../components/ropes";
-
 function poseToVector(p, z) {
 	if (z) {
 		return new Vector3(p.x, p.y, z);
@@ -7,6 +5,7 @@ function poseToVector(p, z) {
 		return new Vector3(p.x, p.y, p.z);
 	}
 }
+
 
 function posePointsToVector(a, b, norm = true) {
 	let v;
@@ -19,6 +18,7 @@ function posePointsToVector(a, b, norm = true) {
 
 	return norm ? v.normalize() : v;
 }
+
 
 function middlePosition(a, b, norm = true) {
 	let v;
@@ -40,15 +40,11 @@ function middlePosition(a, b, norm = true) {
 	return norm ? v.normalize() : v;
 }
 
+
 function getLimbsVectorAtIdx(joints_position, idx) {
-
-	// const limbs = [
-	// 	"upperarm_l", "lowerarm_l", "hand_l",
-	// 	"upperarm_r", "lowerarm_r", "hand_r",
-	// 	"thigh_l", "calf_l", "foot_l",
-	// 	"thigh_r", "calf_r", "foot_r"
-	// ]
-
+	/**
+	 * get the limbs orientation vector from animation joints positions
+	 */
 	const limbs = {
 		// shoulder
 		"shoulder": ["upperarm_r", "upperarm_l"],
@@ -70,10 +66,10 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 
 	for (let l of limbs) {
 
-		const end = joints_position[limbs[l][1]][idx]
-		const start = joints_position[limbs[l][0]][idx]
+		const end = joints_position[limbs[l][1]][idx];
+		const start = joints_position[limbs[l][0]][idx];
 
-		limb_vector[l] = new THREE.Vector3(end.x - start.x, end.y - start.y, end.z - start.z)
+		limb_vector[l] = new THREE.Vector3(end.x - start.x, end.y - start.y, end.z - start.z).normalize();
 	}
 
 	return limb_vector
@@ -81,7 +77,9 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 
 
 function torsoBasisFromJointsPosition(joints_position, idx) {
-
+	/**
+	 * get basis coords system from animation `joints_position` at given frame `idx`
+	 */
 	const leftshoulder = new THREE.Vector3(joints_position['upperarm_l'][idx]);
 	const rightshoulder = new THREE.Vector3(joints_position['upperarm_r'][idx]);
 	const pelvis = new THREE.Vector3(joints_position['pelvis'][idx]);
@@ -215,10 +213,7 @@ function pose3dlimbs(pose3D) {
 	const leftCalfOrientation = posePointsToVector(left_knee, left_ankle);
 
 	const rightThighOrientation = posePointsToVector(right_hip, right_knee);
-	const rightCalfOrientation = posePointsToVector(
-		right_knee,
-		right_ankle
-	);
+	const rightCalfOrientation = posePointsToVector(right_knee, right_ankle);
 
 	return {
 		shoulder: chestOrientation,
@@ -236,6 +231,9 @@ function pose3dlimbs(pose3D) {
 
 
 function poseToJointsBasis(pose3D, joints_position, idx) {
+	/**
+	 * the matrix that convert vectors from pose torso system to anim torso system
+	 */
 	const jointsBasis = torsoBasisFromJointsPosition(joints_position, idx);
 	const poseBasis = torsoBasisFromPose(pose3D);
 
@@ -283,15 +281,14 @@ export function fetchAnimationData(animation_data) {
 	return "Animation data received";
 }
 
-export function analyzePose(data) {
-	if (!animation_states) {
+
+export function analyzePose(pose3D, idx) {
+	if (!animation_states || !pose3D || !pose3D.length) {
 		return "";
 	}
 
 	// compare current pose with all frames from the animation
-	// todo define a function to abstract limbs position from animations
+	const result = calculateLimbsDistance(pose3D, animation_states, idx);
 
-	if (data && data.length) {
-		return `name is, 112312313`;
-	}
+	return result
 }
