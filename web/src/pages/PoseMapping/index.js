@@ -12,6 +12,8 @@ import {
 	traverseModel,
 	startCamera,
 	loadFBX,
+	loadJSON,
+	BlazePoseKeypoints,
 } from "../../components/ropes";
 
 /**
@@ -33,6 +35,10 @@ export default function PoseMapping() {
 
 	// ========= captured pose logic
 	const [capturedPose, setcapturedPose] = useState();
+	const capturedPoseRef = useRef(0);
+	const storedPose = useRef([]);
+	const [playPose, setPlayPose] = useState(false);
+	const playPoseRef = useRef(false);
 	const counter = useRef(0);
 	// ========= captured pose logic
 
@@ -61,7 +67,8 @@ export default function PoseMapping() {
 				BlazePoseConfig
 			),
 			loadFBX(process.env.PUBLIC_URL + "/fbx/XBot.fbx"),
-		]).then(([detector, model]) => {
+			loadJSON(process.env.PUBLIC_URL + "/posejson/wlm800-900.npy.json"),
+		]).then(([detector, model, pose3d]) => {
 			poseDetector.current = detector;
 
 			model.position.set(0, 0, 0);
@@ -71,6 +78,8 @@ export default function PoseMapping() {
 			scene.current.add(model);
 
 			applyRotation("mixamorigLeftArm", { x: 0, y: 0, z: Math.PI / 2 });
+
+			storedPose.current = pose3d;
 		});
 
 		animate();
@@ -80,47 +89,52 @@ export default function PoseMapping() {
 		};
 	}, []);
 
+	useEffect(() => {
+		playPoseRef.current = playPose;
+	}, [playPose]);
+
 	function animate() {
 		// ========= captured pose logic
 		if (
-			videoRef.current &&
-			videoRef.current.readyState >= 2 &&
-			counter.current % 6 === 0
+			counter.current % 3 === 0 &&
+			storedPose.current &&
+			storedPose.current.length &&
+			playPoseRef.current
 		) {
-			(async () => {
-				const poses = await poseDetector.current.estimatePoses(
-					videoRef.current
+			const drawdata = [];
+
+			for (let i in storedPose.current[capturedPoseRef.current]) {
+				drawdata[i] = Object.assign(
+					{ name: BlazePoseKeypoints[i].toLowerCase() },
+					storedPose.current[capturedPoseRef.current][i]
 				);
+			}
 
-				if (
-					!poses ||
-					!poses[0] ||
-					!poses[0]["keypoints"] ||
-					!poses[0]["keypoints3D"]
-				) {
-					return;
-				}
+			// for (let i in BlazePoseKeypoints) {
+			// 	console.log(i, BlazePoseKeypoints[i]);
+			// }
 
-				{
-					const drawdata = cloneDeep(poses[0]["keypoints3D"]);
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
 
-					const width_ratio = 30;
-					const height_ratio = (width_ratio * 480) / 640;
+			// multiply x,y by differnt factor
+			for (let v of drawdata) {
+				v["x"] *= -width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
 
-					// multiply x,y by differnt factor
-					for (let v of drawdata) {
-						v["x"] *= -width_ratio;
-						v["y"] *= -height_ratio;
-						v["z"] *= -width_ratio;
-					}
+			const g = drawPoseKeypoints(drawdata);
 
-					const g = drawPoseKeypoints(drawdata);
+			g.scale.set(8, 8, 8);
 
-					g.scale.set(8, 8, 8);
+			setcapturedPose(g);
 
-					setcapturedPose(g);
-				}
-			})();
+			capturedPoseRef.current += 1;
+
+			if (capturedPoseRef.current >= storedPose.current.length) {
+				capturedPoseRef.current = 0;
+			}
 		}
 
 		counter.current += 1;
@@ -237,6 +251,14 @@ export default function PoseMapping() {
 							Stop
 						</Button>
 					)}
+					<Button
+						variant="primary"
+						onClick={() => {
+							setPlayPose(!playPose);
+						}}
+					>
+						PlayPose
+					</Button>
 				</div>
 			</div>
 		</div>
