@@ -508,32 +508,12 @@ export function radianGradientColor(radian) {
 	];
 }
 
-export function calculateSilhouetteColors(vectorDistances, keypoints3D) {
+export function calculateSilhouetteColors(vectorDistances) {
 	const colors = {};
 
-	const [
-		chest,
-		leftupperarm,
-		leftforearm,
-		rightupperarm,
-		rightforearm,
-		abdominal,
-		leftthigh,
-		leftcalf,
-		rightthigh,
-		rightcalf,
-	] = vectorDistances;
-
-	colors["torso"] = radianGradientColor(chest);
-	colors["upperarm_l"] = radianGradientColor(leftupperarm);
-	colors["forearm_l"] = radianGradientColor(leftforearm);
-	colors["upperarm_r"] = radianGradientColor(rightupperarm);
-	colors["forearm_r"] = radianGradientColor(rightforearm);
-	// colors["abdominal"] = radianGradientColor(abdominal);
-	colors["thigh_l"] = radianGradientColor(leftthigh);
-	colors["calf_l"] = radianGradientColor(leftcalf);
-	colors["thigh_r"] = radianGradientColor(rightthigh);
-	colors["calf_r"] = radianGradientColor(rightcalf);
+	for (let name in vectorDistances) {
+		colors[name] = radianGradientColor(vectorDistances[name]);
+	}
 
 	return colors;
 }

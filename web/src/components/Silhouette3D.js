@@ -192,19 +192,19 @@ export default class Silhouette3D {
 		}
 		this.body.add(this.upperarm_l);
 
-		// left forearm
-		this.forearm_l = new THREE.Group();
+		// left lowerarm
+		this.lowerarm_l = new THREE.Group();
 
-		this.forearm_l_mesh = this.getLimbMesh(
+		this.lowerarm_l_mesh = this.getLimbMesh(
 			this.elbow_radius,
 			this.wrist_size,
 			this.smallarm_size
 		);
 
 		if (this.add_mesh) {
-			this.forearm_l.add(this.forearm_l_mesh);
+			this.lowerarm_l.add(this.lowerarm_l_mesh);
 		}
-		this.body.add(this.forearm_l);
+		this.body.add(this.lowerarm_l);
 
 		// right upperarm
 		this.upperarm_r = new THREE.Group();
@@ -219,19 +219,19 @@ export default class Silhouette3D {
 			this.upperarm_r.add(this.upperarm_r_mesh);
 		}
 		this.body.add(this.upperarm_r);
-		// right forearm
-		this.forearm_r = new THREE.Group();
+		// right lowerarm
+		this.lowerarm_r = new THREE.Group();
 
-		this.forearm_r_mesh = this.getLimbMesh(
+		this.lowerarm_r_mesh = this.getLimbMesh(
 			this.elbow_radius,
 			this.wrist_size,
 			this.smallarm_size
 		);
 
 		if (this.add_mesh) {
-			this.forearm_r.add(this.forearm_r_mesh);
+			this.lowerarm_r.add(this.lowerarm_r_mesh);
 		}
-		this.body.add(this.forearm_r);
+		this.body.add(this.lowerarm_r);
 
 		// left thigh
 		this.thigh_l = new THREE.Group();
@@ -371,7 +371,7 @@ export default class Silhouette3D {
 			shoulder_pose_l.y,
 			shoulder_pose_l.z
 		);
-		this.forearm_l.position.set(
+		this.lowerarm_l.position.set(
 			elbow_pose_l.x,
 			elbow_pose_l.y,
 			elbow_pose_l.z
@@ -384,7 +384,7 @@ export default class Silhouette3D {
 			shoulder_pose_r.y,
 			shoulder_pose_r.z
 		);
-		this.forearm_r.position.set(
+		this.lowerarm_r.position.set(
 			elbow_pose_r.x,
 			elbow_pose_r.y,
 			elbow_pose_r.z
@@ -397,7 +397,10 @@ export default class Silhouette3D {
 			elbow_pose_l,
 			shoulder_pose_l
 		);
-		const forearm_l_target = posePointsToVector(wrist_pose_l, elbow_pose_l);
+		const lowerarm_l_target = posePointsToVector(
+			wrist_pose_l,
+			elbow_pose_l
+		);
 		const thigh_l_target = posePointsToVector(knee_pose_l, hip_pose_l);
 		const calf_l_target = posePointsToVector(ankle_pose_l, knee_pose_l);
 
@@ -405,7 +408,10 @@ export default class Silhouette3D {
 			elbow_pose_r,
 			shoulder_pose_r
 		);
-		const forearm_r_target = posePointsToVector(wrist_pose_r, elbow_pose_r);
+		const lowerarm_r_target = posePointsToVector(
+			wrist_pose_r,
+			elbow_pose_r
+		);
 		const thigh_r_target = posePointsToVector(knee_pose_r, hip_pose_r);
 		const calf_r_target = posePointsToVector(ankle_pose_r, knee_pose_r);
 
@@ -414,9 +420,9 @@ export default class Silhouette3D {
 			this.init_vector,
 			upperarm_l_target
 		);
-		const forearm_l_q = quaternionFromVectors(
+		const lowerarm_l_q = quaternionFromVectors(
 			this.init_vector,
-			forearm_l_target
+			lowerarm_l_target
 		);
 		const thigh_l_q = quaternionFromVectors(
 			this.init_vector,
@@ -428,9 +434,9 @@ export default class Silhouette3D {
 			this.init_vector,
 			upperarm_r_target
 		);
-		const forearm_r_q = quaternionFromVectors(
+		const lowerarm_r_q = quaternionFromVectors(
 			this.init_vector,
-			forearm_r_target
+			lowerarm_r_target
 		);
 		const thigh_r_q = quaternionFromVectors(
 			this.init_vector,
@@ -439,12 +445,12 @@ export default class Silhouette3D {
 		const calf_r_q = quaternionFromVectors(this.init_vector, calf_r_target);
 
 		this.upperarm_l.setRotationFromQuaternion(upperarm_l_q);
-		this.forearm_l.setRotationFromQuaternion(forearm_l_q);
+		this.lowerarm_l.setRotationFromQuaternion(lowerarm_l_q);
 		this.thigh_l.setRotationFromQuaternion(thigh_l_q);
 		this.calf_l.setRotationFromQuaternion(calf_l_q);
 
 		this.upperarm_r.setRotationFromQuaternion(upperarm_r_q);
-		this.forearm_r.setRotationFromQuaternion(forearm_r_q);
+		this.lowerarm_r.setRotationFromQuaternion(lowerarm_r_q);
 		this.thigh_r.setRotationFromQuaternion(thigh_r_q);
 		this.calf_r.setRotationFromQuaternion(calf_r_q);
 
@@ -492,7 +498,7 @@ export default class Silhouette3D {
 				true
 			);
 			this.scaleLimb(
-				this.forearm_l_mesh,
+				this.lowerarm_l_mesh,
 				wrist_pose_l,
 				elbow_pose_l,
 				true
@@ -507,7 +513,7 @@ export default class Silhouette3D {
 				false
 			);
 			this.scaleLimb(
-				this.forearm_r_mesh,
+				this.lowerarm_r_mesh,
 				wrist_pose_r,
 				elbow_pose_r,
 				false

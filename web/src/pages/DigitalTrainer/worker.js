@@ -89,14 +89,14 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 	 */
 	const limbs = {
 		// shoulder
-		shoulder: ["upperarm_r", "upperarm_l"],
+		torso: ["upperarm_r", "upperarm_l"],
 		// arms
 		upperarm_r: ["upperarm_r", "lowerarm_r"],
 		lowerarm_r: ["lowerarm_r", "hand_r"],
 		upperarm_l: ["upperarm_l", "lowerarm_l"],
 		lowerarm_l: ["lowerarm_l", "hand_l"],
 		// pelvis
-		pelvis: ["thigh_r", "thigh_l"],
+		// pelvis: ["thigh_r", "thigh_l"],
 		// legs
 		thigh_r: ["thigh_r", "calf_r"],
 		calf_r: ["calf_r", "foot_r"],
@@ -243,12 +243,12 @@ function pose3dlimbs(pose3D) {
 	const rightCalfOrientation = pointsSub(right_knee, right_ankle);
 
 	return {
-		shoulder: chestOrientation,
+		torso: chestOrientation,
 		upperarm_l: leftArmOrientation,
 		lowerarm_l: leftForeArmOrientation,
 		upperarm_r: rightArmOrientation,
 		lowerarm_r: rightForeArmOrientation,
-		pelvis: abdominalOrientation,
+		// pelvis: abdominalOrientation,
 		thigh_l: leftThighOrientation,
 		calf_l: leftCalfOrientation,
 		thigh_r: rightThighOrientation,

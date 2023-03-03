@@ -29,6 +29,7 @@ import {
 	drawPoseKeypoints,
 	calculateLongestTrackFromAnimation,
 	applyTransfer,
+	radianGradientColor,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
 
@@ -365,8 +366,16 @@ export default function DigitalTrainer() {
 							keypoints3D.current,
 							currentAnimationIndx.current
 						)
-						.then((msg) => {
-							console.log(msg);
+						.then((angleBetweenLimbs) => {
+							const colors = {};
+
+							for (let name in angleBetweenLimbs) {
+								colors[name] = radianGradientColor(
+									angleBetweenLimbs[name]
+								);
+							}
+
+							silhouette.current.applyColor(colors);
 
 							workerAvailable.current = true;
 						});
