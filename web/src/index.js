@@ -17,6 +17,7 @@ import CloudRove from "./pages/CloudRove";
 import Register from "./pages/Auth/Register";
 import ParticleFigure from "./pages/ParticleFigure";
 import Site from "./pages/Site";
+import PoseMapping from "./pages/PoseMapping";
 
 const router = createBrowserRouter([
 	{
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
 			{
 				path: "/site",
 				element: <Site />,
+			},
+			{
+				path: "/mapping",
+				element: <PoseMapping />,
 			},
 		],
 	},
