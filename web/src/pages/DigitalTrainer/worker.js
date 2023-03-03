@@ -56,6 +56,13 @@ function posePointsToVector(a, b, norm = true) {
 	return norm ? v.normalize() : v;
 }
 
+function pointsSub(a, b) {
+	/**
+	 * joint position minus operation
+	 */
+	return [a.x - b.x, a.y - b.y, a.z - b.z];
+}
+
 function middlePosition(a, b, norm = true) {
 	let v;
 
@@ -99,14 +106,14 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 
 	const limb_vector = {};
 
-	for (let l of limbs) {
+	for (let l in limbs) {
 		const end = joints_position[limbs[l][1]][idx];
 		const start = joints_position[limbs[l][0]][idx];
 
 		limb_vector[l] = new THREE.Vector3(
-			end.x - start.x,
-			end.y - start.y,
-			end.z - start.z
+			end[0] - start[0],
+			end[1] - start[1],
+			end[2] - start[2]
 		).normalize();
 	}
 
@@ -117,12 +124,20 @@ function torsoBasisFromJointsPosition(joints_position, idx) {
 	/**
 	 * get basis coords system from animation `joints_position` at given frame `idx`
 	 */
-	const leftshoulder = new THREE.Vector3(joints_position["upperarm_l"][idx]);
-	const rightshoulder = new THREE.Vector3(joints_position["upperarm_r"][idx]);
-	const pelvis = new THREE.Vector3(joints_position["pelvis"][idx]);
+	const leftshoulder = joints_position["upperarm_l"][idx];
+	const rightshoulder = joints_position["upperarm_r"][idx];
+	const pelvis = joints_position["pelvis"][idx];
 
-	const x_basis = rightshoulder.sub(leftshoulder);
-	const y_tmp = pelvis.sub(leftshoulder);
+	const x_basis = new THREE.Vector3(
+		rightshoulder[0] - leftshoulder[0],
+		rightshoulder[1] - leftshoulder[1],
+		rightshoulder[2] - leftshoulder[2]
+	);
+	const y_tmp = new THREE.Vector3(
+		pelvis[0] - leftshoulder[0],
+		pelvis[1] - leftshoulder[1],
+		pelvis[2] - leftshoulder[2]
+	);
 
 	const z_basis = new THREE.Vector3()
 		.crossVectors(x_basis, y_tmp)
@@ -211,24 +226,21 @@ function pose3dlimbs(pose3D) {
 		pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
 	);
 
-	const chestOrientation = posePointsToVector(left_shoulder, right_shoulder);
+	const chestOrientation = pointsSub(left_shoulder, right_shoulder);
 
-	const leftArmOrientation = posePointsToVector(left_elbow, left_shoulder);
-	const leftForeArmOrientation = posePointsToVector(left_wrist, left_elbow);
+	const leftArmOrientation = pointsSub(left_elbow, left_shoulder);
+	const leftForeArmOrientation = pointsSub(left_wrist, left_elbow);
 
-	const rightArmOrientation = posePointsToVector(right_elbow, right_shoulder);
-	const rightForeArmOrientation = posePointsToVector(
-		right_wrist,
-		right_elbow
-	);
+	const rightArmOrientation = pointsSub(right_elbow, right_shoulder);
+	const rightForeArmOrientation = pointsSub(right_wrist, right_elbow);
 
-	const abdominalOrientation = posePointsToVector(left_hip, right_hip);
+	const abdominalOrientation = pointsSub(left_hip, right_hip);
 
-	const leftThighOrientation = posePointsToVector(left_hip, left_knee);
-	const leftCalfOrientation = posePointsToVector(left_knee, left_ankle);
+	const leftThighOrientation = pointsSub(left_hip, left_knee);
+	const leftCalfOrientation = pointsSub(left_knee, left_ankle);
 
-	const rightThighOrientation = posePointsToVector(right_hip, right_knee);
-	const rightCalfOrientation = posePointsToVector(right_knee, right_ankle);
+	const rightThighOrientation = pointsSub(right_hip, right_knee);
+	const rightCalfOrientation = pointsSub(right_knee, right_ankle);
 
 	return {
 		shoulder: chestOrientation,
@@ -259,18 +271,25 @@ function poseToJointsBasis(pose3D, joints_position, idx) {
 function calculateLimbsDistance(pose3D, joints_position, idx) {
 	const basisMatrix = poseToJointsBasis(pose3D, joints_position, idx);
 
-	const poseVectors = pose3dlimbs(pose3D);
+	const poseLimbsArray = pose3dlimbs(pose3D);
+	const poseLimbsVectors = {};
 
-	for (let i in poseVectors) {
-		poseVectors[i].applyMatrix4(basisMatrix);
+	for (let name in poseLimbsArray) {
+		const vec = new THREE.Vector3(
+			poseLimbsArray[name].x,
+			poseLimbsArray[name].y,
+			poseLimbsArray[name].z
+		).applyMatrix4(basisMatrix);
+
+		poseLimbsVectors[name] = vec;
 	}
 
 	const animVectos = getLimbsVectorAtIdx(joints_position, idx);
 
 	const result = {};
 
-	for (let name in poseVectors) {
-		poseVectors[name].angleTo(animVectos[name]);
+	for (let name in poseLimbsVectors) {
+		result[name] = poseLimbsVectors[name].angleTo(animVectos[name]);
 	}
 
 	return result;
@@ -299,6 +318,8 @@ export function analyzePose(pose3D, idx) {
 
 	// compare current pose with all frames from the animation
 	const result = calculateLimbsDistance(pose3D, animation_states, idx);
+
+	console.log("analyzePose", result);
 
 	return result;
 }

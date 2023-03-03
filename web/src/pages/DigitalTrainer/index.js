@@ -366,6 +366,8 @@ export default function DigitalTrainer() {
 							currentAnimationIndx.current
 						)
 						.then((msg) => {
+							console.log(msg);
+
 							workerAvailable.current = true;
 						});
 				}
