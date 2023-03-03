@@ -60,7 +60,7 @@ function pointsSub(a, b) {
 	/**
 	 * joint position minus operation
 	 */
-	return [a.x - b.x, a.y - b.y, a.z - b.z];
+	return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
 }
 
 function middlePosition(a, b, norm = true) {
@@ -252,7 +252,7 @@ function pose3dlimbs(pose3D) {
 		thigh_l: leftThighOrientation,
 		calf_l: leftCalfOrientation,
 		thigh_r: rightThighOrientation,
-		thigh_l: rightCalfOrientation,
+		calf_r: rightCalfOrientation,
 	};
 }
 
@@ -269,6 +269,9 @@ function poseToJointsBasis(pose3D, joints_position, idx) {
 }
 
 function calculateLimbsDistance(pose3D, joints_position, idx) {
+	/**
+	 * calculate angle between pose limbs vectors and anim limbs vectors
+	 */
 	const basisMatrix = poseToJointsBasis(pose3D, joints_position, idx);
 
 	const poseLimbsArray = pose3dlimbs(pose3D);
@@ -279,7 +282,9 @@ function calculateLimbsDistance(pose3D, joints_position, idx) {
 			poseLimbsArray[name].x,
 			poseLimbsArray[name].y,
 			poseLimbsArray[name].z
-		).applyMatrix4(basisMatrix);
+		).normalize();
+
+		vec.applyMatrix4(basisMatrix);
 
 		poseLimbsVectors[name] = vec;
 	}
