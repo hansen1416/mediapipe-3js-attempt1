@@ -6,12 +6,12 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
-import Silhouette3D from "../../components/Silhouette3D";
 import {
 	BlazePoseConfig,
 	drawPoseKeypoints,
-	// loadJSON,
+	traverseModel,
 	startCamera,
+	loadFBX,
 } from "../../components/ropes";
 
 /**
@@ -28,7 +28,7 @@ export default function PoseMapping() {
 
 	const animationPointer = useRef(0);
 
-	const figure = useRef([]);
+	const bones = useRef({});
 	// const fbxmodel = useRef(null);
 
 	// ========= captured pose logic
@@ -53,40 +53,25 @@ export default function PoseMapping() {
 		setsubsceneWidth(documentWidth * 0.25);
 		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
 
-		_scene(documentWidth, documentHeight);
+		mainScene(documentWidth, documentHeight);
 
 		Promise.all([
 			poseDetection.createDetector(
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-		]).then(([detector]) => {
+			loadFBX(process.env.PUBLIC_URL + "/fbx/XBot.fbx"),
+		]).then(([detector, model]) => {
 			poseDetector.current = detector;
+
+			model.position.set(0, 0, 0);
+
+			traverseModel(model, bones.current);
+
+			scene.current.add(model);
+
+			applyRotation("mixamorigLeftArm", { x: 0, y: 0, z: Math.PI / 2 });
 		});
-
-		// const arr = Array(50)
-		// 	.fill(0)
-		// 	.map((item, idx) => {
-		// 		return item + idx - 12;
-		// 	});
-
-		// for (let i of arr) {
-		// 	for (let j of arr) {
-		// 		const tmp = new Silhouette3D();
-		// 		const body = tmp.init();
-
-		// 		body.position.set(i * 20, j * 20, 0);
-
-		// 		scene.current.add(body);
-
-		// 		figures.current.push(tmp);
-		// 	}
-		// }
-
-		figure.current = new Silhouette3D();
-		const body = figure.current.init();
-
-		scene.current.add(body);
 
 		animate();
 
@@ -134,12 +119,6 @@ export default function PoseMapping() {
 					g.scale.set(8, 8, 8);
 
 					setcapturedPose(g);
-
-					// for (let i in figures.current) {
-					// 	figures.current[i].applyPose(drawdata, true);
-					// }
-
-					figure.current.applyPose(drawdata, true);
 				}
 			})();
 		}
@@ -154,11 +133,9 @@ export default function PoseMapping() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	function _scene(viewWidth, viewHeight) {
-		const backgroundColor = 0x022244;
-
+	function mainScene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(backgroundColor);
+		scene.current.background = new THREE.Color(0x022244);
 
 		camera.current = new THREE.PerspectiveCamera(
 			90,
@@ -167,7 +144,7 @@ export default function PoseMapping() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 100);
+		camera.current.position.set(0, 0, 300);
 
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
@@ -184,6 +161,10 @@ export default function PoseMapping() {
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
 		renderer.current.setSize(viewWidth, viewHeight);
+	}
+
+	function applyRotation(bone_name, euler) {
+		bones.current[bone_name].rotation.set(euler.x, euler.y, euler.z);
 	}
 
 	return (
