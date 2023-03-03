@@ -110,11 +110,15 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 		const end = joints_position[limbs[l][1]][idx];
 		const start = joints_position[limbs[l][0]][idx];
 
-		limb_vector[l] = new THREE.Vector3(
-			end[0] - start[0],
-			end[1] - start[1],
-			end[2] - start[2]
-		).normalize();
+		if (end && end.length && start && start.length) {
+			limb_vector[l] = new THREE.Vector3(
+				end[0] - start[0],
+				end[1] - start[1],
+				end[2] - start[2]
+			).normalize();
+		} else {
+			limb_vector[l] = new THREE.Vector3(0, 0, 0).normalize();
+		}
 	}
 
 	return limb_vector;
@@ -127,6 +131,10 @@ function torsoBasisFromJointsPosition(joints_position, idx) {
 	const leftshoulder = joints_position["upperarm_l"][idx];
 	const rightshoulder = joints_position["upperarm_r"][idx];
 	const pelvis = joints_position["pelvis"][idx];
+
+	if (!rightshoulder || !leftshoulder || !pelvis) {
+		return new THREE.Matrix4();
+	}
 
 	const x_basis = new THREE.Vector3(
 		rightshoulder[0] - leftshoulder[0],
@@ -284,8 +292,7 @@ function calculateLimbsDistance(pose3D, joints_position, idx) {
 			poseLimbsArray[name].z
 		).normalize();
 
-		vec.applyMatrix4(basisMatrix);
-
+		// vec.applyMatrix4(basisMatrix).normalize();
 		poseLimbsVectors[name] = vec;
 	}
 
@@ -311,7 +318,7 @@ export function fetchAnimationData(animation_data) {
 
 	animation_states = animation_data;
 
-	console.log(animation_states);
+	// console.log(animation_states);
 
 	return "Animation data received";
 }
@@ -324,7 +331,7 @@ export function analyzePose(pose3D, idx) {
 	// compare current pose with all frames from the animation
 	const result = calculateLimbsDistance(pose3D, animation_states, idx);
 
-	console.log("analyzePose", result);
+	// console.log("analyzePose", result);
 
 	return result;
 }

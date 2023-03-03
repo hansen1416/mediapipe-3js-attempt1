@@ -563,7 +563,15 @@ export default class Silhouette3D {
 		 */
 
 		for (let name in colors) {
-			this[name + "_mesh"].material.color.setRGB(...colors[name]);
+			// if (name === "lowerarm_r") {
+			// 	console.log(colors[name], this[name + "_mesh"]);
+			// }
+
+			this[name + "_mesh"].material.color.setRGB(
+				Number(colors[name][0]) / 255,
+				Number(colors[name][1]) / 255,
+				Number(colors[name][2]) / 255
+			);
 		}
 	}
 

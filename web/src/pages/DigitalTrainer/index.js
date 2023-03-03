@@ -373,6 +373,13 @@ export default function DigitalTrainer() {
 								colors[name] = radianGradientColor(
 									angleBetweenLimbs[name]
 								);
+
+								// if (name === "lowerarm_r") {
+								// 	console.log(
+								// 		angleBetweenLimbs[name],
+								// 		colors[name]
+								// 	);
+								// }
 							}
 
 							silhouette.current.applyColor(colors);
