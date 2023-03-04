@@ -193,6 +193,8 @@ export default function ParticleFigure() {
 
 			setcapturedPose(g);
 
+			figure.current.applyPose(drawdata, true);
+
 			capturedPoseRef.current += 1;
 
 			if (capturedPoseRef.current >= storedPose.current.length) {
