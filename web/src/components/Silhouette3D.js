@@ -313,25 +313,25 @@ export default class Silhouette3D {
 		thetaLength
 		thetaStart
 		 */
-		const height = distanceBetweenPoints(joint1, joint2);
-		const width = height / 3;
-		const width_scale =
-			width /
-			(mesh.geometry.parameters.radiusTop +
-				mesh.geometry.parameters.radiusBottom);
+		// const height = distanceBetweenPoints(joint1, joint2);
+		// const width = height / 3;
+		// const width_scale =
+		// 	width /
+		// 	(mesh.geometry.parameters.radiusTop +
+		// 		mesh.geometry.parameters.radiusBottom);
 
-		mesh.scale.set(
-			width_scale,
-			height / mesh.geometry.parameters.height,
-			width_scale
-		);
+		// mesh.scale.set(
+		// 	width_scale,
+		// 	height / mesh.geometry.parameters.height,
+		// 	width_scale
+		// );
 
-		// no need to set z, cause i'm not adjust the orientation
-		if (is_left) {
-			mesh.position.set(width / 2, height / -2, 0);
-		} else {
-			mesh.position.set(width / -2, height / -2, 0);
-		}
+		// // no need to set z, cause i'm not adjust the orientation
+		// if (is_left) {
+		// 	mesh.position.set(width / 2, height / -2, 0);
+		// } else {
+		// 	mesh.position.set(width / -2, height / -2, 0);
+		// }
 
 		mesh.material.opacity = this.visible_opacity;
 	}
@@ -524,33 +524,33 @@ export default class Silhouette3D {
 			if (nose.score > 0.5) {
 				this.head_mesh.material.opacity = this.visible_opacity;
 
-				if (
-					shoulder_pose_l.score > 0.5 &&
-					shoulder_pose_r.score > 0.5
-				) {
-					const head_size =
-						distanceBetweenPoints(
-							shoulder_pose_l,
-							shoulder_pose_r
-						) / 4;
+				// if (
+				// 	shoulder_pose_l.score > 0.5 &&
+				// 	shoulder_pose_r.score > 0.5
+				// ) {
+				// 	const head_size =
+				// 		distanceBetweenPoints(
+				// 			shoulder_pose_l,
+				// 			shoulder_pose_r
+				// 		) / 4;
 
-					const head_scale =
-						head_size / this.head_mesh.geometry.parameters.radius;
+				// 	const head_scale =
+				// 		head_size / this.head_mesh.geometry.parameters.radius;
 
-					this.head_mesh.scale.set(
-						head_scale,
-						head_scale,
-						head_scale
-					);
+				// 	this.head_mesh.scale.set(
+				// 		head_scale,
+				// 		head_scale,
+				// 		head_scale
+				// 	);
 
-					// todo we need to first rotate head to same orientation pf torso,
-					// then adjust the position
-					// this.head_mesh.position.set(
-					// 	head_size / -2,
-					// 	head_size / -2,
-					// 	head_size * -1
-					// );
-				}
+				// 	// todo we need to first rotate head to same orientation pf torso,
+				// 	// then adjust the position
+				// 	// this.head_mesh.position.set(
+				// 	// 	head_size / -2,
+				// 	// 	head_size / -2,
+				// 	// 	head_size * -1
+				// 	// );
+				// }
 			} else {
 				this.head_mesh.material.opacity = this.invisible_opacity;
 			}
