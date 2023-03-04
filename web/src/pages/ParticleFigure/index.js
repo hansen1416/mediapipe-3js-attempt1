@@ -8,9 +8,10 @@ import { cloneDeep } from "lodash";
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette3D from "../../components/Silhouette3D";
 import {
+	BlazePoseKeypoints,
 	BlazePoseConfig,
 	drawPoseKeypoints,
-	// loadJSON,
+	loadJSON,
 	startCamera,
 } from "../../components/ropes";
 
@@ -36,6 +37,13 @@ export default function ParticleFigure() {
 	const counter = useRef(0);
 	// ========= captured pose logic
 
+	// ========= pose json data
+	const capturedPoseRef = useRef(0);
+	const storedPose = useRef([]);
+	const [playPose, setPlayPose] = useState(false);
+	const playPoseRef = useRef(false);
+	// ========= pose json data
+
 	const poseDetector = useRef(null);
 
 	const videoRef = useRef(null);
@@ -60,8 +68,13 @@ export default function ParticleFigure() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-		]).then(([detector]) => {
+			loadJSON(
+				process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+			),
+		]).then(([detector, pose3d]) => {
 			poseDetector.current = detector;
+
+			storedPose.current = pose3d;
 		});
 
 		// const arr = Array(50)
@@ -95,11 +108,16 @@ export default function ParticleFigure() {
 		};
 	}, []);
 
+	useEffect(() => {
+		playPoseRef.current = playPose;
+	}, [playPose]);
+
 	function animate() {
 		// ========= captured pose logic
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
+			!playPoseRef.current &&
 			counter.current % 6 === 0
 		) {
 			(async () => {
@@ -142,6 +160,44 @@ export default function ParticleFigure() {
 					figure.current.applyPose(drawdata, true);
 				}
 			})();
+		}
+
+		if (
+			counter.current % 3 === 0 &&
+			storedPose.current &&
+			storedPose.current.length &&
+			playPoseRef.current
+		) {
+			const drawdata = [];
+
+			for (let i in storedPose.current[capturedPoseRef.current]) {
+				drawdata[i] = Object.assign(
+					{ name: BlazePoseKeypoints[i].toLowerCase() },
+					storedPose.current[capturedPoseRef.current][i]
+				);
+			}
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of drawdata) {
+				v["x"] *= width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+
+			const g = drawPoseKeypoints(drawdata);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+
+			capturedPoseRef.current += 1;
+
+			if (capturedPoseRef.current >= storedPose.current.length) {
+				capturedPoseRef.current = 0;
+			}
 		}
 
 		counter.current += 1;
@@ -256,6 +312,18 @@ export default function ParticleFigure() {
 							Stop
 						</Button>
 					)}
+
+					<Button
+						variant="primary"
+						onClick={() => {
+							setPlayPose(!playPose);
+						}}
+						style={{
+							marginLeft: 20,
+						}}
+					>
+						PlayPose
+					</Button>
 				</div>
 			</div>
 		</div>

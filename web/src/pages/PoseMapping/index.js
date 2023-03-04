@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
 import * as poseDetection from "@tensorflow-models/pose-detection";
+import { PoseSolver } from "../../kalido/PoseSolver";
 import { cloneDeep } from "lodash";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
@@ -67,7 +68,9 @@ export default function PoseMapping() {
 				BlazePoseConfig
 			),
 			loadFBX(process.env.PUBLIC_URL + "/fbx/XBot.fbx"),
-			loadJSON(process.env.PUBLIC_URL + "/posejson/wlm800-900.npy.json"),
+			loadJSON(
+				process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+			),
 		]).then(([detector, model, pose3d]) => {
 			poseDetector.current = detector;
 
@@ -77,9 +80,9 @@ export default function PoseMapping() {
 
 			scene.current.add(model);
 
-			applyRotation("mixamorigLeftArm", { x: 0, y: 0, z: Math.PI / 2 });
-
 			storedPose.current = pose3d;
+
+			console.log(bones.current);
 		});
 
 		animate();
@@ -101,6 +104,26 @@ export default function PoseMapping() {
 			storedPose.current.length &&
 			playPoseRef.current
 		) {
+			const limbsRotation = PoseSolver.solve(
+				cloneDeep(storedPose.current[capturedPoseRef.current]),
+				cloneDeep(storedPose.current[capturedPoseRef.current]),
+				{ imageSize: { width: 640, height: 480 }, runtime: "tfjs" }
+			);
+
+			// console.log(limbsRotation);
+
+			applyRotation("mixamorigLeftArm", limbsRotation["LeftUpperArm"]);
+			applyRotation(
+				"mixamorigLeftForeArm",
+				limbsRotation["LeftLowerArm"]
+			);
+
+			applyRotation("mixamorigRightArm", limbsRotation["RightUpperArm"]);
+			applyRotation(
+				"mixamorigRightForeArm",
+				limbsRotation["RightLowerArm"]
+			);
+
 			const drawdata = [];
 
 			for (let i in storedPose.current[capturedPoseRef.current]) {
@@ -119,7 +142,7 @@ export default function PoseMapping() {
 
 			// multiply x,y by differnt factor
 			for (let v of drawdata) {
-				v["x"] *= -width_ratio;
+				v["x"] *= width_ratio;
 				v["y"] *= -height_ratio;
 				v["z"] *= -width_ratio;
 			}
@@ -178,7 +201,7 @@ export default function PoseMapping() {
 	}
 
 	function applyRotation(bone_name, euler) {
-		bones.current[bone_name].rotation.set(euler.x, euler.y, euler.z);
+		bones.current[bone_name].rotation.set(euler.x, euler.z, -euler.y);
 	}
 
 	return (
