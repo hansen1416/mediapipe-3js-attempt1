@@ -2,6 +2,16 @@ import os
 import cv2
 
 
+def str_time(time_str):
+    time_str = time_str.split(":")
+    if len(time_str) == 2:
+        time_str = int(time_str[0])*60 + int(time_str[1])
+    else:
+        time_str = int(time_str[0])
+
+    return time_str
+
+
 def video_slicer(filepath, start_time, end_time):
     """
     slice a piece of video, fron start_time to end_time in seconds
@@ -13,8 +23,11 @@ def video_slicer(filepath, start_time, end_time):
     # read frame per second
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    start_frame = start_time*fps
-    end_frame = end_time*fps
+    start_seconds = str_time(start_time)
+    end_seconds = str_time(end_time)
+
+    start_frame = start_seconds*fps
+    end_frame = end_seconds*fps
 
     ret, frame = cap.read()
     h, w, _ = frame.shape
@@ -55,9 +68,9 @@ if __name__ == "__main__":
 
     parser.add_argument(
         'filename', type=str, help="Path of a video file")
-    parser.add_argument("-s", "--start", default="1", type=int, metavar="start time",
+    parser.add_argument("-s", "--start", default="1", type=str, metavar="start time",
                         help="Start time in seconds")
-    parser.add_argument("-e", "--end", default="-1", type=int, metavar="end time",
+    parser.add_argument("-e", "--end", default="-1", type=str, metavar="end time",
                         help="End time in seconds")
 
     args = parser.parse_args()
