@@ -100,6 +100,8 @@ export default function Site() {
 
 			new THREE.MeshPhongMaterial({
 				color: new THREE.Color(0x3e9edf),
+				transparent: true,
+				opacity: 0.9,
 			})
 		);
 
