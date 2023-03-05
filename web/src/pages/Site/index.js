@@ -52,7 +52,7 @@ export default function Site() {
 			1000
 		);
 
-		camera.current.position.set(0, 1, 60);
+		camera.current.position.set(0, 0, 12);
 
 		{
 			// mimic the sun light
@@ -125,7 +125,7 @@ export default function Site() {
 		const island = new THREE.Mesh(
 			new THREE.CylinderGeometry(40, 40, 1, 64, 64),
 			new THREE.MeshBasicMaterial({
-				color: 0xf7b891,
+				color: 0xf5ccb3,
 			})
 		);
 
