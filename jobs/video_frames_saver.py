@@ -3,6 +3,9 @@ import cv2
 
 
 def video_slicer(filepath, start_time, end_time):
+    """
+    save video frames to images
+    """
 
     filename, fileext = os.path.basename(filepath).split('.')
 

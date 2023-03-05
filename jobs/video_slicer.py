@@ -3,6 +3,9 @@ import cv2
 
 
 def video_slicer(filepath, start_time, end_time):
+    """
+    slice a piece of video, fron start_time to end_time in seconds
+    """
 
     filename, fileext = os.path.basename(filepath).split('.')
 
@@ -53,9 +56,9 @@ if __name__ == "__main__":
     parser.add_argument(
         'filename', type=str, help="Path of a video file")
     parser.add_argument("-s", "--start", default="1", type=int, metavar="start time",
-                        help="Start time")
+                        help="Start time in seconds")
     parser.add_argument("-e", "--end", default="-1", type=int, metavar="end time",
-                        help="End time")
+                        help="End time in seconds")
 
     args = parser.parse_args()
 
