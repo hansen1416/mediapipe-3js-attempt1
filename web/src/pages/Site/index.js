@@ -40,15 +40,12 @@ export default function Site() {
 		camera.current.position.set(0, 1, 20);
 
 		{
-			// const light = new THREE.PointLight(0xffffff, 1);
-			// // light.position.set(10, 10, 10);
-			// camera.current.add(light);
-
-			// scene.current.add(camera.current);
-
-			let light = new THREE.DirectionalLight(0xffffff, 0.5);
-			light.position.set(3, 5, 8);
-			scene.current.add(light, new THREE.AmbientLight(0xffffff, 0.5));
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.5);
+			dlight.position.set(0, 100, -100);
+			scene.current.add(dlight);
+			// env light
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.5));
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
@@ -97,7 +94,6 @@ export default function Site() {
 
 		const ground = new THREE.Mesh(
 			new THREE.PlaneGeometry(1000, 1000).rotateX(-Math.PI * 0.5),
-
 			new THREE.MeshPhongMaterial({
 				color: new THREE.Color(0x3e9edf),
 				transparent: true,
