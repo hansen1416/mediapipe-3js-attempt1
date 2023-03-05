@@ -17,34 +17,7 @@ export default function Site() {
 
 		mainScene(documentWidth, documentHeight);
 
-		for (let i = 0; i < 100; i++) {
-			let box = new THREE.Mesh(
-				new THREE.BoxGeometry().translate(0, 0.51, 0),
-				new THREE.MeshLambertMaterial({ color: "pink" })
-			);
-			box.position.setFromCylindricalCoords(
-				Math.random() * 10,
-				Math.random() * Math.PI * 2,
-				0
-			);
-			let distRatio = 1 - Math.hypot(box.position.x, box.position.z) / 10;
-			box.scale.y = 1 + distRatio * distRatio * distRatio * 5;
-			scene.current.add(box);
-		}
-
-		const ground = new THREE.Mesh(
-			new THREE.PlaneGeometry(1000, 1000).rotateX(-Math.PI * 0.5),
-			// new THREE.MeshBasicMaterial({
-			// 	color: new THREE.Color(0x442288).multiplyScalar(1.5),
-			// })
-			new THREE.MeshToonMaterial({
-				color: new THREE.Color(0x442288).multiplyScalar(1.5),
-			})
-		);
-
-		ground.position.set(0, 0, 0);
-
-		scene.current.add(ground);
+		drawScene();
 
 		animate();
 
@@ -106,6 +79,35 @@ export default function Site() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
+	function drawScene() {
+		// for (let i = 0; i < 100; i++) {
+		// 	let box = new THREE.Mesh(
+		// 		new THREE.BoxGeometry().translate(0, 0.51, 0),
+		// 		new THREE.MeshLambertMaterial({ color: "pink" })
+		// 	);
+		// 	box.position.setFromCylindricalCoords(
+		// 		Math.random() * 10,
+		// 		Math.random() * Math.PI * 2,
+		// 		0
+		// 	);
+		// 	let distRatio = 1 - Math.hypot(box.position.x, box.position.z) / 10;
+		// 	box.scale.y = 1 + distRatio * distRatio * distRatio * 5;
+		// 	scene.current.add(box);
+		// }
+
+		const ground = new THREE.Mesh(
+			new THREE.PlaneGeometry(1000, 1000).rotateX(-Math.PI * 0.5),
+
+			new THREE.MeshPhongMaterial({
+				color: new THREE.Color(0x3e9edf),
+			})
+		);
+
+		ground.position.set(0, 0, 0);
+
+		scene.current.add(ground);
+	}
+
 	return (
 		<div
 			className="site"
@@ -113,7 +115,7 @@ export default function Site() {
 				overflow: "hidden",
 				margin: 0,
 				background:
-					"linear-gradient(0deg, #face8d 50%, aquamarine 100%)",
+					"linear-gradient(0deg, rgb(175,210,253) 50%, rgb(21,73,204) 100%)",
 			}}
 		>
 			<canvas ref={canvasRef} />
