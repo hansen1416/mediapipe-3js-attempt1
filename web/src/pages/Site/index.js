@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+import { loadFBX } from "../../components/ropes";
+
 export default function Site() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -10,6 +12,8 @@ export default function Site() {
 	const controls = useRef(null);
 
 	const animationPointer = useRef(0);
+
+	const ground_level = -10;
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -20,6 +24,17 @@ export default function Site() {
 		drawScene();
 
 		animate();
+		// process.env.PUBLIC_URL + "/fbx/YBot.fbx"
+		// Promise.add()
+
+		Promise.all([loadFBX(process.env.PUBLIC_URL + "/fbx/girl.fbx")]).then(
+			([model]) => {
+				model.position.set(0, 4, 0);
+				model.rotation.set(0, Math.PI, 0);
+
+				scene.current.add(model);
+			}
+		);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -37,12 +52,12 @@ export default function Site() {
 			1000
 		);
 
-		camera.current.position.set(0, 1, 20);
+		camera.current.position.set(0, 1, 60);
 
 		{
 			// mimic the sun light
 			const dlight = new THREE.PointLight(0xffffff, 0.5);
-			dlight.position.set(0, 100, -100);
+			dlight.position.set(0, 100, 100);
 			scene.current.add(dlight);
 			// env light
 			scene.current.add(new THREE.AmbientLight(0xffffff, 0.5));
@@ -59,10 +74,10 @@ export default function Site() {
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
 		controls.current.enablePan = false;
-		controls.current.minPolarAngle = THREE.MathUtils.degToRad(45);
-		controls.current.maxPolarAngle = THREE.MathUtils.degToRad(85);
+		controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
+		controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
 		controls.current.minDistance = 10;
-		controls.current.maxDistance = 30;
+		controls.current.maxDistance = 100;
 		controls.current.enableDamping = true;
 
 		renderer.current.setSize(viewWidth, viewHeight);
@@ -92,18 +107,44 @@ export default function Site() {
 		// 	scene.current.add(box);
 		// }
 
+		// das meer
 		const ground = new THREE.Mesh(
-			new THREE.PlaneGeometry(1000, 1000).rotateX(-Math.PI * 0.5),
-			new THREE.MeshPhongMaterial({
-				color: new THREE.Color(0x3e9edf),
+			new THREE.CircleGeometry(1500, 64).rotateX(-Math.PI * 0.5),
+			new THREE.MeshBasicMaterial({
+				color: new THREE.Color(0x2c589d),
 				transparent: true,
-				opacity: 0.9,
+				opacity: 0.7,
 			})
 		);
 
-		ground.position.set(0, 0, 0);
+		ground.position.set(0, ground_level, 0);
 
 		scene.current.add(ground);
+
+		// das strand
+		const island = new THREE.Mesh(
+			new THREE.CylinderGeometry(40, 40, 1, 64, 64),
+			new THREE.MeshBasicMaterial({
+				color: 0xf7b891,
+			})
+		);
+
+		island.position.set(0, ground_level, 0);
+
+		scene.current.add(island);
+
+		const wave = new THREE.Mesh(
+			new THREE.CircleGeometry(41, 64).rotateX(-Math.PI * 0.5),
+			new THREE.MeshToonMaterial({
+				color: 0xffffff,
+				transparent: true,
+				opacity: 0.4,
+			})
+		);
+
+		wave.position.set(0, ground_level + 0.1, 0);
+
+		scene.current.add(wave);
 	}
 
 	return (
