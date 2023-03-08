@@ -10,11 +10,11 @@ import { PI } from "./../constants";
 export const calcArms = (lm) => {
 	//Pure Rotation Calculations
 	const UpperArm = {
-		r: Vector.findRotation(lm[11], lm[13]),
-		l: Vector.findRotation(lm[12], lm[14]),
+		r: Vector.findRotation(lm[11], lm[13]),// 11: "LEFT_SHOULDER", 13: "LEFT_ELBOW",
+		l: Vector.findRotation(lm[12], lm[14]),// 12: "RIGHT_SHOULDER", 14: "RIGHT_ELBOW",
 	};
-	UpperArm.r.y = Vector.angleBetween3DCoords(lm[12], lm[11], lm[13]);
-	UpperArm.l.y = Vector.angleBetween3DCoords(lm[11], lm[12], lm[14]);
+	UpperArm.r.y = Vector.angleBetween3DCoords(lm[12], lm[11], lm[13]);// 12: "RIGHT_SHOULDER", 11: "LEFT_SHOULDER", 13: "LEFT_ELBOW",
+	UpperArm.l.y = Vector.angleBetween3DCoords(lm[11], lm[12], lm[14]);// 11: "LEFT_SHOULDER", 12: "RIGHT_SHOULDER", 14: "RIGHT_ELBOW",
 
 	const LowerArm = {
 		r: Vector.findRotation(lm[13], lm[15]),

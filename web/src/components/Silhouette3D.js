@@ -75,6 +75,48 @@ export default class Silhouette3D {
 		this.visible_opacity = 0.5;
 	}
 
+	torsoRotation() {
+		/**
+		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1. 
+		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2. 
+		 * Is there there a way to obtain the quaternion representing the rotation between P1 and P2?
+		 * 
+		 * From u1 and v1, the normal vector n1 of P1 can be obtained. 
+		 * From u2 and v2, the normal vector n2 of P2 can be obtained. 
+		 * The rotation between P1 and P2 actually is the rotation between n1 and n2. 
+		 * Given two vectors n1 and n2, we can find a rotation matrix R such that n2=Rn1. 
+		 * Then convert the rotation matrix to a quaternion.
+		 * 
+		 * N1 = U1.cross(V1)
+		N2 = U2.cross(V2)
+		N1.normalize(), N2.normalize()
+		Vector M = N1+N2
+		M.normalize()
+		Vector axis = M.cross(N2)
+		angle = M.dot(N2)
+		Quaternion q(w=angle, x=axis.x, y=axis.y, z=axis)
+		q.normalize()
+		 */
+
+		const shoulder1 = left_shoulder1.sub(right_shoulder1)
+		const oblique1 = left_shoulder1.sub(left_hip1)
+
+		const shoulder2 = left_shoulder2.sub(right_shoulder2)
+		const oblique2 = left_shoulder2.sub(left_hip2)
+
+
+		new THREE.Vector3().add
+
+		const n1 = shoulder1.cross(oblique1)
+		const n2 = shoulder2.cross(oblique2)
+
+		n1.normalize()
+		n2.normalize()
+
+
+
+	}
+
 	getLimbMesh(
 		radiusTop,
 		radiusBottom,
@@ -124,7 +166,7 @@ export default class Silhouette3D {
 		return new THREE.Mesh(geometry, material);
 	}
 
-	getHeadMesh(radius, widthSegments = 8, heightSegments = 8) {
+	getBallMesh(radius, widthSegments = 8, heightSegments = 8) {
 		/**
 		 * head sphere
 		 */
@@ -154,7 +196,7 @@ export default class Silhouette3D {
 		// head
 		this.head = new THREE.Group();
 
-		this.head_mesh = this.getHeadMesh(this.head_radius);
+		this.head_mesh = this.getBallMesh(this.head_radius);
 
 		if (this.add_mesh) {
 			this.head.add(this.head_mesh);
