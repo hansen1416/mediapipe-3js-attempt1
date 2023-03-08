@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { Quaternion } from "three";
 // import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
 import {
@@ -75,7 +76,14 @@ export default class Silhouette3D {
 		this.visible_opacity = 0.5;
 	}
 
-	torsoRotation() {
+	torsoRotation(
+		left_shoulder1,
+		right_shoulder1,
+		left_hip1,
+		left_shoulder2,
+		right_shoulder2,
+		left_hip2
+	) {
 		/**
 		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1. 
 		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2. 
@@ -98,23 +106,50 @@ export default class Silhouette3D {
 		q.normalize()
 		 */
 
-		const shoulder1 = left_shoulder1.sub(right_shoulder1)
-		const oblique1 = left_shoulder1.sub(left_hip1)
+		const shoulder1 = new THREE.Vector3().subVectors(
+			left_shoulder1,
+			right_shoulder1
+		);
+		const oblique1 = new THREE.Vector3().subVectors(
+			left_shoulder1,
+			left_hip1
+		);
 
-		const shoulder2 = left_shoulder2.sub(right_shoulder2)
-		const oblique2 = left_shoulder2.sub(left_hip2)
+		const shoulder2 = new THREE.Vector3().subVectors(
+			left_shoulder2,
+			right_shoulder2
+		);
+		const oblique2 = new THREE.Vector3().subVectors(
+			left_shoulder2,
+			left_hip2
+		);
 
+		const n1 = new THREE.Vector3().crossVectors(shoulder1, oblique1);
+		const n2 = new THREE.Vector3().crossVectors(shoulder2, oblique2);
 
-		new THREE.Vector3().add
+		const q2 = new THREE.Quaternion().setFromUnitVectors(n1, n2);
 
-		const n1 = shoulder1.cross(oblique1)
-		const n2 = shoulder2.cross(oblique2)
+		return q2;
+		console.log("q2", q2);
 
-		n1.normalize()
-		n2.normalize()
+		n1.normalize();
+		n2.normalize();
 
+		const m = n1.clone();
 
+		m.add(n2).normalize();
 
+		console.log("m", m);
+
+		const axis = m.clone();
+
+		axis.cross(n2);
+
+		const angle = m.dot(n2);
+
+		const q = new THREE.Quaternion(axis.x, axis.y, axis.z, angle);
+
+		return q;
 	}
 
 	getLimbMesh(
