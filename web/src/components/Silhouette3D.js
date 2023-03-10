@@ -72,7 +72,7 @@ export default class Silhouette3D {
 		this.color = 0x44aa88;
 
 		// opacity of material, when pose score is lower/higher then 0.5
-		this.invisible_opacity = 0.1;
+		this.invisible_opacity = 0.3;
 		this.visible_opacity = 0.5;
 	}
 
@@ -127,21 +127,16 @@ export default class Silhouette3D {
 
 	getBallMesh(radius, widthSegments = 8, heightSegments = 8) {
 		/**
-		 * head sphere
+		 * a ball
 		 */
-		const geometry = new THREE.SphereGeometry(
-			radius,
-			widthSegments,
-			heightSegments
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius, widthSegments, heightSegments),
+			new THREE.MeshBasicMaterial({
+				color: this.color,
+				transparent: true,
+				opacity: this.invisible_opacity,
+			})
 		);
-
-		const material = new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 0,
-		});
-
-		return new THREE.Mesh(geometry, material);
 	}
 
 	init() {
@@ -151,63 +146,56 @@ export default class Silhouette3D {
 		 */
 
 		this.body = new THREE.Group();
-
-		this.torso1_mesh = new THREE.Mesh(
+		// todo separate torso to two parts, chest and abdominal
+		this.torso_mesh = new THREE.Mesh(
 			new THREE.BoxGeometry(
-				this.shoulder_size*5/3,
+				(this.shoulder_size * 5) / 3,
 				this.spine_size,
 				this.deltoid_radius
 			),
-			new THREE.MeshBasicMaterial({color: this.color})
-		)
+			new THREE.MeshBasicMaterial({
+				color: this.color,
+				transparent: true,
+				opacity: this.invisible_opacity,
+			})
+		);
 
-		this.body.add(this.torso1_mesh)
+		const axesHelper = new THREE.AxesHelper(30);
+
+		this.torso_mesh.add(axesHelper);
+
+		this.body.add(this.torso_mesh);
 
 		// head
-		this.head_mesh = new THREE.Mesh(new THREE.SphereGeometry(
-			this.head_radius,
-			8,
-			8
-		), new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 1,
-		}));
+		this.head_mesh = this.getBallMesh(this.head_radius);
 
-		this.head_mesh.position.set(0,this.spine_size,0)
+		this.head_mesh.position.set(0, this.spine_size, 0);
 
-		this.torso1_mesh.add(this.head_mesh)
+		this.torso_mesh.add(this.head_mesh);
 
 		// left shoulder
-		this.shoulder_l_mesh = new THREE.Mesh(new THREE.SphereGeometry(
-			this.deltoid_radius,
-			8,
-			8
-		), new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 1,
-		}));
+		this.shoulder_l_mesh = this.getBallMesh((this.deltoid_radius * 3) / 2);
 
-		this.shoulder_l_mesh.position.set(this.shoulder_size-this.deltoid_radius/2,this.spine_size/2-this.deltoid_radius,0)
+		this.shoulder_l_mesh.position.set(
+			this.shoulder_size - this.deltoid_radius / 2,
+			this.spine_size / 2 - this.deltoid_radius,
+			0
+		);
 
-		this.body.add(this.shoulder_l_mesh);
+		this.torso_mesh.add(this.shoulder_l_mesh);
 
 		// right shoulder
-		this.shoulder_r_mesh = new THREE.Mesh(new THREE.SphereGeometry(
-			this.deltoid_radius,
-			8,
-			8
-		), new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 1,
-		}));
+		this.shoulder_r_mesh = this.getBallMesh(this.deltoid_radius);
 
-		this.shoulder_r_mesh.position.set(-this.shoulder_size+this.deltoid_radius/2,this.spine_size/2-this.deltoid_radius,0)
+		this.shoulder_r_mesh.position.set(
+			-this.shoulder_size + this.deltoid_radius / 2,
+			this.spine_size / 2 - this.deltoid_radius,
+			0
+		);
 
-		this.body.add(this.shoulder_r_mesh);
+		this.torso_mesh.add(this.shoulder_r_mesh);
 
+		return this.body;
 
 		// left upperarm
 		this.upperarm_l = new THREE.Group();
@@ -320,97 +308,67 @@ export default class Silhouette3D {
 		return this.body;
 	}
 
-	scaleLimb(mesh, joint1, joint2, is_left, color = this.color) {
+	torsoRotation(left_shoulder2, right_shoulder2, left_hip2) {
 		/**
-		 * scale limbs size
-		 * set limbs position
-		 * set material opacity
+		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1.
+		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2.
+		 * Is there there a way to obtain the quaternion representing the rotation between P1 and P2?
+		 *
+		 * From u1 and v1, the normal vector n1 of P1 can be obtained.
+		 * From u2 and v2, the normal vector n2 of P2 can be obtained.
+		 * The rotation between P1 and P2 actually is the rotation between n1 and n2.
+		 * Given two vectors n1 and n2, we can find a rotation matrix R such that n2=Rn1.
+		 * Then convert the rotation matrix to a quaternion.
+		 *
 		 */
-		if (joint1.score < 0.5 || joint2.score < 0.5) {
-			mesh.material.opacity = this.invisible_opacity;
 
-			return;
-		}
+		// const left_shoulder1 = new THREE.Vector3(1, 0, 0);
+		// const right_shoulder1 = new THREE.Vector3(0, 0, 0);
+		// const left_hip1 = new THREE.Vector3(0, -1, 0);
 
-		/**
-		 * cylinder geometry parameters
-		 * 
-		height
-		heightSegments
-		openEnded
-		radialSegments
-		radiusBottom
-		radiusTop
-		thetaLength
-		thetaStart
-		 */
-		// const height = distanceBetweenPoints(joint1, joint2);
-		// const width = height / 3;
-		// const width_scale =
-		// 	width /
-		// 	(mesh.geometry.parameters.radiusTop +
-		// 		mesh.geometry.parameters.radiusBottom);
-
-		// mesh.scale.set(
-		// 	width_scale,
-		// 	height / mesh.geometry.parameters.height,
-		// 	width_scale
+		// const shoulder1 = new THREE.Vector3().subVectors(
+		// 	left_shoulder1,
+		// 	right_shoulder1
+		// );
+		// const oblique1 = new THREE.Vector3().subVectors(
+		// 	left_shoulder1,
+		// 	left_hip1
 		// );
 
-		// // no need to set z, cause i'm not adjust the orientation
-		// if (is_left) {
-		// 	mesh.position.set(width / 2, height / -2, 0);
-		// } else {
-		// 	mesh.position.set(width / -2, height / -2, 0);
-		// }
+		// const n1 = new THREE.Vector3().crossVectors(shoulder1, oblique1);
 
-		mesh.material.opacity = this.visible_opacity;
-	}
+		const xaxis0 = new THREE.Vector3(1, 0, 0);
+		const yaxis0 = new THREE.Vector3(0, -1, 0);
+		const zaxis0 = new THREE.Vector3(0, 0, 1);
 
-	torsoRotation(
-		left_shoulder2,
-		right_shoulder2,
-		left_hip2
-	) {
-		/**
-		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1. 
-		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2. 
-		 * Is there there a way to obtain the quaternion representing the rotation between P1 and P2?
-		 * 
-		 * From u1 and v1, the normal vector n1 of P1 can be obtained. 
-		 * From u2 and v2, the normal vector n2 of P2 can be obtained. 
-		 * The rotation between P1 and P2 actually is the rotation between n1 and n2. 
-		 * Given two vectors n1 and n2, we can find a rotation matrix R such that n2=Rn1. 
-		 * Then convert the rotation matrix to a quaternion.
-		 * 
-		 */
+		const m0 = new THREE.Matrix4().makeBasis(xaxis0, yaxis0, zaxis0);
 
-		const left_shoulder1 = new THREE.Vector3(1, 0, 0);
-		const right_shoulder1 = new THREE.Vector3(0, 0, 0);
-		const left_hip1 = new THREE.Vector3(0, -1, 0);
+		const xaxis = new THREE.Vector3()
+			.subVectors(left_shoulder2, right_shoulder2)
+			.normalize();
 
-		const shoulder1 = new THREE.Vector3().subVectors(
-			left_shoulder1,
-			right_shoulder1
-		);
-		const oblique1 = new THREE.Vector3().subVectors(
-			left_shoulder1,
-			left_hip1
-		);
+		const oblique2 = new THREE.Vector3()
+			.subVectors(left_shoulder2, left_hip2)
+			.normalize();
 
-		const shoulder2 = new THREE.Vector3().subVectors(
-			left_shoulder2,
-			right_shoulder2
-		);
-		const oblique2 = new THREE.Vector3().subVectors(
-			left_shoulder2,
-			left_hip2
-		);
+		const zaxis = new THREE.Vector3()
+			.crossVectors(xaxis, oblique2)
+			.normalize();
 
-		const n1 = new THREE.Vector3().crossVectors(shoulder1, oblique1);
-		const n2 = new THREE.Vector3().crossVectors(shoulder2, oblique2);
+		const yaxis = new THREE.Vector3()
+			.crossVectors(xaxis, zaxis)
+			.normalize();
 
-		const q2 = new THREE.Quaternion().setFromUnitVectors(n1, n2);
+		console.log("pos", left_shoulder2, right_shoulder2, left_hip2);
+		console.log(xaxis, yaxis, zaxis);
+
+		const m1 = new THREE.Matrix4().makeBasis(xaxis, yaxis, zaxis);
+
+		m0.invert();
+
+		const m = m1.multiply(m0);
+
+		const q2 = new THREE.Quaternion().setFromRotationMatrix(m);
 
 		return q2;
 	}
@@ -442,11 +400,23 @@ export default class Silhouette3D {
 		const knee_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
 		const ankle_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]];
 
-		const torso_q = this.torsoRotation(new THREE.Vector3(shoulder_pose_l.x,shoulder_pose_l.y,shoulder_pose_l.z),
-		new THREE.Vector3(shoulder_pose_r.x, shoulder_pose_r.y, shoulder_pose_r.z),
-		new THREE.Vector3(hip_pose_l.x, hip_pose_l.y, hip_pose_l.z))
+		const torso_q = this.torsoRotation(
+			new THREE.Vector3(
+				shoulder_pose_l.x,
+				shoulder_pose_l.y,
+				shoulder_pose_l.z
+			),
+			new THREE.Vector3(
+				shoulder_pose_r.x,
+				shoulder_pose_r.y,
+				shoulder_pose_r.z
+			),
+			new THREE.Vector3(hip_pose_l.x, hip_pose_l.y, hip_pose_l.z)
+		);
 
-		this.torso1_mesh.rotation.setFromQuaternion(torso_q);
+		this.torso_mesh.rotation.setFromQuaternion(torso_q);
+
+		return;
 
 		// set limbs positions
 		// this.head.position.set(nose.x, nose.y, nose.z);
@@ -538,46 +508,6 @@ export default class Silhouette3D {
 		this.lowerarm_r.setRotationFromQuaternion(lowerarm_r_q);
 		this.thigh_r.setRotationFromQuaternion(thigh_r_q);
 		this.calf_r.setRotationFromQuaternion(calf_r_q);
-
-		// resize, adjust mesh size to fit the pose
-		if (resize) {
-			// todo also adjust the radius of cylinder here
-			this.scaleLimb(
-				this.upperarm_l_mesh,
-				shoulder_pose_l,
-				elbow_pose_l,
-				true
-			);
-			this.scaleLimb(
-				this.lowerarm_l_mesh,
-				wrist_pose_l,
-				elbow_pose_l,
-				true
-			);
-			this.scaleLimb(this.thigh_l_mesh, knee_pose_l, hip_pose_l, true);
-			this.scaleLimb(this.calf_l_mesh, ankle_pose_l, knee_pose_l, true);
-
-			this.scaleLimb(
-				this.upperarm_r_mesh,
-				shoulder_pose_r,
-				elbow_pose_r,
-				false
-			);
-			this.scaleLimb(
-				this.lowerarm_r_mesh,
-				wrist_pose_r,
-				elbow_pose_r,
-				false
-			);
-			this.scaleLimb(this.thigh_r_mesh, knee_pose_r, hip_pose_r, false);
-			this.scaleLimb(this.calf_r_mesh, ankle_pose_r, knee_pose_r, false);
-
-			// if (nose.score > 0.5) {
-			// 	this.head_mesh.material.opacity = this.visible_opacity;
-			// } else {
-			// 	this.head_mesh.material.opacity = this.invisible_opacity;
-			// }
-		}
 	}
 
 	applyColor(colors) {
