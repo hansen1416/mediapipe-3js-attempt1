@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     files = ['wlm0-3000.npy', 'wlm800-900.npy',
              'wlm1500-1600.npy', 'wlm2300-2400.npy']
-    files = ['lm3960-4200.npy']
+    files = ['wlm1500-1575.npy']
 
     dirname = 'tmp'
     dirname = 'pose_data'

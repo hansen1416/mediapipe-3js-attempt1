@@ -99,36 +99,6 @@ export default function ParticleFigure() {
 		figure.current = new Silhouette3D();
 		const body = figure.current.init();
 
-		const left_shoulder1 = new THREE.Vector3(1, 0, 0);
-		const right_shoulder1 = new THREE.Vector3(0, 0, 0);
-		const left_hip1 = new THREE.Vector3(0, -1, 0);
-
-		const left_shoulder2 = new THREE.Vector3(0.5, 0, 0.1);
-		const right_shoulder2 = new THREE.Vector3(-0.5, 0, 0.1);
-		const left_hip2 = new THREE.Vector3(0.5, -1, -0.1);
-
-		const q = figure.current.torsoRotation(
-			left_shoulder1.normalize(),
-			right_shoulder1.normalize(),
-			left_hip1.normalize(),
-			left_shoulder2.normalize(),
-			right_shoulder2.normalize(),
-			left_hip2.normalize()
-		);
-
-		console.log(q);
-
-		var plane = new THREE.Mesh(
-			new THREE.PlaneGeometry(100, 100),
-			new THREE.MeshNormalMaterial({
-				side: THREE.DoubleSide,
-			})
-		);
-
-		scene.current.add(plane);
-
-		plane.applyQuaternion(q);
-
 		scene.current.add(body);
 
 		animate();

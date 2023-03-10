@@ -40,7 +40,7 @@ export default class Silhouette3D {
 	constructor() {
 		this.unit = 1;
 
-		this.head_radius = 3 * this.unit;
+		this.head_radius = 2 * this.unit;
 		this.neck_radius = 1.6 * this.unit;
 		this.neck_size = 2 * this.unit;
 
@@ -48,7 +48,7 @@ export default class Silhouette3D {
 		this.spine_size = 12 * this.unit;
 		this.waist_size = 5 * this.unit;
 
-		this.deltoid_radius = 2 * this.unit;
+		this.deltoid_radius = 1.8 * this.unit;
 		this.bigarm_size = 8 * this.unit;
 		this.elbow_radius = 1.6 * this.unit;
 
@@ -74,6 +74,63 @@ export default class Silhouette3D {
 		// opacity of material, when pose score is lower/higher then 0.5
 		this.invisible_opacity = 0.1;
 		this.visible_opacity = 0.5;
+	}
+
+	torsoRotation(
+		left_shoulder2,
+		right_shoulder2,
+		left_hip2
+	) {
+		/**
+		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1. 
+		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2. 
+		 * Is there there a way to obtain the quaternion representing the rotation between P1 and P2?
+		 * 
+		 * From u1 and v1, the normal vector n1 of P1 can be obtained. 
+		 * From u2 and v2, the normal vector n2 of P2 can be obtained. 
+		 * The rotation between P1 and P2 actually is the rotation between n1 and n2. 
+		 * Given two vectors n1 and n2, we can find a rotation matrix R such that n2=Rn1. 
+		 * Then convert the rotation matrix to a quaternion.
+		 * 
+		 * N1 = U1.cross(V1)
+		N2 = U2.cross(V2)
+		N1.normalize(), N2.normalize()
+		Vector M = N1+N2
+		M.normalize()
+		Vector axis = M.cross(N2)
+		angle = M.dot(N2)
+		Quaternion q(w=angle, x=axis.x, y=axis.y, z=axis)
+		q.normalize()
+		 */
+
+		const left_shoulder1 = new THREE.Vector3(1, 0, 0);
+		const right_shoulder1 = new THREE.Vector3(0, 0, 0);
+		const left_hip1 = new THREE.Vector3(0, -1, 0);
+
+		const shoulder1 = new THREE.Vector3().subVectors(
+			left_shoulder1,
+			right_shoulder1
+		);
+		const oblique1 = new THREE.Vector3().subVectors(
+			left_shoulder1,
+			left_hip1
+		);
+
+		const shoulder2 = new THREE.Vector3().subVectors(
+			left_shoulder2,
+			right_shoulder2
+		);
+		const oblique2 = new THREE.Vector3().subVectors(
+			left_shoulder2,
+			left_hip2
+		);
+
+		const n1 = new THREE.Vector3().crossVectors(shoulder1, oblique1);
+		const n2 = new THREE.Vector3().crossVectors(shoulder2, oblique2);
+
+		const q2 = new THREE.Quaternion().setFromUnitVectors(n1, n2);
+
+		return q2;
 	}
 
 	getLimbMesh(
@@ -163,51 +220,33 @@ export default class Silhouette3D {
 
 		this.body.add(this.torso1_mesh)
 
+
 		// head
-		this.head_mesh = new THREE.Mesh(new THREE.SphereGeometry(
-			this.head_radius,
-			8,
-			8
-		), new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 1,
-		}));
+		this.head = new THREE.Group();
 
-		this.head_mesh.position.set(0,this.spine_size,0)
+		this.head_mesh = this.getBallMesh(this.head_radius);
 
-		this.torso1_mesh.add(this.head_mesh)
+		if (this.add_mesh) {
+			this.head.add(this.head_mesh);
+		}
+		this.body.add(this.head);
 
-		// left shoulder
-		this.shoulder_l_mesh = new THREE.Mesh(new THREE.SphereGeometry(
-			this.deltoid_radius,
-			8,
-			8
-		), new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 1,
-		}));
+		// torso
+		this.torso = new THREE.Group();
 
-		this.shoulder_l_mesh.position.set(this.shoulder_size-this.deltoid_radius/2,this.spine_size/2-this.deltoid_radius,0)
+		this.torso_mesh = this.getTorsoMesh([
+			new THREE.Vector3(-1, 1, 0),
+			new THREE.Vector3(0, 0, 0),
+			new THREE.Vector3(0, 1, 0),
+			new THREE.Vector3(-1, 1, 0),
+			new THREE.Vector3(-1, 0, 0),
+			new THREE.Vector3(0, 0, 0),
+		]);
 
-		this.body.add(this.shoulder_l_mesh);
-
-		// right shoulder
-		this.shoulder_r_mesh = new THREE.Mesh(new THREE.SphereGeometry(
-			this.deltoid_radius,
-			8,
-			8
-		), new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 1,
-		}));
-
-		this.shoulder_r_mesh.position.set(-this.shoulder_size+this.deltoid_radius/2,this.spine_size/2-this.deltoid_radius,0)
-
-		this.body.add(this.shoulder_r_mesh);
-
+		if (this.add_mesh) {
+			this.torso.add(this.torso_mesh);
+		}
+		this.body.add(this.torso);
 
 		// left upperarm
 		this.upperarm_l = new THREE.Group();
@@ -367,54 +406,6 @@ export default class Silhouette3D {
 		mesh.material.opacity = this.visible_opacity;
 	}
 
-	torsoRotation(
-		left_shoulder2,
-		right_shoulder2,
-		left_hip2
-	) {
-		/**
-		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1. 
-		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2. 
-		 * Is there there a way to obtain the quaternion representing the rotation between P1 and P2?
-		 * 
-		 * From u1 and v1, the normal vector n1 of P1 can be obtained. 
-		 * From u2 and v2, the normal vector n2 of P2 can be obtained. 
-		 * The rotation between P1 and P2 actually is the rotation between n1 and n2. 
-		 * Given two vectors n1 and n2, we can find a rotation matrix R such that n2=Rn1. 
-		 * Then convert the rotation matrix to a quaternion.
-		 * 
-		 */
-
-		const left_shoulder1 = new THREE.Vector3(1, 0, 0);
-		const right_shoulder1 = new THREE.Vector3(0, 0, 0);
-		const left_hip1 = new THREE.Vector3(0, -1, 0);
-
-		const shoulder1 = new THREE.Vector3().subVectors(
-			left_shoulder1,
-			right_shoulder1
-		);
-		const oblique1 = new THREE.Vector3().subVectors(
-			left_shoulder1,
-			left_hip1
-		);
-
-		const shoulder2 = new THREE.Vector3().subVectors(
-			left_shoulder2,
-			right_shoulder2
-		);
-		const oblique2 = new THREE.Vector3().subVectors(
-			left_shoulder2,
-			left_hip2
-		);
-
-		const n1 = new THREE.Vector3().crossVectors(shoulder1, oblique1);
-		const n2 = new THREE.Vector3().crossVectors(shoulder2, oblique2);
-
-		const q2 = new THREE.Quaternion().setFromUnitVectors(n1, n2);
-
-		return q2;
-	}
-
 	applyPose(pose3D, resize = false) {
 		/**
 		 * apply pose to mesh, adjust it's position and scale
@@ -449,7 +440,7 @@ export default class Silhouette3D {
 		this.torso1_mesh.rotation.setFromQuaternion(torso_q);
 
 		// set limbs positions
-		// this.head.position.set(nose.x, nose.y, nose.z);
+		this.head.position.set(nose.x, nose.y, nose.z);
 
 		this.upperarm_l.position.set(
 			shoulder_pose_l.x,
@@ -539,6 +530,40 @@ export default class Silhouette3D {
 		this.thigh_r.setRotationFromQuaternion(thigh_r_q);
 		this.calf_r.setRotationFromQuaternion(calf_r_q);
 
+		// update torso geometry
+		// it's a plane, defined by 4 points. left/right shoulder, left/right hip
+		const torso_geo = this.torso_mesh.geometry.attributes.position.array;
+
+		let i = 0;
+
+		for (const l of [
+			shoulder_pose_l,
+			hip_pose_r,
+			shoulder_pose_r,
+			shoulder_pose_l,
+			hip_pose_l,
+			hip_pose_r,
+		]) {
+			torso_geo[i++] = l.x;
+			torso_geo[i++] = l.y;
+			torso_geo[i++] = l.z;
+		}
+
+		this.torso_mesh.geometry.attributes.position.needsUpdate = true;
+
+		const valid_score = [
+			shoulder_pose_l.score,
+			shoulder_pose_r.score,
+			hip_pose_l.score,
+			hip_pose_r.score,
+		].filter((s) => s > 0.5);
+
+		if (valid_score.length > 2) {
+			this.torso_mesh.material.opacity = this.visible_opacity;
+		} else {
+			this.torso_mesh.material.opacity = this.invisible_opacity;
+		}
+
 		// resize, adjust mesh size to fit the pose
 		if (resize) {
 			// todo also adjust the radius of cylinder here
@@ -572,11 +597,39 @@ export default class Silhouette3D {
 			this.scaleLimb(this.thigh_r_mesh, knee_pose_r, hip_pose_r, false);
 			this.scaleLimb(this.calf_r_mesh, ankle_pose_r, knee_pose_r, false);
 
-			// if (nose.score > 0.5) {
-			// 	this.head_mesh.material.opacity = this.visible_opacity;
-			// } else {
-			// 	this.head_mesh.material.opacity = this.invisible_opacity;
-			// }
+			if (nose.score > 0.5) {
+				this.head_mesh.material.opacity = this.visible_opacity;
+
+				// if (
+				// 	shoulder_pose_l.score > 0.5 &&
+				// 	shoulder_pose_r.score > 0.5
+				// ) {
+				// 	const head_size =
+				// 		distanceBetweenPoints(
+				// 			shoulder_pose_l,
+				// 			shoulder_pose_r
+				// 		) / 4;
+
+				// 	const head_scale =
+				// 		head_size / this.head_mesh.geometry.parameters.radius;
+
+				// 	this.head_mesh.scale.set(
+				// 		head_scale,
+				// 		head_scale,
+				// 		head_scale
+				// 	);
+
+				// 	// todo we need to first rotate head to same orientation pf torso,
+				// 	// then adjust the position
+				// 	// this.head_mesh.position.set(
+				// 	// 	head_size / -2,
+				// 	// 	head_size / -2,
+				// 	// 	head_size * -1
+				// 	// );
+				// }
+			} else {
+				this.head_mesh.material.opacity = this.invisible_opacity;
+			}
 		}
 	}
 
