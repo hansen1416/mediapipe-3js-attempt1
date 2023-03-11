@@ -101,6 +101,10 @@ export default function ParticleFigure() {
 
 		scene.current.add(body);
 
+		const axesHelper = new THREE.AxesHelper(40);
+
+		scene.current.add(axesHelper);
+
 		animate();
 
 		return () => {

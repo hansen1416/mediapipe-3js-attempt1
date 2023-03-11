@@ -6,9 +6,12 @@ import {
 	BlazePoseKeypointsValues,
 	posePointsToVector,
 	quaternionFromVectors,
-	distanceBetweenPoints,
 } from "./ropes";
 // import MeshLineMaterial from "./MeshLineMaterial";
+
+function middlePosition(a, b) {
+	return new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+}
 
 export default class Silhouette3D {
 	/**
@@ -44,9 +47,10 @@ export default class Silhouette3D {
 		this.neck_radius = 1.6 * this.unit;
 		this.neck_size = 2 * this.unit;
 
-		this.shoulder_size = 6 * this.unit;
-		this.spine_size = 12 * this.unit;
-		this.waist_size = 5 * this.unit;
+		this.shoulder_size = 10 * this.unit;
+		this.chest_size = 7 * this.unit;
+		this.abs_size = 5 * this.unit;
+		this.waist_size = 8 * this.unit;
 
 		this.deltoid_radius = 2 * this.unit;
 		this.bigarm_size = 8 * this.unit;
@@ -74,6 +78,34 @@ export default class Silhouette3D {
 		// opacity of material, when pose score is lower/higher then 0.5
 		this.invisible_opacity = 0.3;
 		this.visible_opacity = 0.5;
+	}
+
+	getBoxMesh(width, height, depth) {
+		/**
+		 *
+		 */
+		return new THREE.Mesh(
+			new THREE.BoxGeometry(width, height, depth),
+			new THREE.MeshBasicMaterial({
+				color: this.color,
+				transparent: true,
+				opacity: this.invisible_opacity,
+			})
+		);
+	}
+
+	getBallMesh(radius, widthSegments = 8, heightSegments = 8) {
+		/**
+		 * a ball
+		 */
+		return new THREE.Mesh(
+			new THREE.SphereGeometry(radius, widthSegments, heightSegments),
+			new THREE.MeshBasicMaterial({
+				color: this.color,
+				transparent: true,
+				opacity: this.invisible_opacity,
+			})
+		);
 	}
 
 	getLimbMesh(
@@ -109,36 +141,6 @@ export default class Silhouette3D {
 		return new THREE.Mesh(geometry, material);
 	}
 
-	getTorsoMesh(points) {
-		/**
-		 * torso plane
-		 */
-		const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-		const material = new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: 0,
-			side: THREE.DoubleSide,
-		});
-
-		return new THREE.Mesh(geometry, material);
-	}
-
-	getBallMesh(radius, widthSegments = 8, heightSegments = 8) {
-		/**
-		 * a ball
-		 */
-		return new THREE.Mesh(
-			new THREE.SphereGeometry(radius, widthSegments, heightSegments),
-			new THREE.MeshBasicMaterial({
-				color: this.color,
-				transparent: true,
-				opacity: this.invisible_opacity,
-			})
-		);
-	}
-
 	init() {
 		/**
 		 * initialize body parts
@@ -147,53 +149,61 @@ export default class Silhouette3D {
 
 		this.body = new THREE.Group();
 		// todo separate torso to two parts, chest and abdominal
-		this.torso_mesh = new THREE.Mesh(
-			new THREE.BoxGeometry(
-				(this.shoulder_size * 5) / 3,
-				this.spine_size,
-				this.deltoid_radius
-			),
-			new THREE.MeshBasicMaterial({
-				color: this.color,
-				transparent: true,
-				opacity: this.invisible_opacity,
-			})
+		this.chest_mesh = this.getBoxMesh(
+			this.shoulder_size,
+			this.chest_size,
+			this.deltoid_radius
 		);
 
 		const axesHelper = new THREE.AxesHelper(30);
 
-		this.torso_mesh.add(axesHelper);
+		this.chest_mesh.add(axesHelper);
 
-		this.body.add(this.torso_mesh);
+		this.chest_mesh.position.set(0, this.chest_size / 2, 0);
+
+		this.body.add(this.chest_mesh);
 
 		// head
 		this.head_mesh = this.getBallMesh(this.head_radius);
 
-		this.head_mesh.position.set(0, this.spine_size, 0);
+		this.head_mesh.position.set(0, this.chest_size, 0);
 
-		this.torso_mesh.add(this.head_mesh);
+		this.chest_mesh.add(this.head_mesh);
 
 		// left shoulder
 		this.shoulder_l_mesh = this.getBallMesh((this.deltoid_radius * 3) / 2);
 
 		this.shoulder_l_mesh.position.set(
-			this.shoulder_size - this.deltoid_radius / 2,
-			this.spine_size / 2 - this.deltoid_radius,
+			this.shoulder_size / 2 - this.deltoid_radius / 2,
+			this.chest_size / 2 - this.deltoid_radius,
 			0
 		);
 
-		this.torso_mesh.add(this.shoulder_l_mesh);
+		this.chest_mesh.add(this.shoulder_l_mesh);
 
 		// right shoulder
 		this.shoulder_r_mesh = this.getBallMesh(this.deltoid_radius);
 
 		this.shoulder_r_mesh.position.set(
-			-this.shoulder_size + this.deltoid_radius / 2,
-			this.spine_size / 2 - this.deltoid_radius,
+			this.shoulder_size / -2 + this.deltoid_radius / 2,
+			this.chest_size / 2 - this.deltoid_radius,
 			0
 		);
 
-		this.torso_mesh.add(this.shoulder_r_mesh);
+		this.chest_mesh.add(this.shoulder_r_mesh);
+
+		// abdominal
+		this.abs_mesh = this.getBoxMesh(
+			this.waist_size,
+			this.abs_size,
+			this.deltoid_radius
+		);
+
+		this.abs_mesh.add(new THREE.AxesHelper(30));
+
+		this.abs_mesh.position.set(0, this.abs_size / -2, 0);
+
+		this.body.add(this.abs_mesh);
 
 		return this.body;
 
@@ -308,69 +318,96 @@ export default class Silhouette3D {
 		return this.body;
 	}
 
-	torsoRotation(left_shoulder2, right_shoulder2, left_hip2) {
+	quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 		/**
-		 * I have 2 vectors, U1 and V1 (from origin) in 3D space, together forming a plane P1.
-		 * The vectors then both changes to U2 and V2 (still from origin) forming a new plane P2.
-		 * Is there there a way to obtain the quaternion representing the rotation between P1 and P2?
-		 *
-		 * From u1 and v1, the normal vector n1 of P1 can be obtained.
-		 * From u2 and v2, the normal vector n2 of P2 can be obtained.
-		 * The rotation between P1 and P2 actually is the rotation between n1 and n2.
-		 * Given two vectors n1 and n2, we can find a rotation matrix R such that n2=Rn1.
-		 * Then convert the rotation matrix to a quaternion.
-		 *
+		 * transfer object from basis0 to basis1
+		 */
+		const m0 = new THREE.Matrix4().makeBasis(xaxis0, yaxis0, zaxis0);
+		const m1 = new THREE.Matrix4().makeBasis(xaxis1, yaxis1, zaxis1);
+
+		const m = m1.multiply(m0.invert());
+
+		return new THREE.Quaternion().setFromRotationMatrix(m);
+	}
+
+	torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
+		/**
+			Now you want matrix B that maps from 1st set of coords to 2nd set:
+			A2 = B * A1
+			This is now a very complex math problem that requires advanced skills to arrive at the solution:
+			B = A2 * inverse of A1
 		 */
 
-		// const left_shoulder1 = new THREE.Vector3(1, 0, 0);
-		// const right_shoulder1 = new THREE.Vector3(0, 0, 0);
-		// const left_hip1 = new THREE.Vector3(0, -1, 0);
+		const left_oblique = middlePosition(left_shoulder2, left_hip2);
+		const right_oblique = middlePosition(right_shoulder2, right_hip2);
 
-		// const shoulder1 = new THREE.Vector3().subVectors(
-		// 	left_shoulder1,
-		// 	right_shoulder1
-		// );
-		// const oblique1 = new THREE.Vector3().subVectors(
-		// 	left_shoulder1,
-		// 	left_hip1
-		// );
+		const center = middlePosition(left_oblique, right_oblique);
 
-		// const n1 = new THREE.Vector3().crossVectors(shoulder1, oblique1);
-
+		// origin basis of chest
 		const xaxis0 = new THREE.Vector3(1, 0, 0);
 		const yaxis0 = new THREE.Vector3(0, -1, 0);
 		const zaxis0 = new THREE.Vector3(0, 0, 1);
 
-		const m0 = new THREE.Matrix4().makeBasis(xaxis0, yaxis0, zaxis0);
-
-		const xaxis = new THREE.Vector3()
+		// new basis of chest from pose data
+		const xaxis1 = new THREE.Vector3()
 			.subVectors(left_shoulder2, right_shoulder2)
 			.normalize();
 
-		const oblique2 = new THREE.Vector3()
-			.subVectors(left_shoulder2, left_hip2)
+		const y_tmp1 = new THREE.Vector3()
+			.subVectors(left_shoulder2, center)
 			.normalize();
 
-		const zaxis = new THREE.Vector3()
-			.crossVectors(xaxis, oblique2)
+		const zaxis1 = new THREE.Vector3()
+			.crossVectors(xaxis1, y_tmp1)
 			.normalize();
 
-		const yaxis = new THREE.Vector3()
-			.crossVectors(xaxis, zaxis)
+		const yaxis1 = new THREE.Vector3()
+			.crossVectors(xaxis1, zaxis1)
 			.normalize();
 
-		console.log("pos", left_shoulder2, right_shoulder2, left_hip2);
-		console.log(xaxis, yaxis, zaxis);
+		const chest_q = this.quaternionFromBasis(
+			xaxis0,
+			yaxis0,
+			zaxis0,
+			xaxis1,
+			yaxis1,
+			zaxis1
+		);
 
-		const m1 = new THREE.Matrix4().makeBasis(xaxis, yaxis, zaxis);
+		// origin basis of abs
+		const xaxis2 = new THREE.Vector3(1, 0, 0);
+		const yaxis2 = new THREE.Vector3(0, 1, 0);
+		const zaxis2 = new THREE.Vector3(0, 0, 1);
 
-		m0.invert();
+		// new basis of abs from pose data
+		const xaxis3 = new THREE.Vector3()
+			.subVectors(left_hip2, right_hip2)
+			.normalize();
 
-		const m = m1.multiply(m0);
+		const y_tmp3 = new THREE.Vector3()
+			.subVectors(center, left_hip2)
+			.normalize();
 
-		const q2 = new THREE.Quaternion().setFromRotationMatrix(m);
+		const zaxis3 = new THREE.Vector3()
+			.crossVectors(xaxis3, y_tmp3)
+			.normalize();
 
-		return q2;
+		const yaxis3 = new THREE.Vector3()
+			.crossVectors(zaxis3, xaxis3)
+			.normalize();
+
+		// console.log(xaxis3, yaxis3, zaxis3);
+
+		const abs_q = this.quaternionFromBasis(
+			xaxis2,
+			yaxis2,
+			zaxis2,
+			xaxis3,
+			yaxis3,
+			zaxis3
+		);
+
+		return [chest_q, abs_q];
 	}
 
 	applyPose(pose3D, resize = false) {
@@ -400,7 +437,7 @@ export default class Silhouette3D {
 		const knee_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
 		const ankle_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]];
 
-		const torso_q = this.torsoRotation(
+		const [chest_q, abs_q] = this.torsoRotation(
 			new THREE.Vector3(
 				shoulder_pose_l.x,
 				shoulder_pose_l.y,
@@ -411,10 +448,13 @@ export default class Silhouette3D {
 				shoulder_pose_r.y,
 				shoulder_pose_r.z
 			),
-			new THREE.Vector3(hip_pose_l.x, hip_pose_l.y, hip_pose_l.z)
+			new THREE.Vector3(hip_pose_l.x, hip_pose_l.y, hip_pose_l.z),
+			new THREE.Vector3(hip_pose_r.x, hip_pose_r.y, hip_pose_r.z)
 		);
 
-		this.torso_mesh.rotation.setFromQuaternion(torso_q);
+		this.chest_mesh.rotation.setFromQuaternion(chest_q);
+
+		this.abs_mesh.rotation.setFromQuaternion(abs_q);
 
 		return;
 
