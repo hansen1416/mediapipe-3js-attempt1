@@ -44,27 +44,33 @@ export default class Silhouette3D {
 		this.unit = 1;
 
 		this.head_radius = 3 * this.unit;
-		this.neck_radius = 1.6 * this.unit;
-		this.neck_size = 2 * this.unit;
 
-		this.shoulder_size = 10 * this.unit;
-		this.chest_size = 7 * this.unit;
-		this.abs_size = 5 * this.unit;
-		this.waist_size = 8 * this.unit;
+		this.chest_width = 10 * this.unit;
+		this.chest_height = 7 * this.unit;
+		this.chest_depth = 3 * this.unit;
+		this.abs_height = 5 * this.unit;
+		this.abs_width = 8 * this.unit;
+		this.abs_depth = 2 * this.unit;
 
 		this.deltoid_radius = 2 * this.unit;
 		this.bigarm_size = 8 * this.unit;
 		this.elbow_radius = 1.6 * this.unit;
-
 		this.smallarm_size = 8 * this.unit;
 		this.wrist_size = 1.2 * this.unit;
+
+		this.hand_width = 2.2 * this.unit;
+		this.hand_height = 3 * this.unit;
+		this.hand_depth = 1 * this.unit;
 
 		this.thigh_radius = 2.8 * this.unit;
 		this.thigh_size = 10 * this.unit;
 		this.knee_radius = 2.0 * this.unit;
-
 		this.calf_size = 10 * this.unit;
 		this.ankle_radius = 1.6 * this.unit;
+
+		this.foot_width = 3.2 * this.unit;
+		this.foot_height = 4 * this.unit;
+		this.foot_depth = 1 * this.unit;
 
 		// the initial vector of limbs
 		this.init_vector = new THREE.Vector3(0, -1, 0);
@@ -76,8 +82,214 @@ export default class Silhouette3D {
 		this.color = 0x44aa88;
 
 		// opacity of material, when pose score is lower/higher then 0.5
-		this.invisible_opacity = 0.3;
-		this.visible_opacity = 0.5;
+		this.invisible_opacity = 0.5;
+		this.visible_opacity = 0.8;
+
+		this.body = new THREE.Group();
+
+		this.limbs = [
+			"abs",
+			"chest",
+			"head",
+			"upperarm_l",
+			"lowerarm_l",
+			"hand_l",
+			"upperarm_r",
+			"lowerarm_r",
+			"hand_r",
+			"thigh_l",
+			"calf_l",
+			"foot_l",
+			"thigh_r",
+			"calf_r",
+			"foot_r",
+		];
+
+		this.abs = {
+			parent: this.body,
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.abs_width,
+				this.abs_height,
+				this.abs_depth
+			),
+			position: new THREE.Vector3(0, 0, 0),
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.chest = {
+			parent: this.abs.group,
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.chest_width,
+				this.chest_height,
+				this.chest_depth
+			),
+			position: new THREE.Vector3(
+				0,
+				this.abs_height + (this.chest_height - this.abs_height) / 2,
+				0
+			),
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.head = {
+			parent: this.chest.group,
+			group: new THREE.Group(),
+			mesh: this.getBallMesh(this.head_radius),
+			position: new THREE.Vector3(
+				0,
+				this.chest_height / 2 + this.head_radius,
+				0
+			),
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.upperarm_l = {
+			parent: this.chest.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.deltoid_radius,
+				this.elbow_radius,
+				this.bigarm_size
+			),
+			position: new THREE.Vector3(
+				this.chest_width / 2,
+				this.chest_height / 2,
+				0
+			),
+			mesh_position: new THREE.Vector3(0, -this.chest_height / 2, 0),
+		};
+		this.lowerarm_l = {
+			parent: this.upperarm_l.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.elbow_radius,
+				this.wrist_size,
+				this.smallarm_size
+			),
+			position: new THREE.Vector3(0, -this.bigarm_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+		};
+		this.hand_l = {
+			parent: this.lowerarm_l.group,
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.hand_width,
+				this.hand_height,
+				this.hand_depth
+			),
+			position: new THREE.Vector3(0, -this.smallarm_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
+		};
+		this.upperarm_r = {
+			parent: this.chest.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.deltoid_radius,
+				this.elbow_radius,
+				this.bigarm_size
+			),
+			position: new THREE.Vector3(
+				-this.chest_width / 2,
+				this.chest_height / 2,
+				0
+			),
+			mesh_position: new THREE.Vector3(0, -this.chest_height / 2, 0),
+		};
+		this.lowerarm_r = {
+			parent: this.upperarm_r.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.elbow_radius,
+				this.wrist_size,
+				this.smallarm_size
+			),
+			position: new THREE.Vector3(0, -this.bigarm_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+		};
+		this.hand_r = {
+			parent: this.lowerarm_r.group,
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.hand_width,
+				this.hand_height,
+				this.hand_depth
+			),
+			position: new THREE.Vector3(0, -this.smallarm_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
+		};
+		this.thigh_l = {
+			parent: this.abs.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.thigh_radius,
+				this.knee_radius,
+				this.thigh_size
+			),
+			position: new THREE.Vector3(
+				this.abs_width / 2,
+				-this.abs_height / 2,
+				0
+			),
+			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
+		};
+		this.calf_l = {
+			parent: this.thigh_l.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.knee_radius,
+				this.ankle_radius,
+				this.calf_size
+			),
+			position: new THREE.Vector3(0, -this.thigh_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
+		};
+		this.foot_l = {
+			parent: this.calf_l.group,
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.foot_width,
+				this.foot_height,
+				this.foot_depth
+			),
+			position: new THREE.Vector3(0, -this.calf_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
+		};
+		this.thigh_r = {
+			parent: this.abs.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.thigh_radius,
+				this.knee_radius,
+				this.thigh_size
+			),
+			position: new THREE.Vector3(
+				-this.abs_width / 2,
+				-this.abs_height / 2,
+				0
+			),
+			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
+		};
+		this.calf_r = {
+			parent: this.thigh_r.group,
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.knee_radius,
+				this.ankle_radius,
+				this.calf_size
+			),
+			position: new THREE.Vector3(0, -this.thigh_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
+		};
+		this.foot_r = {
+			parent: this.calf_r.group,
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.foot_width,
+				this.foot_height,
+				this.foot_depth
+			),
+			position: new THREE.Vector3(0, -this.calf_size, 0),
+			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
+		};
 	}
 
 	getBoxMesh(width, height, depth) {
@@ -108,7 +320,7 @@ export default class Silhouette3D {
 		);
 	}
 
-	getLimbMesh(
+	getCylinderMesh(
 		radiusTop,
 		radiusBottom,
 		height,
@@ -135,7 +347,7 @@ export default class Silhouette3D {
 		const material = new THREE.MeshBasicMaterial({
 			color: this.color,
 			transparent: true,
-			opacity: 0,
+			opacity: this.invisible_opacity,
 		});
 
 		return new THREE.Mesh(geometry, material);
@@ -146,175 +358,36 @@ export default class Silhouette3D {
 		 * initialize body parts
 		 */
 
-		// the overall group, contains everything
-		this.body = new THREE.Group();
+		for (let name of this.limbs) {
+			this[name].group.name = name;
 
-		// abdominal
-		this.abs_mesh = this.getBoxMesh(
-			this.waist_size,
-			this.abs_size,
-			this.deltoid_radius
-		);
+			this[name].parent.add(this[name].group);
 
-		this.abs_mesh.position.set(0, 0, 0);
+			this[name].group.add(this[name].mesh);
 
-		this.body.add(this.abs_mesh);
+			this[name].group.position.set(
+				this[name].position.x,
+				this[name].position.y,
+				this[name].position.z
+			);
 
-		// todo separate torso to two parts, chest and abdominal
-		this.chest_mesh = this.getBoxMesh(
-			this.shoulder_size,
-			this.chest_size,
-			this.deltoid_radius
-		);
-
-		this.chest_mesh.add(new THREE.AxesHelper(30));
-
-		this.chest_mesh.position.set(
-			0,
-			this.abs_size + (this.chest_size - this.abs_size) / 2,
-			0
-		);
-
-		this.abs_mesh.add(this.chest_mesh);
-
-		// head
-		this.head_mesh = this.getBallMesh(this.head_radius);
-
-		this.head_mesh.position.set(0, this.chest_size, 0);
-
-		this.chest_mesh.add(this.head_mesh);
-
-		// left shoulder
-		this.shoulder_l_mesh = this.getBallMesh((this.deltoid_radius * 3) / 2);
-
-		this.shoulder_l_mesh.position.set(
-			this.shoulder_size / 2 - this.deltoid_radius / 2,
-			this.chest_size / 2 - this.deltoid_radius,
-			0
-		);
-
-		this.chest_mesh.add(this.shoulder_l_mesh);
-
-		// right shoulder
-		this.shoulder_r_mesh = this.getBallMesh(this.deltoid_radius);
-
-		this.shoulder_r_mesh.position.set(
-			this.shoulder_size / -2 + this.deltoid_radius / 2,
-			this.chest_size / 2 - this.deltoid_radius,
-			0
-		);
-
-		this.chest_mesh.add(this.shoulder_r_mesh);
-
-		return this.body;
-
-		// left upperarm
-		this.upperarm_l = new THREE.Group();
-
-		this.upperarm_l_mesh = this.getLimbMesh(
-			this.deltoid_radius,
-			this.elbow_radius,
-			this.bigarm_size
-		);
-
-		if (this.add_mesh) {
-			this.upperarm_l.add(this.upperarm_l_mesh);
+			this[name].mesh.position.set(
+				this[name].mesh_position.x,
+				this[name].mesh_position.y,
+				this[name].mesh_position.z
+			);
 		}
-		this.body.add(this.upperarm_l);
+		// this.upperarm_l.group.rotation.set(-1, 0, 0);
+		// this.lowerarm_l.group.rotation.set(-1, 0, 0);
 
-		// left lowerarm
-		this.lowerarm_l = new THREE.Group();
+		// this.upperarm_r.group.rotation.set(-1.4, 0, 0);
+		// this.lowerarm_r.group.rotation.set(-1.3, 0, 0);
 
-		this.lowerarm_l_mesh = this.getLimbMesh(
-			this.elbow_radius,
-			this.wrist_size,
-			this.smallarm_size
-		);
+		// this.thigh_l.group.rotation.set(-1, 0, 0);
+		// this.calf_l.group.rotation.set(1, 0, 0);
 
-		if (this.add_mesh) {
-			this.lowerarm_l.add(this.lowerarm_l_mesh);
-		}
-		this.body.add(this.lowerarm_l);
-
-		// right upperarm
-		this.upperarm_r = new THREE.Group();
-
-		this.upperarm_r_mesh = this.getLimbMesh(
-			this.deltoid_radius,
-			this.elbow_radius,
-			this.bigarm_size
-		);
-
-		if (this.add_mesh) {
-			this.upperarm_r.add(this.upperarm_r_mesh);
-		}
-		this.body.add(this.upperarm_r);
-		// right lowerarm
-		this.lowerarm_r = new THREE.Group();
-
-		this.lowerarm_r_mesh = this.getLimbMesh(
-			this.elbow_radius,
-			this.wrist_size,
-			this.smallarm_size
-		);
-
-		if (this.add_mesh) {
-			this.lowerarm_r.add(this.lowerarm_r_mesh);
-		}
-		this.body.add(this.lowerarm_r);
-
-		// left thigh
-		this.thigh_l = new THREE.Group();
-
-		this.thigh_l_mesh = this.getLimbMesh(
-			this.thigh_radius,
-			this.knee_radius,
-			this.thigh_size
-		);
-
-		if (this.add_mesh) {
-			this.thigh_l.add(this.thigh_l_mesh);
-		}
-		this.body.add(this.thigh_l);
-		// right thigh
-		this.thigh_r = new THREE.Group();
-
-		this.thigh_r_mesh = this.getLimbMesh(
-			this.thigh_radius,
-			this.knee_radius,
-			this.thigh_size
-		);
-
-		if (this.add_mesh) {
-			this.thigh_r.add(this.thigh_r_mesh);
-		}
-		this.body.add(this.thigh_r);
-		// left calf
-		this.calf_l = new THREE.Group();
-
-		this.calf_l_mesh = this.getLimbMesh(
-			this.knee_radius,
-			this.ankle_radius,
-			this.calf_size
-		);
-
-		if (this.add_mesh) {
-			this.calf_l.add(this.calf_l_mesh);
-		}
-		this.body.add(this.calf_l);
-		// right calf
-		this.calf_r = new THREE.Group();
-
-		this.calf_r_mesh = this.getLimbMesh(
-			this.knee_radius,
-			this.ankle_radius,
-			this.calf_size
-		);
-
-		if (this.add_mesh) {
-			this.calf_r.add(this.calf_r_mesh);
-		}
-		this.body.add(this.calf_r);
+		// this.thigh_r.group.rotation.set(-1.4, 0, 0);
+		// this.calf_r.group.rotation.set(1.3, 0, 0);
 
 		return this.body;
 	}

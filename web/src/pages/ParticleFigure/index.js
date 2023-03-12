@@ -229,7 +229,7 @@ export default function ParticleFigure() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 100);
+		camera.current.position.set(0, 0, 40);
 
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
