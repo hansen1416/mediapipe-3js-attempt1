@@ -144,10 +144,22 @@ export default class Silhouette3D {
 	init() {
 		/**
 		 * initialize body parts
-		 * todo add hands and foot
 		 */
 
+		// the overall group, contains everything
 		this.body = new THREE.Group();
+
+		// abdominal
+		this.abs_mesh = this.getBoxMesh(
+			this.waist_size,
+			this.abs_size,
+			this.deltoid_radius
+		);
+
+		this.abs_mesh.position.set(0, 0, 0);
+
+		this.body.add(this.abs_mesh);
+
 		// todo separate torso to two parts, chest and abdominal
 		this.chest_mesh = this.getBoxMesh(
 			this.shoulder_size,
@@ -155,13 +167,15 @@ export default class Silhouette3D {
 			this.deltoid_radius
 		);
 
-		const axesHelper = new THREE.AxesHelper(30);
+		this.chest_mesh.add(new THREE.AxesHelper(30));
 
-		this.chest_mesh.add(axesHelper);
+		this.chest_mesh.position.set(
+			0,
+			this.abs_size + (this.chest_size - this.abs_size) / 2,
+			0
+		);
 
-		this.chest_mesh.position.set(0, this.chest_size / 2, 0);
-
-		this.body.add(this.chest_mesh);
+		this.abs_mesh.add(this.chest_mesh);
 
 		// head
 		this.head_mesh = this.getBallMesh(this.head_radius);
@@ -191,19 +205,6 @@ export default class Silhouette3D {
 		);
 
 		this.chest_mesh.add(this.shoulder_r_mesh);
-
-		// abdominal
-		this.abs_mesh = this.getBoxMesh(
-			this.waist_size,
-			this.abs_size,
-			this.deltoid_radius
-		);
-
-		this.abs_mesh.add(new THREE.AxesHelper(30));
-
-		this.abs_mesh.position.set(0, this.abs_size / -2, 0);
-
-		this.body.add(this.abs_mesh);
 
 		return this.body;
 
@@ -407,7 +408,9 @@ export default class Silhouette3D {
 			zaxis3
 		);
 
-		return [chest_q, abs_q];
+		const qs = chest_q.clone().multiply(abs_q.clone().invert());
+
+		return [qs, abs_q];
 	}
 
 	applyPose(pose3D, resize = false) {
