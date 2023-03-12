@@ -1,3 +1,4 @@
+import { confusionMatrix } from "@tensorflow/tfjs-core/dist/math";
 import * as THREE from "three";
 import { Quaternion } from "three";
 // import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
@@ -13,32 +14,15 @@ function middlePosition(a, b) {
 	return new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
 }
 
+function posVec(p) {
+	return new THREE.Vector3(p.x, p.y, p.z);
+}
+
 export default class Silhouette3D {
 	/**
 	 * todo, work out the math for a proper position of landmark
 	 * it should be in good proportion and can change as camera distance change
-	 *
-	 * use particle for limbs
-	 *
-	 *
 	 */
-
-	limbs_arr = [
-		"TORSO",
-		"HEAD",
-		"LEFT_UPPERARM",
-		"LEFT_FOREARM",
-		"LEFT_HAND",
-		"RIGHT_UPPERARM",
-		"RIGHT_FOREARM",
-		"RIGHT_HAND",
-		"LEFT_THIGH",
-		"LEFT_CALF",
-		"LEFT_FOOT",
-		"RIGHT_THIGH",
-		"RIGHT_CALF",
-		"RIGHT_FOOT",
-	];
 
 	constructor() {
 		this.unit = 1;
@@ -481,12 +465,66 @@ export default class Silhouette3D {
 			zaxis3
 		);
 
-		const qs = chest_q.clone().multiply(abs_q.clone().invert());
+		// const qs = chest_q.clone().multiply(abs_q.clone().invert());
 
-		return [qs, abs_q];
+		return [abs_q, chest_q];
 	}
 
-	applyPose(pose3D, resize = false) {
+	getQuaternions(pose3D) {
+		// get position of joints
+
+		const shoulder_pose_l = posVec(
+			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+		);
+		const elbow_pose_l = posVec(
+			pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+		);
+		const wrist_pose_l = posVec(
+			pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]]
+		);
+		const hip_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]);
+		const knee_pose_l = posVec(
+			pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]
+		);
+		const ankle_pose_l = posVec(
+			pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]
+		);
+
+		const shoulder_pose_r = posVec(
+			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+		);
+		const elbow_pose_r = posVec(
+			pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
+		);
+		const wrist_pose_r = posVec(
+			pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
+		);
+		const hip_pose_r = posVec(
+			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+		);
+		const knee_pose_r = posVec(
+			pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]
+		);
+		const ankle_pose_r = posVec(
+			pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
+		);
+
+		const result = {};
+
+		const [abs_q, chest_q] = this.torsoRotation(
+			shoulder_pose_l,
+			shoulder_pose_r,
+			hip_pose_l,
+			hip_pose_r
+		);
+
+		result["abs"] = abs_q;
+		result["chest"] = chest_q;
+
+		return result;
+	}
+
+	applyPose(pose3D) {
 		/**
 		 * apply pose to mesh, adjust it's position and scale
 		 */
@@ -494,49 +532,25 @@ export default class Silhouette3D {
 			return;
 		}
 
-		// get position of joints
-		const nose = pose3D[BlazePoseKeypointsValues["NOSE"]];
+		const qs = this.getQuaternions(pose3D);
 
-		const shoulder_pose_l =
-			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
-		const elbow_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]];
-		const wrist_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]];
-		const hip_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
-		const knee_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
-		const ankle_pose_l = pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]];
+		for (let name of this.limbs) {
+			if (!qs[name]) {
+				continue;
+			}
 
-		const shoulder_pose_r =
-			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
-		const elbow_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
-		const wrist_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]];
-		const hip_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]];
-		const knee_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
-		const ankle_pose_r = pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]];
+			const q = qs[name]
+				.clone()
+				.multiply(this[name].parent.quaternion.clone().invert());
 
-		const [chest_q, abs_q] = this.torsoRotation(
-			new THREE.Vector3(
-				shoulder_pose_l.x,
-				shoulder_pose_l.y,
-				shoulder_pose_l.z
-			),
-			new THREE.Vector3(
-				shoulder_pose_r.x,
-				shoulder_pose_r.y,
-				shoulder_pose_r.z
-			),
-			new THREE.Vector3(hip_pose_l.x, hip_pose_l.y, hip_pose_l.z),
-			new THREE.Vector3(hip_pose_r.x, hip_pose_r.y, hip_pose_r.z)
-		);
-
-		this.chest_mesh.rotation.setFromQuaternion(chest_q);
-
-		this.abs_mesh.rotation.setFromQuaternion(abs_q);
+			this[name].group.rotation.setFromQuaternion(q);
+		}
 
 		return;
 
 		// set limbs positions
 		// this.head.position.set(nose.x, nose.y, nose.z);
-
+		/**
 		this.upperarm_l.position.set(
 			shoulder_pose_l.x,
 			shoulder_pose_l.y,
@@ -624,6 +638,7 @@ export default class Silhouette3D {
 		this.lowerarm_r.setRotationFromQuaternion(lowerarm_r_q);
 		this.thigh_r.setRotationFromQuaternion(thigh_r_q);
 		this.calf_r.setRotationFromQuaternion(calf_r_q);
+		 */
 	}
 
 	applyColor(colors) {
@@ -643,39 +658,4 @@ export default class Silhouette3D {
 			);
 		}
 	}
-
-	// meshToLine(mesh) {
-	// 	const sampler = new MeshSurfaceSampler(mesh).build();
-
-	// 	const tempPosition = new THREE.Vector3();
-
-	// 	const points = []
-
-	// 	for (let i = 0; i < 500; i++) {
-	// 		sampler.sample(tempPosition);
-	// 		points.push(tempPosition.clone())
-	// 	}
-
-	// 	// const curve = new THREE.CatmullRomCurve3(points).getPoints(100);
-
-	// 	const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-	// 	// const material = new MeshLineMaterial( {
-	// 	// 	transparent: true,
-	// 	// 	depthTest:false,
-	// 	// 	lineWidth:0.5,
-	// 	// 	color: 0xffcc12,
-	// 	// 	dashArray:4,
-	// 	// 	dashRatio:0.95,
-	// 	// } );
-
-	// 	const material = new THREE.PointsMaterial({
-	// 		color: 0x47b2f5,
-	// 		size: 0.1,
-	// 		// transparent: true,
-	// 		// opacity: 0.5,
-	// 	});
-
-	// 	return new THREE.Points( geometry, material );
-	// }
 }
