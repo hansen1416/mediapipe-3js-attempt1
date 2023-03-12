@@ -1,14 +1,6 @@
-import { confusionMatrix } from "@tensorflow/tfjs-core/dist/math";
 import * as THREE from "three";
-import { Quaternion } from "three";
-// import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 
-import {
-	BlazePoseKeypointsValues,
-	posePointsToVector,
-	quaternionFromVectors,
-} from "./ropes";
-// import MeshLineMaterial from "./MeshLineMaterial";
+import { BlazePoseKeypointsValues, quaternionFromVectors } from "./ropes";
 
 function middlePosition(a, b) {
 	return new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
@@ -16,6 +8,18 @@ function middlePosition(a, b) {
 
 function posVec(p) {
 	return new THREE.Vector3(p.x, p.y, p.z);
+}
+
+function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
+	/**
+	 * transfer object from basis0 to basis1
+	 */
+	const m0 = new THREE.Matrix4().makeBasis(xaxis0, yaxis0, zaxis0);
+	const m1 = new THREE.Matrix4().makeBasis(xaxis1, yaxis1, zaxis1);
+
+	const m = m1.multiply(m0.invert());
+
+	return new THREE.Quaternion().setFromRotationMatrix(m);
 }
 
 export default class Silhouette3D {
@@ -492,18 +496,6 @@ export default class Silhouette3D {
 		return this.body;
 	}
 
-	quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
-		/**
-		 * transfer object from basis0 to basis1
-		 */
-		const m0 = new THREE.Matrix4().makeBasis(xaxis0, yaxis0, zaxis0);
-		const m1 = new THREE.Matrix4().makeBasis(xaxis1, yaxis1, zaxis1);
-
-		const m = m1.multiply(m0.invert());
-
-		return new THREE.Quaternion().setFromRotationMatrix(m);
-	}
-
 	torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		/**
 			Now you want matrix B that maps from 1st set of coords to 2nd set:
@@ -539,7 +531,7 @@ export default class Silhouette3D {
 			.crossVectors(xaxis1, zaxis1)
 			.normalize();
 
-		const chest_q = this.quaternionFromBasis(
+		const chest_q = quaternionFromBasis(
 			xaxis0,
 			yaxis0,
 			zaxis0,
@@ -572,7 +564,7 @@ export default class Silhouette3D {
 
 		// console.log(xaxis3, yaxis3, zaxis3);
 
-		const abs_q = this.quaternionFromBasis(
+		const abs_q = quaternionFromBasis(
 			xaxis2,
 			yaxis2,
 			zaxis2,

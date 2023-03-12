@@ -77,33 +77,14 @@ export default function ParticleFigure() {
 			storedPose.current = pose3d;
 		});
 
-		// const arr = Array(50)
-		// 	.fill(0)
-		// 	.map((item, idx) => {
-		// 		return item + idx - 12;
-		// 	});
-
-		// for (let i of arr) {
-		// 	for (let j of arr) {
-		// 		const tmp = new Silhouette3D();
-		// 		const body = tmp.init();
-
-		// 		body.position.set(i * 20, j * 20, 0);
-
-		// 		scene.current.add(body);
-
-		// 		figures.current.push(tmp);
-		// 	}
-		// }
-
 		figure.current = new Silhouette3D();
 		const body = figure.current.init();
 
 		scene.current.add(body);
 
-		const axesHelper = new THREE.AxesHelper(40);
+		// const axesHelper = new THREE.AxesHelper(40);
 
-		scene.current.add(axesHelper);
+		// scene.current.add(axesHelper);
 
 		animate();
 
