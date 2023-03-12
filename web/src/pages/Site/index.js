@@ -54,6 +54,13 @@ export default function Site() {
 
 		camera.current.position.set(0, 0, 12);
 
+		// camera.current.position.set(0, 44, 33);
+		// camera.current.rotation.set(
+		// 	-0.9366089265496195,
+		// 	-0.041875841789770954,
+		// 	-0.056853524782885745
+		// );
+
 		{
 			// mimic the sun light
 			const dlight = new THREE.PointLight(0xffffff, 0.5);
@@ -74,8 +81,8 @@ export default function Site() {
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
 		controls.current.enablePan = false;
-		controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
-		controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
+		// controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
+		// controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
 		controls.current.minDistance = 10;
 		controls.current.maxDistance = 100;
 		controls.current.enableDamping = true;
@@ -84,6 +91,8 @@ export default function Site() {
 	}
 
 	function animate() {
+		// console.log(camera.current);
+
 		controls.current.update();
 
 		renderer.current.render(scene.current, camera.current);
