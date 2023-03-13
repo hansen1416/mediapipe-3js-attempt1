@@ -3,8 +3,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { cloneDeep } from "lodash";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 
 import { loadFBX, loadJSON, muscleGroupsColors } from "../../components/ropes";
 
@@ -383,57 +381,25 @@ export default function Motions({
 			className="panel"
 			style={{ width: width + "px", height: height + "px" }}
 		>
-			<Tabs>
-				<TabList>
-					{musclGroups &&
-						musclGroups.map((item) => {
-							return (
-								<Tab
-									key={item}
-									style={{
-										backgroundColor: muscleGroupsColors[item],
-									}}
-									onClick={() => {
-										// making request to get exercise json
-										loadAnimationList(item);
-									}}
-								>
-									{item}
-								</Tab>
-							);
-					})}
-				</TabList>
+			<div className="tabs">
 				{musclGroups &&
-						musclGroups.map(() => {
-							return (
-								<TabPanel>
-									{blockN &&
-										Array(blockN)
-											.fill(0)
-											.map((_, i) => {
-												return (
-													<div
-														key={i}
-														className={[
-															"block",
-															(i + 1) % 4 === 0 ? "fringe" : "",
-														].join(" ")}
-														style={{
-															width: blockSize + "px",
-															height: blockSize + "px",
-															backgroundColor: sceneBgColor,
-															display:
-																i < animationList.length
-																	? "inline-block"
-																	: "none",
-														}}
-													></div>
-												);
-											})}
-								</TabPanel>
-							)
-				})}
-			</Tabs>
+					musclGroups.map((item) => {
+						return (
+							<div
+								key={item}
+								style={{
+									backgroundColor: muscleGroupsColors[item],
+								}}
+								onClick={() => {
+									// making request to get exercise json
+									loadAnimationList(item);
+								}}
+							>
+								{item}
+							</div>
+						);
+					})}
+			</div>
 			<div
 				className="motions"
 				style={{
@@ -443,7 +409,29 @@ export default function Motions({
 					height: "100%",
 				}}
 			>
-				
+				{blockN &&
+					Array(blockN)
+						.fill(0)
+						.map((_, i) => {
+							return (
+								<div
+									key={i}
+									className={[
+										"block",
+										(i + 1) % 4 === 0 ? "fringe" : "",
+									].join(" ")}
+									style={{
+										width: blockSize + "px",
+										height: blockSize + "px",
+										backgroundColor: sceneBgColor,
+										display:
+											i < animationList.length
+												? "inline-block"
+												: "none",
+									}}
+								></div>
+							);
+						})}
 			</div>
 			<div ref={container} className="motions">
 				<canvas

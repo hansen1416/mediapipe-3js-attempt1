@@ -24,8 +24,7 @@ function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 
 export default class Silhouette3D {
 	/**
-	 * todo, work out the math for a proper position of landmark
-	 * it should be in good proportion and can change as camera distance change
+	 * limbs geometry combined 3d human figure
 	 */
 
 	constructor() {
@@ -60,15 +59,8 @@ export default class Silhouette3D {
 		this.foot_height = 4 * this.unit;
 		this.foot_depth = 1 * this.unit;
 
-		// the initial vector of limbs
-		this.init_vector = new THREE.Vector3(0, -1, 0);
-
-		// todo remove this property when i'm sure
-		// replace mesh by particles
-		this.add_mesh = true;
-
+		// color of material
 		this.color = 0x44aa88;
-
 		// opacity of material, when pose score is lower/higher then 0.5
 		this.invisible_opacity = 0.5;
 		this.visible_opacity = 0.8;

@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Nav from "react-bootstrap/Nav";
 import "./styles/css/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,6 +13,9 @@ function App() {
 					className="flex-column"
 				>
 					{/* <Nav.Link href="/interpreter">Active</Nav.Link> */}
+					<Nav.Link href="/training-explore">
+						Training explore
+					</Nav.Link>
 					<Nav.Link href="/excercise-editor">
 						excercise editor
 					</Nav.Link>

@@ -10,10 +10,10 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
+import TrainingExplore from "./pages/TrainingExplore";
 import MotionInterpreter from "./pages/MotionInterpreter";
 import ExcerciseEditor from "./pages/ExcerciseEditor";
 import DigitalTrainer from "./pages/DigitalTrainer";
-import CloudRove from "./pages/CloudRove";
 import Register from "./pages/Auth/Register";
 import ParticleFigure from "./pages/ParticleFigure";
 import Site from "./pages/Site";
@@ -34,16 +34,16 @@ const router = createBrowserRouter([
 				element: <MotionInterpreter />,
 			},
 			{
+				path: "/training-explore",
+				element: <TrainingExplore />,
+			},
+			{
 				path: "/excercise-editor",
 				element: <ExcerciseEditor />,
 			},
 			{
 				path: "/digital-trainer",
 				element: <DigitalTrainer />,
-			},
-			{
-				path: "/cloud-rove",
-				element: <CloudRove />,
 			},
 			{
 				path: "/register",
