@@ -1,5 +1,47 @@
-body {
+@light-color: #000;
+@dark-color: #fff;
+
+.App {
+
     overflow: hidden;
+    min-height: 100vh;
+    
+    &.light {
+        h1,h2,h3,h4,h5,a,span,p {
+            color: @light-color;
+        }
+    }
+
+    &.dark {
+        background-color: #0F2027;
+
+        h1,h2,h3,h4,h5,a,span,p {
+            color: @dark-color;
+        }
+    }
+}
+
+.flex-row.nav {
+    position: absolute;
+    top: 0;
+    right: 30px;
+    
+    a{
+        font-size: 24px;
+    }
+}
+
+.main-content {
+    position: relative;
+    width: 80%;
+    margin: 70px auto;
+}
+
+// remove below styles
+.btn-box {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .tmp {

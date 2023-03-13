@@ -12,12 +12,11 @@ import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
 import TrainingExplore from "./pages/TrainingExplore";
 import MotionInterpreter from "./pages/MotionInterpreter";
-import ExcerciseEditor from "./pages/ExcerciseEditor";
+import TrainingBuilder from "./pages/TrainingBuilder";
 import DigitalTrainer from "./pages/DigitalTrainer";
 import Register from "./pages/Auth/Register";
 import ParticleFigure from "./pages/ParticleFigure";
 import Site from "./pages/Site";
-import PoseMapping from "./pages/PoseMapping";
 
 const router = createBrowserRouter([
 	{
@@ -25,6 +24,10 @@ const router = createBrowserRouter([
 		element: <App />,
 		errorElement: <ErrorPage />,
 		children: [
+			{
+				path: "/register",
+				element: <Register />,
+			},
 			{
 				path: "/",
 				element: <Home />,
@@ -38,16 +41,12 @@ const router = createBrowserRouter([
 				element: <TrainingExplore />,
 			},
 			{
-				path: "/excercise-editor",
-				element: <ExcerciseEditor />,
+				path: "/training-builder",
+				element: <TrainingBuilder />,
 			},
 			{
 				path: "/digital-trainer",
 				element: <DigitalTrainer />,
-			},
-			{
-				path: "/register",
-				element: <Register />,
 			},
 			{
 				path: "/cloud",
@@ -56,10 +55,6 @@ const router = createBrowserRouter([
 			{
 				path: "/site",
 				element: <Site />,
-			},
-			{
-				path: "/mapping",
-				element: <PoseMapping />,
 			},
 		],
 	},

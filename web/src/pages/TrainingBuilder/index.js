@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import "../../styles/css/ExerciseEditor.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import "../../styles/css/TrainingBuilder.css";
 
 import { loadFBX, traverseModel, applyTransfer } from "../../components/ropes";
 import Synthesizer from "./Synthesizer";
 import Motions from "./Motions";
 
-export default function ExcerciseEditor() {
+export default function TrainingBuilder() {
 	const mainSceneRef = useRef(null);
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -198,7 +198,7 @@ export default function ExcerciseEditor() {
 
 	return (
 		<div
-			className="box"
+			className="training-builder"
 			style={{ width: boxWidth + "px", height: boxHeight + "px" }}
 		>
 			<div className="kasten">

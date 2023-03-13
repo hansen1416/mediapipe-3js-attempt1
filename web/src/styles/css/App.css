@@ -1,5 +1,47 @@
-body {
+.App {
   overflow: hidden;
+  min-height: 100vh;
+}
+.App.light h1,
+.App.light h2,
+.App.light h3,
+.App.light h4,
+.App.light h5,
+.App.light a,
+.App.light span,
+.App.light p {
+  color: #000;
+}
+.App.dark {
+  background-color: #0F2027;
+}
+.App.dark h1,
+.App.dark h2,
+.App.dark h3,
+.App.dark h4,
+.App.dark h5,
+.App.dark a,
+.App.dark span,
+.App.dark p {
+  color: #fff;
+}
+.flex-row.nav {
+  position: absolute;
+  top: 0;
+  right: 30px;
+}
+.flex-row.nav a {
+  font-size: 24px;
+}
+.main-content {
+  position: relative;
+  width: 80%;
+  margin: 70px auto;
+}
+.btn-box {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 .tmp {
   color: #47b2f5;

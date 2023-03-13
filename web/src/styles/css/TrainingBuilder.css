@@ -1,32 +1,29 @@
-body {
-  background-color: #0F2027;
-}
-.box {
+.training-builder {
   margin: 100px auto 0;
   display: flex;
   flex-direction: column;
 }
-.box .kasten {
+.training-builder .kasten {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
-.box .kasten .panel {
+.training-builder .kasten .panel {
   border-radius: 6px;
   position: relative;
 }
-.box .kasten .panel.main {
+.training-builder .kasten .panel.main {
   border: 1px solid #fff;
   cursor: pointer;
 }
-.box .kasten .panel canvas {
+.training-builder .kasten .panel canvas {
   width: 100%;
   height: 100%;
   max-width: 100%;
   max-height: 100%;
   display: block;
 }
-.box .kasten .panel .tabs {
+.training-builder .kasten .panel .tabs {
   position: absolute;
   width: 100%;
   height: 40px;
@@ -34,7 +31,7 @@ body {
   display: flex;
   flex-direction: row;
 }
-.box .kasten .panel .tabs div {
+.training-builder .kasten .panel .tabs div {
   width: auto;
   height: 100%;
   overflow: hidden;
@@ -45,14 +42,14 @@ body {
   font-size: 20px;
   padding: 0 20px;
 }
-.box .kasten .panel .motions .block {
+.training-builder .kasten .panel .motions .block {
   display: inline-block;
   box-sizing: border-box;
   margin: 0 10px 10px 0;
   border-radius: 6px;
   cursor: pointer;
 }
-.box .kasten .panel .motions .block.fringe {
+.training-builder .kasten .panel .motions .block.fringe {
   margin-right: 0;
 }
 .synthesizer {
