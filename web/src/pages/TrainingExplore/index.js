@@ -6,7 +6,14 @@ export default function TrainingExplore() {
 	const canvasRef = useRef(null);
 
 	useEffect(() => {
-		console.log(1123123123);
+		
+		fetch(process.env.PUBLIC_URL + "/data/training-list.json")
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data)
+		})
+
+
 	}, []);
 
 	return (

@@ -4,37 +4,389 @@
         "duration": 1800,
         "intensity": 10,
         "calories": 1000,
-        "muscles": {"chest": 0.9,"shoulders": 0.1,
-        back: "rgb(255, 234, 2)",
-        arms: "rgb(59,148,94)",
-        abdominals: "rgb(136,96,208)",
-        legs: "rgb(2, 36, 255)"}
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training2"
+        "name": "training2",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training3"
+        "name": "training3",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training4"
+        "name": "training4",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training5"
+        "name": "training5",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training6"
+        "name": "training6",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training7"
+        "name": "training7",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training8"
+        "name": "training8",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training9"
+        "name": "training9",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     },
     {
-        "name": "training10"
+        "name": "training10",
+        "duration": 1800,
+        "intensity": 10,
+        "calories": 1000,
+        "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+        "exercises": [
+            {
+                "name": "exercise1",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise2",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise3",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise4",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 20
+            },
+            {
+                "name": "exercise5",
+                "reps": 10,
+                "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"upperarms":0.0,"lowerarms":0.0,"abdominals":0.0,"thigh":0.0,"calf":0.0},
+                "rest": 0
+            }
+        ]
     }
 ]
