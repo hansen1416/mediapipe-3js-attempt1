@@ -1,18 +1,18 @@
-export default function MusclePercentage({musclesPercent}) {
+import '../styles/css/MusclePercentage.css'
+
+export default function MusclePercentage({musclesPercent, limit=10}) {
 
     const muscleArr = [
         "chest","shoulders", "back","arms","abdominals","legs"
     ]
 
-    return <div>
+    return <div className='muscle-percentage'>
         {
-            muscleArr.map((name) => {
+            muscleArr.map((name, idx) => {
 
-                if (name in musclesPercent) {
-                    return <span>{name}: {musclesPercent[name]}%</span>
-                }
-
-                return <></>
+                return <i key={idx}>
+                    {Boolean(idx < Number(limit) && name in musclesPercent) && <span>{name}: {musclesPercent[name]}%</span>}
+                </i>
             })
         }
     </div>

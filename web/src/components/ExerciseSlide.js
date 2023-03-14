@@ -4,18 +4,9 @@ import '../styles/css/TrainingSlide.css'
 
 import MusclePercentage from "./MusclePercentage";
 
-export default function TrainingSlide({trainingData}) {
+export default function ExerciseSlide({trainingData}) {
 
-    return <div className="training-slide">
-        <div className="title">
-            <span>name: {trainingData.name}</span>
-            <span>duration: {trainingData.duration}</span>
-            <span>intensity: {trainingData.intensity}</span>
-            <span>calories: {trainingData.calories}</span>
-            <MusclePercentage
-                musclesPercent={trainingData.muscles}
-            />
-        </div>
+    return <div className="exercise-slide">
         <Splide
             options={{
                 type: 'slide',
@@ -68,10 +59,10 @@ export default function TrainingSlide({trainingData}) {
                 })
             }
 
-            {/* <div className="splide__arrows">
-                <button className="splide__arrow splide__arrow--prev">Prev</button>
-                <button className="splide__arrow splide__arrow--next">Next</button>
-            </div> */}
+            <div className="splide__arrows">
+                {/* <button className="splide__arrow splide__arrow--prev">Prev</button>
+                <button className="splide__arrow splide__arrow--next">Next</button> */}
+            </div>
         </Splide>
     </div>
 }

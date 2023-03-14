@@ -4,6 +4,14 @@ import Nav from "react-bootstrap/Nav";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/css/App.css";
 
+// Default theme
+// import '@splidejs/react-splide/css';
+// or other themes
+// import '@splidejs/react-splide/css/skyblue';
+import '@splidejs/react-splide/css/sea-green';
+// // or only core styles
+import '@splidejs/react-splide/css/core';
+
 function App() {
 	const [theme] = useState("dark");
 
