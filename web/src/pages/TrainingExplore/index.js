@@ -5,14 +5,15 @@ import "../../styles/css/TrainingExplore.css";
 export default function TrainingExplore() {
 	const canvasRef = useRef(null);
 
+	const [trainingList, settrainingList] = useState([])
+
 	useEffect(() => {
 		
 		fetch(process.env.PUBLIC_URL + "/data/training-list.json")
 		.then((response) => response.json())
 		.then((data) => {
-			console.log(data)
-		})
-
+			settrainingList(data)
+		});
 
 	}, []);
 
@@ -22,9 +23,19 @@ export default function TrainingExplore() {
 				<h1>Training Explore</h1>
 			</div>
 			<div>
-				<div>
-					<TrainingSlide />
-				</div>
+				{
+					trainingList.map((training, idx) => {
+						return (
+							<div
+								key={idx}
+							>
+								<TrainingSlide
+									trainingData={training}
+								/>
+							</div>
+						)
+					})
+				}
 				<div>
 					<canvas ref={canvasRef} />
 				</div>

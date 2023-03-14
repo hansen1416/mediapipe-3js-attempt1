@@ -2,6 +2,9 @@
   overflow: hidden;
   min-height: 100vh;
 }
+.App p {
+  margin: 0;
+}
 .App.light h1,
 .App.light h2,
 .App.light h3,
