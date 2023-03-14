@@ -120,7 +120,9 @@ export default function DigitalTrainer() {
 	const [showCompleted, setshowCompleted] = useState(false);
 	// ======== training process related end
 
-	const ground_level = -10;
+	// ========= captured pose logic
+	const [capturedPose, setcapturedPose] = useState();
+	// ========= captured pose logic
 
 	const worker = useWorker(createWorker);
 
@@ -150,8 +152,7 @@ export default function DigitalTrainer() {
 
 			// add 3d model to main scene
 			mannequinModel.current = model;
-			mannequinModel.current.position.set(0, -9, 0);
-			mannequinModel.current.scale.set(0.1, 0.1, 0.1);
+			mannequinModel.current.position.set(0, -100, 0);
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
 
@@ -268,16 +269,16 @@ export default function DigitalTrainer() {
 		 * @param {number} viewHeight
 		 */
 		scene.current = new THREE.Scene();
-		// scene.current.background = new THREE.Color(0x022244);
+		scene.current.background = new THREE.Color(0x022244);
 
 		camera.current = new THREE.PerspectiveCamera(
-			90,
+			75,
 			viewWidth / viewHeight,
 			0.1,
 			1000
 		);
 
-		camera.current.position.set(0, 0, 12);
+		camera.current.position.set(0, 0, 300);
 
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
@@ -287,12 +288,8 @@ export default function DigitalTrainer() {
 			scene.current.add(camera.current);
 		}
 
-		drawScene();
-
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
-			alpha: true,
-			antialias: true,
 		});
 
 		renderer.current.toneMappingExposure = 0.5;
@@ -300,62 +297,6 @@ export default function DigitalTrainer() {
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
 		renderer.current.setSize(viewWidth, viewHeight);
-	}
-
-	function drawScene() {
-		// for (let i = 0; i < 100; i++) {
-		// 	let box = new THREE.Mesh(
-		// 		new THREE.BoxGeometry().translate(0, 0.51, 0),
-		// 		new THREE.MeshLambertMaterial({ color: "pink" })
-		// 	);
-		// 	box.position.setFromCylindricalCoords(
-		// 		Math.random() * 10,
-		// 		Math.random() * Math.PI * 2,
-		// 		0
-		// 	);
-		// 	let distRatio = 1 - Math.hypot(box.position.x, box.position.z) / 10;
-		// 	box.scale.y = 1 + distRatio * distRatio * distRatio * 5;
-		// 	scene.current.add(box);
-		// }
-
-		// das meer
-		const ground = new THREE.Mesh(
-			new THREE.CircleGeometry(1500, 64).rotateX(-Math.PI * 0.5),
-			new THREE.MeshBasicMaterial({
-				color: new THREE.Color(0x2c589d),
-				transparent: true,
-				opacity: 0.7,
-			})
-		);
-
-		ground.position.set(0, ground_level, 0);
-
-		scene.current.add(ground);
-
-		// das strand
-		const island = new THREE.Mesh(
-			new THREE.CylinderGeometry(40, 40, 1, 64, 64),
-			new THREE.MeshBasicMaterial({
-				color: 0xf5ccb3,
-			})
-		);
-
-		island.position.set(0, ground_level, 0);
-
-		scene.current.add(island);
-
-		const wave = new THREE.Mesh(
-			new THREE.CircleGeometry(41, 64).rotateX(-Math.PI * 0.5),
-			new THREE.MeshToonMaterial({
-				color: 0xffffff,
-				transparent: true,
-				opacity: 0.4,
-			})
-		);
-
-		wave.position.set(0, ground_level + 0.1, 0);
-
-		scene.current.add(wave);
 	}
 
 	function createSubScene() {
@@ -373,9 +314,9 @@ export default function DigitalTrainer() {
 		 */
 
 		sceneSub.current = new THREE.Scene();
-		// sceneSub.current.background = new THREE.Color(0x22244);
+		sceneSub.current.background = new THREE.Color(0x22244);
 
-		cameraSub.current = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
+		cameraSub.current = new THREE.PerspectiveCamera(90, 1, 0.1, 1000);
 
 		cameraSub.current.position.set(0, 0, 30);
 
@@ -383,8 +324,6 @@ export default function DigitalTrainer() {
 
 		rendererSub.current = new THREE.WebGLRenderer({
 			canvas: canvasRefSub.current,
-			alpha: true,
-			antialias: true,
 		});
 
 		controlsSub.current = new OrbitControls(
@@ -451,6 +390,17 @@ export default function DigitalTrainer() {
 		} else {
 			keypoints3D.current = null;
 		}
+
+		// ========= captured pose logic
+		if (keypoints3D.current) {
+			// draw the pose as dots and lines on the sub scene
+			const g = drawPoseKeypoints(keypoints3D.current);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+		}
+		// ========= captured pose logic
 
 		if (inExercise.current) {
 			counter.current += 1;
@@ -744,9 +694,34 @@ export default function DigitalTrainer() {
 				style={{
 					display: "none",
 				}}
+				// style={{
+				// 	display: "block",
+				// 	position: "absolute",
+				// 	top: 0,
+				// 	left: subsceneWidth + "px",
+				// }}
 			></video>
 
 			<canvas ref={canvasRef} />
+
+			{/* // ========= captured pose logic */}
+			<div
+				style={{
+					width: subsceneWidth + "px",
+					height: subsceneHeight + "px",
+					position: "absolute",
+					top: 0,
+					left: 0,
+				}}
+			>
+				<SubThreeJsScene
+					width={subsceneWidth}
+					height={subsceneHeight}
+					objects={capturedPose}
+					cameraZ={200}
+				/>
+			</div>
+			{/* // ========= captured pose logic */}
 
 			<div
 				style={{
