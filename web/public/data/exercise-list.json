@@ -1,0 +1,152 @@
+[
+    {
+        "name": "exercise1",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise2",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise3",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise4",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise5",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise6",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise7",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise8",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise9",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise10",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise11",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise12",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise13",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise14",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise15",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise16",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise17",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise18",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise19",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise20",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise21",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise22",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise23",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise24",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise25",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise26",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise27",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise28",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise29",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    },
+    {
+        "name": "exercise30",
+        "img": "",
+        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
+    }
+]
