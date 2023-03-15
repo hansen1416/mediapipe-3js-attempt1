@@ -12,16 +12,26 @@ export default function TrainingBuilder() {
 
     const pageSize = 12;
 
-    const [totalPage, settotalPage] = useState([1,2,3])
+    const [totalPage] = useState([1,2,3])
     const [currentPage, setcurrentPage] = useState(1)
-    const [exercisePages, setexercisePages] = useState([])
+    const [allData, setallData] = useState([])
+    const [pageData, setpageData] =  useState([])
 
 	useEffect(() => {
 
-        const {width} = kasten.current.getBoundingClientRect();
+        let resizeObserver;
+        // watch box size change and set size for individual block
+        if (kasten.current) {
+            // wait for the elementRef to be available
+            resizeObserver = new ResizeObserver(([ResizeObserverEntry]) => {
+                // Do what you want to do when the size of the element changes
+                const width = parseInt(ResizeObserverEntry.contentRect.width / 4);
 
-        setitemWidth(parseInt(width/4))
-        setitemHeight(parseInt(width/4) + 100)
+                setitemWidth(width)
+                setitemHeight(width + 100)
+            });
+            resizeObserver.observe(kasten.current);
+        }
 
 		fetch(process.env.PUBLIC_URL + "/data/exercise-list.json")
 		.then((response) => response.json())
@@ -38,10 +48,29 @@ export default function TrainingBuilder() {
                 tmp[tmp.length-1].push(e)
             }
 
-			setexercisePages(tmp)
+			setallData(tmp)
 		});
 
+        return () => {
+            if (resizeObserver){
+                resizeObserver.disconnect();// clean up observer
+            }
+        } 
+
 	}, []);
+
+    function loadPageData(p) {
+
+        setcurrentPage(p)
+
+        const idx = Number(p) - 1;
+
+        if (allData[idx]) {
+            setpageData(allData[idx])
+        } else {
+            setpageData([])
+        }
+    }
 
 	return (
 		<div 
@@ -56,41 +85,33 @@ export default function TrainingBuilder() {
             </div>
 			<div>
                 {
-                    exercisePages.map((exercises, idx) => {
+                    pageData.map((exercise, idx) => {
                         return (
-                            <div
-                                key={idx}
-                            >
-                                {
-                                    exercises.map((e, idx1) => {
-                                        return (
-                                        <div
-                                            key={idx1}
-                                            style={{
-                                                width: itemWidth+'px',
-                                                height: itemHeight+'px',
-                                                display: "inline-block",
-                                            }}
-                                        >
-                                            <div>
-                                                <img
-                                                    style={{width: '100%', height: '100%'}}
-                                                    src={process.env.PUBLIC_URL + "/thumb.png"} 
-                                                    alt=""
-                                                />
-                                            </div>
-                                            <div>
-                                                <span>{e.name}</span>
-                                            </div>
-                                            <div>
-                                                <MusclePercentage
-                                                    musclesPercent={e.muscles}
-                                                />
-                                            </div>
-                                        </div>)
-                                    })
-                                }
-                            </div>)
+                                <div
+                                    key={idx}
+                                    style={{
+                                        width: itemWidth+'px',
+                                        height: itemHeight+'px',
+                                        display: "inline-block",
+                                    }}
+                                >
+                                    <div>
+                                        <img
+                                            style={{width: '100%', height: '100%'}}
+                                            src={process.env.PUBLIC_URL + "/thumb.png"} 
+                                            alt=""
+                                        />
+                                    </div>
+                                    <div>
+                                        <span>{exercise.name}</span>
+                                    </div>
+                                    <div>
+                                        <MusclePercentage
+                                            musclesPercent={exercise.muscles}
+                                        />
+                                    </div>
+                                </div>   
+                            )
                     })
                 }
             </div>
@@ -101,8 +122,11 @@ export default function TrainingBuilder() {
                     totalPage.map((p) => {
                         return (
                             <div
-                                className={["page", currentPage === p ? 'active' : ''].join(' ')}
                                 key={p}
+                                className={["page", currentPage === p ? 'active' : ''].join(' ')}
+                                onClick={() => {
+                                    loadPageData(p)
+                                }}
                             ><span>{p}</span></div>
                         )
                     })
