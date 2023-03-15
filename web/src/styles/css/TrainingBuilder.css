@@ -1,7 +1,8 @@
 .training-builder .exercise-block {
   display: inline-block;
-  padding: 10px;
   box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 /** 20230314
 @border-radius: 6px;

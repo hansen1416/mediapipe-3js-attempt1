@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import Button from "react-bootstrap/Button";
+import { cloneDeep } from "lodash";
 
+import "../../styles/css/TrainingBuilder.css"
 import TrainingSlideEditor from "../../components/TrainingSlideEditor";
 import MusclePercentage from "../../components/MusclePercentage";
-import "../../styles/css/TrainingBuilder.css"
+
 
 export default function TrainingBuilder() {
     const canvasRef = useRef(null);
@@ -19,7 +22,7 @@ export default function TrainingBuilder() {
     const [allData, setallData] = useState([]);
     const [pageData, setpageData] = useState([]);
 
-    const [trainingData, settrainingData] = useState([]);
+    const [trainingData, settrainingData] = useState({});
 
 	useEffect(() => {
 
@@ -32,7 +35,7 @@ export default function TrainingBuilder() {
                 const width = parseInt(ResizeObserverEntry.contentRect.width / 4);
 
                 setitemWidth(width);
-                setitemHeight(width + 100);
+                setitemHeight(width + 200);
             });
             resizeObserver.observe(kasten.current);
         }
@@ -84,6 +87,26 @@ export default function TrainingBuilder() {
         }
     }
 
+    function addExerciseToTraining(exercise) {
+
+        const tmp = cloneDeep(trainingData)
+
+        if (!tmp || !tmp.exercises) {
+            Object.assign(tmp, {
+                "name": "training name",
+                "duration": 1800,
+                "intensity": 10,
+                "calories": 1000,
+                "muscles": {"chest": 0.6,"shoulders": 0.3, "back": 0.1,"arms":0.0,"abdominals":0.0,"legs":0.0},
+                "exercises": []
+            });
+        }
+
+        tmp.exercises.push(Object.assign({"reps": 1, "rest": 10}, exercise))
+
+        settrainingData(tmp)
+    }
+
 	return (
 		<div 
             className="main-content training-builder"
@@ -127,6 +150,18 @@ export default function TrainingBuilder() {
                                         <MusclePercentage
                                             musclesPercent={exercise.muscles}
                                         />
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <Button
+                                                variant="primary"
+                                                onClick={() => {
+                                                    addExerciseToTraining(exercise)
+                                                }}
+                                            >
+                                                Add
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>   
                             )

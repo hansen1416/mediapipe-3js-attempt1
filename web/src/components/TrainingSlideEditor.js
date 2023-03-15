@@ -1,14 +1,28 @@
 // import { useEffect, useRef, useState } from "react";
 import { Splide, SplideSlide } from '@splidejs/react-splide';
+import { cloneDeep } from "lodash";
 
 import '../styles/css/TrainingSlideEditor.css'
 import MusclePercentage from "./MusclePercentage";
+import InputIncreaseDecrease from './InputIncreaseDecrease';
 
 export default function TrainingSlideEditor({trainingData, settrainingData}) {
 
+    function updateExercise(idx, dict) {
+        const tmp = cloneDeep(trainingData);
+
+        for (let i in tmp.exercises) {
+            if (Number(i) === Number(idx)) {
+                Object.assign(tmp.exercises[i], dict)
+            }
+        }
+
+        settrainingData(tmp)
+    }
+
     return <div className="training-slide-editor">
         {
-            trainingData && trainingData.length && 
+            trainingData && trainingData.name && 
             <section>
                 <div className="title">
                     <span>name: {trainingData.name}</span>
@@ -25,7 +39,7 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
                         focus: 0,
                         perMove: 1,
                         fixedWidth : 160,
-                        fixedHeight: 200,
+                        // fixedHeight: 200,
                         gap: 10,
                         rewind     : true,
                         pagination : false,
@@ -58,23 +72,40 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
                                         </div>
                                         <div>
                                             <p>{exercise.name}</p>
-                                            <p>reps: {exercise.reps}</p>
-                                            <p>rest: {exercise.rest}</p>
                                             <MusclePercentage
                                                 musclesPercent={exercise.muscles}
                                                 limit={3}
                                             />
+                                        </div>
+                                        <div>
+                                            <div>
+                                                <span>reps: </span>
+                                                <span>
+                                                    <InputIncreaseDecrease
+                                                        value={exercise.reps}
+                                                        onChange={(v) => {
+                                                            updateExercise(idx, {reps: v})
+                                                        }}
+                                                    />
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span>rest: </span>
+                                                <span>
+                                                    <InputIncreaseDecrease
+                                                        value={exercise.rest}
+                                                        onChange={(v) => {
+                                                            updateExercise(idx, {rest: v})
+                                                        }}
+                                                    />
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </SplideSlide>
                             )
                         })
                     }
-
-                    {/* <div className="splide__arrows">
-                        <button className="splide__arrow splide__arrow--prev">Prev</button>
-                        <button className="splide__arrow splide__arrow--next">Next</button>
-                    </div> */}
                 </Splide>
             </section>
         }
