@@ -13,7 +13,7 @@ import '@splidejs/react-splide/css/sea-green';
 import '@splidejs/react-splide/css/core';
 
 function App() {
-	const [theme] = useState("dark");
+	const [theme] = useState("light");
 
 	return (
 		<div className={`App ${theme}`}>

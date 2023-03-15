@@ -15,6 +15,12 @@
 .App.light p {
   color: #000;
 }
+.App.light .pagination .page {
+  border-color: #000;
+}
+.App.light .pagination .page.active span {
+  color: #47b2f5;
+}
 .App.dark {
   background-color: #0F2027;
 }
@@ -28,6 +34,12 @@
 .App.dark p {
   color: #fff;
 }
+.App.dark .pagination .page {
+  border-color: #fff;
+}
+.App.dark .pagination .page.active span {
+  color: #47b2f5;
+}
 .flex-row.nav {
   position: absolute;
   top: 0;
@@ -40,6 +52,27 @@
   position: relative;
   width: 80%;
   margin: 70px auto;
+}
+.pagination {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.pagination .page {
+  width: 32px;
+  height: 32px;
+  border: 1px solid;
+  border-radius: 4px;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.pagination .page:hover {
+  opacity: 0.8;
 }
 .btn-box {
   position: absolute;

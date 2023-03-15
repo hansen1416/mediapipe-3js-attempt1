@@ -1,5 +1,7 @@
 @light-color: #000;
+@light-active-color: #47b2f5;
 @dark-color: #fff;
+@dark-active-color: #47b2f5;
 
 .App {
 
@@ -14,6 +16,18 @@
         h1,h2,h3,h4,h5,a,span,p {
             color: @light-color;
         }
+
+        .pagination {
+            .page {
+                border-color: @light-color;
+                
+                &.active {
+                    span{
+                        color: @light-active-color;
+                    }
+                }
+            }
+        }
     }
 
     &.dark {
@@ -21,6 +35,18 @@
 
         h1,h2,h3,h4,h5,a,span,p {
             color: @dark-color;
+        }
+
+        .pagination {
+            .page {
+                border-color: @dark-color;
+
+                &.active {
+                    span{
+                        color: @dark-active-color;
+                    }
+                }
+            }
         }
     }
 }
@@ -39,6 +65,30 @@
     position: relative;
     width: 80%;
     margin: 70px auto;
+}
+
+.pagination {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end; // aligh right
+    margin-top: 10px;
+
+    .page {
+        width: 32px;
+        height: 32px;
+        border: 1px solid;
+        border-radius: 4px;
+        margin-right: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
 }
 
 // remove below styles

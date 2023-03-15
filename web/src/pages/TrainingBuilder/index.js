@@ -12,15 +12,16 @@ export default function TrainingBuilder() {
 
     const pageSize = 12;
 
-    const [totalPage, settotalPage] = useState([1,2,3])    
+    const [totalPage, settotalPage] = useState([1,2,3])
+    const [currentPage, setcurrentPage] = useState(1)
     const [exercisePages, setexercisePages] = useState([])
 
 	useEffect(() => {
 
         const {width} = kasten.current.getBoundingClientRect();
 
-        setitemWidth(width/4)
-        setitemHeight(width/4 + 100)
+        setitemWidth(parseInt(width/4))
+        setitemHeight(parseInt(width/4) + 100)
 
 		fetch(process.env.PUBLIC_URL + "/data/exercise-list.json")
 		.then((response) => response.json())
@@ -48,8 +49,11 @@ export default function TrainingBuilder() {
             ref={kasten}
         >
 			<div className="title">
-				<h1>Training Explore</h1>
+				<h1>Training Builder</h1>
 			</div>
+            <div className="title">
+                <div><span>Filter placeholder</span></div>
+            </div>
 			<div>
                 {
                     exercisePages.map((exercises, idx) => {
@@ -90,13 +94,16 @@ export default function TrainingBuilder() {
                     })
                 }
             </div>
-            <div>
+            <div
+                className="pagination"
+            >
                 {
                     totalPage.map((p) => {
                         return (
                             <div
+                                className={["page", currentPage === p ? 'active' : ''].join(' ')}
                                 key={p}
-                            >{p}</div>
+                            ><span>{p}</span></div>
                         )
                     })
                 }
