@@ -1,5 +1,6 @@
 // import { useEffect, useRef, useState } from "react";
 import { Splide, SplideSlide } from '@splidejs/react-splide';
+import Button from "react-bootstrap/Button";
 import { cloneDeep } from "lodash";
 
 import '../styles/css/TrainingSlideEditor.css'
@@ -107,6 +108,18 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
                         })
                     }
                 </Splide>
+                <div
+                    className='operation'
+                >
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                            // todo, save to user's
+                        }}
+                    >
+                        Save to my list
+                    </Button>
+                </div>
             </section>
         }
     </div>
