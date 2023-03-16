@@ -12,6 +12,8 @@ import '@splidejs/react-splide/css/sea-green';
 // // or only core styles
 import '@splidejs/react-splide/css/core';
 
+import { ReactComponent as ArrowUpSvg } from './svg/sun.svg'
+
 function App() {
 	const [theme] = useState("dark");
 
@@ -20,7 +22,9 @@ function App() {
 			<Outlet />
 
 			<div>
-				<div></div>
+				<div>
+					<ArrowUpSvg/>
+				</div>
 				<Nav defaultActiveKey="/digital-trainer" className="flex-row">
 					<Nav.Link href="/training-explore">Explore</Nav.Link>
 					<Nav.Link href="/training-builder">Builder</Nav.Link>
