@@ -14,18 +14,18 @@ import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 import "react-range-slider-input/dist/style.css";
 
 import "../../styles/css/DigitalTrainer.css";
-import SubThreeJsScene from "../../components/SubThreeJsScene";
+// import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette3D from "../../components/Silhouette3D";
 import Counter from "../../components/Counter";
 import PoseSync from "../../components/PoseSync";
 // import PoseSyncVector from "../../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
-	loadFBX,
+	// loadFBX,
 	loadJSON,
 	startCamera,
 	traverseModel,
-	drawPoseKeypoints,
+	// drawPoseKeypoints,
 	calculateLongestTrackFromAnimation,
 	applyTransfer,
 	radianGradientColor,
@@ -151,7 +151,7 @@ export default function DigitalTrainer() {
 
 			// add 3d model to main scene
 			mannequinModel.current = gltf.scene.children[0];
-			mannequinModel.current.position.set(0, -4, 0);
+			mannequinModel.current.position.set(0, -6, 0);
 			mannequinModel.current.scale.set(6, 6, 6);
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
@@ -286,7 +286,7 @@ export default function DigitalTrainer() {
 			dlight.position.set(0, 100, 100);
 			// scene.current.add(dlight);
 			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 0.8));
+			scene.current.add(new THREE.AmbientLight(0xffffff, 1));
 		}
 
 		drawScene();
@@ -305,7 +305,7 @@ export default function DigitalTrainer() {
 	}
 
 	function drawScene() {
-		return
+		// return
 
 		// das meer
 		const ground = new THREE.Mesh(
