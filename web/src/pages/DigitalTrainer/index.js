@@ -21,7 +21,7 @@ import PoseSync from "../../components/PoseSync";
 // import PoseSyncVector from "../../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
-	// loadFBX,
+	loadFBX,
 	loadJSON,
 	startCamera,
 	traverseModel,
@@ -145,14 +145,20 @@ export default function DigitalTrainer() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
+			loadFBX(process.env.PUBLIC_URL + "/fbx/house_lake.fbx"),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-		]).then(([detector, gltf]) => {
+		]).then(([detector, site, gltf]) => {
 			poseDetector.current = detector;
+
+			// add site
+			scene.current.add(site);
+
+			site.scale.set(0.1, 0.1, 0.1);
 
 			// add 3d model to main scene
 			mannequinModel.current = gltf.scene.children[0];
-			mannequinModel.current.position.set(0, -6, 0);
-			mannequinModel.current.scale.set(6, 6, 6);
+			mannequinModel.current.position.set(0, 0, 0);
+			mannequinModel.current.scale.set(500, 500, 500);
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
 
@@ -275,10 +281,10 @@ export default function DigitalTrainer() {
 			90,
 			viewWidth / viewHeight,
 			0.1,
-			1000
+			10000
 		);
 
-		camera.current.position.set(0, 4, 12);
+		camera.current.position.set(0, 1, 100);
 
 		{
 			// mimic the sun light
@@ -286,7 +292,7 @@ export default function DigitalTrainer() {
 			dlight.position.set(0, 100, 100);
 			// scene.current.add(dlight);
 			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 1));
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.8));
 		}
 
 		drawScene();
@@ -301,11 +307,18 @@ export default function DigitalTrainer() {
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
+		controls.current.enablePan = false;
+		// controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
+		// controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
+		controls.current.minDistance = 2;
+		controls.current.maxDistance = 3000;
+		controls.current.enableDamping = true;
+
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
 	function drawScene() {
-		// return
+		return;
 
 		// das meer
 		const ground = new THREE.Mesh(
