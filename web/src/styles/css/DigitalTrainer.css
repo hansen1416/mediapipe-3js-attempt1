@@ -1,7 +1,7 @@
 .digital-trainer {
   overflow: hidden;
   margin: 0;
-  background: linear-gradient(0deg, #afd2fd 50%, #1549cc 100%);
+  background: #f7797d;
 }
 .digital-trainer .single-thumb .range-slider__thumb[data-lower] {
   width: 0;

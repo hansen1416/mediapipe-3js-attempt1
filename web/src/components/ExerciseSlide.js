@@ -40,7 +40,7 @@ export default function ExerciseSlide({trainingData}) {
                                 >
                                     <img
                                         style={{width: '100%', height: '100%'}}
-                                        src={process.env.PUBLIC_URL + "/thumb.png"} 
+                                        src={process.env.PUBLIC_URL + "/thumb1.png"} 
                                         alt=""
                                     />
                                 </div>

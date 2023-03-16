@@ -29,6 +29,7 @@ import {
 	calculateLongestTrackFromAnimation,
 	applyTransfer,
 	radianGradientColor,
+	loadGLTF,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
 
@@ -144,14 +145,14 @@ export default function DigitalTrainer() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-		]).then(([detector, model]) => {
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+		]).then(([detector, gltf]) => {
 			poseDetector.current = detector;
 
 			// add 3d model to main scene
-			mannequinModel.current = model;
-			mannequinModel.current.position.set(0, -9, 0);
-			mannequinModel.current.scale.set(0.1, 0.1, 0.1);
+			mannequinModel.current = gltf.scene.children[0];
+			mannequinModel.current.position.set(0, -4, 0);
+			mannequinModel.current.scale.set(6, 6, 6);
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
 
@@ -277,14 +278,15 @@ export default function DigitalTrainer() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 12);
+		camera.current.position.set(0, 4, 12);
 
 		{
-			const light = new THREE.PointLight(0xffffff, 1);
-			// light.position.set(10, 10, 10);
-			camera.current.add(light);
-
-			scene.current.add(camera.current);
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.2);
+			dlight.position.set(0, 100, 100);
+			// scene.current.add(dlight);
+			// env light
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.8));
 		}
 
 		drawScene();
@@ -303,20 +305,7 @@ export default function DigitalTrainer() {
 	}
 
 	function drawScene() {
-		// for (let i = 0; i < 100; i++) {
-		// 	let box = new THREE.Mesh(
-		// 		new THREE.BoxGeometry().translate(0, 0.51, 0),
-		// 		new THREE.MeshLambertMaterial({ color: "pink" })
-		// 	);
-		// 	box.position.setFromCylindricalCoords(
-		// 		Math.random() * 10,
-		// 		Math.random() * Math.PI * 2,
-		// 		0
-		// 	);
-		// 	let distRatio = 1 - Math.hypot(box.position.x, box.position.z) / 10;
-		// 	box.scale.y = 1 + distRatio * distRatio * distRatio * 5;
-		// 	scene.current.add(box);
-		// }
+		return
 
 		// das meer
 		const ground = new THREE.Mesh(
