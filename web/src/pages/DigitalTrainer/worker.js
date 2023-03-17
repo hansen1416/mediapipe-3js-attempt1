@@ -36,6 +36,34 @@ export const BlazePoseKeypointsValues = {
 	RIGHT_FOOT_INDEX: 32,
 };
 
+function middlePosition(a, b) {
+	return new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+}
+
+function posVec(p) {
+	return new THREE.Vector3(p.x, p.y, p.z);
+}
+
+function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
+	/**
+	 * transfer object from basis0 to basis1
+	 */
+	const m0 = new THREE.Matrix4().makeBasis(xaxis0, yaxis0, zaxis0);
+	const m1 = new THREE.Matrix4().makeBasis(xaxis1, yaxis1, zaxis1);
+
+	const m = m1.multiply(m0.invert());
+
+	return new THREE.Quaternion().setFromRotationMatrix(m);
+}
+
+function quaternionFromVectors(a, b) {
+	const quaternion = new THREE.Quaternion();
+
+	quaternion.setFromUnitVectors(a.normalize(), b.normalize());
+
+	return quaternion;
+}
+
 function poseToVector(p, z) {
 	if (z) {
 		return new THREE.Vector3(p.x, p.y, z);
@@ -63,25 +91,25 @@ function pointsSub(a, b) {
 	return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
 }
 
-function middlePosition(a, b, norm = true) {
-	let v;
+// function middlePosition(a, b, norm = true) {
+// 	let v;
 
-	if (a[0]) {
-		v = new THREE.Vector3(
-			(a[0] + b[0]) / 2,
-			(a[1] + b[1]) / 2,
-			(a[2] + b[2]) / 2
-		);
-	} else {
-		v = new THREE.Vector3(
-			(a.x + b.x) / 2,
-			(a.y + b.y) / 2,
-			(a.z + b.z) / 2
-		);
-	}
+// 	if (a[0]) {
+// 		v = new THREE.Vector3(
+// 			(a[0] + b[0]) / 2,
+// 			(a[1] + b[1]) / 2,
+// 			(a[2] + b[2]) / 2
+// 		);
+// 	} else {
+// 		v = new THREE.Vector3(
+// 			(a.x + b.x) / 2,
+// 			(a.y + b.y) / 2,
+// 			(a.z + b.z) / 2
+// 		);
+// 	}
 
-	return norm ? v.normalize() : v;
-}
+// 	return norm ? v.normalize() : v;
+// }
 
 function getLimbsVectorAtIdx(joints_position, idx) {
 	/**
@@ -474,7 +502,7 @@ function getQuaternions(pose3D) {
 	return result;
 }
 
-function getJointPositionAtIndex() {
+function getJointPositionAtIndex(joints_position, idx) {
 
 	const joints = [
 		'NOSE',
@@ -512,7 +540,7 @@ function getJointPositionAtIndex() {
 		'RIGHT_FOOT_INDEX',
 	]
 
-	joints_vectors = []
+	const joints_vectors = []
 
 	for (let i in joints) {
 		const pos = joints_position[joints[i]][idx];
@@ -526,7 +554,7 @@ function getJointPositionAtIndex() {
 			))
 
 		} else {
-			limb_vector[l] = new THREE.Vector3(0, 0, 0);
+			joints_vectors.push(new THREE.Vector3(0, 0, 0));
 		}
 	}
 }
