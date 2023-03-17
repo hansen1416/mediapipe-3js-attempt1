@@ -287,11 +287,11 @@ export default function DigitalTrainer() {
 
 		{
 			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.5);
+			const dlight = new THREE.PointLight(0xffffff, 0.8);
 			dlight.position.set(0, 100, 100);
-			// scene.current.add(dlight);
+			scene.current.add(dlight);
 			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 0.5));
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.2));
 		}
 
 		// drawScene();
@@ -317,7 +317,6 @@ export default function DigitalTrainer() {
 	}
 
 	function drawScene() {
-
 		// das meer
 		const ground = new THREE.Mesh(
 			new THREE.CircleGeometry(1500, 64).rotateX(-Math.PI * 0.5),

@@ -3,8 +3,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { cloneDeep } from "lodash";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 
 import { loadFBX, loadJSON, muscleGroupsColors } from "../../components/ropes";
 
@@ -391,7 +391,8 @@ export default function Motions({
 								<Tab
 									key={item}
 									style={{
-										backgroundColor: muscleGroupsColors[item],
+										backgroundColor:
+											muscleGroupsColors[item],
 									}}
 									onClick={() => {
 										// making request to get exercise json
@@ -401,38 +402,43 @@ export default function Motions({
 									{item}
 								</Tab>
 							);
-					})}
+						})}
 				</TabList>
 				{musclGroups &&
-						musclGroups.map(() => {
-							return (
-								<TabPanel>
-									{blockN &&
-										Array(blockN)
-											.fill(0)
-											.map((_, i) => {
-												return (
-													<div
-														key={i}
-														className={[
-															"block",
-															(i + 1) % 4 === 0 ? "fringe" : "",
-														].join(" ")}
-														style={{
-															width: blockSize + "px",
-															height: blockSize + "px",
-															backgroundColor: sceneBgColor,
-															display:
-																i < animationList.length
-																	? "inline-block"
-																	: "none",
-														}}
-													></div>
-												);
-											})}
-								</TabPanel>
-							)
-				})}
+					musclGroups.map(() => {
+						return (
+							<TabPanel>
+								{blockN &&
+									Array(blockN)
+										.fill(0)
+										.map((_, i) => {
+											return (
+												<div
+													key={i}
+													className={[
+														"block",
+														(i + 1) % 4 === 0
+															? "fringe"
+															: "",
+													].join(" ")}
+													style={{
+														width: blockSize + "px",
+														height:
+															blockSize + "px",
+														backgroundColor:
+															sceneBgColor,
+														display:
+															i <
+															animationList.length
+																? "inline-block"
+																: "none",
+													}}
+												></div>
+											);
+										})}
+							</TabPanel>
+						);
+					})}
 			</Tabs>
 			<div
 				className="motions"
@@ -442,9 +448,7 @@ export default function Motions({
 					width: "100%",
 					height: "100%",
 				}}
-			>
-				
-			</div>
+			></div>
 			<div ref={container} className="motions">
 				<canvas
 					ref={canvasRef}
