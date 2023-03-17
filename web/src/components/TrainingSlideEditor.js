@@ -1,4 +1,4 @@
-// import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import Button from "react-bootstrap/Button";
 import { cloneDeep } from "lodash";
@@ -8,6 +8,27 @@ import MusclePercentage from "./MusclePercentage";
 import InputIncreaseDecrease from "./InputIncreaseDecrease";
 
 export default function TrainingSlideEditor({ trainingData, settrainingData }) {
+	const kasten = useRef(null);
+
+	const [itemWidth, setitemWidth] = useState(0);
+
+	useEffect(() => {
+		let resizeObserver;
+		// watch box size change and set size for individual block
+		if (kasten.current) {
+			// wait for the elementRef to be available
+			resizeObserver = new ResizeObserver(([ResizeObserverEntry]) => {
+				// Do what you want to do when the size of the element changes
+				const width = parseInt(
+					ResizeObserverEntry.contentRect.width / 6
+				);
+
+				setitemWidth(width);
+			});
+			resizeObserver.observe(kasten.current);
+		}
+	}, []);
+
 	function updateExercise(idx, dict) {
 		const tmp = cloneDeep(trainingData);
 
@@ -61,13 +82,25 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 	}
 
 	return (
-		<div className="training-slide-editor">
+		<div className="training-slide-editor" ref={kasten}>
 			{trainingData && trainingData.name && (
 				<section>
 					<div className="title">
 						<div className="info">
 							<div>
-								<span>name: {trainingData.name}</span>
+								<span>
+									name:{" "}
+									<input
+										value={trainingData.name}
+										onChange={(e) => {
+											const tmp = cloneDeep(trainingData);
+
+											tmp.name = e.target.value;
+
+											settrainingData(tmp);
+										}}
+									/>
+								</span>
 							</div>
 							<div>
 								<span>duration: {trainingData.duration}</span>
@@ -97,9 +130,10 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 							type: "slide",
 							focus: 0,
 							perMove: 1,
-							fixedWidth: 160,
+							fixedWidth: itemWidth,
 							// fixedHeight: 200,
 							gap: 10,
+							arrows: false,
 							rewind: true,
 							pagination: false,
 						}}
@@ -110,14 +144,14 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 									<SplideSlide key={idx}>
 										<div
 											style={{
-												width: "100%",
+												width: itemWidth,
 												height: "100%",
 											}}
 										>
 											<div
 												style={{
-													width: "100px",
-													height: "100px",
+													width: itemWidth,
+													height: itemWidth,
 												}}
 											>
 												<img

@@ -49,50 +49,55 @@
             }
         }
     }
-}
 
-.nav {
-    .controls {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-end;
+    .nav {
+        .controls {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
 
-        div {
-            cursor: pointer;
-            margin-right: 20px;
+            div {
+                cursor: pointer;
+                margin-right: 20px;
+            }
         }
     }
-}
 
-.main-content {
-    position: relative;
-    width: 80%;
-    margin: 70px auto;
-}
+    .main-content {
+        position: relative;
+        width: 80%;
+        margin: 70px auto;
+    }
 
-.pagination {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end; // aligh right
-    margin-top: 10px;
-
-    .page {
-        width: 32px;
-        height: 32px;
-        border: 1px solid;
-        border-radius: 4px;
-        margin-right: 10px;
+    .pagination {
+        position: relative;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
+        flex-direction: row;
+        justify-content: flex-end; // aligh right
+        margin-top: 10px;
 
-        &:hover {
-            opacity: 0.8;
+        .page {
+            width: 32px;
+            height: 32px;
+            border: 1px solid;
+            border-radius: 4px;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+            }
         }
+    }
+
+    .splide {
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 
