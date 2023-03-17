@@ -21,15 +21,14 @@ import PoseSync from "../../components/PoseSync";
 // import PoseSyncVector from "../../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
-	loadFBX,
 	loadJSON,
 	startCamera,
 	traverseModel,
-	// drawPoseKeypoints,
 	calculateLongestTrackFromAnimation,
 	applyTransfer,
 	radianGradientColor,
-	loadGLTF,
+	// loadGLTF,
+	loadFBX,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
 
@@ -133,8 +132,9 @@ export default function DigitalTrainer() {
 
 		creatMainScene(documentWidth, documentHeight);
 
-		setsubsceneWidth(documentWidth * 0.25);
-		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
+		// setsubsceneWidth(documentWidth * 0.25);
+		setsubsceneWidth(documentWidth * 0.2);
+		setsubsceneHeight(documentWidth * 0.2);
 
 		createSubScene();
 
@@ -145,20 +145,18 @@ export default function DigitalTrainer() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			loadFBX(process.env.PUBLIC_URL + "/fbx/house_lake.fbx"),
-			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-		]).then(([detector, site, gltf]) => {
+			// loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		]).then(([detector, model]) => {
 			poseDetector.current = detector;
 
-			// add site
-			scene.current.add(site);
-
-			site.scale.set(0.1, 0.1, 0.1);
-
 			// add 3d model to main scene
-			mannequinModel.current = gltf.scene.children[0];
-			mannequinModel.current.position.set(0, 0, 0);
-			mannequinModel.current.scale.set(500, 500, 500);
+			// mannequinModel.current = gltf.scene.children[0];
+			// mannequinModel.current.position.set(0, -8, 0);
+			// mannequinModel.current.scale.set(10, 10, 10);
+
+			mannequinModel.current = model;
+
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
 
@@ -281,21 +279,22 @@ export default function DigitalTrainer() {
 			90,
 			viewWidth / viewHeight,
 			0.1,
-			10000
+			1000
 		);
 
-		camera.current.position.set(0, 1, 100);
+		camera.current.position.set(0, 0, 200);
+		// camera.current.position.set(0, 0, 20);
 
 		{
 			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.2);
+			const dlight = new THREE.PointLight(0xffffff, 0.5);
 			dlight.position.set(0, 100, 100);
 			// scene.current.add(dlight);
 			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 0.8));
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.5));
 		}
 
-		drawScene();
+		// drawScene();
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
@@ -311,14 +310,13 @@ export default function DigitalTrainer() {
 		// controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
 		// controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
 		controls.current.minDistance = 2;
-		controls.current.maxDistance = 3000;
+		controls.current.maxDistance = 1000;
 		controls.current.enableDamping = true;
 
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
 	function drawScene() {
-		return;
 
 		// das meer
 		const ground = new THREE.Mesh(
@@ -416,7 +414,7 @@ export default function DigitalTrainer() {
 			if (keypoints3D.current) {
 				silhouette.current.applyPose(keypoints3D.current, true);
 
-				// todo, pass keypoints3d data to web worker,
+				// pass keypoints3d data to web worker,
 				// so it can analysis the user's kinematics data
 				// decide its amplitude, speed
 

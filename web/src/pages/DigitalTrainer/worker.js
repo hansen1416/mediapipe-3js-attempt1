@@ -89,14 +89,14 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 	 */
 	const limbs = {
 		// shoulder
-		torso: ["upperarm_r", "upperarm_l"],
+		chest: ["upperarm_r", "upperarm_l"],
 		// arms
 		upperarm_r: ["upperarm_r", "lowerarm_r"],
 		lowerarm_r: ["lowerarm_r", "hand_r"],
 		upperarm_l: ["upperarm_l", "lowerarm_l"],
 		lowerarm_l: ["lowerarm_l", "hand_l"],
-		// pelvis
-		// pelvis: ["thigh_r", "thigh_l"],
+		// abs
+		abs: ["thigh_r", "thigh_l"],
 		// legs
 		thigh_r: ["thigh_r", "calf_r"],
 		calf_r: ["calf_r", "foot_r"],
@@ -264,23 +264,278 @@ function pose3dlimbs(pose3D) {
 	};
 }
 
-function poseToJointsBasis(pose3D, joints_position, idx) {
+// function poseToJointsBasis(pose3D, joints_position, idx) {
+// 	/**
+// 	 * the matrix that convert vectors from pose torso system to anim torso system
+// 	 */
+// 	const jointsBasis = torsoBasisFromJointsPosition(joints_position, idx);
+// 	const poseBasis = torsoBasisFromPose(pose3D);
+
+// 	const poseBasisi = poseBasis.invert();
+
+// 	return jointsBasis.multiply(poseBasisi);
+// }
+
+function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	/**
-	 * the matrix that convert vectors from pose torso system to anim torso system
+		Now you want matrix B that maps from 1st set of coords to 2nd set:
+		A2 = B * A1
+		This is now a very complex math problem that requires advanced skills to arrive at the solution:
+		B = A2 * inverse of A1
 	 */
-	const jointsBasis = torsoBasisFromJointsPosition(joints_position, idx);
-	const poseBasis = torsoBasisFromPose(pose3D);
 
-	const poseBasisi = poseBasis.invert();
+	const left_oblique = middlePosition(left_shoulder2, left_hip2);
+	const right_oblique = middlePosition(right_shoulder2, right_hip2);
 
-	return jointsBasis.multiply(poseBasisi);
+	const center = middlePosition(left_oblique, right_oblique);
+
+	// origin basis of chest
+	const xaxis0 = new THREE.Vector3(1, 0, 0);
+	const yaxis0 = new THREE.Vector3(0, -1, 0);
+	const zaxis0 = new THREE.Vector3(0, 0, 1);
+
+	// new basis of chest from pose data
+	const xaxis1 = new THREE.Vector3()
+		.subVectors(left_shoulder2, right_shoulder2)
+		.normalize();
+
+	const y_tmp1 = new THREE.Vector3()
+		.subVectors(left_shoulder2, center)
+		.normalize();
+
+	const zaxis1 = new THREE.Vector3()
+		.crossVectors(xaxis1, y_tmp1)
+		.normalize();
+
+	const yaxis1 = new THREE.Vector3()
+		.crossVectors(xaxis1, zaxis1)
+		.normalize();
+
+	const chest_q = quaternionFromBasis(
+		xaxis0,
+		yaxis0,
+		zaxis0,
+		xaxis1,
+		yaxis1,
+		zaxis1
+	);
+
+	// origin basis of abs
+	const xaxis2 = new THREE.Vector3(1, 0, 0);
+	const yaxis2 = new THREE.Vector3(0, 1, 0);
+	const zaxis2 = new THREE.Vector3(0, 0, 1);
+
+	// new basis of abs from pose data
+	const xaxis3 = new THREE.Vector3()
+		.subVectors(left_hip2, right_hip2)
+		.normalize();
+
+	const y_tmp3 = new THREE.Vector3()
+		.subVectors(center, left_hip2)
+		.normalize();
+
+	const zaxis3 = new THREE.Vector3()
+		.crossVectors(xaxis3, y_tmp3)
+		.normalize();
+
+	const yaxis3 = new THREE.Vector3()
+		.crossVectors(zaxis3, xaxis3)
+		.normalize();
+
+	// console.log(xaxis3, yaxis3, zaxis3);
+
+	const abs_q = quaternionFromBasis(
+		xaxis2,
+		yaxis2,
+		zaxis2,
+		xaxis3,
+		yaxis3,
+		zaxis3
+	);
+
+	// const qs = chest_q.clone().multiply(abs_q.clone().invert());
+
+	return [abs_q, chest_q];
+}
+
+function getQuaternions(pose3D) {
+	// get position of joints
+
+	const shoulder_pose_l = posVec(
+		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+	);
+	const elbow_pose_l = posVec(
+		pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
+	);
+	const wrist_pose_l = posVec(
+		pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]]
+	);
+	const hip_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]);
+	const knee_pose_l = posVec(
+		pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]
+	);
+	const ankle_pose_l = posVec(
+		pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]
+	);
+
+	const shoulder_pose_r = posVec(
+		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+	);
+	const elbow_pose_r = posVec(
+		pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
+	);
+	const wrist_pose_r = posVec(
+		pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
+	);
+	const hip_pose_r = posVec(
+		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+	);
+	const knee_pose_r = posVec(
+		pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]
+	);
+	const ankle_pose_r = posVec(
+		pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
+	);
+
+	const result = {};
+
+	const [abs_q, chest_q] = torsoRotation(
+		shoulder_pose_l,
+		shoulder_pose_r,
+		hip_pose_l,
+		hip_pose_r
+	);
+
+	result["abs"] = abs_q;
+	result["chest"] = chest_q;
+
+	result["head"] = new THREE.Quaternion();
+
+	result["upperarm_l"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3()
+			.subVectors(elbow_pose_l, shoulder_pose_l)
+			.normalize()
+	);
+
+	result["lowerarm_l"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3()
+			.subVectors(wrist_pose_l, elbow_pose_l)
+			.normalize()
+	);
+
+	result["hand_l"] = new THREE.Quaternion();
+
+	result["upperarm_r"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3()
+			.subVectors(elbow_pose_r, shoulder_pose_r)
+			.normalize()
+	);
+
+	result["lowerarm_r"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3()
+			.subVectors(wrist_pose_r, elbow_pose_r)
+			.normalize()
+	);
+
+	result["hand_r"] = new THREE.Quaternion();
+
+	result["thigh_l"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3().subVectors(knee_pose_l, hip_pose_l).normalize()
+	);
+
+	result["calf_l"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3()
+			.subVectors(ankle_pose_l, knee_pose_l)
+			.normalize()
+	);
+
+	result["foot_l"] = new THREE.Quaternion();
+
+	result["thigh_r"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3().subVectors(knee_pose_r, hip_pose_r).normalize()
+	);
+
+	result["calf_r"] = quaternionFromVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3()
+			.subVectors(ankle_pose_r, knee_pose_r)
+			.normalize()
+	);
+
+	result["foot_r"] = new THREE.Quaternion();
+
+	return result;
+}
+
+function getJointPositionAtIndex() {
+
+	const joints = [
+		'NOSE',
+		'LEFT_EYE_INNER',
+		'LEFT_EYE',
+		'LEFT_EYE_OUTER',
+		'RIGHT_EYE_INNER',
+		'RIGHT_EYE',
+		'RIGHT_EYE_OUTER',
+		'LEFT_EAR',
+		'RIGHT_EAR',
+		'LEFT_RIGHT',
+		'RIGHT_LEFT',
+		'upperarm_l',
+		'upperarm_r',
+		'lowerarm_l',
+		'lowerarm_r',
+		'hand_l',
+		'hand_r',
+		'LEFT_PINKY',
+		'RIGHT_PINKY',
+		'LEFT_INDEX',
+		'RIGHT_INDEX',
+		'LEFT_THUMB',
+		'RIGHT_THUMB',
+		'thigh_l',
+		'thigh_r',
+		'calf_l',
+		'calf_r',
+		'foot_l',
+		'foot_r',
+		'LEFT_HEEL',
+		'RIGHT_HEEL',
+		'LEFT_FOOT_INDEX',
+		'RIGHT_FOOT_INDEX',
+	]
+
+	joints_vectors = []
+
+	for (let i in joints) {
+		const pos = joints_position[joints[i]][idx];
+
+		if (pos && pos.length) {
+
+			joints_vectors.push(new THREE.Vector3(
+				pos[0],
+				pos[1],
+				pos[2]
+			))
+
+		} else {
+			limb_vector[l] = new THREE.Vector3(0, 0, 0);
+		}
+	}
 }
 
 function calculateLimbsDistance(pose3D, joints_position, idx) {
 	/**
 	 * calculate angle between pose limbs vectors and anim limbs vectors
 	 */
-	const basisMatrix = poseToJointsBasis(pose3D, joints_position, idx);
+	// const basisMatrix = poseToJointsBasis(pose3D, joints_position, idx);
 
 	const poseLimbsArray = pose3dlimbs(pose3D);
 	const poseLimbsVectors = {};
@@ -316,6 +571,7 @@ export function fetchAnimationData(animation_data) {
 	// 	animationData = data;
 	// });
 
+	// use a variable store animation data
 	animation_states = animation_data;
 
 	// console.log(animation_states);

@@ -32,10 +32,10 @@
 .App.dark a,
 .App.dark span,
 .App.dark p {
-  color: #fff;
+  color: #e5e5e5;
 }
 .App.dark .pagination .page {
-  border-color: #fff;
+  border-color: #e5e5e5;
 }
 .App.dark .pagination .page.active span {
   color: #47b2f5;
