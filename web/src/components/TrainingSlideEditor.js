@@ -18,21 +18,84 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
             }
         }
 
+        calculateTrainingInfo(tmp)
+
         settrainingData(tmp)
+    }
+
+    function calculateTrainingInfo(trainingData) {
+
+        trainingData.duration = 0;
+        trainingData.calories = 0;
+        trainingData.intensity = 0;
+
+        trainingData.muscles.chest = 0;
+        trainingData.muscles.shoulders = 0;
+        trainingData.muscles.back = 0;
+        trainingData.muscles.arms = 0;
+        trainingData.muscles.abdominals = 0;
+        trainingData.muscles.legs = 0;
+
+        for (let e of trainingData.exercises) {
+            trainingData.duration += Number(e.reps) * Number(e.duration) + Number(e.rest)
+            trainingData.calories += Number(e.reps) * Number(e.calories)
+            trainingData.intensity += Number(e.intensity)
+
+            trainingData.muscles.chest += Number(e.muscles.chest)
+            trainingData.muscles.shoulders += Number(e.muscles.shoulders)
+            trainingData.muscles.back += Number(e.muscles.back)
+            trainingData.muscles.arms += Number(e.muscles.arms)
+            trainingData.muscles.abdominals += Number(e.muscles.abdominals)
+            trainingData.muscles.legs += Number(e.muscles.legs)
+        }
+
+        if (trainingData.exercises.length) {
+            trainingData.intensity /= trainingData.exercises.length;
+
+            trainingData.muscles.chest /= trainingData.exercises.length;
+            trainingData.muscles.shoulders /= trainingData.exercises.length;
+            trainingData.muscles.back /= trainingData.exercises.length;
+            trainingData.muscles.arms /= trainingData.exercises.length;
+            trainingData.muscles.abdominals /= trainingData.exercises.length;
+            trainingData.muscles.legs /= trainingData.exercises.length;
+        }
     }
 
     return <div className="training-slide-editor">
         {
             trainingData && trainingData.name && 
             <section>
-                <div className="title">
-                    <span>name: {trainingData.name}</span>
-                    <span>duration: {trainingData.duration}</span>
-                    <span>intensity: {trainingData.intensity}</span>
-                    <span>calories: {trainingData.calories}</span>
-                    <MusclePercentage
-                        musclesPercent={trainingData.muscles}
-                    />
+                <div
+                    className='title'
+                >
+                    <div className="info">
+                        <div>
+                            <span>name: {trainingData.name}</span>
+                        </div>
+                        <div>
+                            <span>duration: {trainingData.duration}</span>
+                            <span>intensity: {trainingData.intensity}</span>
+                            <span>calories: {trainingData.calories}</span>
+                        </div>
+                        <div>
+                            <MusclePercentage
+                                musclesPercent={trainingData.muscles}
+                            />
+                        </div>
+                    </div>
+                    <div
+                        className='operation'
+                    >
+                        <Button
+                            variant="primary"
+                            onClick={() => {
+                                // todo, save to user's
+                                console.log(trainingData)
+                            }}
+                        >
+                            Save to my list
+                        </Button>
+                    </div>
                 </div>
                 <Splide
                     options={{
@@ -79,7 +142,9 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
                                             />
                                         </div>
                                         <div>
-                                            <div>
+                                            <div
+                                                className='num-control'
+                                            >
                                                 <span>reps: </span>
                                                 <span>
                                                     <InputIncreaseDecrease
@@ -90,7 +155,9 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
                                                     />
                                                 </span>
                                             </div>
-                                            <div>
+                                            <div
+                                                className='num-control'
+                                            >
                                                 <span>rest: </span>
                                                 <span>
                                                     <InputIncreaseDecrease
@@ -108,18 +175,6 @@ export default function TrainingSlideEditor({trainingData, settrainingData}) {
                         })
                     }
                 </Splide>
-                <div
-                    className='operation'
-                >
-                    <Button
-                        variant="primary"
-                        onClick={() => {
-                            // todo, save to user's
-                        }}
-                    >
-                        Save to my list
-                    </Button>
-                </div>
             </section>
         }
     </div>

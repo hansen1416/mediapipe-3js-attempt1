@@ -1,8 +1,10 @@
+import '../styles/css/InputIncreaseDecrease.css'
+
 export default function InputIncreaseDecrease({value, onChange}) {
     return (
         <div className="input-increase-descrease">
             <div 
-                className="value-button"
+                className="value-button decrease"
                 onClick={() => {
                     onChange(Number(value-1))
                 }}
@@ -15,7 +17,7 @@ export default function InputIncreaseDecrease({value, onChange}) {
                     }}
                 />
             <div 
-                className="value-button"
+                className="value-button increase"
                 onClick={() => {
                     onChange(Number(value+1))
                 }} 

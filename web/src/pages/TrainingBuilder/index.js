@@ -102,7 +102,7 @@ export default function TrainingBuilder() {
             });
         }
 
-        tmp.exercises.push(Object.assign({"reps": 1, "rest": 10}, exercise))
+        tmp.exercises.push(Object.assign({"reps": 0, "rest": 10}, exercise))
 
         settrainingData(tmp)
     }

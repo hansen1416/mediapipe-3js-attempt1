@@ -1,5 +1,6 @@
 // import { useEffect, useRef, useState } from "react";
 import { Splide, SplideSlide } from '@splidejs/react-splide';
+import Button from "react-bootstrap/Button";
 import '../styles/css/TrainingSlide.css'
 
 import MusclePercentage from "./MusclePercentage";
@@ -8,13 +9,25 @@ export default function TrainingSlide({trainingData}) {
 
     return <div className="training-slide">
         <div className="title">
-            <span>name: {trainingData.name}</span>
-            <span>duration: {trainingData.duration}</span>
-            <span>intensity: {trainingData.intensity}</span>
-            <span>calories: {trainingData.calories}</span>
-            <MusclePercentage
-                musclesPercent={trainingData.muscles}
-            />
+            <div>
+                <span>name: {trainingData.name}</span>
+                <span>duration: {trainingData.duration}</span>
+                <span>intensity: {trainingData.intensity}</span>
+                <span>calories: {trainingData.calories}</span>
+                <MusclePercentage
+                    musclesPercent={trainingData.muscles}
+                />
+            </div>
+            <div>
+                <Button
+                    variant="primary"
+                    onClick={() => {
+                        
+                    }}
+                >
+                    Try it now!
+                </Button>
+            </div>
         </div>
         <Splide
             options={{

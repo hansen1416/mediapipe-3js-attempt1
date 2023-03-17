@@ -1,6 +1,19 @@
+.training-slide-editor .title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
 .training-slide-editor .operation {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   margin-bottom: 20px;
+}
+.training-slide-editor .num-control {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
 }
