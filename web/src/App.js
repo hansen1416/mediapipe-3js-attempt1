@@ -12,20 +12,16 @@ import '@splidejs/react-splide/css/sea-green';
 // // or only core styles
 import '@splidejs/react-splide/css/core';
 
-import { ReactComponent as ArrowUpSvg } from './svg/sun.svg'
+import { ReactComponent as DarkSvg } from './svg/sun.svg'
+import { ReactComponent as LightSvg } from './svg/sun-light.svg'
 
 function App() {
-	const [theme] = useState("dark");
+	const [theme, settheme] = useState("dark");
 
 	return (
 		<div className={`App ${theme}`}>
-			<Outlet />
-
 			<div>
-				<div>
-					<ArrowUpSvg/>
-				</div>
-				<Nav defaultActiveKey="/digital-trainer" className="flex-row">
+				<Nav defaultActiveKey="/digital-trainer" className="justify-content-center">
 					<Nav.Link href="/training-explore">Explore</Nav.Link>
 					<Nav.Link href="/training-builder">Builder</Nav.Link>
 					<Nav.Link href="/digital-trainer">D-trainer</Nav.Link>
@@ -33,8 +29,26 @@ function App() {
 					{/* <Nav.Link href="/cloud">figures</Nav.Link> */}
 					{/* <Nav.Link href="/site">site</Nav.Link> */}
 					{/* <Nav.Link href="/mapping">mapping</Nav.Link> */}
+					<div
+						className="controls"
+					>
+						<div
+							onClick={() => {
+								settheme(theme === 'dark' ? 'light' : 'dark')
+							}}
+						>
+							{
+								theme === 'dark'
+								? <LightSvg/>
+								: <DarkSvg/>
+							}
+						</div>
+					</div>
 				</Nav>
 			</div>
+
+			<Outlet />
+
 		</div>
 	);
 }
