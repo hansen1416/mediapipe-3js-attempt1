@@ -22,6 +22,15 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		B = A2 * inverse of A1
 	 */
 
+	if (
+		(left_shoulder2.score && left_shoulder2.score < 0.5) ||
+		(right_shoulder2.score && right_shoulder2.score < 0.5) ||
+		(left_hip2.score && left_hip2.score < 0.5) ||
+		(right_hip2.score && right_hip2.score < 0.5)
+	) {
+		return [new THREE.Quaternion(), new THREE.Quaternion()];
+	}
+
 	const left_oblique = new THREE.Vector3(
 		(left_shoulder2.x + left_hip2.x) / 2,
 		(left_shoulder2.y + left_hip2.y) / 2,
