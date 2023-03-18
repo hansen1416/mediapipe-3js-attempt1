@@ -12,6 +12,7 @@ import {
 	BlazePoseConfig,
 	drawPoseKeypoints,
 	loadJSON,
+	loadFBX,
 	startCamera,
 } from "../../components/ropes";
 
@@ -71,10 +72,13 @@ export default function ParticleFigure() {
 			loadJSON(
 				process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
 			),
-		]).then(([detector, pose3d]) => {
+			loadFBX(process.env.PUBLIC_URL + "/fbx/T.fbx"),
+		]).then(([detector, pose3d, model]) => {
 			poseDetector.current = detector;
 
 			storedPose.current = pose3d;
+
+			scene.current.add(model);
 		});
 
 		figure.current = new Silhouette3D();
