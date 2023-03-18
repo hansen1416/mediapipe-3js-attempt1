@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import { BlazePoseKeypointsValues, quaternionFromVectors } from "./ropes";
+import { BlazePoseKeypointsValues } from "./ropes";
 
 function middlePosition(a, b) {
 	return new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
@@ -96,32 +96,46 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	return [abs_q, chest_q];
 }
 
+function getLimbQuaternion(pose3D, joint_start, joint_end) {
+	/**
+	 * calculate quaternion for a limb,
+	 * which start from `joint_start` end at `joint_end`
+	 */
+	const start_pos = pose3D[BlazePoseKeypointsValues[joint_start]];
+	const end_pos = pose3D[BlazePoseKeypointsValues[joint_end]];
+
+	const quaternion = new THREE.Quaternion();
+
+	if (
+		(start_pos.score && start_pos.score < 0.5) ||
+		(end_pos.score && end_pos.score < 0.5)
+	) {
+		return quaternion;
+	}
+
+	quaternion.setFromUnitVectors(
+		new THREE.Vector3(0, -1, 0).normalize(),
+		new THREE.Vector3(
+			end_pos.x - start_pos.x,
+			end_pos.y - start_pos.y,
+			end_pos.z - start_pos.z
+		).normalize()
+	);
+
+	return quaternion;
+}
+
 function getQuaternions(pose3D) {
 	// get position of joints
 
 	const shoulder_pose_l = posVec(
 		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
 	);
-	const elbow_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]);
-	const wrist_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]]);
 	const hip_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]);
-	const knee_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]);
-	const ankle_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]);
-
 	const shoulder_pose_r = posVec(
 		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
 	);
-	const elbow_pose_r = posVec(
-		pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
-	);
-	const wrist_pose_r = posVec(
-		pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
-	);
 	const hip_pose_r = posVec(pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]);
-	const knee_pose_r = posVec(pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]);
-	const ankle_pose_r = posVec(
-		pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
-	);
 
 	const result = {};
 
@@ -137,55 +151,43 @@ function getQuaternions(pose3D) {
 
 	result["head"] = new THREE.Quaternion();
 
-	result["upperarm_l"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3()
-			.subVectors(elbow_pose_l, shoulder_pose_l)
-			.normalize()
+	result["upperarm_l"] = getLimbQuaternion(
+		pose3D,
+		"LEFT_SHOULDER",
+		"LEFT_ELBOW"
 	);
 
-	result["lowerarm_l"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3().subVectors(wrist_pose_l, elbow_pose_l).normalize()
+	result["lowerarm_l"] = getLimbQuaternion(
+		pose3D,
+		"LEFT_ELBOW",
+		"LEFT_WRIST"
 	);
 
 	result["hand_l"] = new THREE.Quaternion();
 
-	result["upperarm_r"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3()
-			.subVectors(elbow_pose_r, shoulder_pose_r)
-			.normalize()
+	result["upperarm_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_SHOULDER",
+		"RIGHT_ELBOW"
 	);
 
-	result["lowerarm_r"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3().subVectors(wrist_pose_r, elbow_pose_r).normalize()
+	result["lowerarm_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_ELBOW",
+		"RIGHT_WRIST"
 	);
 
 	result["hand_r"] = new THREE.Quaternion();
 
-	result["thigh_l"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3().subVectors(knee_pose_l, hip_pose_l).normalize()
-	);
+	result["thigh_l"] = getLimbQuaternion(pose3D, "LEFT_HIP", "LEFT_KNEE");
 
-	result["calf_l"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3().subVectors(ankle_pose_l, knee_pose_l).normalize()
-	);
+	result["calf_l"] = getLimbQuaternion(pose3D, "LEFT_KNEE", "LEFT_ANKLE");
 
 	result["foot_l"] = new THREE.Quaternion();
 
-	result["thigh_r"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3().subVectors(knee_pose_r, hip_pose_r).normalize()
-	);
+	result["thigh_r"] = getLimbQuaternion(pose3D, "RIGHT_HIP", "RIGHT_KNEE");
 
-	result["calf_r"] = quaternionFromVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
-		new THREE.Vector3().subVectors(ankle_pose_r, knee_pose_r).normalize()
-	);
+	result["calf_r"] = getLimbQuaternion(pose3D, "RIGHT_KNEE", "RIGHT_ANKLE");
 
 	result["foot_r"] = new THREE.Quaternion();
 
@@ -196,6 +198,24 @@ export default class Silhouette3D {
 	/**
 	 * limbs geometry combined 3d human figure
 	 */
+
+	limbs = [
+		"abs",
+		"chest",
+		"head",
+		"upperarm_l",
+		"lowerarm_l",
+		"hand_l",
+		"upperarm_r",
+		"lowerarm_r",
+		"hand_r",
+		"thigh_l",
+		"calf_l",
+		"foot_l",
+		"thigh_r",
+		"calf_r",
+		"foot_r",
+	];
 
 	constructor() {
 		this.unit = 1;
@@ -236,24 +256,6 @@ export default class Silhouette3D {
 		this.visible_opacity = 0.8;
 
 		this.body = new THREE.Group();
-
-		this.limbs = [
-			"abs",
-			"chest",
-			"head",
-			"upperarm_l",
-			"lowerarm_l",
-			"hand_l",
-			"upperarm_r",
-			"lowerarm_r",
-			"hand_r",
-			"thigh_l",
-			"calf_l",
-			"foot_l",
-			"thigh_r",
-			"calf_r",
-			"foot_r",
-		];
 
 		this.abs = {
 			group: new THREE.Group(),
@@ -635,25 +637,6 @@ export default class Silhouette3D {
 				this[name].mesh_position.z
 			);
 		}
-
-		// const q = quaternionFromVectors(
-		// 	new THREE.Vector3(0, -1, 0).normalize(),
-		// 	new THREE.Vector3(0, -0.5, 0.5)
-		// );
-
-		// this.thigh_l.group.rotation.setFromQuaternion(q);
-
-		// this.upperarm_l.group.rotation.set(-1, 0, 0);
-		// this.lowerarm_l.group.rotation.set(-1, 0, 0);
-
-		// this.upperarm_r.group.rotation.set(-1.4, 0, 0);
-		// this.lowerarm_r.group.rotation.set(-1.3, 0, 0);
-
-		// this.thigh_l.group.rotation.set(-1, 0, 0);
-		// this.calf_l.group.rotation.set(1, 0, 0);
-
-		// this.thigh_r.group.rotation.set(-1.4, 0, 0);
-		// this.calf_r.group.rotation.set(1.3, 0, 0);
 
 		return this.body;
 	}
