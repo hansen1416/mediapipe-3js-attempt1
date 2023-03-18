@@ -145,6 +145,10 @@ export default function TrainingBuilder() {
 								<span>{exercise.name}</span>
 							</div>
 							<div>
+								<p>intensity: {exercise.intensity}</p>
+								<p>calories: {exercise.calories}</p>
+							</div>
+							<div>
 								<MusclePercentage
 									musclesPercent={exercise.muscles}
 								/>
