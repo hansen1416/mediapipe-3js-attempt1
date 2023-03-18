@@ -685,7 +685,7 @@ export default class Silhouette3D {
 			// 	console.log(colors[name], this[name + "_mesh"]);
 			// }
 
-			this[name + "_mesh"].material.color.setRGB(
+			this[name].mesh.material.color.setRGB(
 				Number(colors[name][0]) / 255,
 				Number(colors[name][1]) / 255,
 				Number(colors[name][2]) / 255

@@ -142,7 +142,7 @@ export default function ParticleFigure() {
 					// 	figures.current[i].applyPose(drawdata, true);
 					// }
 
-					figure.current.applyPose(drawdata, true);
+					figure.current.applyPose(drawdata);
 				}
 			})();
 		}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-// import { Sky } from "three/examples/jsm/objects/Sky";
+import { cloneDeep } from "lodash";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
@@ -132,9 +132,9 @@ export default function DigitalTrainer() {
 
 		creatMainScene(documentWidth, documentHeight);
 
-		// setsubsceneWidth(documentWidth * 0.25);
 		setsubsceneWidth(documentWidth * 0.2);
-		setsubsceneHeight(documentWidth * 0.2);
+		// remember not to use a squared video
+		setsubsceneHeight((documentWidth * 0.2 * 480) / 640);
 
 		createSubScene();
 
@@ -409,44 +409,7 @@ export default function DigitalTrainer() {
 
 			comparePose();
 
-			// draw 3d silhouette
-			if (keypoints3D.current) {
-				silhouette.current.applyPose(keypoints3D.current, true);
-
-				// pass keypoints3d data to web worker,
-				// so it can analysis the user's kinematics data
-				// decide its amplitude, speed
-
-				if (workerAvailable.current) {
-					workerAvailable.current = false;
-
-					worker
-						.analyzePose(
-							keypoints3D.current,
-							currentAnimationIndx.current
-						)
-						.then((angleBetweenLimbs) => {
-							const colors = {};
-
-							for (let name in angleBetweenLimbs) {
-								colors[name] = radianGradientColor(
-									angleBetweenLimbs[name]
-								);
-
-								// if (name === "lowerarm_r") {
-								// 	console.log(
-								// 		angleBetweenLimbs[name],
-								// 		colors[name]
-								// 	);
-								// }
-							}
-
-							silhouette.current.applyColor(colors);
-
-							workerAvailable.current = true;
-						});
-				}
-			}
+			manipulateSilhouette();
 		} else {
 			keypoints3D.current = null;
 		}
@@ -491,19 +454,17 @@ export default function DigitalTrainer() {
 				return;
 			}
 
-			keypoints3D.current = poses[0]["keypoints3D"];
+			keypoints3D.current = cloneDeep(poses[0]["keypoints3D"]);
 
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
 
 			// multiply x,y by differnt factor
 			for (let v of keypoints3D.current) {
-				v["x"] *= -width_ratio;
+				v["x"] *= width_ratio;
 				v["y"] *= -height_ratio;
 				v["z"] *= -width_ratio;
 			}
-
-			// console.log(keypoints3D.current);
 		})();
 	}
 
@@ -530,25 +491,41 @@ export default function DigitalTrainer() {
 
 			// compare the distance curve between animation and pose
 		}
+	}
 
-		// if (poseSyncVector.current) {
-		// 	// compare the limbs vectors between pose and animation
+	function manipulateSilhouette() {
+		/**
+		 * apply pose/color to silhouette
+		 */
+		if (!keypoints3D.current) {
+			return;
+		}
 
-		// 	// this is only for display, doesn't affect animtion
-		// 	// draw different colors on the silhouette
-		// 	const distances = poseSyncVector.current.compareCurrentPose(
-		// 		keypoints3D.current,
-		// 		figureParts.current
-		// 	);
+		silhouette.current.applyPose(keypoints3D.current);
 
-		// 	// watch keypoints3d and vectorDistances,
-		// 	const colors = calculateSilhouetteColors(
-		// 		distances,
-		// 		keypoints3D.current
-		// 	);
+		// pass keypoints3d data to web worker,
+		// so it can analysis the user's kinematics data
+		// decide its amplitude, speed
 
-		// 	// silhouette.current.applyColor(colors);
-		// }
+		if (workerAvailable.current) {
+			workerAvailable.current = false;
+
+			worker
+				.analyzePose(keypoints3D.current, currentAnimationIndx.current)
+				.then((angleBetweenLimbs) => {
+					const colors = {};
+
+					for (let name in angleBetweenLimbs) {
+						colors[name] = radianGradientColor(
+							angleBetweenLimbs[name]
+						);
+					}
+					// apply color to silhouette
+					silhouette.current.applyColor(colors);
+
+					workerAvailable.current = true;
+				});
+		}
 	}
 
 	function doingTraining() {
