@@ -2,14 +2,6 @@ import * as THREE from "three";
 
 import { BlazePoseKeypointsValues } from "./ropes";
 
-function middlePosition(a, b) {
-	return new THREE.Vector3((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
-}
-
-function posVec(p) {
-	return new THREE.Vector3(p.x, p.y, p.z);
-}
-
 function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 	/**
 	 * transfer object from basis0 to basis1
@@ -30,10 +22,21 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		B = A2 * inverse of A1
 	 */
 
-	const left_oblique = middlePosition(left_shoulder2, left_hip2);
-	const right_oblique = middlePosition(right_shoulder2, right_hip2);
-
-	const center = middlePosition(left_oblique, right_oblique);
+	const left_oblique = new THREE.Vector3(
+		(left_shoulder2.x + left_hip2.x) / 2,
+		(left_shoulder2.y + left_hip2.y) / 2,
+		(left_shoulder2.z + left_hip2.z) / 2
+	);
+	const right_oblique = new THREE.Vector3(
+		(right_shoulder2.x + right_hip2.x) / 2,
+		(right_shoulder2.y + right_hip2.y) / 2,
+		(right_shoulder2.z + right_hip2.z) / 2
+	);
+	const center = new THREE.Vector3(
+		(left_oblique.x + right_oblique.x) / 2,
+		(left_oblique.y + right_oblique.y) / 2,
+		(left_oblique.z + right_oblique.z) / 2
+	);
 
 	// origin basis of chest
 	const xaxis0 = new THREE.Vector3(1, 0, 0);
@@ -41,13 +44,17 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	const zaxis0 = new THREE.Vector3(0, 0, 1);
 
 	// new basis of chest from pose data
-	const xaxis1 = new THREE.Vector3()
-		.subVectors(left_shoulder2, right_shoulder2)
-		.normalize();
+	const xaxis1 = new THREE.Vector3(
+		left_shoulder2.x - right_shoulder2.x,
+		left_shoulder2.y - right_shoulder2.y,
+		left_shoulder2.z - right_shoulder2.z
+	).normalize();
 
-	const y_tmp1 = new THREE.Vector3()
-		.subVectors(left_shoulder2, center)
-		.normalize();
+	const y_tmp1 = new THREE.Vector3(
+		left_shoulder2.x - center.x,
+		left_shoulder2.y - center.y,
+		left_shoulder2.z - center.z
+	).normalize();
 
 	const zaxis1 = new THREE.Vector3().crossVectors(xaxis1, y_tmp1).normalize();
 
@@ -68,13 +75,17 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	const zaxis2 = new THREE.Vector3(0, 0, 1);
 
 	// new basis of abs from pose data
-	const xaxis3 = new THREE.Vector3()
-		.subVectors(left_hip2, right_hip2)
-		.normalize();
+	const xaxis3 = new THREE.Vector3(
+		left_hip2.x - right_hip2.x,
+		left_hip2.y - right_hip2.y,
+		left_hip2.z - right_hip2.z
+	).normalize();
 
-	const y_tmp3 = new THREE.Vector3()
-		.subVectors(center, left_hip2)
-		.normalize();
+	const y_tmp3 = new THREE.Vector3(
+		center.x - left_hip2.x,
+		center.y - left_hip2.y,
+		center.z - left_hip2.z
+	).normalize();
 
 	const zaxis3 = new THREE.Vector3().crossVectors(xaxis3, y_tmp3).normalize();
 
@@ -128,22 +139,13 @@ function getLimbQuaternion(pose3D, joint_start, joint_end) {
 function getQuaternions(pose3D) {
 	// get position of joints
 
-	const shoulder_pose_l = posVec(
-		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-	);
-	const hip_pose_l = posVec(pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]);
-	const shoulder_pose_r = posVec(
-		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
-	);
-	const hip_pose_r = posVec(pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]);
-
 	const result = {};
 
 	const [abs_q, chest_q] = torsoRotation(
-		shoulder_pose_l,
-		shoulder_pose_r,
-		hip_pose_l,
-		hip_pose_r
+		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
+		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
 	);
 
 	result["abs"] = abs_q;
