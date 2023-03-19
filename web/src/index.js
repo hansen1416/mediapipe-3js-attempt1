@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import TrainingExplore from "./pages/TrainingExplore";
 import MotionInterpreter from "./pages/MotionInterpreter";
 import TrainingBuilder from "./pages/TrainingBuilder";
+import TrainingReport from "./pages/TrainingReport";
 import DigitalTrainer from "./pages/DigitalTrainer";
 import Register from "./pages/Auth/Register";
 import ParticleFigure from "./pages/ParticleFigure";
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
 			{
 				path: "/training-builder",
 				element: <TrainingBuilder />,
+			},
+			{
+				path: "/training-report",
+				element: <TrainingReport />,
 			},
 			{
 				path: "/digital-trainer",

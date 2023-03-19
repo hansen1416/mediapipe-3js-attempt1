@@ -12,8 +12,12 @@
 .App.light h5,
 .App.light a,
 .App.light span,
-.App.light p {
+.App.light p,
+.App.light i {
   color: #000;
+}
+.App.light .grenze {
+  border-color: #000;
 }
 .App.light .pagination .page {
   border-color: #000;
@@ -31,8 +35,12 @@
 .App.dark h5,
 .App.dark a,
 .App.dark span,
-.App.dark p {
+.App.dark p,
+.App.dark i {
   color: #e5e5e5;
+}
+.App.dark .grenze {
+  border-color: #e5e5e5;
 }
 .App.dark .pagination .page {
   border-color: #e5e5e5;
