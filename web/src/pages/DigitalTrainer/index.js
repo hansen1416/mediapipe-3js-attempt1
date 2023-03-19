@@ -145,7 +145,9 @@ export default function DigitalTrainer() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			// loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+			// 	loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+			// 	loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+			// ]).then(([detector, gltf, model]) => {
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 		]).then(([detector, model]) => {
 			poseDetector.current = detector;
@@ -159,6 +161,8 @@ export default function DigitalTrainer() {
 
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
+
+			// console.log(Object.keys(figureParts.current));
 
 			scene.current.add(mannequinModel.current);
 

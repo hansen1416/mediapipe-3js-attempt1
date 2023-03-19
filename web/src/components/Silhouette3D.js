@@ -228,7 +228,7 @@ export default class Silhouette3D {
 		"foot_r",
 	];
 
-	constructor() {
+	constructor(geometry) {
 		this.unit = 1;
 
 		this.head_radius = 3 * this.unit;
@@ -525,8 +525,21 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
 		};
+
+		// const calf_r_mesh = new THREE.Mesh(
+		// 	geometry.calf_r,
+		// 	new THREE.MeshBasicMaterial({
+		// 		color: this.color,
+		// 		transparent: true,
+		// 		opacity: this.invisible_opacity,
+		// 	})
+		// );
+
+		// calf_r_mesh.scale.set(0.5, 0.5, 0.5);
+
 		this.calf_r = {
 			group: new THREE.Group(),
+			// mesh: calf_r_mesh,
 			mesh: this.getCylinderMesh(
 				this.knee_radius,
 				this.ankle_radius,
@@ -544,8 +557,21 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
 		};
+
+		// const foot_r_mesh = new THREE.Mesh(
+		// 	geometry.foot_r,
+		// 	new THREE.MeshBasicMaterial({
+		// 		color: this.color,
+		// 		transparent: true,
+		// 		opacity: this.invisible_opacity,
+		// 	})
+		// );
+
+		// foot_r_mesh.scale.set(0.5, 0.5, 0.5);
+
 		this.foot_r = {
 			group: new THREE.Group(),
+			// mesh: foot_r_mesh,
 			mesh: this.getBoxMesh(
 				this.foot_width,
 				this.foot_height,

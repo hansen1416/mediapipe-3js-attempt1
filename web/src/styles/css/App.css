@@ -40,6 +40,11 @@
 .App.dark .pagination .page.active span {
   color: #47b2f5;
 }
+.App .nav {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
 .App .nav .controls {
   flex-grow: 1;
   display: flex;

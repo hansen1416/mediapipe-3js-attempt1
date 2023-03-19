@@ -21,6 +21,18 @@ import {
  * @returns
  */
 
+function traverseModel(model, bodyParts) {
+	if (model && model.isMesh) {
+		// console.log(model.name, model.children.length)
+		bodyParts[model.name] = model;
+	}
+	// console.log(model, model.name, model.matrix);
+
+	model.children.forEach((child) => {
+		traverseModel(child, bodyParts);
+	});
+}
+
 export default function ParticleFigure() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -55,6 +67,8 @@ export default function ParticleFigure() {
 	const [startBtnShow, setstartBtnShow] = useState(true);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
 
+	const meshes = useRef({});
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -79,12 +93,42 @@ export default function ParticleFigure() {
 			storedPose.current = pose3d;
 
 			scene.current.add(model);
+
+			model.position.set(-50, 0, 0);
+
+			traverseModel(model, meshes.current);
+
+			console.log(meshes.current);
+
+			function addpart(name) {
+				scene.current.add(meshes.current[name]);
+
+				meshes.current[name].position.set(0, 0, 0);
+
+				// meshes.current.polySurface17.scale.set(10, 10, 10);
+			}
+
+			const mapping = {
+				aGroup47173: "pelvis",
+				pCube5: "foot_r",
+				pCube6: "chest",
+				pCube7: "head",
+				pSphere1: "neck",
+				pSphere6: "calf_r",
+			};
+
+			const geos = {
+				calf_r: meshes.current["pSphere6"].geometry,
+				foot_r: meshes.current["pCube5"].geometry,
+			};
+
+			// addpart("pSphere6");
+
+			figure.current = new Silhouette3D(geos);
+			const body = figure.current.init();
+
+			scene.current.add(body);
 		});
-
-		figure.current = new Silhouette3D();
-		const body = figure.current.init();
-
-		scene.current.add(body);
 
 		// const axesHelper = new THREE.AxesHelper(40);
 
@@ -214,7 +258,7 @@ export default function ParticleFigure() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 40);
+		camera.current.position.set(0, 0, 150);
 
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
