@@ -116,7 +116,7 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	return [abs_q, chest_q];
 }
 
-function getLimbQuaternion(pose3D, joint_start, joint_end) {
+function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
 	/**
 	 * calculate quaternion for a limb,
 	 * which start from `joint_start` end at `joint_end`
@@ -134,7 +134,7 @@ function getLimbQuaternion(pose3D, joint_start, joint_end) {
 	}
 
 	quaternion.setFromUnitVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
+		upVector,
 		new THREE.Vector3(
 			end_pos.x - start_pos.x,
 			end_pos.y - start_pos.y,
@@ -165,13 +165,15 @@ function getQuaternions(pose3D) {
 	result["upperarm_l"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_SHOULDER",
-		"LEFT_ELBOW"
+		"LEFT_ELBOW",
+		new THREE.Vector3(1, 0, 0)
 	);
 
 	result["lowerarm_l"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_ELBOW",
-		"LEFT_WRIST"
+		"LEFT_WRIST",
+		new THREE.Vector3(1, 0, 0)
 	);
 
 	result["hand_l"] = new THREE.Quaternion();
@@ -179,26 +181,48 @@ function getQuaternions(pose3D) {
 	result["upperarm_r"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_SHOULDER",
-		"RIGHT_ELBOW"
+		"RIGHT_ELBOW",
+		new THREE.Vector3(-1, 0, 0)
 	);
 
 	result["lowerarm_r"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_ELBOW",
-		"RIGHT_WRIST"
+		"RIGHT_WRIST",
+		new THREE.Vector3(-1, 0, 0)
 	);
 
 	result["hand_r"] = new THREE.Quaternion();
 
-	result["thigh_l"] = getLimbQuaternion(pose3D, "LEFT_HIP", "LEFT_KNEE");
+	result["thigh_l"] = getLimbQuaternion(
+		pose3D,
+		"LEFT_HIP",
+		"LEFT_KNEE",
+		new THREE.Vector3(0, -1, 0)
+	);
 
-	result["calf_l"] = getLimbQuaternion(pose3D, "LEFT_KNEE", "LEFT_ANKLE");
+	result["calf_l"] = getLimbQuaternion(
+		pose3D,
+		"LEFT_KNEE",
+		"LEFT_ANKLE",
+		new THREE.Vector3(0, -1, 0)
+	);
 
 	result["foot_l"] = new THREE.Quaternion();
 
-	result["thigh_r"] = getLimbQuaternion(pose3D, "RIGHT_HIP", "RIGHT_KNEE");
+	result["thigh_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_HIP",
+		"RIGHT_KNEE",
+		new THREE.Vector3(0, -1, 0)
+	);
 
-	result["calf_r"] = getLimbQuaternion(pose3D, "RIGHT_KNEE", "RIGHT_ANKLE");
+	result["calf_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_KNEE",
+		"RIGHT_ANKLE",
+		new THREE.Vector3(0, -1, 0)
+	);
 
 	result["foot_r"] = new THREE.Quaternion();
 
@@ -218,7 +242,7 @@ export default class Silhouette3D {
 		"shoulder_l",
 		"shoulder_r",
 		"upperarm_l",
-		"upperarm_r",
+		// "upperarm_r",
 		// "elbow_l",
 		// "elbow_r",
 		// "lowerarm_l",
@@ -244,160 +268,159 @@ export default class Silhouette3D {
 	];
 
 	pos = {
-		"abs": {
-			"x": 0,
-			"y": 73.06646537780762,
-			"z": 2.173459053039551
+		abs: {
+			x: 0,
+			y: 73.06646537780762,
+			z: 2.173459053039551,
 		},
-		"chest": {
-			"x": 0,
-			"y": 96.37579345703125,
-			"z": 1.555971384048462
+		chest: {
+			x: 0,
+			y: 96.37579345703125,
+			z: 1.555971384048462,
 		},
-		"neck": {
-			"x": -2.384185791015625e-7,
-			"y": 108.9151611328125,
-			"z": 1.2082147598266602
+		neck: {
+			x: -2.384185791015625e-7,
+			y: 108.9151611328125,
+			z: 1.2082147598266602,
 		},
-		"head": {
-			"x": 0,
-			"y": 115.1942367553711,
-			"z": 2.442631244659424
+		head: {
+			x: 0,
+			y: 115.1942367553711,
+			z: 2.442631244659424,
 		},
-		"foot_l": {
-			"x": 6.038201689720154,
-			"y": 4.189789369702339,
-			"z": 5.3377227783203125
+		foot_l: {
+			x: 6.038201689720154,
+			y: 4.189789369702339,
+			z: 5.3377227783203125,
 		},
-		"foot_r": {
-			"x": -6.038201689720154,
-			"y": 4.189789369702339,
-			"z": 5.3377227783203125
+		foot_r: {
+			x: -6.038201689720154,
+			y: 4.189789369702339,
+			z: 5.3377227783203125,
 		},
-		"calf_l": {
-			"x": 6.078888535499573,
-			"y": 24.266510009765625,
-			"z": 1.186724066734314
+		calf_l: {
+			x: 6.078888535499573,
+			y: 24.266510009765625,
+			z: 1.186724066734314,
 		},
-		"calf_r": {
-			"x": -6.078888535499573,
-			"y": 24.266510009765625,
-			"z": 1.186724066734314
+		calf_r: {
+			x: -6.078888535499573,
+			y: 24.266510009765625,
+			z: 1.186724066734314,
 		},
-		"lowerarm_l": {
-			"x": 34.57040786743164,
-			"y": 98.3515853881836,
-			"z": -0.5303339958190918
+		lowerarm_l: {
+			x: 34.57040786743164,
+			y: 98.3515853881836,
+			z: -0.5303339958190918,
 		},
-		"lowerarm_r": {
-			"x": -34.57040786743164,
-			"y": 98.3515853881836,
-			"z": -0.5303339958190918
+		lowerarm_r: {
+			x: -34.57040786743164,
+			y: 98.3515853881836,
+			z: -0.5303339958190918,
 		},
-		"pelma_l": {
-			"x": 5.950271844863892,
-			"y": 2.106816291809082,
-			"z": 9.454838275909424
+		pelma_l: {
+			x: 5.950271844863892,
+			y: 2.106816291809082,
+			z: 9.454838275909424,
 		},
-		"pelma_r": {
-			"x": -5.950271844863892,
-			"y": 2.106816291809082,
-			"z": 9.454838275909424
+		pelma_r: {
+			x: -5.950271844863892,
+			y: 2.106816291809082,
+			z: 9.454838275909424,
 		},
-		"thigh_l": {
-			"x": 6.465143918991089,
-			"y": 52.77687644958496,
-			"z": 1.2393369674682617
+		thigh_l: {
+			x: 6.465143918991089,
+			y: 52.77687644958496,
+			z: 1.2393369674682617,
 		},
-		"thigh_r": {
-			"x": -6.465143918991089,
-			"y": 52.77687644958496,
-			"z": 1.2393369674682617
+		thigh_r: {
+			x: -6.465143918991089,
+			y: 52.77687644958496,
+			z: 1.2393369674682617,
 		},
-		"knee_l": {
-			"x": 5.950271725654602,
-			"y": 39.12459182739258,
-			"z": 1.4469028115272522
+		knee_l: {
+			x: 5.950271725654602,
+			y: 39.12459182739258,
+			z: 1.4469028115272522,
 		},
-		"knee_r": {
-			"x": -5.950271725654602,
-			"y": 39.12459182739258,
-			"z": 1.4469028115272522
+		knee_r: {
+			x: -5.950271725654602,
+			y: 39.12459182739258,
+			z: 1.4469028115272522,
 		},
-		"wrist_l": {
-			"x": 42.58299446105957,
-			"y": 97.59692001342773,
-			"z": 0.7862309217453003
+		wrist_l: {
+			x: 42.58299446105957,
+			y: 97.59692001342773,
+			z: 0.7862309217453003,
 		},
-		"wrist_r": {
-			"x": -42.58299446105957,
-			"y": 97.59692001342773,
-			"z": 0.7862309217453003
+		wrist_r: {
+			x: -42.58299446105957,
+			y: 97.59692001342773,
+			z: 0.7862309217453003,
 		},
-		"shoulder_l": {
-			"x": 10.224750518798828,
-			"y": 99.86847686767578,
-			"z": 1.8163499236106873
+		shoulder_l: {
+			x: 10.224750518798828,
+			y: 99.86847686767578,
+			z: 1.8163499236106873,
 		},
-		"shoulder_r": {
-			"x": -10.224750518798828,
-			"y": 99.86847686767578,
-			"z": 1.8163499236106873
+		shoulder_r: {
+			x: -10.224750518798828,
+			y: 99.86847686767578,
+			z: 1.8163499236106873,
 		},
-		"elbow_l": {
-			"x": 26.771096229553223,
-			"y": 98.29524612426758,
-			"z": -0.9946861267089844
+		elbow_l: {
+			x: 26.771096229553223,
+			y: 98.29524612426758,
+			z: -0.9946861267089844,
 		},
-		"elbow_r": {
-			"x": -26.771096229553223,
-			"y": 98.29524612426758,
-			"z": -0.9946861267089844
+		elbow_r: {
+			x: -26.771096229553223,
+			y: 98.29524612426758,
+			z: -0.9946861267089844,
 		},
-		"hand_l": {
-			"x": 49.42721748352051,
-			"y": 97.63338470458984,
-			"z": 3.562742054462433
+		hand_l: {
+			x: 49.42721748352051,
+			y: 97.63338470458984,
+			z: 3.562742054462433,
 		},
-		"hand_r": {
-			"x": -49.42721748352051,
-			"y": 97.63338470458984,
-			"z": 3.562742054462433
+		hand_r: {
+			x: -49.42721748352051,
+			y: 97.63338470458984,
+			z: 3.562742054462433,
 		},
-		"upperarm_l": {
-			"x": 18.69175386428833,
-			"y": 99.65556335449219,
-			"z": 0.5235534906387329
+		upperarm_l: {
+			x: 18.69175386428833,
+			y: 99.65556335449219,
+			z: 0.5235534906387329,
 		},
-		"upperarm_r": {
-			"x": -18.69175386428833,
-			"y": 99.65556335449219,
-			"z": 0.5235534906387329
+		upperarm_r: {
+			x: -18.69175386428833,
+			y: 99.65556335449219,
+			z: 0.5235534906387329,
 		},
-		"hip_l": {
-			"x": 5.822864592075348,
-			"y": 66.59577178955078,
-			"z": 1.9783098697662354
+		hip_l: {
+			x: 5.822864592075348,
+			y: 66.59577178955078,
+			z: 1.9783098697662354,
 		},
-		"hip_r": {
-			"x": -5.822864592075348,
-			"y": 66.59577178955078,
-			"z": 1.9783098697662354
+		hip_r: {
+			x: -5.822864592075348,
+			y: 66.59577178955078,
+			z: 1.9783098697662354,
 		},
-		"ankle_l": {
-			"x": 5.950271844863892,
-			"y": 8.869707345962524,
-			"z": -4.76837158203125e-7
+		ankle_l: {
+			x: 5.950271844863892,
+			y: 8.869707345962524,
+			z: -4.76837158203125e-7,
 		},
-		"ankle_r": {
-			"x": -5.950271844863892,
-			"y": 8.869707345962524,
-			"z": -4.76837158203125e-7
+		ankle_r: {
+			x: -5.950271844863892,
+			y: 8.869707345962524,
+			z: -4.76837158203125e-7,
 		},
-	}
+	};
 
 	constructor(geometry) {
-
 		// color of material
 		this.color = 0x44aa88;
 		// opacity of material, when pose score is lower/higher then 0.5
@@ -406,7 +429,7 @@ export default class Silhouette3D {
 
 		this.body = new THREE.Group();
 
-		const meshes = {}
+		const meshes = {};
 
 		for (let name in geometry) {
 			meshes[name] = new THREE.Mesh(
@@ -416,7 +439,7 @@ export default class Silhouette3D {
 					transparent: true,
 					opacity: 0.6,
 				})
-			)
+			);
 		}
 
 		this.abs = {
@@ -434,7 +457,7 @@ export default class Silhouette3D {
 				const v = new THREE.Vector3(
 					this.pos.chest.x - this.pos.abs.x,
 					this.pos.chest.y - this.pos.abs.y,
-					this.pos.chest.z - this.pos.abs.z,
+					this.pos.chest.z - this.pos.abs.z
 				);
 
 				v.applyQuaternion(this.abs.group.quaternion);
@@ -450,7 +473,7 @@ export default class Silhouette3D {
 				const v0 = new THREE.Vector3(
 					this.pos.neck.x - this.pos.chest.x,
 					this.pos.neck.y - this.pos.chest.y,
-					this.pos.neck.z - this.pos.chest.z,
+					this.pos.neck.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -469,7 +492,7 @@ export default class Silhouette3D {
 				const v0 = new THREE.Vector3(
 					this.pos.head.x - this.pos.neck.x,
 					this.pos.head.y - this.pos.neck.y,
-					this.pos.head.z - this.pos.neck.z,
+					this.pos.head.z - this.pos.neck.z
 				);
 
 				v0.applyQuaternion(this.neck.group.quaternion);
@@ -488,7 +511,7 @@ export default class Silhouette3D {
 				const v0 = new THREE.Vector3(
 					this.pos.shoulder_l.x - this.pos.chest.x,
 					this.pos.shoulder_l.y - this.pos.chest.y,
-					this.pos.shoulder_l.z - this.pos.chest.z,
+					this.pos.shoulder_l.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -505,9 +528,11 @@ export default class Silhouette3D {
 			mesh: meshes.upperarm_l,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_l.x - this.pos.chest.x,
+					this.pos.upperarm_l.x -
+						this.pos.chest.x -
+						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
 					this.pos.upperarm_l.y - this.pos.chest.y,
-					this.pos.upperarm_l.z - this.pos.chest.z,
+					this.pos.upperarm_l.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -517,7 +542,11 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3((this.pos.shoulder_l.x - this.pos.elbow_l.x) / 2, 0, 0),
+			mesh_position: new THREE.Vector3(
+				(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+				0,
+				0
+			),
 		};
 		this.lowerarm_l = {
 			group: new THREE.Group(),
@@ -564,7 +593,7 @@ export default class Silhouette3D {
 				const v0 = new THREE.Vector3(
 					this.pos.shoulder_r.x - this.pos.chest.x,
 					this.pos.shoulder_r.y - this.pos.chest.y,
-					this.pos.shoulder_r.z - this.pos.chest.z,
+					this.pos.shoulder_r.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -866,7 +895,6 @@ export default class Silhouette3D {
 		qs.head = qs.chest.clone();
 		qs.shoulder_l = qs.chest.clone();
 		qs.shoulder_r = qs.chest.clone();
-
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
