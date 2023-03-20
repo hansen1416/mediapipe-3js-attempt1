@@ -69,6 +69,31 @@ export default function ParticleFigure() {
 
 	const meshes = useRef({});
 
+	function jsonToBufferGeometry(data) {
+		const geometry = new THREE.BufferGeometry();
+
+		geometry.setAttribute(
+			"position",
+			new THREE.BufferAttribute(
+				new Float32Array(data.data.attributes.position.array),
+				3
+			)
+		);
+		geometry.setAttribute(
+			"normal",
+			new THREE.BufferAttribute(
+				new Float32Array(data.data.attributes.normal.array),
+				3
+			)
+		);
+		geometry.setAttribute(
+			"uv",
+			new THREE.BufferAttribute(new Float32Array(data.data.attributes.uv.array), 2)
+		);
+
+		return geometry
+	}
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -94,51 +119,187 @@ export default function ParticleFigure() {
 
 			// scene.current.add(model);
 
-			// model.position.set(-50, 0, 0);
-
 			traverseModel(model, meshes.current);
 
-			const geos = {};
-			const poss = {}
+			figure.current = new Silhouette3D({});
+			const body = figure.current.init();
 
-			for (let name in meshes.current) {
+			scene.current.add(body);
+		});
 
-				const pos = meshes.current[name].position
 
-				poss[name] = new THREE.Vector3(pos.x * -1, pos.y * -1, pos.z * -1)
+		const poss = {
+			"head": {
+				"x": 0,
+				"y": 115.1942367553711,
+				"z": 2.442631244659424
+			},
+			"abs": {
+				"x": 0,
+				"y": 73.06646537780762,
+				"z": 2.173459053039551
+			},
+			"neck": {
+				"x": -2.384185791015625e-7,
+				"y": 108.9151611328125,
+				"z": 1.2082147598266602
+			},
+			"foot_l": {
+				"x": 6.038201689720154,
+				"y": 4.189789369702339,
+				"z": 5.3377227783203125
+			},
+			"foot_r": {
+				"x": -6.038201689720154,
+				"y": 4.189789369702339,
+				"z": 5.3377227783203125
+			},
+			"calf_r": {
+				"x": -6.078888535499573,
+				"y": 24.266510009765625,
+				"z": 1.186724066734314
+			},
+			"calf_l": {
+				"x": 6.078888535499573,
+				"y": 24.266510009765625,
+				"z": 1.186724066734314
+			},
+			"lowerarm_l": {
+				"x": -34.57040786743164,
+				"y": 98.3515853881836,
+				"z": -0.5303339958190918
+			},
+			"lowerarm_r": {
+				"x": 34.57040786743164,
+				"y": 98.3515853881836,
+				"z": -0.5303339958190918
+			},
+			"polySurface99": {
+				"x": -5.950271844863892,
+				"y": 2.106816291809082,
+				"z": 9.454838275909424
+			},
+			"thigh_l": {
+				"x": -6.465143918991089,
+				"y": 52.77687644958496,
+				"z": 1.2393369674682617
+			},
+			"polySurface100": {
+				"x": -5.950271725654602,
+				"y": 39.12459182739258,
+				"z": 1.4469028115272522
+			},
+			"polySurface66": {
+				"x": 42.58299446105957,
+				"y": 97.59692001342773,
+				"z": 0.7862309217453003
+			},
+			"polySurface65": {
+				"x": 26.771096229553223,
+				"y": 98.29524612426758,
+				"z": -0.9946861267089844
+			},
+			"hand_l": {
+				"x": -49.42721748352051,
+				"y": 97.63338470458984,
+				"z": 3.562742054462433
+			},
+			"upperarm_l": {
+				"x": -18.69175386428833,
+				"y": 99.65556335449219,
+				"z": 0.5235534906387329
+			},
+			"polySurface93": {
+				"x": -42.58299446105957,
+				"y": 97.59692001342773,
+				"z": 0.7862309217453003
+			},
+			"chest": {
+				"x": 0,
+				"y": 96.37579345703125,
+				"z": 1.555971384048462
+			},
+			"polySurface128": {
+				"x": 5.822864592075348,
+				"y": 66.59577178955078,
+				"z": 1.9783098697662354
+			},
+			"polySurface127": {
+				"x": 5.950271725654602,
+				"y": 39.12459182739258,
+				"z": 1.4469028115272522
+			},
+			"thigh_r": {
+				"x": 6.465143918991089,
+				"y": 52.77687644958496,
+				"z": 1.2393369674682617
+			},
+			"polySurface125": {
+				"x": 5.950271844863892,
+				"y": 8.869707345962524,
+				"z": -4.76837158203125e-7
+			},
+			"polySurface114": {
+				"x": -26.771096229553223,
+				"y": 98.29524612426758,
+				"z": -0.9946861267089844
+			},
+			"polySurface111": {
+				"x": -5.822864592075348,
+				"y": 66.59577178955078,
+				"z": 1.9783098697662354
+			},
+			"polySurface110": {
+				"x": 10.224750518798828,
+				"y": 99.86847686767578,
+				"z": 1.8163499236106873
+			},
+			"polySurface86": {
+				"x": -5.950271844863892,
+				"y": 8.869707345962524,
+				"z": -4.76837158203125e-7
+			},
+			"polySurface85": {
+				"x": 5.950271844863892,
+				"y": 2.106816291809082,
+				"z": 9.454838275909424
+			},
+			"hand_r": {
+				"x": 49.42721748352051,
+				"y": 97.63338470458984,
+				"z": 3.562742054462433
+			},
+			"polySurface83": {
+				"x": 18.69175386428833,
+				"y": 99.65556335449219,
+				"z": 0.5235534906387329
+			},
+			"polySurface57": {
+				"x": -10.224750518798828,
+				"y": 99.86847686767578,
+				"z": 1.8163499236106873
+			},
+		}
 
-				const bgeo = meshes.current[name].geometry
 
-				// new THREE.BufferGeometry()
+		const tasks = []
+
+		for (let name in poss) {
+			tasks.push(loadJSON(
+				process.env.PUBLIC_URL + "/t/" + name + ".json"
+			))
+		}
+
+		Promise.all(tasks)
+		.then((results) => {
+			for (let data of results) {
+
+				const name = data.name
 				
-				const position_attr = bgeo.getAttribute('position')
-
-				const position_arr = position_attr.array;
-
-				// console.log(position_arr)
-
-				for (let i = 0; i < position_arr.length; i+= 3) {
-					position_arr[i] += pos.x
-					position_arr[i+1] += pos.y
-					position_arr[i+2] += pos.z
-				}
-
-				bgeo.setAttribute('position', new THREE.BufferAttribute(
-					new Float32Array(position_arr),
-					3
-				))
-
-				// console.log(bgeo)
-
-				geos[name] = bgeo
-			}
-
-		
-			for (let name in geos) {
 				const mesh = new THREE.Mesh(
-					geos[name],
-					new THREE.MeshBasicMaterial({
-						color: 0x33eeb0,
+					jsonToBufferGeometry(data),
+					new THREE.MeshLambertMaterial({
+						color: 0x12c2e9,
 						transparent: true,
 						opacity: 0.6,
 					})
@@ -148,36 +309,7 @@ export default function ParticleFigure() {
 
 				scene.current.add(mesh);
 			}
-
-			// function addpart(name) {
-			// 	scene.current.add(meshes.current[name]);
-
-			// 	meshes.current[name].position.set(0, 0, 0);
-
-			// 	// meshes.current.polySurface17.scale.set(10, 10, 10);
-			// }
-
-			// const mapping = {
-			// 	aGroup47173: "pelvis",
-			// 	pCube5: "foot_r",
-			// 	pCube6: "chest",
-			// 	pCube7: "head",
-			// 	pSphere1: "neck",
-			// 	pSphere6: "calf_r",
-			// };
-
-			// const geos = {
-			// 	calf_r: meshes.current["pSphere6"].geometry,
-			// 	foot_r: meshes.current["pCube5"].geometry,
-			// };
-
-			// addpart("pSphere6");
-
-			figure.current = new Silhouette3D({});
-			const body = figure.current.init();
-
-			scene.current.add(body);
-		});
+		})
 
 		// const axesHelper = new THREE.AxesHelper(40);
 
