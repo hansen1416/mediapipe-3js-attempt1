@@ -125,38 +125,7 @@ export default function ParticleFigure() {
 
 		const tasks = []
 
-		for (let name of [
-			"abs",
-			"chest",
-			"neck",
-			"head",
-			"shoulder_l",
-			"shoulder_r",
-			"upperarm_l",
-			"upperarm_r",
-			"elbow_l",
-			"elbow_r",
-			"lowerarm_l",
-			"lowerarm_r",
-			"wrist_l",
-			"wrist_r",
-			"hand_l",
-			"hand_r",
-			"hip_l",
-			"hip_r",
-			"thigh_l",
-			"thigh_r",
-			"knee_l",
-			"knee_r",
-			"calf_l",
-			"calf_r",
-			"ankle_l",
-			"ankle_r",
-			"foot_l",
-			"foot_r",
-			"pelma_l",
-			"pelma_r",
-		]) {
+		for (let name of Silhouette3D.limbs) {
 			tasks.push(loadJSON(
 				process.env.PUBLIC_URL + "/t/" + name + ".json"
 			))

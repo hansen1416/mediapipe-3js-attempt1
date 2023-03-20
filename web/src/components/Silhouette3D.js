@@ -210,22 +210,37 @@ export default class Silhouette3D {
 	 * limbs geometry combined 3d human figure
 	 */
 
-	limbs = [
+	static limbs = [
 		"abs",
 		"chest",
+		"neck",
 		"head",
+		"shoulder_l",
+		"shoulder_r",
 		"upperarm_l",
-		"lowerarm_l",
-		"hand_l",
 		"upperarm_r",
-		"lowerarm_r",
-		"hand_r",
-		"thigh_l",
-		"calf_l",
-		"foot_l",
-		"thigh_r",
-		"calf_r",
-		"foot_r",
+		// "elbow_l",
+		// "elbow_r",
+		// "lowerarm_l",
+		// "lowerarm_r",
+		// "wrist_l",
+		// "wrist_r",
+		// "hand_l",
+		// "hand_r",
+		// "hip_l",
+		// "hip_r",
+		// "thigh_l",
+		// "thigh_r",
+		// "knee_l",
+		// "knee_r",
+		// "calf_l",
+		// "calf_r",
+		// "ankle_l",
+		// "ankle_r",
+		// "foot_l",
+		// "foot_r",
+		// "pelma_l",
+		// "pelma_r",
 	];
 
 	pos = {
@@ -391,8 +406,10 @@ export default class Silhouette3D {
 
 		this.body = new THREE.Group();
 
+		const meshes = {}
+
 		for (let name in geometry) {
-			const mesh = new THREE.Mesh(
+			meshes[name] = new THREE.Mesh(
 				geometry[name],
 				new THREE.MeshLambertMaterial({
 					color: 0x12c2e9,
@@ -400,312 +417,352 @@ export default class Silhouette3D {
 					opacity: 0.6,
 				})
 			)
-	
-			mesh.position.set(this.pos[name].x, this.pos[name].y, this.pos[name].z);
-
-
-			this.body.add(mesh)
 		}
 
-		// this.abs = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getBoxMesh(
-		// 		this.abs_width,
-		// 		this.abs_height,
-		// 		this.abs_depth
-		// 	),
-		// 	position: () => {
-		// 		return new THREE.Vector3(0, 0, 0);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, 0, 0),
-		// };
-		// this.chest = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getBoxMesh(
-		// 		this.chest_width,
-		// 		this.chest_height,
-		// 		this.chest_depth
-		// 	),
-		// 	position: () => {
-		// 		const v = new THREE.Vector3(
-		// 			0,
-		// 			this.abs_height + (this.chest_height - this.abs_height) / 2,
-		// 			0
-		// 		);
+		this.abs = {
+			group: new THREE.Group(),
+			mesh: meshes.abs,
+			position: () => {
+				return new THREE.Vector3(0, 0, 0);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.chest = {
+			group: new THREE.Group(),
+			mesh: meshes.chest,
+			position: () => {
+				const v = new THREE.Vector3(
+					this.pos.chest.x - this.pos.abs.x,
+					this.pos.chest.y - this.pos.abs.y,
+					this.pos.chest.z - this.pos.abs.z,
+				);
 
-		// 		v.applyQuaternion(this.abs.group.quaternion);
+				v.applyQuaternion(this.abs.group.quaternion);
 
-		// 		return v;
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, 0, 0),
-		// };
-		// this.head = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getBallMesh(this.head_radius),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(
-		// 			0,
-		// 			this.chest_height / 2 + this.head_radius,
-		// 			0
-		// 		);
+				return v;
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.neck = {
+			group: new THREE.Group(),
+			mesh: meshes.neck,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.neck.x - this.pos.chest.x,
+					this.pos.neck.y - this.pos.chest.y,
+					this.pos.neck.z - this.pos.chest.z,
+				);
 
-		// 		v0.applyQuaternion(this.chest.group.quaternion);
+				v0.applyQuaternion(this.chest.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.chest.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, 0, 0),
-		// };
-		// this.upperarm_l = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.deltoid_radius,
-		// 		this.elbow_radius,
-		// 		this.bigarm_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(
-		// 			this.chest_width / 2,
-		// 			this.chest_height / 2,
-		// 			0
-		// 		);
+				return new THREE.Vector3().addVectors(
+					this.chest.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.head = {
+			group: new THREE.Group(),
+			mesh: meshes.head,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.head.x - this.pos.neck.x,
+					this.pos.head.y - this.pos.neck.y,
+					this.pos.head.z - this.pos.neck.z,
+				);
 
-		// 		v0.applyQuaternion(this.chest.group.quaternion);
+				v0.applyQuaternion(this.neck.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.chest.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.chest_height / 2, 0),
-		// };
-		// this.lowerarm_l = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.elbow_radius,
-		// 		this.wrist_size,
-		// 		this.smallarm_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.bigarm_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.neck.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.shoulder_l = {
+			group: new THREE.Group(),
+			mesh: meshes.shoulder_l,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.shoulder_l.x - this.pos.chest.x,
+					this.pos.shoulder_l.y - this.pos.chest.y,
+					this.pos.shoulder_l.z - this.pos.chest.z,
+				);
 
-		// 		v0.applyQuaternion(this.upperarm_l.group.quaternion);
+				v0.applyQuaternion(this.chest.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.upperarm_l.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
-		// };
-		// this.hand_l = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getBoxMesh(
-		// 		this.hand_width,
-		// 		this.hand_height,
-		// 		this.hand_depth
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.chest.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.upperarm_l = {
+			group: new THREE.Group(),
+			mesh: meshes.upperarm_l,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.upperarm_l.x - this.pos.chest.x,
+					this.pos.upperarm_l.y - this.pos.chest.y,
+					this.pos.upperarm_l.z - this.pos.chest.z,
+				);
 
-		// 		v0.applyQuaternion(this.lowerarm_l.group.quaternion);
+				v0.applyQuaternion(this.chest.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.lowerarm_l.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
-		// };
-		// this.upperarm_r = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.deltoid_radius,
-		// 		this.elbow_radius,
-		// 		this.bigarm_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(
-		// 			-this.chest_width / 2,
-		// 			this.chest_height / 2,
-		// 			0
-		// 		);
+				return new THREE.Vector3().addVectors(
+					this.chest.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3((this.pos.shoulder_l.x - this.pos.elbow_l.x) / 2, 0, 0),
+		};
+		this.lowerarm_l = {
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.elbow_radius,
+				this.wrist_size,
+				this.smallarm_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.bigarm_size, 0);
 
-		// 		v0.applyQuaternion(this.chest.group.quaternion);
+				v0.applyQuaternion(this.upperarm_l.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.chest.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.chest_height / 2, 0),
-		// };
-		// this.lowerarm_r = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.elbow_radius,
-		// 		this.wrist_size,
-		// 		this.smallarm_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.bigarm_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.upperarm_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+		};
+		this.hand_l = {
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.hand_width,
+				this.hand_height,
+				this.hand_depth
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
 
-		// 		v0.applyQuaternion(this.upperarm_r.group.quaternion);
+				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.upperarm_r.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
-		// };
-		// this.hand_r = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getBoxMesh(
-		// 		this.hand_width,
-		// 		this.hand_height,
-		// 		this.hand_depth
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.lowerarm_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
+		};
+		this.shoulder_r = {
+			group: new THREE.Group(),
+			mesh: meshes.shoulder_r,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.shoulder_r.x - this.pos.chest.x,
+					this.pos.shoulder_r.y - this.pos.chest.y,
+					this.pos.shoulder_r.z - this.pos.chest.z,
+				);
 
-		// 		v0.applyQuaternion(this.lowerarm_r.group.quaternion);
+				v0.applyQuaternion(this.chest.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.lowerarm_r.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
-		// };
-		// this.thigh_l = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.thigh_radius,
-		// 		this.knee_radius,
-		// 		this.thigh_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(
-		// 			this.abs_width / 2,
-		// 			-this.abs_height / 2,
-		// 			0
-		// 		);
+				return new THREE.Vector3().addVectors(
+					this.chest.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.upperarm_r = {
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.deltoid_radius,
+				this.elbow_radius,
+				this.bigarm_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(
+					-this.chest_width / 2,
+					this.chest_height / 2,
+					0
+				);
 
-		// 		v0.applyQuaternion(this.abs.group.quaternion);
+				v0.applyQuaternion(this.chest.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.abs.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
-		// };
-		// this.calf_l = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.knee_radius,
-		// 		this.ankle_radius,
-		// 		this.calf_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.thigh_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.chest.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.chest_height / 2, 0),
+		};
+		this.lowerarm_r = {
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.elbow_radius,
+				this.wrist_size,
+				this.smallarm_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.bigarm_size, 0);
 
-		// 		v0.applyQuaternion(this.thigh_l.group.quaternion);
+				v0.applyQuaternion(this.upperarm_r.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.thigh_l.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
-		// };
-		// this.foot_l = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getBoxMesh(
-		// 		this.foot_width,
-		// 		this.foot_height,
-		// 		this.foot_depth
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.calf_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.upperarm_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+		};
+		this.hand_r = {
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.hand_width,
+				this.hand_height,
+				this.hand_depth
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
 
-		// 		v0.applyQuaternion(this.calf_l.group.quaternion);
+				v0.applyQuaternion(this.lowerarm_r.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.calf_l.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
-		// };
-		// this.thigh_r = {
-		// 	group: new THREE.Group(),
-		// 	mesh: this.getCylinderMesh(
-		// 		this.thigh_radius,
-		// 		this.knee_radius,
-		// 		this.thigh_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(
-		// 			-this.abs_width / 2,
-		// 			-this.abs_height / 2,
-		// 			0
-		// 		);
+				return new THREE.Vector3().addVectors(
+					this.lowerarm_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
+		};
+		this.thigh_l = {
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.thigh_radius,
+				this.knee_radius,
+				this.thigh_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.abs_width / 2,
+					-this.abs_height / 2,
+					0
+				);
 
-		// 		v0.applyQuaternion(this.abs.group.quaternion);
+				v0.applyQuaternion(this.abs.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.abs.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
-		// };
+				return new THREE.Vector3().addVectors(
+					this.abs.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
+		};
+		this.calf_l = {
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.knee_radius,
+				this.ankle_radius,
+				this.calf_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.thigh_size, 0);
 
-		// this.calf_r = {
-		// 	group: new THREE.Group(),
-		// 	// mesh: calf_r_mesh,
-		// 	mesh: this.getCylinderMesh(
-		// 		this.knee_radius,
-		// 		this.ankle_radius,
-		// 		this.calf_size
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.thigh_size, 0);
+				v0.applyQuaternion(this.thigh_l.group.quaternion);
 
-		// 		v0.applyQuaternion(this.thigh_r.group.quaternion);
+				return new THREE.Vector3().addVectors(
+					this.thigh_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
+		};
+		this.foot_l = {
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.foot_width,
+				this.foot_height,
+				this.foot_depth
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.calf_size, 0);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.thigh_r.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
-		// };
+				v0.applyQuaternion(this.calf_l.group.quaternion);
 
-		// this.foot_r = {
-		// 	group: new THREE.Group(),
-		// 	// mesh: foot_r_mesh,
-		// 	mesh: this.getBoxMesh(
-		// 		this.foot_width,
-		// 		this.foot_height,
-		// 		this.foot_depth
-		// 	),
-		// 	position: () => {
-		// 		const v0 = new THREE.Vector3(0, -this.calf_size, 0);
+				return new THREE.Vector3().addVectors(
+					this.calf_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
+		};
+		this.thigh_r = {
+			group: new THREE.Group(),
+			mesh: this.getCylinderMesh(
+				this.thigh_radius,
+				this.knee_radius,
+				this.thigh_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(
+					-this.abs_width / 2,
+					-this.abs_height / 2,
+					0
+				);
 
-		// 		v0.applyQuaternion(this.calf_r.group.quaternion);
+				v0.applyQuaternion(this.abs.group.quaternion);
 
-		// 		return new THREE.Vector3().addVectors(
-		// 			this.calf_r.group.position,
-		// 			v0
-		// 		);
-		// 	},
-		// 	mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
-		// };
+				return new THREE.Vector3().addVectors(
+					this.abs.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
+		};
+
+		this.calf_r = {
+			group: new THREE.Group(),
+			// mesh: calf_r_mesh,
+			mesh: this.getCylinderMesh(
+				this.knee_radius,
+				this.ankle_radius,
+				this.calf_size
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.thigh_size, 0);
+
+				v0.applyQuaternion(this.thigh_r.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.thigh_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
+		};
+
+		this.foot_r = {
+			group: new THREE.Group(),
+			// mesh: foot_r_mesh,
+			mesh: this.getBoxMesh(
+				this.foot_width,
+				this.foot_height,
+				this.foot_depth
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.calf_size, 0);
+
+				v0.applyQuaternion(this.calf_r.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.calf_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
+		};
 	}
 
 	getBoxMesh(width, height, depth) {
@@ -774,23 +831,23 @@ export default class Silhouette3D {
 		 * initialize body parts
 		 */
 
-		// for (let name of this.limbs) {
-		// 	this[name].group.name = name;
+		for (let name of Silhouette3D.limbs) {
+			this[name].group.name = name;
 
-		// 	this.body.add(this[name].group);
+			this.body.add(this[name].group);
 
-		// 	this[name].group.add(this[name].mesh);
+			this[name].group.add(this[name].mesh);
 
-		// 	const pos = this[name].position();
+			const pos = this[name].position();
 
-		// 	this[name].group.position.set(pos.x, pos.y, pos.z);
+			this[name].group.position.set(pos.x, pos.y, pos.z);
 
-		// 	this[name].mesh.position.set(
-		// 		this[name].mesh_position.x,
-		// 		this[name].mesh_position.y,
-		// 		this[name].mesh_position.z
-		// 	);
-		// }
+			this[name].mesh.position.set(
+				this[name].mesh_position.x,
+				this[name].mesh_position.y,
+				this[name].mesh_position.z
+			);
+		}
 
 		return this.body;
 	}
@@ -805,7 +862,13 @@ export default class Silhouette3D {
 
 		const qs = getQuaternions(pose3D);
 
-		for (let name of this.limbs) {
+		qs.neck = qs.chest.clone();
+		qs.head = qs.chest.clone();
+		qs.shoulder_l = qs.chest.clone();
+		qs.shoulder_r = qs.chest.clone();
+
+
+		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
 				continue;
 			}
