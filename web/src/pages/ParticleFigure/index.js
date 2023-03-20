@@ -86,45 +86,94 @@ export default function ParticleFigure() {
 			loadJSON(
 				process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
 			),
-			loadFBX(process.env.PUBLIC_URL + "/fbx/T.fbx"),
+			loadFBX(process.env.PUBLIC_URL + "/fbx/T_0.fbx"),
 		]).then(([detector, pose3d, model]) => {
 			poseDetector.current = detector;
 
 			storedPose.current = pose3d;
 
-			scene.current.add(model);
+			// scene.current.add(model);
 
-			model.position.set(-50, 0, 0);
+			// model.position.set(-50, 0, 0);
 
 			traverseModel(model, meshes.current);
 
-			console.log(meshes.current);
+			const geos = {};
+			const poss = {}
 
-			function addpart(name) {
-				scene.current.add(meshes.current[name]);
+			for (let name in meshes.current) {
 
-				meshes.current[name].position.set(0, 0, 0);
+				const pos = meshes.current[name].position
 
-				// meshes.current.polySurface17.scale.set(10, 10, 10);
+				poss[name] = new THREE.Vector3(pos.x * -1, pos.y * -1, pos.z * -1)
+
+				const bgeo = meshes.current[name].geometry
+
+				// new THREE.BufferGeometry()
+				
+				const position_attr = bgeo.getAttribute('position')
+
+				const position_arr = position_attr.array;
+
+				// console.log(position_arr)
+
+				for (let i = 0; i < position_arr.length; i+= 3) {
+					position_arr[i] += pos.x
+					position_arr[i+1] += pos.y
+					position_arr[i+2] += pos.z
+				}
+
+				bgeo.setAttribute('position', new THREE.BufferAttribute(
+					new Float32Array(position_arr),
+					3
+				))
+
+				// console.log(bgeo)
+
+				geos[name] = bgeo
 			}
 
-			const mapping = {
-				aGroup47173: "pelvis",
-				pCube5: "foot_r",
-				pCube6: "chest",
-				pCube7: "head",
-				pSphere1: "neck",
-				pSphere6: "calf_r",
-			};
+		
+			for (let name in geos) {
+				const mesh = new THREE.Mesh(
+					geos[name],
+					new THREE.MeshBasicMaterial({
+						color: 0x33eeb0,
+						transparent: true,
+						opacity: 0.6,
+					})
+				)
 
-			const geos = {
-				calf_r: meshes.current["pSphere6"].geometry,
-				foot_r: meshes.current["pCube5"].geometry,
-			};
+				mesh.position.set(poss[name].x, poss[name].y, poss[name].z)
+
+				scene.current.add(mesh);
+			}
+
+			// function addpart(name) {
+			// 	scene.current.add(meshes.current[name]);
+
+			// 	meshes.current[name].position.set(0, 0, 0);
+
+			// 	// meshes.current.polySurface17.scale.set(10, 10, 10);
+			// }
+
+			// const mapping = {
+			// 	aGroup47173: "pelvis",
+			// 	pCube5: "foot_r",
+			// 	pCube6: "chest",
+			// 	pCube7: "head",
+			// 	pSphere1: "neck",
+			// 	pSphere6: "calf_r",
+			// };
+
+			// const geos = {
+			// 	calf_r: meshes.current["pSphere6"].geometry,
+			// 	foot_r: meshes.current["pCube5"].geometry,
+			// };
 
 			// addpart("pSphere6");
 
-			figure.current = new Silhouette3D(geos);
+			figure.current = new Silhouette3D({});
 			const body = figure.current.init();
 
 			scene.current.add(body);
