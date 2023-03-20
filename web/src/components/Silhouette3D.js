@@ -243,7 +243,7 @@ export default class Silhouette3D {
 		"shoulder_r",
 		"upperarm_l",
 		"upperarm_r",
-		// "elbow_l",
+		"elbow_l",
 		// "elbow_r",
 		// "lowerarm_l",
 		// "lowerarm_r",
@@ -597,14 +597,12 @@ export default class Silhouette3D {
 			mesh: meshes.elbow_l,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_l.x -
-						this.pos.chest.x -
-						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
-					this.pos.upperarm_l.y - this.pos.chest.y,
-					this.pos.upperarm_l.z - this.pos.chest.z
+					this.pos.elbow_l.x - this.pos.chest.x,
+					this.pos.elbow_l.y - this.pos.chest.y,
+					this.pos.elbow_l.z - this.pos.chest.z
 				);
 
-				v0.applyQuaternion(this.chest.group.quaternion);
+				// v0.applyQuaternion(this.chest.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
 					this.chest.group.position,
