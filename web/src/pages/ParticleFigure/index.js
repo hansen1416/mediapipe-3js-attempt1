@@ -7,6 +7,7 @@ import { cloneDeep } from "lodash";
 
 import SubThreeJsScene from "../../components/SubThreeJsScene";
 import Silhouette3D from "../../components/Silhouette3D";
+import T from "../../components/T";
 import {
 	BlazePoseKeypoints,
 	BlazePoseConfig,
@@ -88,10 +89,13 @@ export default function ParticleFigure() {
 		);
 		geometry.setAttribute(
 			"uv",
-			new THREE.BufferAttribute(new Float32Array(data.data.attributes.uv.array), 2)
+			new THREE.BufferAttribute(
+				new Float32Array(data.data.attributes.uv.array),
+				2
+			)
 		);
 
-		return geometry
+		return geometry;
 	}
 
 	useEffect(() => {
@@ -122,29 +126,47 @@ export default function ParticleFigure() {
 			// traverseModel(model, meshes.current);
 		});
 
-
-		const tasks = []
+		const tasks = [];
 
 		for (let name of Silhouette3D.limbs) {
-			tasks.push(loadJSON(
-				process.env.PUBLIC_URL + "/t/" + name + ".json"
-			))
+			tasks.push(
+				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
+			);
 		}
 
-		Promise.all(tasks)
-		.then((results) => {
-
-			const geos = {}
+		Promise.all(tasks).then((results) => {
+			const geos = {};
 
 			for (let data of results) {
-				geos[data.name] = jsonToBufferGeometry(data)
+				geos[data.name] = jsonToBufferGeometry(data);
 			}
 
 			figure.current = new Silhouette3D(geos);
 			const body = figure.current.init();
 
 			scene.current.add(body);
-		})
+		});
+
+		const tasks1 = [];
+
+		for (let name of T.limbs) {
+			tasks1.push(
+				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
+			);
+		}
+
+		Promise.all(tasks1).then((results) => {
+			const geos = {};
+
+			for (let data of results) {
+				geos[data.name] = jsonToBufferGeometry(data);
+			}
+
+			figure.current = new T(geos);
+			const body = figure.current.init();
+
+			scene.current.add(body);
+		});
 
 		// const axesHelper = new THREE.AxesHelper(40);
 
