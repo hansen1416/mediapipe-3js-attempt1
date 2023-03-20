@@ -124,7 +124,7 @@ export default function ParticleFigure() {
 			figure.current = new Silhouette3D({});
 			const body = figure.current.init();
 
-			// scene.current.add(body);
+			scene.current.add(body);
 		});
 
 
