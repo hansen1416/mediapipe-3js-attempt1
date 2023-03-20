@@ -116,7 +116,7 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	return [abs_q, chest_q];
 }
 
-function getLimbQuaternion(pose3D, joint_start, joint_end) {
+function getLimbQuaternion(upVector, pose3D, joint_start, joint_end) {
 	/**
 	 * calculate quaternion for a limb,
 	 * which start from `joint_start` end at `joint_end`
@@ -134,7 +134,7 @@ function getLimbQuaternion(pose3D, joint_start, joint_end) {
 	}
 
 	quaternion.setFromUnitVectors(
-		new THREE.Vector3(0, -1, 0).normalize(),
+		upVector,
 		new THREE.Vector3(
 			end_pos.x - start_pos.x,
 			end_pos.y - start_pos.y,
@@ -163,12 +163,14 @@ function getQuaternions(pose3D) {
 	result["head"] = new THREE.Quaternion();
 
 	result["upperarm_l"] = getLimbQuaternion(
+		new THREE.Vector3(1, 0, 0),
 		pose3D,
 		"LEFT_SHOULDER",
 		"LEFT_ELBOW"
 	);
 
 	result["lowerarm_l"] = getLimbQuaternion(
+		new THREE.Vector3(1, 0, 0),
 		pose3D,
 		"LEFT_ELBOW",
 		"LEFT_WRIST"
@@ -177,12 +179,14 @@ function getQuaternions(pose3D) {
 	result["hand_l"] = new THREE.Quaternion();
 
 	result["upperarm_r"] = getLimbQuaternion(
+		new THREE.Vector3(-1, 0, 0),
 		pose3D,
 		"RIGHT_SHOULDER",
 		"RIGHT_ELBOW"
 	);
 
 	result["lowerarm_r"] = getLimbQuaternion(
+		new THREE.Vector3(-1, 0, 0),
 		pose3D,
 		"RIGHT_ELBOW",
 		"RIGHT_WRIST"
@@ -190,15 +194,15 @@ function getQuaternions(pose3D) {
 
 	result["hand_r"] = new THREE.Quaternion();
 
-	result["thigh_l"] = getLimbQuaternion(pose3D, "LEFT_HIP", "LEFT_KNEE");
+	result["thigh_l"] = getLimbQuaternion(new THREE.Vector3(0, -1, 0), pose3D, "LEFT_HIP", "LEFT_KNEE");
 
-	result["calf_l"] = getLimbQuaternion(pose3D, "LEFT_KNEE", "LEFT_ANKLE");
+	result["calf_l"] = getLimbQuaternion(new THREE.Vector3(0, -1, 0), pose3D, "LEFT_KNEE", "LEFT_ANKLE");
 
 	result["foot_l"] = new THREE.Quaternion();
 
-	result["thigh_r"] = getLimbQuaternion(pose3D, "RIGHT_HIP", "RIGHT_KNEE");
+	result["thigh_r"] = getLimbQuaternion(new THREE.Vector3(0, -1, 0), pose3D, "RIGHT_HIP", "RIGHT_KNEE");
 
-	result["calf_r"] = getLimbQuaternion(pose3D, "RIGHT_KNEE", "RIGHT_ANKLE");
+	result["calf_r"] = getLimbQuaternion(new THREE.Vector3(0, -1, 0), pose3D, "RIGHT_KNEE", "RIGHT_ANKLE");
 
 	result["foot_r"] = new THREE.Quaternion();
 
