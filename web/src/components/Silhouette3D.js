@@ -262,10 +262,8 @@ export default class Silhouette3D {
 		"calf_r",
 		"ankle_l",
 		"ankle_r",
-		// "foot_l",
-		// "foot_r",
-		// "pelma_l",
-		// "pelma_r",
+		"foot_l",
+		"foot_r",
 	];
 
 	pos = {
@@ -318,16 +316,6 @@ export default class Silhouette3D {
 			x: -34.57040786743164,
 			y: 98.3515853881836,
 			z: -0.5303339958190918,
-		},
-		pelma_l: {
-			x: 5.950271844863892,
-			y: 2.106816291809082,
-			z: 9.454838275909424,
-		},
-		pelma_r: {
-			x: -5.950271844863892,
-			y: 2.106816291809082,
-			z: 9.454838275909424,
 		},
 		thigh_l: {
 			x: 6.465143918991089,
@@ -1000,13 +988,13 @@ export default class Silhouette3D {
 		};
 		this.foot_l = {
 			group: new THREE.Group(),
-			mesh: this.getBoxMesh(
-				this.foot_width,
-				this.foot_height,
-				this.foot_depth
-			),
+			mesh: meshes.foot_l,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.calf_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.foot_l.x - this.pos.calf_l.x,
+					this.pos.foot_l.y - this.pos.calf_l.y + (this.pos.ankle_l.y - this.pos.knee_l.y) / 2,
+					this.pos.foot_l.z - this.pos.calf_l.z
+				);
 
 				v0.applyQuaternion(this.calf_l.group.quaternion);
 
@@ -1015,18 +1003,18 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
+			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
 		this.foot_r = {
 			group: new THREE.Group(),
 			// mesh: foot_r_mesh,
-			mesh: this.getBoxMesh(
-				this.foot_width,
-				this.foot_height,
-				this.foot_depth
-			),
+			mesh: meshes.foot_r,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.calf_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.foot_r.x - this.pos.calf_r.x,
+					this.pos.foot_r.y - this.pos.calf_r.y + (this.pos.ankle_r.y - this.pos.knee_r.y) / 2,
+					this.pos.foot_r.z - this.pos.calf_r.z
+				);
 
 				v0.applyQuaternion(this.calf_r.group.quaternion);
 
@@ -1035,7 +1023,7 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
+			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
 	}
 
@@ -1153,6 +1141,8 @@ export default class Silhouette3D {
 		qs.knee_r = qs.thigh_r.clone();
 		qs.ankle_l = qs.calf_l.clone();
 		qs.ankle_r = qs.calf_r.clone();
+		qs.foot_l = new THREE.Quaternion();
+		qs.foot_r = new THREE.Quaternion();
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
