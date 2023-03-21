@@ -145,7 +145,7 @@ export default function ParticleFigure() {
 			figure.current = new Silhouette3D(geos);
 			const body = figure.current.init();
 
-			// getMeshSize(figure.current.chest.mesh, scene.current)
+			// getMeshSize(figure.current.hand_r.mesh, scene.current)
 
 			scene.current.add(body);
 		});

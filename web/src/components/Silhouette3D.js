@@ -250,8 +250,8 @@ export default class Silhouette3D {
 		"lowerarm_r",
 		"wrist_l",
 		"wrist_r",
-		// "hand_l",
-		// "hand_r",
+		"hand_l",
+		"hand_r",
 		// "hip_l",
 		// "hip_r",
 		// "thigh_l",
@@ -432,6 +432,11 @@ export default class Silhouette3D {
 			"y": 23.94965362548828,
 			"z": 14.528369903564453
 		},
+		hand: {
+			"x": 12.95370101928711,
+			"y": 2.6799774169921875,
+			"z": 10.326093673706055
+		},
 	}
 
 	constructor(geometry) {
@@ -578,9 +583,7 @@ export default class Silhouette3D {
 			mesh: meshes.upperarm_l,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_l.x -
-						this.pos.chest.x -
-						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+					this.pos.upperarm_l.x - this.pos.chest.x - (this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
 					this.pos.upperarm_l.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.upperarm_l.z - this.pos.chest.z
 				);
@@ -603,7 +606,7 @@ export default class Silhouette3D {
 			mesh: meshes.upperarm_r,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_r.x - this.pos.chest.x + (this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+					this.pos.upperarm_r.x - this.pos.chest.x - (this.pos.elbow_r.x - this.pos.shoulder_r.x) / 2,
 					this.pos.upperarm_r.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.upperarm_r.z - this.pos.chest.z
 				);
@@ -753,13 +756,13 @@ export default class Silhouette3D {
 		};
 		this.hand_l = {
 			group: new THREE.Group(),
-			mesh: this.getBoxMesh(
-				this.hand_width,
-				this.hand_height,
-				this.hand_depth
-			),
+			mesh: meshes.hand_l,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.hand_l.x - this.pos.lowerarm_l.x + (this.pos.wrist_l.x - this.pos.elbow_l.x) / 2,
+					this.pos.hand_l.y - this.pos.lowerarm_l.y,
+					this.pos.hand_l.z - this.pos.lowerarm_l.z
+				);
 
 				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
 
@@ -768,17 +771,17 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
+			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
 		this.hand_r = {
 			group: new THREE.Group(),
-			mesh: this.getBoxMesh(
-				this.hand_width,
-				this.hand_height,
-				this.hand_depth
-			),
+			mesh: meshes.hand_r,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.hand_r.x - this.pos.lowerarm_r.x + (this.pos.wrist_r.x - this.pos.elbow_r.x) / 2,
+					this.pos.hand_r.y - this.pos.lowerarm_r.y,
+					this.pos.hand_r.z - this.pos.lowerarm_r.z
+				);
 
 				v0.applyQuaternion(this.lowerarm_r.group.quaternion);
 
@@ -787,7 +790,7 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
+			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
 		this.thigh_l = {
 			group: new THREE.Group(),
@@ -1022,6 +1025,8 @@ export default class Silhouette3D {
 		qs.elbow_r = qs.lowerarm_r.clone();
 		qs.wrist_l = qs.lowerarm_l.clone();
 		qs.wrist_r = qs.lowerarm_r.clone();
+		qs.hand_l = qs.lowerarm_l.clone();
+		qs.hand_r = qs.lowerarm_r.clone();
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
