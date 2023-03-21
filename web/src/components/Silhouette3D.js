@@ -260,8 +260,8 @@ export default class Silhouette3D {
 		"knee_r",
 		"calf_l",
 		"calf_r",
-		// "ankle_l",
-		// "ankle_r",
+		"ankle_l",
+		"ankle_r",
 		// "foot_l",
 		// "foot_r",
 		// "pelma_l",
@@ -952,6 +952,52 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, (this.pos.ankle_r.y - this.pos.knee_r.y) / 2, 0),
 		};
+		this.ankle_l = {
+			group: new THREE.Group(),
+			mesh: meshes.ankle_l,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.ankle_l.x - this.pos.calf_l.x,
+					this.pos.ankle_l.y - this.pos.calf_l.y,
+					this.pos.ankle_l.z - this.pos.calf_l.z
+				);
+
+				v0.applyQuaternion(this.calf_l.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.calf_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(
+				0,
+				(this.pos.ankle_l.y - this.pos.knee_l.y) / 2,
+				0
+			),
+		};
+		this.ankle_r = {
+			group: new THREE.Group(),
+			mesh: meshes.ankle_r,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.ankle_r.x - this.pos.calf_r.x,
+					this.pos.ankle_r.y - this.pos.calf_r.y,
+					this.pos.ankle_r.z - this.pos.calf_r.z
+				);
+
+				v0.applyQuaternion(this.calf_r.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.calf_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(
+				0,
+				(this.pos.ankle_r.y - this.pos.knee_r.y) / 2,
+				0
+			),
+		};
 		this.foot_l = {
 			group: new THREE.Group(),
 			mesh: this.getBoxMesh(
@@ -1105,6 +1151,8 @@ export default class Silhouette3D {
 		qs.hip_r = qs.abs.clone();
 		qs.knee_l = qs.thigh_l.clone();
 		qs.knee_r = qs.thigh_r.clone();
+		qs.ankle_l = qs.calf_l.clone();
+		qs.ankle_r = qs.calf_r.clone();
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
