@@ -208,7 +208,7 @@ export default class T {
 				new THREE.MeshLambertMaterial({
 					color: 0x12c2e9,
 					transparent: true,
-					opacity: 0.1,
+					opacity: 0.2,
 				})
 			);
 

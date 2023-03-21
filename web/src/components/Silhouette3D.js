@@ -245,7 +245,7 @@ export default class Silhouette3D {
 		"upperarm_l",
 		"upperarm_r",
 		"elbow_l",
-		// "elbow_r",
+		"elbow_r",
 		// "lowerarm_l",
 		// "lowerarm_r",
 		// "wrist_l",
@@ -426,10 +426,27 @@ export default class Silhouette3D {
 			"x": 21.701854705810547,
 			"y": 22.411624908447266,
 			"z": 16.466567993164062
-		}
+		},
+		chest: {
+			"x": 20.53396224975586,
+			"y": 23.94965362548828,
+			"z": 14.528369903564453
+		},
 	}
 
 	constructor(geometry) {
+
+		this.pos_adjusted = {
+			abs: {
+				x: 0, y: 0, z: 0
+			},
+			chest: {
+				x: this.pos.chest.x - this.pos.abs.x,
+				y: this.pos.chest.y - this.pos.abs.y - this.size.chest.y/2,
+				z: this.pos.chest.z - this.pos.abs.z
+			}
+		}
+
 		// color of material
 		this.color = 0x44aa88;
 		// opacity of material, when pose score is lower/higher then 0.5
@@ -455,9 +472,13 @@ export default class Silhouette3D {
 			group: new THREE.Group(),
 			mesh: meshes.abs,
 			position: () => {
-				return new THREE.Vector3(0, 0, 0);
+				return new THREE.Vector3(
+					0,
+					0,
+					0,
+				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.size.abs.y/2, 0),
+			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
 		this.chest = {
 			group: new THREE.Group(),
@@ -465,15 +486,16 @@ export default class Silhouette3D {
 			position: () => {
 				const v = new THREE.Vector3(
 					this.pos.chest.x - this.pos.abs.x,
-					this.pos.chest.y - this.pos.abs.y,
+					this.pos.chest.y - this.pos.abs.y - this.size.chest.y/2,
 					this.pos.chest.z - this.pos.abs.z
 				);
-
+				// adjust the chest position lower in y, make the rotation center to be at the bottom of the chest mesh
 				v.applyQuaternion(this.abs.group.quaternion);
 
 				return v;
 			},
-			mesh_position: new THREE.Vector3(0, 0, 0),
+			//since the group position moved toward negative y, move mesh to positive y, so the mesh is above `abs` mesh
+			mesh_position: new THREE.Vector3(0, this.size.chest.y / 2, 0),
 		};
 		this.neck = {
 			group: new THREE.Group(),
@@ -481,7 +503,7 @@ export default class Silhouette3D {
 			position: () => {
 				const v0 = new THREE.Vector3(
 					this.pos.neck.x - this.pos.chest.x,
-					this.pos.neck.y - this.pos.chest.y,
+					this.pos.neck.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.neck.z - this.pos.chest.z
 				);
 
@@ -519,7 +541,7 @@ export default class Silhouette3D {
 			position: () => {
 				const v0 = new THREE.Vector3(
 					this.pos.shoulder_l.x - this.pos.chest.x,
-					this.pos.shoulder_l.y - this.pos.chest.y,
+					this.pos.shoulder_l.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.shoulder_l.z - this.pos.chest.z
 				);
 
@@ -538,7 +560,7 @@ export default class Silhouette3D {
 			position: () => {
 				const v0 = new THREE.Vector3(
 					this.pos.shoulder_r.x - this.pos.chest.x,
-					this.pos.shoulder_r.y - this.pos.chest.y,
+					this.pos.shoulder_r.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.shoulder_r.z - this.pos.chest.z
 				);
 
@@ -559,7 +581,7 @@ export default class Silhouette3D {
 					this.pos.upperarm_l.x -
 						this.pos.chest.x -
 						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
-					this.pos.upperarm_l.y - this.pos.chest.y,
+					this.pos.upperarm_l.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.upperarm_l.z - this.pos.chest.z
 				);
 
@@ -584,7 +606,7 @@ export default class Silhouette3D {
 					this.pos.upperarm_r.x -
 						this.pos.chest.x +
 						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
-					this.pos.upperarm_r.y - this.pos.chest.y,
+					this.pos.upperarm_r.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.upperarm_r.z - this.pos.chest.z
 				);
 
@@ -606,20 +628,43 @@ export default class Silhouette3D {
 			mesh: meshes.elbow_l,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.elbow_l.x - this.pos.chest.x,
-					this.pos.elbow_l.y - this.pos.chest.y,
-					this.pos.elbow_l.z - this.pos.chest.z
+					this.pos.elbow_l.x - this.pos.upperarm_l.x + (this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+					this.pos.elbow_l.y - this.pos.upperarm_l.y,
+					this.pos.elbow_l.z - this.pos.upperarm_l.z
 				);
 
-				// v0.applyQuaternion(this.chest.group.quaternion);
+				v0.applyQuaternion(this.upperarm_l.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.chest.group.position,
+					this.upperarm_l.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+				0,
+				0,
+				0
+			),
+		};
+		this.elbow_r = {
+			group: new THREE.Group(),
+			mesh: meshes.elbow_r,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.elbow_r.x - this.pos.upperarm_r.x + (this.pos.elbow_r.x - this.pos.shoulder_r.x) / 2,
+					this.pos.elbow_r.y - this.pos.upperarm_r.y,
+					this.pos.elbow_r.z - this.pos.upperarm_r.z
+				);
+
+				v0.applyQuaternion(this.upperarm_r.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.upperarm_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(
+				0,
 				0,
 				0
 			),
@@ -643,25 +688,6 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
 		};
-		this.hand_l = {
-			group: new THREE.Group(),
-			mesh: this.getBoxMesh(
-				this.hand_width,
-				this.hand_height,
-				this.hand_depth
-			),
-			position: () => {
-				const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
-
-				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
-
-				return new THREE.Vector3().addVectors(
-					this.lowerarm_l.group.position,
-					v0
-				);
-			},
-			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
-		};
 		this.lowerarm_r = {
 			group: new THREE.Group(),
 			mesh: this.getCylinderMesh(
@@ -680,6 +706,25 @@ export default class Silhouette3D {
 				);
 			},
 			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+		};
+		this.hand_l = {
+			group: new THREE.Group(),
+			mesh: this.getBoxMesh(
+				this.hand_width,
+				this.hand_height,
+				this.hand_depth
+			),
+			position: () => {
+				const v0 = new THREE.Vector3(0, -this.smallarm_size, 0);
+
+				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.lowerarm_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, -this.hand_height / 2, 0),
 		};
 		this.hand_r = {
 			group: new THREE.Group(),
