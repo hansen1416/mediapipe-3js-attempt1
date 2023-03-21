@@ -164,7 +164,6 @@ function getQuaternions(pose3D) {
 	result["head"] = new THREE.Quaternion();
 
 	result["upperarm_l"] = getLimbQuaternion(
-		new THREE.Vector3(1, 0, 0),
 		pose3D,
 		"LEFT_SHOULDER",
 		"LEFT_ELBOW",
@@ -172,7 +171,6 @@ function getQuaternions(pose3D) {
 	);
 
 	result["lowerarm_l"] = getLimbQuaternion(
-		new THREE.Vector3(1, 0, 0),
 		pose3D,
 		"LEFT_ELBOW",
 		"LEFT_WRIST",
@@ -182,7 +180,6 @@ function getQuaternions(pose3D) {
 	result["hand_l"] = new THREE.Quaternion();
 
 	result["upperarm_r"] = getLimbQuaternion(
-		new THREE.Vector3(-1, 0, 0),
 		pose3D,
 		"RIGHT_SHOULDER",
 		"RIGHT_ELBOW",
@@ -190,7 +187,6 @@ function getQuaternions(pose3D) {
 	);
 
 	result["lowerarm_r"] = getLimbQuaternion(
-		new THREE.Vector3(-1, 0, 0),
 		pose3D,
 		"RIGHT_ELBOW",
 		"RIGHT_WRIST",
@@ -425,6 +421,14 @@ export default class Silhouette3D {
 		},
 	};
 
+	size = {
+		abs: {
+			"x": 21.701854705810547,
+			"y": 22.411624908447266,
+			"z": 16.466567993164062
+		}
+	}
+
 	constructor(geometry) {
 		// color of material
 		this.color = 0x44aa88;
@@ -453,7 +457,7 @@ export default class Silhouette3D {
 			position: () => {
 				return new THREE.Vector3(0, 0, 0);
 			},
-			mesh_position: new THREE.Vector3(0, 0, 0),
+			mesh_position: new THREE.Vector3(0, -this.size.abs.y/2, 0),
 		};
 		this.chest = {
 			group: new THREE.Group(),
