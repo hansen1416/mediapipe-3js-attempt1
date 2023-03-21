@@ -161,13 +161,20 @@ function getQuaternions(pose3D) {
 	result["abs"] = abs_q;
 	result["chest"] = chest_q;
 
-	result["head"] = new THREE.Quaternion();
+	// result["head"] = new THREE.Quaternion();
 
 	result["upperarm_l"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_SHOULDER",
 		"LEFT_ELBOW",
 		new THREE.Vector3(1, 0, 0)
+	);
+
+	result["upperarm_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_SHOULDER",
+		"RIGHT_ELBOW",
+		new THREE.Vector3(-1, 0, 0)
 	);
 
 	result["lowerarm_l"] = getLimbQuaternion(
@@ -177,15 +184,6 @@ function getQuaternions(pose3D) {
 		new THREE.Vector3(1, 0, 0)
 	);
 
-	result["hand_l"] = new THREE.Quaternion();
-
-	result["upperarm_r"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_SHOULDER",
-		"RIGHT_ELBOW",
-		new THREE.Vector3(-1, 0, 0)
-	);
-
 	result["lowerarm_r"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_ELBOW",
@@ -193,12 +191,21 @@ function getQuaternions(pose3D) {
 		new THREE.Vector3(-1, 0, 0)
 	);
 
-	result["hand_r"] = new THREE.Quaternion();
+	// result["hand_l"] = new THREE.Quaternion();
+
+	// result["hand_r"] = new THREE.Quaternion();
 
 	result["thigh_l"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_HIP",
 		"LEFT_KNEE",
+		new THREE.Vector3(0, -1, 0)
+	);
+
+	result["thigh_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_HIP",
+		"RIGHT_KNEE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
@@ -209,21 +216,14 @@ function getQuaternions(pose3D) {
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["foot_l"] = new THREE.Quaternion();
-
-	result["thigh_r"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_HIP",
-		"RIGHT_KNEE",
-		new THREE.Vector3(0, -1, 0)
-	);
-
 	result["calf_r"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_KNEE",
 		"RIGHT_ANKLE",
 		new THREE.Vector3(0, -1, 0)
 	);
+
+	result["foot_l"] = new THREE.Quaternion();
 
 	result["foot_r"] = new THREE.Quaternion();
 
