@@ -248,8 +248,8 @@ export default class Silhouette3D {
 		"elbow_r",
 		"lowerarm_l",
 		"lowerarm_r",
-		// "wrist_l",
-		// "wrist_r",
+		"wrist_l",
+		"wrist_r",
 		// "hand_l",
 		// "hand_r",
 		// "hip_l",
@@ -705,6 +705,52 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3((this.pos.wrist_r.x - this.pos.elbow_r.x) / 2, 0, 0),
 		};
+		this.wrist_l = {
+			group: new THREE.Group(),
+			mesh: meshes.wrist_l,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.wrist_l.x - this.pos.lowerarm_l.x,
+					this.pos.wrist_l.y - this.pos.lowerarm_l.y,
+					this.pos.wrist_l.z - this.pos.lowerarm_l.z
+				);
+
+				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.lowerarm_l.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(
+				(this.pos.wrist_l.x - this.pos.elbow_l.x) / 2,
+				0,
+				0
+			),
+		};
+		this.wrist_r = {
+			group: new THREE.Group(),
+			mesh: meshes.wrist_r,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.wrist_r.x - this.pos.lowerarm_r.x,
+					this.pos.wrist_r.y - this.pos.lowerarm_r.y,
+					this.pos.wrist_r.z - this.pos.lowerarm_r.z
+				);
+
+				v0.applyQuaternion(this.lowerarm_r.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.lowerarm_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(
+				(this.pos.wrist_r.x - this.pos.elbow_r.x) / 2,
+				0,
+				0
+			),
+		};
 		this.hand_l = {
 			group: new THREE.Group(),
 			mesh: this.getBoxMesh(
@@ -971,9 +1017,11 @@ export default class Silhouette3D {
 		qs.neck = qs.chest.clone();
 		qs.head = qs.chest.clone();
 		qs.shoulder_l = qs.upperarm_l.clone();
-		qs.elbow_l = qs.lowerarm_l.clone();
 		qs.shoulder_r = qs.upperarm_r.clone();
+		qs.elbow_l = qs.lowerarm_l.clone();
 		qs.elbow_r = qs.lowerarm_r.clone();
+		qs.wrist_l = qs.lowerarm_l.clone();
+		qs.wrist_r = qs.lowerarm_r.clone();
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
