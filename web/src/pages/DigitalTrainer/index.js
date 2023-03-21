@@ -29,6 +29,7 @@ import {
 	radianGradientColor,
 	// loadGLTF,
 	loadFBX,
+	jsonToBufferGeometry,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
 
@@ -167,11 +168,28 @@ export default function DigitalTrainer() {
 			scene.current.add(mannequinModel.current);
 
 			// add silhouette to subscene
-			silhouette.current = new Silhouette3D();
+			const tasks = [];
 
-			const body = silhouette.current.init();
+			for (let name of Silhouette3D.limbs) {
+				tasks.push(
+					loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
+				);
+			}
 
-			sceneSub.current.add(body);
+			Promise.all(tasks).then((results) => {
+				const geos = {};
+
+				for (let data of results) {
+					geos[data.name] = jsonToBufferGeometry(data);
+				}
+
+				silhouette.current = new Silhouette3D(geos);
+				const body = silhouette.current.init();
+
+				// getMeshSize(figure.current.foot_l.mesh, scene.current)
+
+				sceneSub.current.add(body);
+			});
 
 			animate();
 		});
@@ -378,9 +396,9 @@ export default function DigitalTrainer() {
 		sceneSub.current = new THREE.Scene();
 		// sceneSub.current.background = new THREE.Color(0x22244);
 
-		cameraSub.current = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
+		cameraSub.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
 
-		cameraSub.current.position.set(0, 0, 30);
+		cameraSub.current.position.set(0, 0, 100);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 

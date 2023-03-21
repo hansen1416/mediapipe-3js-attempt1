@@ -116,7 +116,6 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	return [abs_q, chest_q];
 }
 
-
 function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
 	/**
 	 * calculate quaternion for a limb,

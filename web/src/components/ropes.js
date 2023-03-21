@@ -1089,6 +1089,34 @@ export function getMeshSize(mesh, scene) {
 	console.log( 'size', size )
 }
 
+export function jsonToBufferGeometry(data) {
+	const geometry = new THREE.BufferGeometry();
+
+	geometry.setAttribute(
+		"position",
+		new THREE.BufferAttribute(
+			new Float32Array(data.data.attributes.position.array),
+			3
+		)
+	);
+	geometry.setAttribute(
+		"normal",
+		new THREE.BufferAttribute(
+			new Float32Array(data.data.attributes.normal.array),
+			3
+		)
+	);
+	geometry.setAttribute(
+		"uv",
+		new THREE.BufferAttribute(
+			new Float32Array(data.data.attributes.uv.array),
+			2
+		)
+	);
+
+	return geometry;
+}
+
 /**
  * calf_l
 calf_r

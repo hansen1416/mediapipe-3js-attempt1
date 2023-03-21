@@ -16,6 +16,7 @@ import {
 	loadFBX,
 	startCamera,
 	getMeshSize,
+	jsonToBufferGeometry,
 } from "../../components/ropes";
 
 /**
@@ -70,34 +71,6 @@ export default function ParticleFigure() {
 	const [stopBtnShow, setstopBtnShow] = useState(false);
 
 	const meshes = useRef({});
-
-	function jsonToBufferGeometry(data) {
-		const geometry = new THREE.BufferGeometry();
-
-		geometry.setAttribute(
-			"position",
-			new THREE.BufferAttribute(
-				new Float32Array(data.data.attributes.position.array),
-				3
-			)
-		);
-		geometry.setAttribute(
-			"normal",
-			new THREE.BufferAttribute(
-				new Float32Array(data.data.attributes.normal.array),
-				3
-			)
-		);
-		geometry.setAttribute(
-			"uv",
-			new THREE.BufferAttribute(
-				new Float32Array(data.data.attributes.uv.array),
-				2
-			)
-		);
-
-		return geometry;
-	}
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
