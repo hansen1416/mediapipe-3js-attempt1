@@ -246,8 +246,8 @@ export default class Silhouette3D {
 		"upperarm_r",
 		"elbow_l",
 		"elbow_r",
-		// "lowerarm_l",
-		// "lowerarm_r",
+		"lowerarm_l",
+		"lowerarm_r",
 		// "wrist_l",
 		// "wrist_r",
 		// "hand_l",
@@ -603,9 +603,7 @@ export default class Silhouette3D {
 			mesh: meshes.upperarm_r,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_r.x -
-						this.pos.chest.x +
-						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+					this.pos.upperarm_r.x - this.pos.chest.x + (this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
 					this.pos.upperarm_r.y - this.pos.chest.y + this.size.chest.y/2,
 					this.pos.upperarm_r.z - this.pos.chest.z
 				);
@@ -671,13 +669,13 @@ export default class Silhouette3D {
 		};
 		this.lowerarm_l = {
 			group: new THREE.Group(),
-			mesh: this.getCylinderMesh(
-				this.elbow_radius,
-				this.wrist_size,
-				this.smallarm_size
-			),
+			mesh: meshes.lowerarm_l,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.bigarm_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.lowerarm_l.x - this.pos.upperarm_l.x,
+					this.pos.lowerarm_l.y - this.pos.upperarm_l.y,
+					this.pos.lowerarm_l.z - this.pos.upperarm_l.z
+				);
 
 				v0.applyQuaternion(this.upperarm_l.group.quaternion);
 
@@ -686,17 +684,17 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+			mesh_position: new THREE.Vector3((this.pos.wrist_l.x - this.pos.elbow_l.x) / 2, 0, 0),
 		};
 		this.lowerarm_r = {
 			group: new THREE.Group(),
-			mesh: this.getCylinderMesh(
-				this.elbow_radius,
-				this.wrist_size,
-				this.smallarm_size
-			),
+			mesh: meshes.lowerarm_r,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.bigarm_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.lowerarm_r.x - this.pos.upperarm_r.x,
+					this.pos.lowerarm_r.y - this.pos.upperarm_r.y,
+					this.pos.lowerarm_r.z - this.pos.upperarm_r.z
+				);
 
 				v0.applyQuaternion(this.upperarm_r.group.quaternion);
 
@@ -705,7 +703,7 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.smallarm_size / 2, 0),
+			mesh_position: new THREE.Vector3((this.pos.wrist_r.x - this.pos.elbow_r.x) / 2, 0, 0),
 		};
 		this.hand_l = {
 			group: new THREE.Group(),
