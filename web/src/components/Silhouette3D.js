@@ -254,8 +254,8 @@ export default class Silhouette3D {
 		"hand_r",
 		"hip_l",
 		"hip_r",
-		// "thigh_l",
-		// "thigh_r",
+		"thigh_l",
+		"thigh_r",
 		// "knee_l",
 		// "knee_r",
 		// "calf_l",
@@ -832,16 +832,12 @@ export default class Silhouette3D {
 		};
 		this.thigh_l = {
 			group: new THREE.Group(),
-			mesh: this.getCylinderMesh(
-				this.thigh_radius,
-				this.knee_radius,
-				this.thigh_size
-			),
+			mesh: meshes.thigh_l,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.abs_width / 2,
-					-this.abs_height / 2,
-					0
+					this.pos.thigh_l.x - this.pos.abs.x,
+					this.pos.thigh_l.y - this.pos.abs.y - (this.pos.knee_l.y - this.pos.hip_l.y) / 2,
+					this.pos.thigh_l.z - this.pos.abs.z
 				);
 
 				v0.applyQuaternion(this.abs.group.quaternion);
@@ -851,20 +847,16 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
+			mesh_position: new THREE.Vector3(0, (this.pos.knee_l.y - this.pos.hip_l.y) / 2, 0),
 		};
 		this.thigh_r = {
 			group: new THREE.Group(),
-			mesh: this.getCylinderMesh(
-				this.thigh_radius,
-				this.knee_radius,
-				this.thigh_size
-			),
+			mesh: meshes.thigh_r,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					-this.abs_width / 2,
-					-this.abs_height / 2,
-					0
+					this.pos.thigh_r.x - this.pos.abs.x,
+					this.pos.thigh_r.y - this.pos.abs.y - (this.pos.knee_r.y - this.pos.hip_r.y) / 2,
+					this.pos.thigh_r.z - this.pos.abs.z
 				);
 
 				v0.applyQuaternion(this.abs.group.quaternion);
@@ -874,7 +866,7 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.thigh_size / 2, 0),
+			mesh_position: new THREE.Vector3(0, (this.pos.knee_r.y - this.pos.hip_r.y) / 2, 0),
 		};
 		this.calf_l = {
 			group: new THREE.Group(),
