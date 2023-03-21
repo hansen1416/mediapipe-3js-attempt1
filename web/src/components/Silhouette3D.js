@@ -258,8 +258,8 @@ export default class Silhouette3D {
 		"thigh_r",
 		"knee_l",
 		"knee_r",
-		// "calf_l",
-		// "calf_r",
+		"calf_l",
+		"calf_r",
 		// "ankle_l",
 		// "ankle_r",
 		// "foot_l",
@@ -916,13 +916,13 @@ export default class Silhouette3D {
 		};
 		this.calf_l = {
 			group: new THREE.Group(),
-			mesh: this.getCylinderMesh(
-				this.knee_radius,
-				this.ankle_radius,
-				this.calf_size
-			),
+			mesh: meshes.calf_l,
 			position: () => {
-				const v0 = new THREE.Vector3(0, -this.thigh_size, 0);
+				const v0 = new THREE.Vector3(
+					this.pos.calf_l.x - this.pos.thigh_l.x,
+					this.pos.calf_l.y - this.pos.thigh_l.y,
+					this.pos.calf_l.z - this.pos.thigh_l.z
+				);
 
 				v0.applyQuaternion(this.thigh_l.group.quaternion);
 
@@ -931,7 +931,26 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
+			mesh_position: new THREE.Vector3(0, (this.pos.ankle_l.y - this.pos.knee_l.y) / 2, 0),
+		};
+		this.calf_r = {
+			group: new THREE.Group(),
+			mesh: meshes.calf_r,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.calf_r.x - this.pos.thigh_r.x,
+					this.pos.calf_r.y - this.pos.thigh_r.y,
+					this.pos.calf_r.z - this.pos.thigh_r.z
+				);
+
+				v0.applyQuaternion(this.thigh_r.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.thigh_r.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, (this.pos.ankle_r.y - this.pos.knee_r.y) / 2, 0),
 		};
 		this.foot_l = {
 			group: new THREE.Group(),
@@ -951,26 +970,6 @@ export default class Silhouette3D {
 				);
 			},
 			mesh_position: new THREE.Vector3(0, -this.foot_height / 2, 0),
-		};
-		this.calf_r = {
-			group: new THREE.Group(),
-			// mesh: calf_r_mesh,
-			mesh: this.getCylinderMesh(
-				this.knee_radius,
-				this.ankle_radius,
-				this.calf_size
-			),
-			position: () => {
-				const v0 = new THREE.Vector3(0, -this.thigh_size, 0);
-
-				v0.applyQuaternion(this.thigh_r.group.quaternion);
-
-				return new THREE.Vector3().addVectors(
-					this.thigh_r.group.position,
-					v0
-				);
-			},
-			mesh_position: new THREE.Vector3(0, -this.calf_size / 2, 0),
 		};
 		this.foot_r = {
 			group: new THREE.Group(),
