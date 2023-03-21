@@ -1008,7 +1008,7 @@ export default class Silhouette3D {
 				const v0 = new THREE.Vector3(
 					this.pos.foot_l.x - this.pos.calf_l.x,
 					this.pos.foot_l.y - this.pos.calf_l.y + (this.pos.ankle_l.y - this.pos.knee_l.y) / 2,
-					this.pos.foot_l.z - this.pos.calf_l.z
+					this.pos.foot_l.z - this.pos.calf_l.z - this.size.foot.z/2
 				);
 
 				v0.applyQuaternion(this.calf_l.group.quaternion);
@@ -1018,7 +1018,7 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, 0, 0),
+			mesh_position: new THREE.Vector3(0, 0, this.size.foot.z/2),
 		};
 		this.foot_r = {
 			group: new THREE.Group(),
@@ -1027,7 +1027,7 @@ export default class Silhouette3D {
 				const v0 = new THREE.Vector3(
 					this.pos.foot_r.x - this.pos.calf_r.x,
 					this.pos.foot_r.y - this.pos.calf_r.y + (this.pos.ankle_r.y - this.pos.knee_r.y) / 2,
-					this.pos.foot_r.z - this.pos.calf_r.z
+					this.pos.foot_r.z - this.pos.calf_r.z - this.size.foot.z/2
 				);
 
 				v0.applyQuaternion(this.calf_r.group.quaternion);
@@ -1037,7 +1037,7 @@ export default class Silhouette3D {
 					v0
 				);
 			},
-			mesh_position: new THREE.Vector3(0, 0, 0),
+			mesh_position: new THREE.Vector3(0, 0, this.size.foot.z/2),
 		};
 	}
 
