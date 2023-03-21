@@ -223,9 +223,19 @@ function getQuaternions(pose3D) {
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["foot_l"] = new THREE.Quaternion();
+	result["foot_l"] = getLimbQuaternion(
+		pose3D,
+		"LEFT_HEEL",
+		"LEFT_FOOT_INDEX",
+		new THREE.Vector3(0, 0, 1)
+	);
 
-	result["foot_r"] = new THREE.Quaternion();
+	result["foot_r"] = getLimbQuaternion(
+		pose3D,
+		"RIGHT_HEEL",
+		"RIGHT_FOOT_INDEX",
+		new THREE.Vector3(0, 0, 1)
+	);
 
 	return result;
 }
@@ -1141,8 +1151,6 @@ export default class Silhouette3D {
 		qs.knee_r = qs.thigh_r.clone();
 		qs.ankle_l = qs.calf_l.clone();
 		qs.ankle_r = qs.calf_r.clone();
-		qs.foot_l = new THREE.Quaternion();
-		qs.foot_r = new THREE.Quaternion();
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
