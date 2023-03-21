@@ -435,6 +435,11 @@ export default class Silhouette3D {
 			"y": 2.6799774169921875,
 			"z": 10.326093673706055
 		},
+		foot: {
+			"x": 7.3205976486206055,
+			"y": 7.993029594421387,
+			"z": 18.409534454345703
+		},
 	}
 
 	constructor(geometry) {
@@ -1017,7 +1022,6 @@ export default class Silhouette3D {
 		};
 		this.foot_r = {
 			group: new THREE.Group(),
-			// mesh: foot_r_mesh,
 			mesh: meshes.foot_r,
 			position: () => {
 				const v0 = new THREE.Vector3(
@@ -1035,67 +1039,6 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-	}
-
-	getBoxMesh(width, height, depth) {
-		/**
-		 *
-		 */
-		return new THREE.Mesh(
-			new THREE.BoxGeometry(width, height, depth),
-			new THREE.MeshBasicMaterial({
-				color: this.color,
-				transparent: true,
-				opacity: this.invisible_opacity,
-			})
-		);
-	}
-
-	getBallMesh(radius, widthSegments = 8, heightSegments = 8) {
-		/**
-		 * a ball
-		 */
-		return new THREE.Mesh(
-			new THREE.SphereGeometry(radius, widthSegments, heightSegments),
-			new THREE.MeshBasicMaterial({
-				color: this.color,
-				transparent: true,
-				opacity: this.invisible_opacity,
-			})
-		);
-	}
-
-	getCylinderMesh(
-		radiusTop,
-		radiusBottom,
-		height,
-		radialSegments = 8,
-		heightSegments = 1
-	) {
-		/**
-		 * the cylinder for limbs
-		 * @param {number} radiusTop
-		 * @param {number} radiusBottom
-		 * @param {number} height
-		 * @param {number} radialSegments
-		 * @param {number} heightSegments
-		 * @returns
-		 */
-		const geometry = new THREE.CylinderGeometry(
-			radiusTop,
-			radiusBottom,
-			height,
-			radialSegments,
-			heightSegments
-		);
-
-		const material = new THREE.MeshBasicMaterial({
-			color: this.color,
-			transparent: true,
-			opacity: this.invisible_opacity,
-		});
-
-		return new THREE.Mesh(geometry, material);
 	}
 
 	init() {

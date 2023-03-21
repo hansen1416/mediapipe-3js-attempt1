@@ -145,31 +145,31 @@ export default function ParticleFigure() {
 			figure.current = new Silhouette3D(geos);
 			const body = figure.current.init();
 
-			// getMeshSize(figure.current.hand_r.mesh, scene.current)
+			// getMeshSize(figure.current.foot_l.mesh, scene.current)
 
 			scene.current.add(body);
 		});
 
-		const tasks1 = [];
+		// const tasks1 = [];
 
-		for (let name of T.limbs) {
-			tasks1.push(
-				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-			);
-		}
+		// for (let name of T.limbs) {
+		// 	tasks1.push(
+		// 		loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
+		// 	);
+		// }
 
-		Promise.all(tasks1).then((results) => {
-			const geos = {};
+		// Promise.all(tasks1).then((results) => {
+		// 	const geos = {};
 
-			for (let data of results) {
-				geos[data.name] = jsonToBufferGeometry(data);
-			}
+		// 	for (let data of results) {
+		// 		geos[data.name] = jsonToBufferGeometry(data);
+		// 	}
 
-			const tpose = new T(geos);
-			const body = tpose.init();
+		// 	const tpose = new T(geos);
+		// 	const body = tpose.init();
 
-			scene.current.add(body);
-		});
+		// 	scene.current.add(body);
+		// });
 
 		// const axesHelper = new THREE.AxesHelper(40);
 
