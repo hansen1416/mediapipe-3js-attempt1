@@ -15,6 +15,7 @@ import {
 	loadJSON,
 	loadFBX,
 	startCamera,
+	getMeshSize,
 } from "../../components/ropes";
 
 /**
@@ -144,6 +145,8 @@ export default function ParticleFigure() {
 			figure.current = new Silhouette3D(geos);
 			const body = figure.current.init();
 
+			getMeshSize(figure.current.abs.mesh, scene.current)
+
 			scene.current.add(body);
 		});
 
@@ -162,8 +165,8 @@ export default function ParticleFigure() {
 				geos[data.name] = jsonToBufferGeometry(data);
 			}
 
-			figure.current = new T(geos);
-			const body = figure.current.init();
+			const tpose = new T(geos);
+			const body = tpose.init();
 
 			scene.current.add(body);
 		});

@@ -1074,6 +1074,21 @@ export function removeObject3D(object) {
 	return true;
 }
 
+export function getMeshSize(mesh, scene) {
+	var box3 = new THREE.Box3();
+	var size = new THREE.Vector3(); // create once and reuse
+
+
+	var boxHelper = new THREE.BoxHelper( mesh );
+	scene.add( boxHelper );
+
+	box3.setFromObject( boxHelper ); // or from mesh, same answer
+	console.log( 'box3', box3 );
+
+	box3.getSize( size ); // pass in size so a new Vector3 is not allocated
+	console.log( 'size', size )
+}
+
 /**
  * calf_l
 calf_r
