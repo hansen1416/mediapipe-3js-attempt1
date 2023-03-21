@@ -252,8 +252,8 @@ export default class Silhouette3D {
 		"wrist_r",
 		"hand_l",
 		"hand_r",
-		// "hip_l",
-		// "hip_r",
+		"hip_l",
+		"hip_r",
 		// "thigh_l",
 		// "thigh_r",
 		// "knee_l",
@@ -792,6 +792,44 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
+		this.hip_l = {
+			group: new THREE.Group(),
+			mesh: meshes.hip_l,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.hip_l.x - this.pos.abs.x,
+					this.pos.hip_l.y - this.pos.abs.y,
+					this.pos.hip_l.z - this.pos.abs.z,
+				);
+
+				v0.applyQuaternion(this.abs.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.abs.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
+		this.hip_r = {
+			group: new THREE.Group(),
+			mesh: meshes.hip_r,
+			position: () => {
+				const v0 = new THREE.Vector3(
+					this.pos.hip_r.x - this.pos.abs.x,
+					this.pos.hip_r.y - this.pos.abs.y,
+					this.pos.hip_r.z - this.pos.abs.z,
+				);
+
+				v0.applyQuaternion(this.abs.group.quaternion);
+
+				return new THREE.Vector3().addVectors(
+					this.abs.group.position,
+					v0
+				);
+			},
+			mesh_position: new THREE.Vector3(0, 0, 0),
+		};
 		this.thigh_l = {
 			group: new THREE.Group(),
 			mesh: this.getCylinderMesh(
@@ -1027,6 +1065,9 @@ export default class Silhouette3D {
 		qs.wrist_r = qs.lowerarm_r.clone();
 		qs.hand_l = qs.lowerarm_l.clone();
 		qs.hand_r = qs.lowerarm_r.clone();
+
+		qs.hip_l = qs.abs.clone();
+		qs.hip_r = qs.abs.clone();
 
 		for (let name of Silhouette3D.limbs) {
 			if (!qs[name]) {
