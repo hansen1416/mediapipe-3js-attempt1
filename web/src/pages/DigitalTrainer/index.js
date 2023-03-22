@@ -147,6 +147,8 @@ export default function DigitalTrainer() {
 
 		createSubScene();
 
+		createEgScene();
+
 		// setsilhouetteSize(0.2 * documentHeight);
 
 		Promise.all([
@@ -365,7 +367,7 @@ export default function DigitalTrainer() {
 
 		cameraSub.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
 
-		cameraSub.current.position.set(0, 0, 100);
+		cameraSub.current.position.set(0, 30, 100);
 
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 
@@ -378,6 +380,41 @@ export default function DigitalTrainer() {
 		controlsSub.current = new OrbitControls(
 			cameraSub.current,
 			canvasRefSub.current
+		);
+	}
+
+	function createEgScene() {
+		/**
+		 * subscene, play the silhouette
+		 * an mapping from pose3d data
+		 *
+		 * assume sqaure canvas, aspect = 1
+		 * visible_x / (tan(fov/2)) = object_z + camera_z
+		 * visible_x = (object_z + camera_z) * tan(fov/2)
+		 *
+		 * so for pose,
+		 * assume x=0.6, the actual x position of pos should be 0.6*visible_x, same for y, since we're using square canvas
+		 * can we apply this to z as well?
+		 */
+
+		sceneEg.current = new THREE.Scene();
+		// sceneSub.current.background = new THREE.Color(0x22244);
+
+		cameraEg.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
+
+		cameraEg.current.position.set(0, 30, 100);
+
+		sceneEg.current.add(new THREE.AmbientLight(0xffffff, 1));
+
+		rendererEg.current = new THREE.WebGLRenderer({
+			canvas: canvasRefEg.current,
+			alpha: true,
+			antialias: true,
+		});
+
+		controlsEg.current = new OrbitControls(
+			cameraEg.current,
+			canvasRefEg.current
 		);
 	}
 
@@ -714,6 +751,17 @@ export default function DigitalTrainer() {
 			<canvas ref={canvasRef} />
 
 			<div className="info">
+				{/* example exercise sub scene */}
+				<div
+					className="sub-scene"
+					style={{
+						width: subsceneWidth + "px",
+						height: subsceneHeight + "px",
+					}}
+				>
+					<canvas ref={canvasRefEg}></canvas>
+				</div>
+
 				{/* captured pose retargetting to a simple model */}
 				<div
 					className="sub-scene"
