@@ -871,6 +871,7 @@ export default function DigitalTrainer() {
 				</div>
 			</div>
 
+			{/* on going exercise info */}
 			{currentExerciseName && (
 				<div className="exercise-info">
 					<span>{currentExerciseName}</span>
@@ -882,8 +883,10 @@ export default function DigitalTrainer() {
 				</div>
 			)}
 
+			{/* countdown, at the center of screen */}
 			{counterNumber >= 0 && <Counter number={counterNumber} />}
 
+			{/* when training finished, at the center of screen */}
 			{showCompleted && (
 				<div className="congratulations">Congratulations</div>
 			)}
