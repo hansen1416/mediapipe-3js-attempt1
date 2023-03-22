@@ -71,6 +71,14 @@ export default function DigitalTrainer() {
 	// ======== for comparing end
 
 	// ======== sub scene start
+	// example exercise subscene
+	const canvasRefEg = useRef(null);
+	const sceneEg = useRef(null);
+	const cameraEg = useRef(null);
+	const rendererEg = useRef(null);
+	const controlsEg = useRef(null);
+
+	// pose capture sub scene
 	const canvasRefSub = useRef(null);
 	const sceneSub = useRef(null);
 	const cameraSub = useRef(null);
@@ -336,47 +344,6 @@ export default function DigitalTrainer() {
 		controls.current.enableDamping = true;
 
 		renderer.current.setSize(viewWidth, viewHeight);
-	}
-
-	function drawScene() {
-		// das meer
-		const ground = new THREE.Mesh(
-			new THREE.CircleGeometry(1500, 64).rotateX(-Math.PI * 0.5),
-			new THREE.MeshBasicMaterial({
-				color: new THREE.Color(0x2c589d),
-				transparent: true,
-				opacity: 0.7,
-			})
-		);
-
-		ground.position.set(0, ground_level, 0);
-
-		scene.current.add(ground);
-
-		// das strand
-		const island = new THREE.Mesh(
-			new THREE.CylinderGeometry(40, 40, 1, 64, 64),
-			new THREE.MeshBasicMaterial({
-				color: 0xf5ccb3,
-			})
-		);
-
-		island.position.set(0, ground_level, 0);
-
-		scene.current.add(island);
-
-		const wave = new THREE.Mesh(
-			new THREE.CircleGeometry(41, 64).rotateX(-Math.PI * 0.5),
-			new THREE.MeshToonMaterial({
-				color: 0xffffff,
-				transparent: true,
-				opacity: 0.4,
-			})
-		);
-
-		wave.position.set(0, ground_level + 0.1, 0);
-
-		scene.current.add(wave);
 	}
 
 	function createSubScene() {
@@ -746,18 +713,30 @@ export default function DigitalTrainer() {
 
 			<canvas ref={canvasRef} />
 
-			<div
-				style={{
-					width: subsceneWidth + "px",
-					height: subsceneHeight + "px",
-					position: "absolute",
-					bottom: 0,
-					left: 0,
-					// border: "1px solid #fff",
-				}}
-			>
-				<div className="sub-scene">
+			<div className="info">
+				{/* captured pose retargetting to a simple model */}
+				<div
+					className="sub-scene"
+					style={{
+						width: subsceneWidth + "px",
+						height: subsceneHeight + "px",
+					}}
+				>
 					<canvas ref={canvasRefSub}></canvas>
+				</div>
+
+				{/* on going exercise info */}
+				<div className="exercise-info">
+					{currentExerciseName && (
+						<div>
+							<span>{currentExerciseName}</span>
+							{currentExerciseRemainRound && (
+								<span style={{ marginLeft: "20px" }}>
+									{currentExerciseRemainRound}
+								</span>
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 			<div className="controls">
@@ -870,18 +849,6 @@ export default function DigitalTrainer() {
 					</div>
 				</div>
 			</div>
-
-			{/* on going exercise info */}
-			{currentExerciseName && (
-				<div className="exercise-info">
-					<span>{currentExerciseName}</span>
-					{currentExerciseRemainRound && (
-						<span style={{ marginLeft: "20px" }}>
-							{currentExerciseRemainRound}
-						</span>
-					)}
-				</div>
-			)}
 
 			{/* countdown, at the center of screen */}
 			{counterNumber >= 0 && <Counter number={counterNumber} />}
