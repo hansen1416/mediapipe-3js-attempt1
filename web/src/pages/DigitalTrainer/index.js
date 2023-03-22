@@ -246,6 +246,10 @@ export default function DigitalTrainer() {
 		cameraSub.current.aspect = subsceneWidth / subsceneHeight;
 		cameraSub.current.updateProjectionMatrix();
 		rendererSub.current.setSize(subsceneWidth, subsceneHeight);
+
+		cameraEg.current.aspect = subsceneWidth / subsceneHeight;
+		cameraEg.current.updateProjectionMatrix();
+		rendererEg.current.setSize(subsceneWidth, subsceneHeight);
 	}, [subsceneWidth, subsceneHeight]);
 
 	useEffect(() => {
