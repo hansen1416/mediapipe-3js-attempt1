@@ -78,6 +78,8 @@ export default function DigitalTrainer() {
 	const rendererEg = useRef(null);
 	const controlsEg = useRef(null);
 
+	const mannequinModelEg = useRef(null);
+
 	// pose capture sub scene
 	const canvasRefSub = useRef(null);
 	const sceneSub = useRef(null);
@@ -139,14 +141,14 @@ export default function DigitalTrainer() {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
-		creatMainScene(documentWidth, documentHeight);
-
 		setsubsceneWidth(documentWidth * 0.2);
 		// remember not to use a squared video
 		setsubsceneHeight((documentWidth * 0.2 * 480) / 640);
-
+		// scene take entire screen
+		creatMainScene(documentWidth, documentHeight);
+		// sub scene play captured pose
 		createSubScene();
-
+		// sub scene play example exercise
 		createEgScene();
 
 		// setsilhouetteSize(0.2 * documentHeight);
@@ -176,6 +178,8 @@ export default function DigitalTrainer() {
 			// console.log(Object.keys(figureParts.current));
 
 			scene.current.add(mannequinModel.current);
+
+			sceneEg.current.add(model.clone());
 
 			// add silhouette to subscene
 			const tasks = [];
@@ -398,7 +402,6 @@ export default function DigitalTrainer() {
 		 */
 
 		sceneEg.current = new THREE.Scene();
-		// sceneSub.current.background = new THREE.Color(0x22244);
 
 		cameraEg.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
 
@@ -451,6 +454,9 @@ export default function DigitalTrainer() {
 
 		controlsSub.current.update();
 		rendererSub.current.render(sceneSub.current, cameraSub.current);
+
+		controlsEg.current.update();
+		rendererEg.current.render(sceneEg.current, cameraEg.current);
 
 		animationPointer.current = requestAnimationFrame(animate);
 	}
