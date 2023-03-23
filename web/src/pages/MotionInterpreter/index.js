@@ -28,7 +28,8 @@ export default function MotionInterpreter() {
 	const [modelRotation, setmodelRotation] = useState({ x: 0, y: 0, z: 0 });
 
 	const allParts = [
-		"pelvis",
+		"abs",
+		"chest",
 		"upperarm_l",
 		"lowerarm_l",
 		"upperarm_r",

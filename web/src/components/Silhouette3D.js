@@ -1158,15 +1158,15 @@ export default class Silhouette3D {
 		}
 	}
 
-	applyColor(colors) {
+	applyColor(colors, muscles = []) {
 		/**
 		 * apply color to mesh
 		 */
 
 		for (let name in colors) {
-			// if (name === "lowerarm_r") {
-			// 	console.log(colors[name], this[name + "_mesh"]);
-			// }
+			if (muscles.indexOf(name) === -1) {
+				continue;
+			}
 
 			this[name].mesh.material.color.setRGB(
 				Number(colors[name][0]) / 255,

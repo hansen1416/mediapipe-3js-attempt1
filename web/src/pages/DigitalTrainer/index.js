@@ -170,7 +170,7 @@ export default function DigitalTrainer() {
 			// mannequinModel.current.scale.set(10, 10, 10);
 
 			mannequinModel.current = model;
-			mannequinModel.current.position.set(0, -100, 0)
+			mannequinModel.current.position.set(0, -100, 0);
 
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
@@ -181,7 +181,7 @@ export default function DigitalTrainer() {
 
 			// for example sub scene
 			sceneEg.current.add(modelEg);
-			modelEg.position.set(0, -100, 0)
+			modelEg.position.set(0, -100, 0);
 
 			mixer.current = new THREE.AnimationMixer(modelEg);
 
@@ -585,8 +585,21 @@ export default function DigitalTrainer() {
 							angleBetweenLimbs[name]
 						);
 					}
+
 					// apply color to silhouette
-					silhouette.current.applyColor(colors);
+					// passed key parts limbs to `applyColor`,
+					// only change the color of the key parts
+					silhouette.current.applyColor(
+						colors,
+						animationJSONs.current[
+							exerciseQueue.current[exerciseQueueIndx.current].key
+						].key_parts || [
+							"upperarm_l",
+							"upperarm_r",
+							"lowerarm_l",
+							"lowerarm_r",
+						]
+					);
 
 					workerAvailable.current = true;
 				});
@@ -885,16 +898,16 @@ export default function DigitalTrainer() {
 							variant="primary"
 							onClick={() => {
 								// if (videoRef.current) {
-									// startCamera(videoRef.current);
+								// startCamera(videoRef.current);
 
-									inExercise.current = true;
+								inExercise.current = true;
 
-									// // count down loop hook. default 5 seconds
+								// // count down loop hook. default 5 seconds
 
-									// getReadyCountDown.current = 300;
+								// getReadyCountDown.current = 300;
 
-									setstartBtnShow(false);
-									setstopBtnShow(true);
+								setstartBtnShow(false);
+								setstopBtnShow(true);
 								// }
 							}}
 						>
