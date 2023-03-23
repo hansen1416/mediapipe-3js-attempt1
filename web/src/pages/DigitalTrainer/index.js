@@ -78,11 +78,8 @@ export default function DigitalTrainer() {
 	const rendererEg = useRef(null);
 	const controlsEg = useRef(null);
 
-/** animation tetsing ------------ */
-	const mannequinModelEg = useRef(null);
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
-/** animation tetsing ------------ */
 
 	// pose capture sub scene
 	const canvasRefSub = useRef(null);
@@ -135,8 +132,6 @@ export default function DigitalTrainer() {
 	const [showCompleted, setshowCompleted] = useState(false);
 	// ======== training process related end
 
-	const ground_level = -10;
-
 	const worker = useWorker(createWorker);
 
 	const workerAvailable = useRef(true);
@@ -166,10 +161,8 @@ export default function DigitalTrainer() {
 			// 	loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 			// ]).then(([detector, gltf, model]) => {
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-/** animation tetsing ------------ */
-			// loadFBX(process.env.PUBLIC_URL + "/fbx/GirlTestAni.fbx"),
-/** animation tetsing ------------ */
-		]).then(([detector, model]) => {
+			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+		]).then(([detector, model, modelEg]) => {
 			poseDetector.current = detector;
 
 			// add 3d model to main scene
@@ -177,40 +170,8 @@ export default function DigitalTrainer() {
 			// mannequinModel.current.position.set(0, -8, 0);
 			// mannequinModel.current.scale.set(10, 10, 10);
 
-/** animation tetsing ------------ */
 			mannequinModel.current = model;
 			mannequinModel.current.position.set(0, -100, 0)
-/**
-			console.log(girl.animations[0])
-
-			mixer.current = new THREE.AnimationMixer(mannequinModel.current);
-
-			mixer.current.stopAllAction();
-
-			const action = mixer.current.clipAction(
-				// THREE.AnimationClip.parse(girl.animations[0])
-				girl.animations[0]
-			);
-
-			action.reset();
-			action.setLoop(THREE.LoopRepeat);
-
-			// action.halt(1);
-
-			// will restore the origin position of model during `time`
-			// action.fadeOut(4);
-
-			// controls how long the animation plays
-			// action.setDuration(1);
-
-			// keep model at the position where it stops
-			action.clampWhenFinished = true;
-
-			action.enable = true;
-
-			action.play();
- */
-/** animation tetsing ------------ */
 
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
@@ -219,7 +180,12 @@ export default function DigitalTrainer() {
 
 			scene.current.add(mannequinModel.current);
 
-			sceneEg.current.add(model.clone());
+			// for example sub scene
+			sceneEg.current.add(modelEg);
+
+			mixer.current = new THREE.AnimationMixer(modelEg);
+
+			mixer.current.stopAllAction();
 
 			// add silhouette to subscene
 			const tasks = [];
@@ -451,7 +417,14 @@ export default function DigitalTrainer() {
 
 		cameraEg.current.position.set(0, 30, 200);
 
-		sceneEg.current.add(new THREE.AmbientLight(0xffffff, 1));
+		{
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.8);
+			dlight.position.set(0, 100, 100);
+			sceneEg.current.add(dlight);
+			// env light
+			sceneEg.current.add(new THREE.AmbientLight(0xffffff, 0.2));
+		}
 
 		rendererEg.current = new THREE.WebGLRenderer({
 			canvas: canvasRefEg.current,
@@ -493,11 +466,10 @@ export default function DigitalTrainer() {
 			doingTraining();
 		}
 
-/** animation tetsing ------------ */
-		// const delta = clock.getDelta();
+		/** play animation in example sub scene */
+		const delta = clock.getDelta();
 
-		// if (mixer.current) mixer.current.update(delta);
-/** animation tetsing ------------ */
+		if (mixer.current) mixer.current.update(delta);
 
 		controls.current.update();
 		renderer.current.render(scene.current, camera.current);
@@ -773,6 +745,22 @@ export default function DigitalTrainer() {
 			animation_data.rotation.y,
 			animation_data.rotation.z
 		);
+
+		// prepare the example exercise action
+		const action = mixer.current.clipAction(
+			THREE.AnimationClip.parse(animation_data)
+		);
+
+		action.reset();
+		action.setLoop(THREE.LoopRepeat);
+
+		// keep model at the position where it stops
+		action.clampWhenFinished = true;
+
+		action.enable = true;
+
+		action.play();
+		// prepare the example exercise action
 
 		currentLongestTrack.current = calculateLongestTrackFromAnimation(
 			animation_data.tracks
