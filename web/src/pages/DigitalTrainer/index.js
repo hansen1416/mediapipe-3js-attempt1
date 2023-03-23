@@ -78,7 +78,11 @@ export default function DigitalTrainer() {
 	const rendererEg = useRef(null);
 	const controlsEg = useRef(null);
 
+/** animation tetsing ------------ */
 	const mannequinModelEg = useRef(null);
+	const mixer = useRef(null);
+	const clock = new THREE.Clock();
+/** animation tetsing ------------ */
 
 	// pose capture sub scene
 	const canvasRefSub = useRef(null);
@@ -162,6 +166,9 @@ export default function DigitalTrainer() {
 			// 	loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
 			// ]).then(([detector, gltf, model]) => {
 			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
+/** animation tetsing ------------ */
+			// loadFBX(process.env.PUBLIC_URL + "/fbx/GirlTestAni.fbx"),
+/** animation tetsing ------------ */
 		]).then(([detector, model]) => {
 			poseDetector.current = detector;
 
@@ -170,7 +177,40 @@ export default function DigitalTrainer() {
 			// mannequinModel.current.position.set(0, -8, 0);
 			// mannequinModel.current.scale.set(10, 10, 10);
 
+/** animation tetsing ------------ */
 			mannequinModel.current = model;
+			mannequinModel.current.position.set(0, -100, 0)
+/**
+			console.log(girl.animations[0])
+
+			mixer.current = new THREE.AnimationMixer(mannequinModel.current);
+
+			mixer.current.stopAllAction();
+
+			const action = mixer.current.clipAction(
+				// THREE.AnimationClip.parse(girl.animations[0])
+				girl.animations[0]
+			);
+
+			action.reset();
+			action.setLoop(THREE.LoopRepeat);
+
+			// action.halt(1);
+
+			// will restore the origin position of model during `time`
+			// action.fadeOut(4);
+
+			// controls how long the animation plays
+			// action.setDuration(1);
+
+			// keep model at the position where it stops
+			action.clampWhenFinished = true;
+
+			action.enable = true;
+
+			action.play();
+ */
+/** animation tetsing ------------ */
 
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
@@ -409,7 +449,7 @@ export default function DigitalTrainer() {
 
 		cameraEg.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
 
-		cameraEg.current.position.set(0, 30, 100);
+		cameraEg.current.position.set(0, 30, 200);
 
 		sceneEg.current.add(new THREE.AmbientLight(0xffffff, 1));
 
@@ -452,6 +492,12 @@ export default function DigitalTrainer() {
 
 			doingTraining();
 		}
+
+/** animation tetsing ------------ */
+		// const delta = clock.getDelta();
+
+		// if (mixer.current) mixer.current.update(delta);
+/** animation tetsing ------------ */
 
 		controls.current.update();
 		renderer.current.render(scene.current, camera.current);
