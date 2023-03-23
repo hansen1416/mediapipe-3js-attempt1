@@ -11,9 +11,13 @@
     p {
         margin: 0;
     }
+
+    li.clickable {
+        cursor: pointer;
+    }
     
     &.light {
-        h1,h2,h3,h4,h5,a,span,p,i {
+        h1,h2,h3,h4,h5,a,span,p,i,li {
             color: @light-color;
         }
 
@@ -37,7 +41,7 @@
     &.dark {
         background-color: #0F2027;
 
-        h1,h2,h3,h4,h5,a,span,p,i {
+        h1,h2,h3,h4,h5,a,span,p,i,li {
             color: @dark-color;
         }
 

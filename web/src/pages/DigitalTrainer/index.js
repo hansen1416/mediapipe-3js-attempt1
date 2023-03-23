@@ -9,7 +9,6 @@ import "@tensorflow/tfjs-backend-webgl";
 import RangeSlider from "react-range-slider-input";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
-import ListGroup from "react-bootstrap/ListGroup";
 import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 import "react-range-slider-input/dist/style.css";
 
@@ -298,7 +297,18 @@ export default function DigitalTrainer() {
 
 				initializeExercise();
 
-				setstartBtnShow(true);
+				if (videoRef.current) {
+					startCamera(videoRef.current);
+
+					inExercise.current = true;
+
+					// count down loop hook. default 5 seconds
+
+					getReadyCountDown.current = 300;
+
+					setstartBtnShow(false);
+					setstopBtnShow(true);
+				}
 			});
 		}
 		// eslint-disable-next-line
@@ -851,58 +861,60 @@ export default function DigitalTrainer() {
 						})}
 				</div> */}
 				<div style={{ marginBottom: "40px" }}>
-					<ListGroup>
+					<ul>
 						{trainingList &&
 							trainingList.map((item, i) => {
 								return (
-									<ListGroup.Item
+									<li
+										className="clickable"
 										key={i}
 										onClick={() => {
 											setselectedTrainingIndx(i);
 										}}
 									>
 										{item.name}
-									</ListGroup.Item>
+									</li>
 								);
 							})}
-					</ListGroup>
+					</ul>
 				</div>
 				<div style={{ marginBottom: "40px" }}>
 					{startBtnShow && (
 						<Button
 							variant="primary"
 							onClick={() => {
-								if (videoRef.current) {
-									startCamera(videoRef.current);
+								// if (videoRef.current) {
+									// startCamera(videoRef.current);
 
 									inExercise.current = true;
 
-									// count down loop hook. default 5 seconds
+									// // count down loop hook. default 5 seconds
 
-									getReadyCountDown.current = 300;
+									// getReadyCountDown.current = 300;
 
 									setstartBtnShow(false);
 									setstopBtnShow(true);
-								}
+								// }
 							}}
 						>
-							Start
+							Continue
 						</Button>
 					)}
 					{stopBtnShow && (
 						<Button
 							variant="secondary"
 							onClick={() => {
-								if (videoRef.current) {
-									videoRef.current.srcObject = null;
+								// if (videoRef.current) {
+								// 	videoRef.current.srcObject = null;
+								// }
 
-									inExercise.current = false;
+								inExercise.current = false;
 
-									setstopBtnShow(false);
-								}
+								setstartBtnShow(true);
+								setstopBtnShow(false);
 							}}
 						>
-							Stop
+							Pause
 						</Button>
 					)}
 				</div>
