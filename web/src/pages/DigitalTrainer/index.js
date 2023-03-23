@@ -181,6 +181,7 @@ export default function DigitalTrainer() {
 
 			// for example sub scene
 			sceneEg.current.add(modelEg);
+			modelEg.position.set(0, -100, 0)
 
 			mixer.current = new THREE.AnimationMixer(modelEg);
 
