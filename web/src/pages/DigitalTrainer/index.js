@@ -134,6 +134,9 @@ export default function DigitalTrainer() {
 	const worker = useWorker(createWorker);
 
 	const workerAvailable = useRef(true);
+	// record user's training result
+	// details refer to `TrainingReport.js`
+	const statistics = useRef({});
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
