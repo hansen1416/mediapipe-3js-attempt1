@@ -46,7 +46,7 @@ export default function MotionInterpreter() {
 
 	const [muscleGroups, setmuscleGroups] = useState([]);
 
-	const animation = useRef(null);
+	const animation_data = useRef(null);
 
 	useEffect(() => {
 		_scene(
@@ -161,35 +161,6 @@ export default function MotionInterpreter() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	/**
-	 * read the animation data
-	 * add `states` for each body part
-	 * `states` is the orientation of a body part at a time
-	 */
-	function loadAnimation(file_url) {
-		loadJSON(file_url).then((data) => {
-			animation.current = data;
-
-			interpretAnimation();
-		});
-
-		// loadFBX(file_url).then((result) => {
-		// 	model.current = result;
-		// 	model.current.position.set(
-		// 		modelPosition.x,
-		// 		modelPosition.y,
-		// 		modelPosition.z
-		// 	);
-		// 	model.current.rotation.set(
-		// 		degreesToRadians(modelRotation.x),
-		// 		degreesToRadians(modelRotation.y),
-		// 		degreesToRadians(modelRotation.z)
-		// 	);
-		// 	scene.current.add(model.current);
-		// 	interpretAnimation();
-		// });
-	}
-
 	function interpretAnimation() {
 		const parts = {};
 		const upVectors = {};
@@ -200,13 +171,11 @@ export default function MotionInterpreter() {
 		getUpVectors(model.current, upVectors);
 
 		(async () => {
-			// animation.current = model.current.animations[0].toJSON();
-
 			let longestTrack = 0;
 			let tracks = {};
 
 			// calculate quaternions and vectors for animation tracks
-			for (let item of animation.current["tracks"]) {
+			for (let item of animation_data.current["tracks"]) {
 				if (item["type"] === "quaternion") {
 					const quaternions = [];
 					for (let i = 0; i < item["values"].length; i += 4) {
@@ -297,16 +266,16 @@ export default function MotionInterpreter() {
 				// break;
 			}
 
-			animation.current["tracks"] = Object.values(tracks);
+			animation_data.current["tracks"] = Object.values(tracks);
 
-			animation.current["rotation"] = modelRotation;
-			animation.current["position"] = modelPosition;
-			animation.current["key_parts"] = keyParts;
-			animation.current["muscle_groups"] = muscleGroups;
-			animation.current["joints_position"] = joints_position;
+			animation_data.current["rotation"] = modelRotation;
+			animation_data.current["position"] = modelPosition;
+			animation_data.current["key_parts"] = keyParts;
+			animation_data.current["muscle_groups"] = muscleGroups;
+			animation_data.current["joints_position"] = joints_position;
 
 			// todo, use API to save this animation to json file
-			console.log(animation.current["name"], animation.current);
+			console.log(animation_data.current["name"], animation_data.current);
 		})();
 	}
 
@@ -366,9 +335,18 @@ export default function MotionInterpreter() {
 						<input
 							type={"file"}
 							onChange={(e) => {
-								loadAnimation(
+								/**
+								 * read the animation data
+								 * add `states` for each body part
+								 * `states` is the orientation of a body part at a time
+								 */
+								loadJSON(
 									URL.createObjectURL(e.target.files[0])
-								);
+								).then((data) => {
+									animation_data.current = data;
+
+									interpretAnimation();
+								});
 							}}
 						/>
 					</label>
