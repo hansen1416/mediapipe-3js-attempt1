@@ -86,23 +86,23 @@ export default class PoseSync {
 
 	modelBonesDistances(bones, compare_upper = true, compare_lower = false) {
 		const upper = [
-			"upperarm_l",
-			"upperarm_r",
-			"lowerarm_l",
-			"lowerarm_r",
-			"hand_l",
-			"hand_r",
-			"thigh_l",
-			"thigh_r",
+			"LeftArm",
+			"RightArm",
+			"LeftForeArm",
+			"RightForeArm",
+			"LeftHand",
+			"RightHand",
+			"LeftUpLeg",
+			"RightUpLeg",
 		];
 
 		const lower = [
-			"thigh_l",
-			"thigh_r",
-			"calf_l",
-			"calf_r",
-			"foot_l",
-			"foot_r",
+			"LeftUpLeg",
+			"RightUpLeg",
+			"LeftLeg",
+			"RightLeg",
+			"LeftFoot",
+			"RightFoot",
 		];
 
 		const distances = [];

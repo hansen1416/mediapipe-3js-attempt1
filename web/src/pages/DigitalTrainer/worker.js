@@ -83,9 +83,10 @@ function torsoBasisFromJointsPosition(joints_position, idx) {
 	/**
 	 * get basis coords system from animation `joints_position` at given frame `idx`
 	 */
-	const leftshoulder = joints_position["upperarm_l"][idx];
-	const rightshoulder = joints_position["upperarm_r"][idx];
-	const pelvis = joints_position["pelvis"][idx];
+	const leftshoulder = joints_position["LeftArm"][idx];
+	const rightshoulder = joints_position["RightArm"][idx];
+	// todo use thigh positions to find a plane
+	const pelvis = joints_position["Hips"][idx];
 
 	if (!rightshoulder || !leftshoulder || !pelvis) {
 		return new THREE.Matrix4();
@@ -153,19 +154,19 @@ function getLimbsVectorAtIdx(joints_position, idx) {
 	 */
 	const limbs = {
 		// shoulder
-		chest: ["upperarm_r", "upperarm_l"],
+		chest: ["RightArm", "LeftArm"],
 		// arms
-		upperarm_l: ["upperarm_l", "lowerarm_l"],
-		lowerarm_l: ["lowerarm_l", "hand_l"],
-		upperarm_r: ["upperarm_r", "lowerarm_r"],
-		lowerarm_r: ["lowerarm_r", "hand_r"],
+		upperarm_l: ["LeftArm", "LeftForeArm"],
+		lowerarm_l: ["LeftForeArm", "LeftHand"],
+		upperarm_r: ["RightArm", "RightForeArm"],
+		lowerarm_r: ["RightForeArm", "RightHand"],
 		// abs
-		abs: ["thigh_r", "thigh_l"],
+		abs: ["RightUpLeg", "LeftUpLeg"],
 		// legs
-		thigh_l: ["thigh_l", "calf_l"],
-		calf_l: ["calf_l", "foot_l"],
-		thigh_r: ["thigh_r", "calf_r"],
-		calf_r: ["calf_r", "foot_r"],
+		thigh_l: ["LeftUpLeg", "LeftLeg"],
+		calf_l: ["LeftLeg", "LeftFoot"],
+		thigh_r: ["RightUpLeg", "RightLeg"],
+		calf_r: ["RightLeg", "RightFoot"],
 	};
 
 	const limb_vector = {};
