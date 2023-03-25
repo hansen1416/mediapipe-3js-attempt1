@@ -212,10 +212,8 @@ export default function DigitalTrainer() {
 		// todo, use API for this feature
 		Promise.all([
 			loadJSON(process.env.PUBLIC_URL + "/data/basic-training.json"),
-		]).then((data) => {
-			console.log(data);
-
-			// settrainingList(data);
+		]).then(([training1]) => {
+			settrainingList([training1]);
 		});
 
 		return () => {
@@ -254,17 +252,22 @@ export default function DigitalTrainer() {
 			const tmp_queue = [];
 
 			try {
+				// todo, update rest time after each exercise
 				resetTime.current = parseInt(
-					trainingList[selectedTrainingIndx].rest
+					// trainingList[selectedTrainingIndx].rest
+					5
 				);
 			} catch (e) {
 				console.error(e);
 			}
 
-			for (const e of trainingList[selectedTrainingIndx].exercise) {
+			for (const e of trainingList[selectedTrainingIndx].exercises) {
 				tasks.push(
 					loadJSON(
-						process.env.PUBLIC_URL + "/animjson/" + e.key + ".json"
+						process.env.PUBLIC_URL +
+							"/data/exercises/" +
+							e.key +
+							".json"
 					)
 				);
 
@@ -274,6 +277,12 @@ export default function DigitalTrainer() {
 			exerciseQueue.current = tmp_queue;
 
 			Promise.all(tasks).then((data) => {
+				/**
+				 * load exercise animation data
+				 * save them to `animationJSONs`
+				 * note: training.exercises[i].key must be equal to data[i].name
+				 */
+
 				for (const v of data) {
 					animationJSONs.current[v.name] = v;
 				}
