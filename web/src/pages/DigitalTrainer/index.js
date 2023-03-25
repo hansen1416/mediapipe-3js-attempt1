@@ -26,8 +26,8 @@ import {
 	calculateLongestTrackFromAnimation,
 	applyTransfer,
 	radianGradientColor,
-	// loadGLTF,
-	loadFBX,
+	loadGLTF,
+	// loadFBX,
 	jsonToBufferGeometry,
 } from "../../components/ropes";
 // import { cloneDeep } from "lodash";
@@ -159,62 +159,58 @@ export default function DigitalTrainer() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			// 	loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-			// 	loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-			// ]).then(([detector, gltf, model]) => {
-			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-			loadFBX(process.env.PUBLIC_URL + "/fbx/mannequin.fbx"),
-		]).then(([detector, model, modelEg]) => {
+
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+		]).then(([detector, glb, glbEg]) => {
 			poseDetector.current = detector;
 
 			// add 3d model to main scene
-			// mannequinModel.current = gltf.scene.children[0];
-			// mannequinModel.current.position.set(0, -8, 0);
-			// mannequinModel.current.scale.set(10, 10, 10);
-
-			mannequinModel.current = model;
-			mannequinModel.current.position.set(0, -100, 0);
+			mannequinModel.current = glb.scene.children[0];
+			mannequinModel.current.position.set(0, -1, 0);
 
 			// store all limbs to `mannequinModel`
 			traverseModel(mannequinModel.current, figureParts.current);
 
-			// console.log(Object.keys(figureParts.current));
+			console.log(Object.keys(figureParts.current));
 
 			scene.current.add(mannequinModel.current);
 
-			// for example sub scene
+			// example exercise sub scene
+			const modelEg = glbEg.scene.children[0];
 			sceneEg.current.add(modelEg);
-			modelEg.position.set(0, -100, 0);
+
+			modelEg.position.set(0, -1, 0);
 
 			mixer.current = new THREE.AnimationMixer(modelEg);
 
 			mixer.current.stopAllAction();
 
-			// add silhouette to subscene
-			const tasks = [];
+			animate();
+		});
 
-			for (let name of Silhouette3D.limbs) {
-				tasks.push(
-					loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-				);
+		// add silhouette to subscene
+		const tasks = [];
+
+		for (let name of Silhouette3D.limbs) {
+			tasks.push(
+				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
+			);
+		}
+
+		Promise.all(tasks).then((results) => {
+			const geos = {};
+
+			for (let data of results) {
+				geos[data.name] = jsonToBufferGeometry(data);
 			}
 
-			Promise.all(tasks).then((results) => {
-				const geos = {};
+			silhouette.current = new Silhouette3D(geos);
+			const body = silhouette.current.init();
 
-				for (let data of results) {
-					geos[data.name] = jsonToBufferGeometry(data);
-				}
+			// getMeshSize(figure.current.foot_l.mesh, scene.current)
 
-				silhouette.current = new Silhouette3D(geos);
-				const body = silhouette.current.init();
-
-				// getMeshSize(figure.current.foot_l.mesh, scene.current)
-
-				sceneSub.current.add(body);
-			});
-
-			animate();
+			sceneSub.current.add(body);
 		});
 
 		// we can load training list separately
@@ -342,16 +338,15 @@ export default function DigitalTrainer() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 200);
-		// camera.current.position.set(0, 0, 20);
+		camera.current.position.set(0, 0, 2);
 
 		{
 			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.8);
-			dlight.position.set(0, 100, 100);
+			const dlight = new THREE.PointLight(0xffffff, 0.4);
+			dlight.position.set(0, 10, 10);
 			scene.current.add(dlight);
 			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 0.2));
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
 		}
 
 		// drawScene();
@@ -429,15 +424,15 @@ export default function DigitalTrainer() {
 
 		cameraEg.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
 
-		cameraEg.current.position.set(0, 30, 200);
+		cameraEg.current.position.set(0, 1, 1.2);
 
 		{
 			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.8);
-			dlight.position.set(0, 100, 100);
+			const dlight = new THREE.PointLight(0xffffff, 0.2);
+			dlight.position.set(0, 10, 10);
 			sceneEg.current.add(dlight);
 			// env light
-			sceneEg.current.add(new THREE.AmbientLight(0xffffff, 0.2));
+			sceneEg.current.add(new THREE.AmbientLight(0xffffff, 0.8));
 		}
 
 		rendererEg.current = new THREE.WebGLRenderer({
