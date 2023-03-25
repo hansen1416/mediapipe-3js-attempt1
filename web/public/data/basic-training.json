@@ -1,0 +1,101 @@
+{
+	"name": "Beginner's Training",
+	"duration": 1800,
+	"intensity": 10,
+	"calories": 1000,
+	"muscles": {
+		"chest": 0.6,
+		"shoulders": 0.3,
+		"back": 0.1,
+		"arms": 0.0,
+		"abdominals": 0.0,
+		"legs": 0.0
+	},
+	"exercises": [
+		{
+			"name": "arm-stretching",
+			"img": "",
+			"intensity": 10,
+			"calories": 10,
+			"duration": 2,
+			"muscles": {
+				"chest": 0.0,
+				"shoulders": 0.0,
+				"back": 0.0,
+				"arms": 0.0,
+				"abdominals": 0.0,
+				"legs": 0.0
+			},
+			"reps": 5,
+			"rest": 20
+		},
+		{
+			"name": "hip-hop-dancing2",
+			"img": "",
+			"intensity": 10,
+			"calories": 10,
+			"duration": 2,
+			"muscles": {
+				"chest": 0.0,
+				"shoulders": 0.0,
+				"back": 0.0,
+				"arms": 0.0,
+				"abdominals": 0.0,
+				"legs": 0.0
+			},
+			"reps": 5,
+			"rest": 20
+		},
+		{
+			"name": "kettlebell-swing",
+			"img": "",
+			"intensity": 10,
+			"calories": 10,
+			"duration": 2,
+			"muscles": {
+				"chest": 0.0,
+				"shoulders": 0.0,
+				"back": 0.0,
+				"arms": 0.0,
+				"abdominals": 0.0,
+				"legs": 0.0
+			},
+			"reps": 5,
+			"rest": 20
+		},
+		{
+			"name": "push-up",
+			"img": "",
+			"intensity": 10,
+			"calories": 10,
+			"duration": 2,
+			"muscles": {
+				"chest": 0.0,
+				"shoulders": 0.0,
+				"back": 0.0,
+				"arms": 0.0,
+				"abdominals": 0.0,
+				"legs": 0.0
+			},
+			"reps": 5,
+			"rest": 20
+		},
+		{
+			"name": "situps",
+			"img": "",
+			"intensity": 10,
+			"calories": 10,
+			"duration": 2,
+			"muscles": {
+				"chest": 0.0,
+				"shoulders": 0.0,
+				"back": 0.0,
+				"arms": 0.0,
+				"abdominals": 0.0,
+				"legs": 0.0
+			},
+			"reps": 5,
+			"rest": 20
+		}
+	]
+}
