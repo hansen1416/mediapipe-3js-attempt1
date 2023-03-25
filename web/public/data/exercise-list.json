@@ -1,242 +1,452 @@
 [
-    {
-        "name": "exercise1",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise2",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise3",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise4",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise5",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise6",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise7",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise8",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise9",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise10",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise11",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise12",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise13",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise14",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise15",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise16",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise17",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise18",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise19",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise20",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise21",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise22",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise23",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise24",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise25",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise26",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise27",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise28",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise29",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    },
-    {
-        "name": "exercise30",
-        "img": "",
-        "intensity": 10,
-        "calories": 10,
-        "duration": 2,
-        "muscles": {"chest": 0.0,"shoulders": 0.0, "back": 0.0,"arms":0.0,"abdominals":0.0,"legs":0.0}
-    }
+	{
+		"name": "exercise1",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise2",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise3",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise4",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise5",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise6",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise7",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise8",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise9",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise10",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise11",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise12",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise13",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise14",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise15",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise16",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise17",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise18",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise19",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise20",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise21",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise22",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise23",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise24",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise25",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise26",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise27",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise28",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise29",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	},
+	{
+		"name": "exercise30",
+		"img": "",
+		"intensity": 10,
+		"calories": 10,
+		"duration": 2,
+		"muscles": {
+			"chest": 0.0,
+			"shoulders": 0.0,
+			"back": 0.0,
+			"arms": 0.0,
+			"abdominals": 0.0,
+			"legs": 0.0
+		}
+	}
 ]
