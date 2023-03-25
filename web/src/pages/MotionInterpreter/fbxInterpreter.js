@@ -7,8 +7,7 @@ import {
 	applyTransfer,
 	degreesToRadians,
 	getUpVectors,
-	loadGLTF,
-	loadJSON,
+	loadFBX,
 	muscleGroupsColors,
 	sleep,
 	traverseModel,
@@ -25,7 +24,7 @@ export default function MotionInterpreter() {
 	const animationPointer = useRef(0);
 
 	const model = useRef(null);
-	const [modelPosition, setmodelPosition] = useState({ x: 0, y: -1, z: 0 });
+	const [modelPosition, setmodelPosition] = useState({ x: 0, y: 0, z: 0 });
 	const [modelRotation, setmodelRotation] = useState({ x: 0, y: 0, z: 0 });
 
 	const allParts = [
@@ -46,33 +45,15 @@ export default function MotionInterpreter() {
 
 	const [muscleGroups, setmuscleGroups] = useState([]);
 
-	const animation = useRef(null);
-
 	useEffect(() => {
 		_scene(
 			document.documentElement.clientWidth,
 			document.documentElement.clientHeight
 		);
 
-		Promise.all([loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")]).then(
-			([glb]) => {
-				model.current = glb.scene.children[0];
-				model.current.position.set(
-					modelPosition.x,
-					modelPosition.y,
-					modelPosition.z
-				);
-
-				// store all limbs to `mannequinModel`
-				// traverseModel(model.current, figureParts.current);
-
-				// console.log(Object.keys(figureParts.current));
-
-				scene.current.add(model.current);
-
-				animate();
-			}
-		);
+		setTimeout(() => {
+			animate();
+		}, 0);
 
 		// interpretAnimation();
 
@@ -106,7 +87,10 @@ export default function MotionInterpreter() {
 	}, [modelRotation]);
 
 	function _scene(viewWidth, viewHeight) {
+		const backgroundColor = 0x022244;
+
 		scene.current = new THREE.Scene();
+		scene.current.background = new THREE.Color(backgroundColor);
 
 		/**
 		 * The first attribute is the field of view.
@@ -131,21 +115,18 @@ export default function MotionInterpreter() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 2);
+		camera.current.position.set(0, 0, 300);
 
 		{
-			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.4);
-			dlight.position.set(0, 10, 10);
-			scene.current.add(dlight);
-			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
+			const light = new THREE.PointLight(0xffffff, 1);
+			// light.position.set(10, 10, 10);
+			camera.current.add(light);
+
+			scene.current.add(camera.current);
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
-			alpha: true,
-			antialias: true,
 		});
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
@@ -167,27 +148,24 @@ export default function MotionInterpreter() {
 	 * `states` is the orientation of a body part at a time
 	 */
 	function loadAnimation(file_url) {
-		loadJSON(file_url).then((data) => {
-			animation.current = data;
+		loadFBX(file_url).then((result) => {
+			model.current = result;
+
+			model.current.position.set(
+				modelPosition.x,
+				modelPosition.y,
+				modelPosition.z
+			);
+			model.current.rotation.set(
+				degreesToRadians(modelRotation.x),
+				degreesToRadians(modelRotation.y),
+				degreesToRadians(modelRotation.z)
+			);
+
+			scene.current.add(model.current);
 
 			interpretAnimation();
 		});
-
-		// loadFBX(file_url).then((result) => {
-		// 	model.current = result;
-		// 	model.current.position.set(
-		// 		modelPosition.x,
-		// 		modelPosition.y,
-		// 		modelPosition.z
-		// 	);
-		// 	model.current.rotation.set(
-		// 		degreesToRadians(modelRotation.x),
-		// 		degreesToRadians(modelRotation.y),
-		// 		degreesToRadians(modelRotation.z)
-		// 	);
-		// 	scene.current.add(model.current);
-		// 	interpretAnimation();
-		// });
 	}
 
 	function interpretAnimation() {
@@ -200,13 +178,13 @@ export default function MotionInterpreter() {
 		getUpVectors(model.current, upVectors);
 
 		(async () => {
-			// animation.current = model.current.animations[0].toJSON();
+			const animation = model.current.animations[0].toJSON();
 
 			let longestTrack = 0;
 			let tracks = {};
 
 			// calculate quaternions and vectors for animation tracks
-			for (let item of animation.current["tracks"]) {
+			for (let item of animation["tracks"]) {
 				if (item["type"] === "quaternion") {
 					const quaternions = [];
 					for (let i = 0; i < item["values"].length; i += 4) {
@@ -297,16 +275,16 @@ export default function MotionInterpreter() {
 				// break;
 			}
 
-			animation.current["tracks"] = Object.values(tracks);
+			animation["tracks"] = Object.values(tracks);
 
-			animation.current["rotation"] = modelRotation;
-			animation.current["position"] = modelPosition;
-			animation.current["key_parts"] = keyParts;
-			animation.current["muscle_groups"] = muscleGroups;
-			animation.current["joints_position"] = joints_position;
+			animation["rotation"] = modelRotation;
+			animation["position"] = modelPosition;
+			animation["key_parts"] = keyParts;
+			animation["muscle_groups"] = muscleGroups;
+			animation["joints_position"] = joints_position;
 
 			// todo, use API to save this animation to json file
-			console.log(animation.current["name"], animation.current);
+			console.log(animation["name"], animation);
 		})();
 	}
 
