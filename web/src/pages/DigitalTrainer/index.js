@@ -189,15 +189,11 @@ export default function DigitalTrainer() {
 		});
 
 		// add silhouette to subscene
-		const tasks = [];
-
-		for (let name of Silhouette3D.limbs) {
-			tasks.push(
+		Promise.all(
+			Silhouette3D.limbs.map((name) =>
 				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-			);
-		}
-
-		Promise.all(tasks).then((results) => {
+			)
+		).then((results) => {
 			const geos = {};
 
 			for (let data of results) {
@@ -214,22 +210,12 @@ export default function DigitalTrainer() {
 
 		// we can load training list separately
 		// todo, use API for this feature
-		new Promise((resolve) => {
-			resolve([
-				{
-					name: "default training",
-					rest: 180,
-					exercise: [
-						{ round: 2, key: "punch-walk" },
-						{ round: 2, key: "basic-crunch" },
-						{ round: 2, key: "curl-up" },
-						{ round: 2, key: "leg-scissors" },
-						{ round: 2, key: "toe-crunch" },
-					],
-				},
-			]);
-		}).then((data) => {
-			settrainingList(data);
+		Promise.all([
+			loadJSON(process.env.PUBLIC_URL + "/data/basic-training.json"),
+		]).then((data) => {
+			console.log(data);
+
+			// settrainingList(data);
 		});
 
 		return () => {
@@ -423,7 +409,7 @@ export default function DigitalTrainer() {
 
 		cameraEg.current = new THREE.PerspectiveCamera(90, 1, 0.1, 500);
 
-		cameraEg.current.position.set(0, 1, 1.2);
+		cameraEg.current.position.set(0, 0.3, 1.2);
 
 		{
 			// mimic the sun light
@@ -739,7 +725,7 @@ export default function DigitalTrainer() {
 		 */
 		currentAnimationIndx.current = 0;
 		currentRound.current = parseInt(
-			exerciseQueue.current[exerciseQueueIndx.current].round
+			exerciseQueue.current[exerciseQueueIndx.current].reps
 		);
 
 		const animation_data =

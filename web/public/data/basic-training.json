@@ -13,7 +13,8 @@
 	},
 	"exercises": [
 		{
-			"name": "arm-stretching",
+			"key": "arm-stretching",
+			"name": "arm stretching",
 			"img": "",
 			"intensity": 10,
 			"calories": 10,
@@ -30,7 +31,8 @@
 			"rest": 20
 		},
 		{
-			"name": "hip-hop-dancing2",
+			"key": "hip-hop-dancing2",
+			"name": "hip hop dancing",
 			"img": "",
 			"intensity": 10,
 			"calories": 10,
@@ -47,7 +49,8 @@
 			"rest": 20
 		},
 		{
-			"name": "kettlebell-swing",
+			"key": "kettlebell-swing",
+			"name": "kettlebell swing",
 			"img": "",
 			"intensity": 10,
 			"calories": 10,
@@ -64,7 +67,8 @@
 			"rest": 20
 		},
 		{
-			"name": "push-up",
+			"key": "push-up",
+			"name": "push up",
 			"img": "",
 			"intensity": 10,
 			"calories": 10,
@@ -81,6 +85,7 @@
 			"rest": 20
 		},
 		{
+			"key": "situps",
 			"name": "situps",
 			"img": "",
 			"intensity": 10,
