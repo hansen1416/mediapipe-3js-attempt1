@@ -48,6 +48,9 @@ export default function MotionInterpreter() {
 
 	const animation_data = useRef(null);
 
+	const [animationName, setanimationName] = useState("");
+	const [animationKey, setanimationKey] = useState("");
+
 	useEffect(() => {
 		_scene(
 			document.documentElement.clientWidth,
@@ -104,6 +107,18 @@ export default function MotionInterpreter() {
 			);
 		}
 	}, [modelRotation]);
+
+	useEffect(() => {
+		if (animation_data.current) {
+			animation_data.current["display_name"] = animationName;
+		}
+	}, [animationName]);
+
+	useEffect(() => {
+		if (animation_data.current) {
+			animation_data.current["name"] = animationKey;
+		}
+	}, [animationKey]);
 
 	function _scene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
@@ -345,8 +360,35 @@ export default function MotionInterpreter() {
 								).then((data) => {
 									animation_data.current = data;
 
+									setanimationName(data.name);
+									setanimationKey(data.name);
+
 									interpretAnimation();
 								});
+							}}
+						/>
+					</label>
+				</div>
+				<div className="block grenze">
+					<label>
+						name:
+						<input
+							type={"text"}
+							value={animationName}
+							onChange={(e) => {
+								setanimationName(e.target.value);
+							}}
+						/>
+					</label>
+				</div>
+				<div className="block grenze">
+					<label>
+						key:
+						<input
+							type={"text"}
+							value={animationKey}
+							onChange={(e) => {
+								setanimationKey(e.target.value);
 							}}
 						/>
 					</label>

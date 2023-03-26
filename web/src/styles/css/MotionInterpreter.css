@@ -14,6 +14,9 @@
   border-bottom-width: 1px;
   border-bottom-style: solid;
 }
+.interpreter .controls .block input {
+  max-width: 120px;
+}
 .interpreter .controls .block span {
   margin-right: 6px;
 }
