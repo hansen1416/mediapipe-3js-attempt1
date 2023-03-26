@@ -1,12 +1,15 @@
 .training-report .explain {
   margin: 10px 0 20px;
 }
-.training-report .basic-info div {
-  margin-bottom: 4px;
+.training-report .basic-info {
+  margin-bottom: 20px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 .training-report .exercise-info {
   margin-bottom: 20px;
-  border-bottom: 1px solid;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 .training-report .exercise-info span {
   margin-right: 10px;

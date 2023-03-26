@@ -842,9 +842,9 @@ export default function DigitalTrainer() {
 					// todo make API call to save user data
 					// console.log(statistics.current);
 
-					window.sessionStorage.setItem(
+					window.localStorage.setItem(
 						"statistics",
-						statistics.current
+						JSON.stringify(statistics.current)
 					);
 				}
 			}
