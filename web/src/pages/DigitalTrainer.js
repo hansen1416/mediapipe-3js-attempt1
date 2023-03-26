@@ -30,7 +30,6 @@ import {
 	// loadFBX,
 	jsonToBufferGeometry,
 } from "../components/ropes";
-// import { cloneDeep } from "lodash";
 
 const createWorker = createWorkerFactory(() =>
 	import("./DigitalTrainerWorker")
@@ -139,6 +138,8 @@ export default function DigitalTrainer() {
 	// record user's training result
 	// details refer to `TrainingReport.js`
 	const statistics = useRef({});
+
+	const animationFps = 30;
 
 	useEffect(() => {
 		/**
@@ -256,6 +257,12 @@ export default function DigitalTrainer() {
 		if (selectedTrainingIndx >= 0 && trainingList[selectedTrainingIndx]) {
 			const tasks = [];
 			const tmp_queue = [];
+
+			// initialize statistics
+			// clear the exercise array
+			// initialize exercise progress in `initializeExercise`
+			// update exercise progres in `applyAnimation`
+			statistics.current = cloneDeep(trainingList[selectedTrainingIndx]);
 
 			try {
 				// todo, update rest time after each exercise
@@ -584,6 +591,17 @@ export default function DigitalTrainer() {
 						);
 					}
 
+					// record the error rate for statistics
+					statistics.current.exercises[
+						exerciseQueueIndx.current
+					].total_compared_frame += 1;
+
+					for (let name in angleBetweenLimbs) {
+						statistics.current.exercises[
+							exerciseQueueIndx.current
+						].error_angles[name] += angleBetweenLimbs[name];
+					}
+
 					// apply color to silhouette
 					// passed key parts limbs to `applyColor`,
 					// only change the color of the key parts
@@ -630,105 +648,8 @@ export default function DigitalTrainer() {
 		setcounterNumber(-1);
 
 		// play animation at 30fps
-		if (counter.current % 2 === 0) {
+		if (counter.current % Math.round(60 / animationFps) === 0) {
 			applyAnimation();
-		}
-	}
-
-	function applyAnimation() {
-		/**
-		 * current animation not finished
-		 *
-		 * 		pose compared result is good
-		 * 			apply animation
-		 * 			continue increment frame index
-		 * 		else
-		 * 			continue
-		 *
-		 * else
-		 * 		more round to do
-		 * 			reset frame index
-		 * 		else
-		 * 			more exercise to do
-		 * 				calculate longest track
-		 * 				refill round
-		 * 				reset frame index
-		 * 			else
-		 *				flag no longer in exercise
-		 *				reset frame index
-		 *				reset logest track
-		 *				reset round
-		 *
-		 *
-		 * `oseCompareResult.current` is the flag indicate whether animation should be going
-		 * it's the diffscore calculated by `poseSync.current.compareCurrentPose`
-		 *
-		 */
-		if (currentAnimationIndx.current < currentLongestTrack.current) {
-			// the current animation is still in progess
-
-			if (poseSync.current) {
-				if (poseCompareResult.current) {
-					if (poseCompareResult.current instanceof Number) {
-						currentAnimationIndx.current =
-							poseCompareResult.current;
-					}
-
-					applyTransfer(
-						figureParts.current,
-						poseSync.current.animation_data.tracks,
-						currentAnimationIndx.current
-					);
-
-					currentAnimationIndx.current += 1;
-				} else if (poseCompareResult.current === false) {
-					// compare failed, pause animation
-				}
-			}
-		} else {
-			// the current animation finished
-
-			if (currentRound.current > 1) {
-				// still more round to go
-				currentRound.current -= 1;
-				currentAnimationIndx.current = 0;
-
-				setcurrentExerciseRemainRound(currentRound.current);
-			} else {
-				// all round done, switch to next exercise
-
-				if (
-					exerciseQueueIndx.current <
-					exerciseQueue.current.length - 1
-				) {
-					// there are more animation in the queue
-
-					exerciseQueueIndx.current += 1;
-
-					initializeExercise();
-
-					// rest hook
-					restCountDown.current = resetTime.current;
-				} else {
-					// all animation played
-
-					inExercise.current = false;
-
-					exerciseQueueIndx.current = 0;
-					currentAnimationIndx.current = 0;
-					currentLongestTrack.current = 0;
-					currentRound.current = 0;
-
-					setstopBtnShow(false);
-
-					// training complete hook
-					setshowCompleted(true);
-					setcurrentExerciseName("");
-					setcurrentExerciseRemainRound(0);
-
-					// todo make API call to save user data
-				}
-			}
 		}
 	}
 
@@ -747,6 +668,26 @@ export default function DigitalTrainer() {
 			animationJSONs.current[
 				exerciseQueue.current[exerciseQueueIndx.current].key
 			];
+
+		// initialize statistics for exercise
+		Object.assign(statistics.current.exercises[exerciseQueueIndx.current], {
+			error_angles: {
+				chest: 0,
+				upperarm_l: 0,
+				lowerarm_l: 0,
+				upperarm_r: 0,
+				lowerarm_r: 0,
+				abs: 0,
+				thigh_l: 0,
+				calf_l: 0,
+				thigh_r: 0,
+				calf_r: 0,
+			},
+			unfollowed: 0,
+			start_time: Date.now(),
+			end_time: 0,
+			total_compared_frame: 0,
+		});
 
 		// send animation data to worker, reserved for future analysis
 		// maybe do this sync
@@ -800,6 +741,109 @@ export default function DigitalTrainer() {
 		);
 
 		setcurrentExerciseRemainRound(currentRound.current);
+	}
+
+	function applyAnimation() {
+		/**
+		 * current animation not finished
+		 *
+		 * 		pose compared result is good
+		 * 			apply animation
+		 * 			continue increment frame index
+		 * 		else
+		 * 			continue
+		 *
+		 * else
+		 * 		more round to do
+		 * 			reset frame index
+		 * 		else
+		 * 			more exercise to do
+		 * 				calculate longest track
+		 * 				refill round
+		 * 				reset frame index
+		 * 			else
+		 *				flag no longer in exercise
+		 *				reset frame index
+		 *				reset logest track
+		 *				reset round
+		 *
+		 *
+		 * `oseCompareResult.current` is the flag indicate whether animation should be going
+		 * it's the diffscore calculated by `poseSync.current.compareCurrentPose`
+		 *
+		 */
+		if (currentAnimationIndx.current < currentLongestTrack.current) {
+			// the current animation is still in progess
+
+			if (poseCompareResult.current) {
+				if (poseCompareResult.current instanceof Number) {
+					currentAnimationIndx.current = poseCompareResult.current;
+				}
+
+				applyTransfer(
+					figureParts.current,
+					poseSync.current.animation_data.tracks,
+					currentAnimationIndx.current
+				);
+
+				currentAnimationIndx.current += 1;
+			} else if (poseCompareResult.current === false) {
+				// compare failed, pause animation
+
+				// accumulte unfolloed time by miliseconds
+				statistics.current.exercises[
+					exerciseQueueIndx.current
+				].unfollowed += 1000 / animationFps;
+			}
+		} else {
+			// the current animation finished
+
+			statistics.current.exercises[exerciseQueueIndx.current].end_time =
+				Date.now();
+
+			if (currentRound.current > 1) {
+				// still more round to go
+				currentRound.current -= 1;
+				currentAnimationIndx.current = 0;
+
+				setcurrentExerciseRemainRound(currentRound.current);
+			} else {
+				// all round done, switch to next exercise
+
+				if (
+					exerciseQueueIndx.current <
+					exerciseQueue.current.length - 1
+				) {
+					// there are more animation in the queue
+
+					exerciseQueueIndx.current += 1;
+
+					initializeExercise();
+
+					// rest hook
+					restCountDown.current = resetTime.current;
+				} else {
+					// all animation played
+
+					inExercise.current = false;
+
+					exerciseQueueIndx.current = 0;
+					currentAnimationIndx.current = 0;
+					currentLongestTrack.current = 0;
+					currentRound.current = 0;
+
+					setstopBtnShow(false);
+
+					// training complete hook
+					setshowCompleted(true);
+					setcurrentExerciseName("");
+					setcurrentExerciseRemainRound(0);
+
+					// todo make API call to save user data
+					console.log(statistics.current);
+				}
+			}
+		}
 	}
 
 	return (
