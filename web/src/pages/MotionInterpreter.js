@@ -326,10 +326,10 @@ export default function MotionInterpreter() {
 	// }
 
 	return (
-		<div className="scene" ref={containerRef}>
+		<div className="interpreter" ref={containerRef}>
 			<canvas ref={canvasRef}></canvas>
-			<div className="btn-box" style={{ color: "#fff" }}>
-				<div>
+			<div className="controls" style={{ color: "#fff" }}>
+				<div className="block grenze">
 					<label>
 						file:
 						<input
@@ -351,8 +351,7 @@ export default function MotionInterpreter() {
 						/>
 					</label>
 				</div>
-				<hr />
-				<div>
+				<div className="block grenze">
 					<span>Position: </span>
 					{["x", "y", "z"].map((axis) => {
 						return (
@@ -374,8 +373,7 @@ export default function MotionInterpreter() {
 						);
 					})}
 				</div>
-				<hr />
-				<div>
+				<div className="block grenze">
 					<span>Rotation: </span>
 					{["x", "y", "z"].map((axis) => {
 						return (
@@ -397,68 +395,57 @@ export default function MotionInterpreter() {
 						);
 					})}
 				</div>
-				<hr />
-				<div>
+				<div className="block grenze">
+					<span>Key parts: </span>
 					{allParts.map((item) => {
 						return (
-							<div key={item}>
-								<label>
-									{item}
-									<input
-										type={"checkbox"}
-										checked={keyParts.indexOf(item) !== -1}
-										onChange={(e) => {
-											let tmp = clone(keyParts);
+							<label key={item}>
+								{item}
+								<input
+									type={"checkbox"}
+									checked={keyParts.indexOf(item) !== -1}
+									onChange={(e) => {
+										let tmp = clone(keyParts);
 
-											if (e.target.checked) {
-												tmp.push(item);
-											} else {
-												tmp = tmp.filter(
-													(x) => x !== item
-												);
-											}
+										if (e.target.checked) {
+											tmp.push(item);
+										} else {
+											tmp = tmp.filter((x) => x !== item);
+										}
 
-											setkeyParts(tmp);
-										}}
-									/>
-								</label>
-							</div>
+										setkeyParts(tmp);
+									}}
+								/>
+							</label>
 						);
 					})}
 				</div>
-				<hr />
-				<div>
+				<div className="block grenze">
+					<span>Muscles: </span>
 					{allMuscleGroups.map((item) => {
 						return (
-							<div key={item}>
-								<label>
-									{item}
-									<input
-										type={"checkbox"}
-										checked={
-											muscleGroups.indexOf(item) !== -1
+							<label key={item}>
+								{item}
+								<input
+									type={"checkbox"}
+									checked={muscleGroups.indexOf(item) !== -1}
+									onChange={(e) => {
+										let tmp = clone(muscleGroups);
+
+										if (e.target.checked) {
+											tmp.push(item);
+										} else {
+											tmp = tmp.filter((x) => x !== item);
 										}
-										onChange={(e) => {
-											let tmp = clone(muscleGroups);
 
-											if (e.target.checked) {
-												tmp.push(item);
-											} else {
-												tmp = tmp.filter(
-													(x) => x !== item
-												);
-											}
-
-											setmuscleGroups(tmp);
-										}}
-									/>
-								</label>
-							</div>
+										setmuscleGroups(tmp);
+									}}
+								/>
+							</label>
 						);
 					})}
 				</div>
-				<hr />
-				<div>
+				<div className="block">
 					<button onClick={interpretAnimation}>
 						Interpret Again
 					</button>

@@ -13,8 +13,8 @@
 	},
 	"exercises": [
 		{
-			"key": "kettlebell-swing",
-			"name": "kettlebell swing",
+			"key": "waving",
+			"name": "waving",
 			"img": "",
 			"intensity": 10,
 			"calories": 10,
@@ -27,79 +27,7 @@
 				"abdominals": 0.0,
 				"legs": 0.0
 			},
-			"reps": 1,
-			"rest": 20
-		},
-		{
-			"key": "hip-hop-dancing2",
-			"name": "hip hop dancing",
-			"img": "",
-			"intensity": 10,
-			"calories": 10,
-			"duration": 2,
-			"muscles": {
-				"chest": 0.0,
-				"shoulders": 0.0,
-				"back": 0.0,
-				"arms": 0.0,
-				"abdominals": 0.0,
-				"legs": 0.0
-			},
-			"reps": 1,
-			"rest": 20
-		},
-		{
-			"key": "push-up",
-			"name": "push up",
-			"img": "",
-			"intensity": 10,
-			"calories": 10,
-			"duration": 2,
-			"muscles": {
-				"chest": 0.0,
-				"shoulders": 0.0,
-				"back": 0.0,
-				"arms": 0.0,
-				"abdominals": 0.0,
-				"legs": 0.0
-			},
-			"reps": 1,
-			"rest": 20
-		},
-		{
-			"key": "situps",
-			"name": "situps",
-			"img": "",
-			"intensity": 10,
-			"calories": 10,
-			"duration": 2,
-			"muscles": {
-				"chest": 0.0,
-				"shoulders": 0.0,
-				"back": 0.0,
-				"arms": 0.0,
-				"abdominals": 0.0,
-				"legs": 0.0
-			},
-			"reps": 1,
-			"rest": 20
-		},
-		{
-			"key": "arm-stretching",
-			"name": "arm stretching",
-			"img": "",
-			"intensity": 10,
-			"calories": 10,
-			"duration": 2,
-			"muscles": {
-				"chest": 0.0,
-				"shoulders": 0.0,
-				"back": 0.0,
-				"arms": 0.0,
-				"abdominals": 0.0,
-				"legs": 0.0
-			},
-			"reps": 1,
+			"reps": 2,
 			"rest": 20
 		}
 	]

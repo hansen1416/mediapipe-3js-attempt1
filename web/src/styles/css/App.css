@@ -17,7 +17,8 @@
 .App.light span,
 .App.light p,
 .App.light i,
-.App.light li {
+.App.light li,
+.App.light label {
   color: #000;
 }
 .App.light .grenze {
@@ -41,7 +42,8 @@
 .App.dark span,
 .App.dark p,
 .App.dark i,
-.App.dark li {
+.App.dark li,
+.App.dark label {
   color: #e5e5e5;
 }
 .App.dark .grenze {
@@ -98,11 +100,6 @@
 .App .splide {
   padding-left: 0;
   padding-right: 0;
-}
-.btn-box {
-  position: absolute;
-  bottom: 0;
-  right: 0;
 }
 .tmp {
   color: #47b2f5;
