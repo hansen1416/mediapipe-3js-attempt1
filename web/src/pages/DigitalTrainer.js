@@ -840,7 +840,12 @@ export default function DigitalTrainer() {
 					setcurrentExerciseRemainRound(0);
 
 					// todo make API call to save user data
-					console.log(statistics.current);
+					// console.log(statistics.current);
+
+					window.sessionStorage.setItem(
+						"statistics",
+						statistics.current
+					);
 				}
 			}
 		}
@@ -1015,7 +1020,9 @@ export default function DigitalTrainer() {
 
 			{/* when training finished, at the center of screen */}
 			{showCompleted && (
-				<div className="congratulations">Congratulations</div>
+				<div className="congratulations">
+					Congratulations, check <a href="/training-report">result</a>
+				</div>
 			)}
 		</div>
 	);
