@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import { loadFBX } from "../../components/ropes";
+import { loadFBX } from "../components/ropes";
 
 export default function Site() {
 	const canvasRef = useRef(null);

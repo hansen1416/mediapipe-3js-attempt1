@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import "../../styles/css/TrainingReport.css";
-import MusclePercentage from "../../components/MusclePercentage";
+import "../styles/css/TrainingReport.css";
+import MusclePercentage from "../components/MusclePercentage";
 
 export default function TrainingReport() {
 	const [report, setreport] = useState({});

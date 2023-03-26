@@ -2,18 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { clone } from "lodash";
-import "../../styles/css/MotionInterpreter.css";
+import "../styles/css/MotionInterpreter.css";
 import {
 	applyTransfer,
 	degreesToRadians,
 	getUpVectors,
-	loadFBX,
+	loadGLTF,
+	loadJSON,
 	muscleGroupsColors,
 	sleep,
 	traverseModel,
-} from "../../components/ropes";
+} from "../components/ropes";
 
-export default function MotionInterpreterFbx() {
+export default function MotionInterpreter() {
 	const canvasRef = useRef(null);
 	const containerRef = useRef(null);
 	const scene = useRef(null);
@@ -24,7 +25,7 @@ export default function MotionInterpreterFbx() {
 	const animationPointer = useRef(0);
 
 	const model = useRef(null);
-	const [modelPosition, setmodelPosition] = useState({ x: 0, y: 0, z: 0 });
+	const [modelPosition, setmodelPosition] = useState({ x: 0, y: -1, z: 0 });
 	const [modelRotation, setmodelRotation] = useState({ x: 0, y: 0, z: 0 });
 
 	const allParts = [
@@ -45,15 +46,33 @@ export default function MotionInterpreterFbx() {
 
 	const [muscleGroups, setmuscleGroups] = useState([]);
 
+	const animation_data = useRef(null);
+
 	useEffect(() => {
 		_scene(
 			document.documentElement.clientWidth,
 			document.documentElement.clientHeight
 		);
 
-		setTimeout(() => {
-			animate();
-		}, 0);
+		Promise.all([loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")]).then(
+			([glb]) => {
+				model.current = glb.scene.children[0];
+				model.current.position.set(
+					modelPosition.x,
+					modelPosition.y,
+					modelPosition.z
+				);
+
+				// store all limbs to `mannequinModel`
+				// traverseModel(model.current, figureParts.current);
+
+				// console.log(Object.keys(figureParts.current));
+
+				scene.current.add(model.current);
+
+				animate();
+			}
+		);
 
 		// interpretAnimation();
 
@@ -87,10 +106,7 @@ export default function MotionInterpreterFbx() {
 	}, [modelRotation]);
 
 	function _scene(viewWidth, viewHeight) {
-		const backgroundColor = 0x022244;
-
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(backgroundColor);
 
 		/**
 		 * The first attribute is the field of view.
@@ -115,18 +131,21 @@ export default function MotionInterpreterFbx() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 100);
+		camera.current.position.set(0, 0, 2);
 
 		{
-			const light = new THREE.PointLight(0xffffff, 1);
-			// light.position.set(10, 10, 10);
-			camera.current.add(light);
-
-			scene.current.add(camera.current);
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.4);
+			dlight.position.set(0, 10, 10);
+			scene.current.add(dlight);
+			// env light
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
+			alpha: true,
+			antialias: true,
 		});
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
@@ -142,32 +161,6 @@ export default function MotionInterpreterFbx() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	/**
-	 * read the animation data
-	 * add `states` for each body part
-	 * `states` is the orientation of a body part at a time
-	 */
-	function loadAnimation(file_url) {
-		loadFBX(file_url).then((result) => {
-			model.current = result;
-
-			model.current.position.set(
-				modelPosition.x,
-				modelPosition.y,
-				modelPosition.z
-			);
-			model.current.rotation.set(
-				degreesToRadians(modelRotation.x),
-				degreesToRadians(modelRotation.y),
-				degreesToRadians(modelRotation.z)
-			);
-
-			scene.current.add(model.current);
-
-			interpretAnimation();
-		});
-	}
-
 	function interpretAnimation() {
 		const parts = {};
 		const upVectors = {};
@@ -178,13 +171,11 @@ export default function MotionInterpreterFbx() {
 		getUpVectors(model.current, upVectors);
 
 		(async () => {
-			const animation = model.current.animations[0].toJSON();
-
 			let longestTrack = 0;
 			let tracks = {};
 
 			// calculate quaternions and vectors for animation tracks
-			for (let item of animation["tracks"]) {
+			for (let item of animation_data.current["tracks"]) {
 				if (item["type"] === "quaternion") {
 					const quaternions = [];
 					for (let i = 0; i < item["values"].length; i += 4) {
@@ -275,16 +266,16 @@ export default function MotionInterpreterFbx() {
 				// break;
 			}
 
-			animation["tracks"] = Object.values(tracks);
+			animation_data.current["tracks"] = Object.values(tracks);
 
-			animation["rotation"] = modelRotation;
-			animation["position"] = modelPosition;
-			animation["key_parts"] = keyParts;
-			animation["muscle_groups"] = muscleGroups;
-			animation["joints_position"] = joints_position;
+			animation_data.current["rotation"] = modelRotation;
+			animation_data.current["position"] = modelPosition;
+			animation_data.current["key_parts"] = keyParts;
+			animation_data.current["muscle_groups"] = muscleGroups;
+			animation_data.current["joints_position"] = joints_position;
 
 			// todo, use API to save this animation to json file
-			console.log(animation["name"], animation);
+			console.log(animation_data.current["name"], animation_data.current);
 		})();
 	}
 
@@ -344,9 +335,18 @@ export default function MotionInterpreterFbx() {
 						<input
 							type={"file"}
 							onChange={(e) => {
-								loadAnimation(
+								/**
+								 * read the animation data
+								 * add `states` for each body part
+								 * `states` is the orientation of a body part at a time
+								 */
+								loadJSON(
 									URL.createObjectURL(e.target.files[0])
-								);
+								).then((data) => {
+									animation_data.current = data;
+
+									interpretAnimation();
+								});
 							}}
 						/>
 					</label>

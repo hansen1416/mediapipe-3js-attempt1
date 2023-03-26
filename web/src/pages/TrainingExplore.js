@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import TrainingSlide from "../../components/TrainingSlide";
-import "../../styles/css/TrainingExplore.css";
+import TrainingSlide from "../components/TrainingSlide";
+import "../styles/css/TrainingExplore.css";
 
 export default function TrainingExplore() {
 	const canvasRef = useRef(null);

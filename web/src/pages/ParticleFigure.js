@@ -5,19 +5,19 @@ import Button from "react-bootstrap/Button";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 
-import SubThreeJsScene from "../../components/SubThreeJsScene";
-import Silhouette3D from "../../components/Silhouette3D";
-import T from "../../components/T";
+import SubThreeJsScene from "../components/SubThreeJsScene";
+import Silhouette3D from "../components/Silhouette3D";
+// import T from "../components/T";
 import {
 	BlazePoseKeypoints,
 	BlazePoseConfig,
 	drawPoseKeypoints,
 	loadJSON,
-	loadFBX,
+	// loadFBX,
 	startCamera,
-	getMeshSize,
+	// getMeshSize,
 	jsonToBufferGeometry,
-} from "../../components/ropes";
+} from "../components/ropes";
 
 /**
  * https://nimb.ws/YdEVQT

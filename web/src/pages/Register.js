@@ -3,13 +3,10 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 
-import "../../styles/css/Auth.css";
+import "../styles/css/Auth.css";
 
 export default function Register() {
-
-	useEffect(() => {
-
-	}, []);
+	useEffect(() => {}, []);
 
 	return (
 		<div className="auth">

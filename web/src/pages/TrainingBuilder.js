@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { cloneDeep } from "lodash";
 
-import "../../styles/css/TrainingBuilder.css";
-import TrainingSlideEditor from "../../components/TrainingSlideEditor";
-import MusclePercentage from "../../components/MusclePercentage";
+import "../styles/css/TrainingBuilder.css";
+import TrainingSlideEditor from "../components/TrainingSlideEditor";
+import MusclePercentage from "../components/MusclePercentage";
 
 export default function TrainingBuilder() {
 	const canvasRef = useRef(null);

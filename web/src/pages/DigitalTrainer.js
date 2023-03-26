@@ -12,12 +12,12 @@ import Button from "react-bootstrap/Button";
 import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 import "react-range-slider-input/dist/style.css";
 
-import "../../styles/css/DigitalTrainer.css";
-// import SubThreeJsScene from "../../components/SubThreeJsScene";
-import Silhouette3D from "../../components/Silhouette3D";
-import Counter from "../../components/Counter";
-import PoseSync from "../../components/PoseSync";
-// import PoseSyncVector from "../../components/PoseSyncVector";
+import "../styles/css/DigitalTrainer.css";
+// import SubThreeJsScene from "../components/SubThreeJsScene";
+import Silhouette3D from "../components/Silhouette3D";
+import Counter from "../components/Counter";
+import PoseSync from "../components/PoseSync";
+// import PoseSyncVector from "../components/PoseSyncVector";
 import {
 	BlazePoseConfig,
 	loadJSON,
@@ -29,10 +29,12 @@ import {
 	loadGLTF,
 	// loadFBX,
 	jsonToBufferGeometry,
-} from "../../components/ropes";
+} from "../components/ropes";
 // import { cloneDeep } from "lodash";
 
-const createWorker = createWorkerFactory(() => import("./worker"));
+const createWorker = createWorkerFactory(() =>
+	import("./DigitalTrainerWorker")
+);
 
 /**
  * BE SUCCESSFUL!!
@@ -139,6 +141,10 @@ export default function DigitalTrainer() {
 	const statistics = useRef({});
 
 	useEffect(() => {
+		/**
+		 * create main scene, pose scene, eg scene
+		 * load pose detector, models, training list
+		 */
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
