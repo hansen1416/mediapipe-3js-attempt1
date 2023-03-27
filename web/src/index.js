@@ -11,18 +11,18 @@ import {
 import ErrorPage from "./pages/ErrorPage";
 import Home from "./pages/Home";
 import TrainingExplore from "./pages/TrainingExplore";
-import MotionInterpreter from "./pages/MotionInterpreter";
-import MotionInterpreterFbx from "./pages/MotionInterpreterFbx";
 import TrainingBuilder from "./pages/TrainingBuilder";
 import TrainingReport from "./pages/TrainingReport";
 import DigitalTrainer from "./pages/DigitalTrainer";
 import Register from "./pages/Register";
-import ParticleFigure from "./pages/ParticleFigure";
-import Site from "./pages/Site";
 
+import MotionInterpreter from "./testing/MotionInterpreter";
+import MotionInterpreterFbx from "./testing/MotionInterpreterFbx";
+import ParticleFigure from "./testing/ParticleFigure";
+import Site from "./testing/Site";
 import GLBModel from "./testing/GLBModel";
 
-const router = createBrowserRouter([
+const production_routes = [
 	{
 		path: "/",
 		element: <App />,
@@ -70,11 +70,35 @@ const router = createBrowserRouter([
 			},
 		],
 	},
-	{
-		path: "/glb-model",
-		element: <GLBModel />,
-	}
-]);
+];
+
+const testing_routees =
+	process.env.NODE_ENV === "production"
+		? []
+		: [
+				{
+					path: "/cloud",
+					element: <ParticleFigure />,
+				},
+				{
+					path: "/site",
+					element: <Site />,
+				},
+				{
+					path: "/interpreter",
+					element: <MotionInterpreter />,
+				},
+				{
+					path: "/interpreterfbx",
+					element: <MotionInterpreterFbx />,
+				},
+				{
+					path: "/glb-model",
+					element: <GLBModel />,
+				},
+		  ];
+
+const router = createBrowserRouter(production_routes.concat(testing_routees));
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

@@ -29,10 +29,6 @@ function App() {
 				<Nav.Link href="/training-explore">Explore</Nav.Link>
 				<Nav.Link href="/training-builder">Builder</Nav.Link>
 				<Nav.Link href="/digital-trainer">D-trainer</Nav.Link>
-				{/* <Nav.Link href="/interpreter">Active</Nav.Link> */}
-				{/* <Nav.Link href="/cloud">figures</Nav.Link> */}
-				{/* <Nav.Link href="/site">site</Nav.Link> */}
-				{/* <Nav.Link href="/mapping">mapping</Nav.Link> */}
 				<div className="controls">
 					<div
 						onClick={() => {

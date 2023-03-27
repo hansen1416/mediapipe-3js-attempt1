@@ -63,7 +63,7 @@ export default function DigitalTrainer() {
 	const keypoints3D = useRef(null);
 	// compare by joints distances
 	const poseSync = useRef(null);
-	const [poseSyncThreshold, setposeSyncThreshold] = useState(10);
+	const [poseSyncThreshold, setposeSyncThreshold] = useState(80);
 	const poseSyncThresholdRef = useRef(0);
 	const [diffScore, setdiffScore] = useState(0);
 	const poseCompareResult = useRef(null);
