@@ -19,7 +19,6 @@ import {
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-
 export default function ParticleFigure() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);

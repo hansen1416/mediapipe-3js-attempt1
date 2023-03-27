@@ -21,6 +21,8 @@ import MotionInterpreterFbx from "./testing/MotionInterpreterFbx";
 import ParticleFigure from "./testing/ParticleFigure";
 import Site from "./testing/Site";
 import GLBModel from "./testing/GLBModel";
+import PoseDiffScore from "./testing/PoseDiffScore";
+import PoseVectorDiveation from "./testing/PoseVectorDiveation";
 
 const production_routes = [
 	{
@@ -35,14 +37,6 @@ const production_routes = [
 			{
 				path: "/",
 				element: <Home />,
-			},
-			{
-				path: "/interpreter",
-				element: <MotionInterpreter />,
-			},
-			{
-				path: "/interpreterfbx",
-				element: <MotionInterpreterFbx />,
 			},
 			{
 				path: "/training-explore",
@@ -60,14 +54,6 @@ const production_routes = [
 				path: "/digital-trainer",
 				element: <DigitalTrainer />,
 			},
-			{
-				path: "/cloud",
-				element: <ParticleFigure />,
-			},
-			{
-				path: "/site",
-				element: <Site />,
-			},
 		],
 	},
 ];
@@ -75,28 +61,41 @@ const production_routes = [
 const testing_routees =
 	process.env.NODE_ENV === "production"
 		? []
-		: [
-				{
-					path: "/cloud",
-					element: <ParticleFigure />,
-				},
-				{
-					path: "/site",
-					element: <Site />,
-				},
-				{
-					path: "/interpreter",
-					element: <MotionInterpreter />,
-				},
-				{
-					path: "/interpreterfbx",
-					element: <MotionInterpreterFbx />,
-				},
-				{
-					path: "/glb-model",
-					element: <GLBModel />,
-				},
-		  ];
+		: {
+				path: "/",
+				element: <App />,
+				errorElement: <ErrorPage />,
+				children: [
+					{
+						path: "/cloud",
+						element: <ParticleFigure />,
+					},
+					{
+						path: "/site",
+						element: <Site />,
+					},
+					{
+						path: "/interpreter",
+						element: <MotionInterpreter />,
+					},
+					{
+						path: "/interpreterfbx",
+						element: <MotionInterpreterFbx />,
+					},
+					{
+						path: "/glb-model",
+						element: <GLBModel />,
+					},
+					{
+						path: "/score",
+						element: <PoseDiffScore />,
+					},
+					{
+						path: "/diveation",
+						element: <PoseVectorDiveation />,
+					},
+				],
+		  };
 
 const router = createBrowserRouter(production_routes.concat(testing_routees));
 
