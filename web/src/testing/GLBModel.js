@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import {
 	loadGLTF,
+    traverseModel,
 } from "../components/ropes";
 
 export default function GLBModel() {
@@ -14,6 +15,7 @@ export default function GLBModel() {
 	const controls = useRef(null);
 
     const model = useRef(null);
+    const figureParts = useRef({});
 
     const animationPointer = useRef(0);
     const mixer = useRef(null);
@@ -33,19 +35,32 @@ export default function GLBModel() {
 			model.current.position.set(0, -1, 0);
 
 			// store all limbs to `model`
-			// traverseModel(model.current, figureParts.current);
+			traverseModel(model.current, figureParts.current);
 
-			// console.log(Object.keys(figureParts.current));
+			console.log(Object.keys(figureParts.current));
 
 			scene.current.add(model.current);
 
-			// example exercise sub scene
 
-			mixer.current = new THREE.AnimationMixer(model.current);
+			animate();
+
+            mixer.current = new THREE.AnimationMixer(model.current);
 
 			mixer.current.stopAllAction();
 
-			animate();
+            // prepare the example exercise action
+            const action = mixer.current.clipAction(glb.animations[0]);
+
+            action.reset();
+            action.setLoop(THREE.LoopRepeat);
+
+            // keep model at the position where it stops
+            action.clampWhenFinished = true;
+
+            action.enable = true;
+
+            action.play();
+            // prepare the example exercise action
 		});
 
         return () => {
