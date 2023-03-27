@@ -19,22 +19,6 @@ import {
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-/**
- * https://nimb.ws/YdEVQT
- * @returns
- */
-
-function traverseModel(model, bodyParts) {
-	if (model && model.isMesh) {
-		// console.log(model.name, model.children.length)
-		bodyParts[model.name] = model;
-	}
-	// console.log(model, model.name, model.matrix);
-
-	model.children.forEach((child) => {
-		traverseModel(child, bodyParts);
-	});
-}
 
 export default function ParticleFigure() {
 	const canvasRef = useRef(null);
@@ -70,7 +54,7 @@ export default function ParticleFigure() {
 	const [startBtnShow, setstartBtnShow] = useState(true);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
 
-	const meshes = useRef({});
+	// const meshes = useRef({});
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -153,6 +137,8 @@ export default function ParticleFigure() {
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
 		};
+
+		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {

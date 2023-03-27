@@ -20,6 +20,8 @@ import Register from "./pages/Register";
 import ParticleFigure from "./pages/ParticleFigure";
 import Site from "./pages/Site";
 
+import GLBModel from "./testing/GLBModel";
+
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -68,6 +70,10 @@ const router = createBrowserRouter([
 			},
 		],
 	},
+	{
+		path: "/glb-model",
+		element: <GLBModel />,
+	}
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

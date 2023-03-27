@@ -61,12 +61,16 @@ export default function TrainingBuilder() {
 				resizeObserver.disconnect(); // clean up observer
 			}
 		};
+
+		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {
 		if (!pageData || pageData.length === 0) {
 			loadPageData(1);
 		}
+
+		// eslint-disable-next-line
 	}, [allData]);
 
 	function loadPageData(p) {

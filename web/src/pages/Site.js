@@ -39,6 +39,8 @@ export default function Site() {
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
 		};
+
+		// eslint-disable-next-line
 	}, []);
 
 	function mainScene(viewWidth, viewHeight) {
