@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { div } from "@tensorflow/tfjs-core";
+import { cloneDeep } from "lodash";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { loadGLTF, traverseModel } from "../components/ropes";
@@ -17,6 +19,8 @@ export default function PoseDiffScore() {
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
 
+	const [rotations, setrotations] = useState(null)
+
 	useEffect(() => {
 		// scene take entire screen
 		creatMainScene(
@@ -33,7 +37,28 @@ export default function PoseDiffScore() {
 				// store all limbs to `model`
 				traverseModel(model.current, figureParts.current);
 
-				console.log(Object.keys(figureParts.current));
+				setrotations([
+					['Hips', 0, 0, 0], 
+					['Spine', 0, 0, 0],
+					['LeftArm', 0, 0, 0], 
+					['LeftForeArm', 0, 0, 0], 
+					['RightArm', 0, 0, 0], 
+					['RightForeArm', 0, 0, 0], 
+					['LeftUpLeg', 
+						0.11285640658436813,
+-0.000015584941724231824,
+-3.074417877523973
+					],
+					['LeftLeg', 0, 0, 0],
+					['RightUpLeg', 
+0.11285692054370032,
+0.00013149488863397916,
+3.0744073939835417
+					],
+					['RightLeg', 0, 0, 0],
+				])
+
+				// console.log(Object.keys(figureParts.current));
 
 				scene.current.add(model.current);
 
@@ -43,19 +68,21 @@ export default function PoseDiffScore() {
 
 				mixer.current.stopAllAction();
 
-				// prepare the example exercise action
-				const action = mixer.current.clipAction(glb.animations[0]);
+				if (glb.animations & glb.animations[0]) {
+					// prepare the example exercise action
+					const action = mixer.current.clipAction(glb.animations[0]);
 
-				action.reset();
-				action.setLoop(THREE.LoopRepeat);
+					action.reset();
+					action.setLoop(THREE.LoopRepeat);
 
-				// keep model at the position where it stops
-				action.clampWhenFinished = true;
+					// keep model at the position where it stops
+					action.clampWhenFinished = true;
 
-				action.enable = true;
+					action.enable = true;
 
-				action.play();
-				// prepare the example exercise action
+					action.play();
+					// prepare the example exercise action
+				}
 			}
 		);
 
@@ -65,6 +92,16 @@ export default function PoseDiffScore() {
 
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		if (!rotations) {
+			return
+		}
+
+		for (let v of rotations) {
+			figureParts.current[v[0]].rotation.set(v[1], v[2], v[3])
+		}
+	}, [rotations]);
 
 	function animate() {
 		/**
@@ -130,9 +167,69 @@ export default function PoseDiffScore() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
+	function onChangeRotation(idx, axis, v) {
+		const tmp = cloneDeep(rotations)
+
+		tmp[idx][axis] = v;
+
+		setrotations(tmp)
+	}
+
 	return (
 		<div className="glb-model">
 			<canvas ref={canvasRef} />
+
+			<div
+				style={{
+					position: "absolute",
+					right: 0,
+					bottom: 0,
+				}}
+			>
+				{
+					rotations.map((item, idx) => {
+						return (<div key={idx}>
+							<span>{item[0]}</span>
+							<label>
+								x:
+								<input
+									style={{
+										width: 50
+									}}
+									value={item[1]}
+									onChange={(e) => {
+										onChangeRotation(idx, 1, e.target.value)
+									}}
+								/>
+							</label>
+							<label>
+								y:
+								<input
+									style={{
+										width: 50
+									}}
+									value={item[2]}
+									onChange={(e) => {
+										onChangeRotation(idx, 2, e.target.value)
+									}}
+								/>
+							</label>
+							<label>
+								z:
+								<input
+									style={{
+										width: 50
+									}}
+									value={item[3]}
+									onChange={(e) => {
+										onChangeRotation(idx, 3, e.target.value)
+									}}
+								/>
+							</label>
+						</div>)
+					})
+				}
+			</div>
 		</div>
 	);
 }
