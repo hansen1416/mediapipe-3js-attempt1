@@ -16,16 +16,16 @@ export default class PoseSync {
 	bnoneSpline = null;
 
 	constructor(animation_data) {
-		this.animation_data = animation_data;
+		// this.animation_data = animation_data;
 
-		for (const v of animation_data.tracks) {
-			if (
-				v.type === "quaternion" &&
-				v.quaternions.length > this.#longestTrack
-			) {
-				this.#longestTrack = v.quaternions.length;
-			}
-		}
+		// for (const v of animation_data.tracks) {
+		// 	if (
+		// 		v.type === "quaternion" &&
+		// 		v.quaternions.length > this.#longestTrack
+		// 	) {
+		// 		this.#longestTrack = v.quaternions.length;
+		// 	}
+		// }
 	}
 
 	keypointsDistances(

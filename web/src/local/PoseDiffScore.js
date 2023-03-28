@@ -1,9 +1,13 @@
-import { div } from "@tensorflow/tfjs-core";
 import { cloneDeep } from "lodash";
+import * as poseDetection from "@tensorflow-models/pose-detection";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { loadGLTF, traverseModel } from "../components/ropes";
+import Button from "react-bootstrap/Button";
+import PoseSync from "../components/PoseSync";
+import { loadGLTF, traverseModel, startCamera,
+	BlazePoseConfig,
+ } from "../components/ropes";
 
 export default function PoseDiffScore() {
 	const canvasRef = useRef(null);
@@ -11,25 +15,58 @@ export default function PoseDiffScore() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const controls = useRef(null);
+	// an integer number, used for cancelAnimationFrame
+	const animationPointer = useRef(0);
+	const counter = useRef(0);
+
+	const videoRef = useRef(null);
+
+	// blazepose pose model
+	const poseDetector = useRef(null);
 
 	const model = useRef(null);
 	const figureParts = useRef({});
 
-	const animationPointer = useRef(0);
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
 
-	const [rotations, setrotations] = useState(null)
+	const [rotations, setrotations] = useState([])
+
+		// subscen size
+		const [subsceneWidth, setsubsceneWidth] = useState(0);
+		const [subsceneHeight, setsubsceneHeight] = useState(0);
+
+			// landmarks of human joints
+	const keypoints3D = useRef(null);
+	// compare by joints distances
+	const poseSync = useRef(null);
 
 	useEffect(() => {
-		// scene take entire screen
-		creatMainScene(
-			document.documentElement.clientWidth,
-			document.documentElement.clientHeight
-		);
 
-		Promise.all([loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")]).then(
-			([glb]) => {
+		const documentWidth = document.documentElement.clientWidth;
+		const documentHeight = document.documentElement.clientHeight;
+
+		setsubsceneWidth(documentWidth * 0.2);
+		// remember not to use a squared video
+		setsubsceneHeight((documentWidth * 0.2 * 480) / 640);
+		// scene take entire screen
+		creatMainScene(documentWidth, documentHeight);
+
+
+		poseSync.current = new PoseSync();
+
+		
+		Promise.all([
+			poseDetection.createDetector(
+				poseDetection.SupportedModels.BlazePose,
+				BlazePoseConfig
+			),
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")
+		]).then(
+			([detector, glb]) => {
+
+				poseDetector.current = detector;
+
 				// add 3d model to main scene
 				model.current = glb.scene.children[0];
 				model.current.position.set(0, -1, 0);
@@ -94,10 +131,6 @@ export default function PoseDiffScore() {
 	}, []);
 
 	useEffect(() => {
-		if (!rotations) {
-			return
-		}
-
 		for (let v of rotations) {
 			figureParts.current[v[0]].rotation.set(v[1], v[2], v[3])
 		}
@@ -106,6 +139,14 @@ export default function PoseDiffScore() {
 	function animate() {
 		/**
 		 */
+
+		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 3 === 0
+		) {
+			capturePose();
+		}
 
 		/** play animation in example sub scene */
 		const delta = clock.getDelta();
@@ -116,6 +157,45 @@ export default function PoseDiffScore() {
 		renderer.current.render(scene.current, camera.current);
 
 		animationPointer.current = requestAnimationFrame(animate);
+	}
+
+	function capturePose() {
+		/**
+		 * when video is ready, we can capture the pose
+		 *
+		 * calculate `keypoints3D.current`
+		 *
+		 * maybe we can do calculation in async then, since the other place will check `keypoints3D.current`
+		 */
+		(async () => {
+			const poses = await poseDetector.current.estimatePoses(
+				videoRef.current
+				// { flipHorizontal: false }
+				// timestamp
+			);
+
+			if (
+				!poses ||
+				!poses[0] ||
+				!poses[0]["keypoints3D"] ||
+				!poseSync.current
+			) {
+				keypoints3D.current = null;
+				return;
+			}
+
+			keypoints3D.current = cloneDeep(poses[0]["keypoints3D"]);
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of keypoints3D.current) {
+				v["x"] *= width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+		})();
 	}
 
 	function creatMainScene(viewWidth, viewHeight) {
@@ -177,6 +257,16 @@ export default function PoseDiffScore() {
 
 	return (
 		<div className="glb-model">
+			<video
+				ref={videoRef}
+				autoPlay={true}
+				width={subsceneWidth + "px"}
+				height={subsceneHeight + "px"}
+				style={{
+					display: "none",
+				}}
+			></video>
+
 			<canvas ref={canvasRef} />
 
 			<div
@@ -186,6 +276,15 @@ export default function PoseDiffScore() {
 					bottom: 0,
 				}}
 			>
+				<div>
+					<Button
+						onClick={() => {
+							startCamera(videoRef.current);
+						}}
+					>
+						Start camera
+					</Button>
+				</div>
 				{
 					rotations.map((item, idx) => {
 						return (<div key={idx}>
