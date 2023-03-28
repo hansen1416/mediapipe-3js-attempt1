@@ -69,7 +69,7 @@ export default function GeometryFigure() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			import('./wlm1500-1600.npy')
+			import("./wlm1500-1600.npy"),
 			// loadJSON(
 			// 	process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
 			// ),
@@ -84,15 +84,11 @@ export default function GeometryFigure() {
 			// traverseModel(model, meshes.current);
 		});
 
-		const tasks = [];
-
-		for (let name of Silhouette3D.limbs) {
-			tasks.push(
+		Promise.all(
+			Silhouette3D.limbs.map((name) =>
 				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-			);
-		}
-
-		Promise.all(tasks).then((results) => {
+			)
+		).then((results) => {
 			const geos = {};
 
 			for (let data of results) {

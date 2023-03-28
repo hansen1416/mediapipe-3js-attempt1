@@ -5,9 +5,12 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
 import PoseSync from "../components/PoseSync";
-import { loadGLTF, traverseModel, startCamera,
+import {
+	loadGLTF,
+	traverseModel,
+	startCamera,
 	BlazePoseConfig,
- } from "../components/ropes";
+} from "../components/ropes";
 
 export default function PoseDiffScore() {
 	const canvasRef = useRef(null);
@@ -30,11 +33,11 @@ export default function PoseDiffScore() {
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
 
-	const [rotations, setrotations] = useState([])
+	const [rotations, setrotations] = useState([]);
 
-		// subscen size
-		const [subsceneWidth, setsubsceneWidth] = useState(0);
-		const [subsceneHeight, setsubsceneHeight] = useState(0);
+	// subscen size
+	const [subsceneWidth, setsubsceneWidth] = useState(0);
+	const [subsceneHeight, setsubsceneHeight] = useState(0);
 
 	// compare by joints distances
 	const poseSync = useRef(null);
@@ -42,7 +45,6 @@ export default function PoseDiffScore() {
 	const boneCurveRef = useRef(null);
 
 	useEffect(() => {
-
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
@@ -52,10 +54,9 @@ export default function PoseDiffScore() {
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
 
-
 		poseSync.current = new PoseSync();
 
-				const geometry = new THREE.BufferGeometry().setFromPoints([
+		const geometry = new THREE.BufferGeometry().setFromPoints([
 			new THREE.Vector2(0, 0),
 			new THREE.Vector2(4, 0),
 		]);
@@ -80,73 +81,71 @@ export default function PoseDiffScore() {
 		scene.current.add(poseCurveRef.current);
 		scene.current.add(boneCurveRef.current);
 
-		
 		Promise.all([
 			poseDetection.createDetector(
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")
-		]).then(
-			([detector, glb]) => {
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+		]).then(([detector, glb]) => {
+			poseDetector.current = detector;
 
-				poseDetector.current = detector;
+			// add 3d model to main scene
+			model.current = glb.scene.children[0];
+			model.current.position.set(0, -1, 0);
 
-				// add 3d model to main scene
-				model.current = glb.scene.children[0];
-				model.current.position.set(0, -1, 0);
+			// store all limbs to `model`
+			traverseModel(model.current, figureParts.current);
 
-				// store all limbs to `model`
-				traverseModel(model.current, figureParts.current);
+			setrotations([
+				["Hips", 0, 0, 0],
+				["Spine", 0, 0, 0],
+				["LeftArm", 0, 0, 0],
+				["LeftForeArm", 0, 0, 0],
+				["RightArm", 0, 0, 0],
+				["RightForeArm", 0, 0, 0],
+				[
+					"LeftUpLeg",
+					0.11285640658436813,
+					-0.000015584941724231824,
+					-3.074417877523973,
+				],
+				["LeftLeg", 0, 0, 0],
+				[
+					"RightUpLeg",
+					0.11285692054370032,
+					0.00013149488863397916,
+					3.0744073939835417,
+				],
+				["RightLeg", 0, 0, 0],
+			]);
 
-				setrotations([
-					['Hips', 0, 0, 0], 
-					['Spine', 0, 0, 0],
-					['LeftArm', 0, 0, 0], 
-					['LeftForeArm', 0, 0, 0], 
-					['RightArm', 0, 0, 0], 
-					['RightForeArm', 0, 0, 0], 
-					['LeftUpLeg', 
-						0.11285640658436813,
--0.000015584941724231824,
--3.074417877523973
-					],
-					['LeftLeg', 0, 0, 0],
-					['RightUpLeg', 
-0.11285692054370032,
-0.00013149488863397916,
-3.0744073939835417
-					],
-					['RightLeg', 0, 0, 0],
-				])
+			// console.log(Object.keys(figureParts.current));
 
-				// console.log(Object.keys(figureParts.current));
+			scene.current.add(model.current);
 
-				scene.current.add(model.current);
+			animate();
 
-				animate();
+			mixer.current = new THREE.AnimationMixer(model.current);
 
-				mixer.current = new THREE.AnimationMixer(model.current);
+			mixer.current.stopAllAction();
 
-				mixer.current.stopAllAction();
+			if (glb.animations & glb.animations[0]) {
+				// prepare the example exercise action
+				const action = mixer.current.clipAction(glb.animations[0]);
 
-				if (glb.animations & glb.animations[0]) {
-					// prepare the example exercise action
-					const action = mixer.current.clipAction(glb.animations[0]);
+				action.reset();
+				action.setLoop(THREE.LoopRepeat);
 
-					action.reset();
-					action.setLoop(THREE.LoopRepeat);
+				// keep model at the position where it stops
+				action.clampWhenFinished = true;
 
-					// keep model at the position where it stops
-					action.clampWhenFinished = true;
+				action.enable = true;
 
-					action.enable = true;
-
-					action.play();
-					// prepare the example exercise action
-				}
+				action.play();
+				// prepare the example exercise action
 			}
-		);
+		});
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -157,7 +156,7 @@ export default function PoseDiffScore() {
 
 	useEffect(() => {
 		for (let v of rotations) {
-			figureParts.current[v[0]].rotation.set(v[1], v[2], v[3])
+			figureParts.current[v[0]].rotation.set(v[1], v[2], v[3]);
 		}
 	}, [rotations]);
 
@@ -285,11 +284,11 @@ export default function PoseDiffScore() {
 	}
 
 	function onChangeRotation(idx, axis, v) {
-		const tmp = cloneDeep(rotations)
+		const tmp = cloneDeep(rotations);
 
 		tmp[idx][axis] = v;
 
-		setrotations(tmp)
+		setrotations(tmp);
 	}
 
 	return (
@@ -322,19 +321,23 @@ export default function PoseDiffScore() {
 						Start camera
 					</Button>
 				</div>
-				{
-					rotations.map((item, idx) => {
-						return (<div key={idx}>
+				{rotations.map((item, idx) => {
+					return (
+						<div key={idx}>
 							<span>{item[0]}</span>
 							<label>
 								x:
 								<input
 									style={{
-										width: 50
+										width: 50,
 									}}
 									value={item[1]}
 									onChange={(e) => {
-										onChangeRotation(idx, 1, e.target.value)
+										onChangeRotation(
+											idx,
+											1,
+											e.target.value
+										);
 									}}
 								/>
 							</label>
@@ -342,11 +345,15 @@ export default function PoseDiffScore() {
 								y:
 								<input
 									style={{
-										width: 50
+										width: 50,
 									}}
 									value={item[2]}
 									onChange={(e) => {
-										onChangeRotation(idx, 2, e.target.value)
+										onChangeRotation(
+											idx,
+											2,
+											e.target.value
+										);
 									}}
 								/>
 							</label>
@@ -354,17 +361,21 @@ export default function PoseDiffScore() {
 								z:
 								<input
 									style={{
-										width: 50
+										width: 50,
 									}}
 									value={item[3]}
 									onChange={(e) => {
-										onChangeRotation(idx, 3, e.target.value)
+										onChangeRotation(
+											idx,
+											3,
+											e.target.value
+										);
 									}}
 								/>
 							</label>
-						</div>)
-					})
-				}
+						</div>
+					);
+				})}
 			</div>
 		</div>
 	);

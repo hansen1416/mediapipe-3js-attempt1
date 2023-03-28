@@ -7,7 +7,7 @@ import TrainingReport from "../pages/TrainingReport";
 import DigitalTrainer from "../pages/DigitalTrainer";
 import Register from "../pages/Register";
 
-export default [
+const routes = [
 	{
 		path: "/",
 		element: <App />,
@@ -40,3 +40,5 @@ export default [
 		],
 	},
 ];
+
+export default routes;
