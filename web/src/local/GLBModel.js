@@ -43,19 +43,21 @@ export default function GLBModel() {
 
 				mixer.current.stopAllAction();
 
-				// prepare the example exercise action
-				const action = mixer.current.clipAction(glb.animations[0]);
+				if (glb.animations && glb.animations[0]) {
+					// prepare the example exercise action
+					const action = mixer.current.clipAction(glb.animations[0]);
 
-				action.reset();
-				action.setLoop(THREE.LoopRepeat);
+					action.reset();
+					action.setLoop(THREE.LoopRepeat);
 
-				// keep model at the position where it stops
-				action.clampWhenFinished = true;
+					// keep model at the position where it stops
+					action.clampWhenFinished = true;
 
-				action.enable = true;
+					action.enable = true;
 
-				action.play();
-				// prepare the example exercise action
+					action.play();
+					// prepare the example exercise action
+				}
 			}
 		);
 

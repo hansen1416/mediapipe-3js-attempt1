@@ -19,7 +19,7 @@ import {
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-export default function ParticleFigure() {
+export default function GeometryFigure() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
@@ -69,14 +69,15 @@ export default function ParticleFigure() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			loadJSON(
-				process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
-			),
+			import('./wlm1500-1600.npy')
+			// loadJSON(
+			// 	process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+			// ),
 			// loadFBX(process.env.PUBLIC_URL + "/fbx/T_0.fbx"),
 		]).then(([detector, pose3d, model]) => {
 			poseDetector.current = detector;
 
-			storedPose.current = pose3d;
+			storedPose.current = pose3d.default;
 
 			// scene.current.add(model);
 

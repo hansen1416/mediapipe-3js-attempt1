@@ -7,7 +7,7 @@ import "../styles/css/Auth.css";
 
 export default function Register() {
 	useEffect(() => {
-		console.info('todo register page')
+		console.info('todo register page. I\'m also a marker')
 	}, []);
 
 	return (

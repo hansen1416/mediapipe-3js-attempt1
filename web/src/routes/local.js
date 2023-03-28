@@ -2,7 +2,7 @@ import App from "../App";
 import ErrorPage from "../pages/ErrorPage";
 import MotionInterpreter from "../local/MotionInterpreter";
 import MotionInterpreterFbx from "../local/MotionInterpreterFbx";
-import ParticleFigure from "../local/ParticleFigure";
+import GeometryFigure from "../local/GeometryFigure";
 import Site from "../local/Site";
 import GLBModel from "../local/GLBModel";
 import PoseDiffScore from "../local/PoseDiffScore";
@@ -15,8 +15,8 @@ export default [
         errorElement: <ErrorPage />,
         children: [
             {
-                path: "/cloud",
-                element: <ParticleFigure />,
+                path: "/figure",
+                element: <GeometryFigure />,
             },
             {
                 path: "/site",
