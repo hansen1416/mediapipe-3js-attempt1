@@ -36,10 +36,10 @@ export default function PoseDiffScore() {
 		const [subsceneWidth, setsubsceneWidth] = useState(0);
 		const [subsceneHeight, setsubsceneHeight] = useState(0);
 
-			// landmarks of human joints
-	const keypoints3D = useRef(null);
 	// compare by joints distances
 	const poseSync = useRef(null);
+	const poseCurveRef = useRef(null);
+	const boneCurveRef = useRef(null);
 
 	useEffect(() => {
 
@@ -54,6 +54,31 @@ export default function PoseDiffScore() {
 
 
 		poseSync.current = new PoseSync();
+
+				const geometry = new THREE.BufferGeometry().setFromPoints([
+			new THREE.Vector2(0, 0),
+			new THREE.Vector2(4, 0),
+		]);
+
+		poseCurveRef.current = new THREE.Line(
+			geometry.clone(),
+			new THREE.LineBasicMaterial({
+				color: 0xff0000,
+			})
+		);
+
+		boneCurveRef.current = new THREE.Line(
+			geometry.clone(),
+			new THREE.LineBasicMaterial({
+				color: 0x00ff00,
+			})
+		);
+
+		poseCurveRef.current.position.set(-2, 0.5, 0);
+		boneCurveRef.current.position.set(-2, 0.5, 0);
+
+		scene.current.add(poseCurveRef.current);
+		scene.current.add(boneCurveRef.current);
 
 		
 		Promise.all([
@@ -180,21 +205,33 @@ export default function PoseDiffScore() {
 				!poses[0]["keypoints3D"] ||
 				!poseSync.current
 			) {
-				keypoints3D.current = null;
 				return;
 			}
 
-			keypoints3D.current = cloneDeep(poses[0]["keypoints3D"]);
+			const keypoints3D = cloneDeep(poses[0]["keypoints3D"]);
 
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
 
 			// multiply x,y by differnt factor
-			for (let v of keypoints3D.current) {
+			for (let v of keypoints3D) {
 				v["x"] *= width_ratio;
 				v["y"] *= -height_ratio;
 				v["z"] *= -width_ratio;
 			}
+
+			const res = poseSync.current.compareCurrentPose(
+				keypoints3D,
+				figureParts.current,
+				1000
+			);
+
+			poseCurveRef.current.geometry.setFromPoints(
+				poseSync.current.poseSpline.getPoints(50)
+			);
+			boneCurveRef.current.geometry.setFromPoints(
+				poseSync.current.boneSpline.getPoints(50)
+			);
 		})();
 	}
 
