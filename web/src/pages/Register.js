@@ -6,7 +6,9 @@ import Stack from "react-bootstrap/Stack";
 import "../styles/css/Auth.css";
 
 export default function Register() {
-	useEffect(() => {}, []);
+	useEffect(() => {
+		console.info('todo register page')
+	}, []);
 
 	return (
 		<div className="auth">
