@@ -1,48 +1,113 @@
-import { useEffect, useRef } from "react";
+import { cloneDeep } from "lodash";
+import * as poseDetection from "@tensorflow-models/pose-detection";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { loadGLTF, traverseModel } from "../components/ropes";
+import Button from "react-bootstrap/Button";
+import PoseSync from "../components/PoseSync";
+import {
+	drawPoseKeypoints,
+	loadGLTF,
+	traverseModel,
+	startCamera,
+	BlazePoseConfig,
+} from "../components/ropes";
+import SubThreeJsScene from "../components/SubThreeJsScene";
 
-export default function PoseVectorDeviation() {
+export default function PoseDiffScore() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const controls = useRef(null);
+	// an integer number, used for cancelAnimationFrame
+	const animationPointer = useRef(0);
+	const counter = useRef(0);
+
+	const videoRef = useRef(null);
+
+	// blazepose pose model
+	const poseDetector = useRef(null);
 
 	const model = useRef(null);
 	const figureParts = useRef({});
 
-	const animationPointer = useRef(0);
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
 
+	const [rotations, setrotations] = useState([]);
+
+	// subscen size
+	const [subsceneWidth, setsubsceneWidth] = useState(0);
+	const [subsceneHeight, setsubsceneHeight] = useState(0);
+
+	// compare by joints distances
+	const poseSync = useRef(null);
+
+	const [capturedPose, setcapturedPose] = useState();
+
 	useEffect(() => {
+		const documentWidth = document.documentElement.clientWidth;
+		const documentHeight = document.documentElement.clientHeight;
+
+		setsubsceneWidth(documentWidth * 0.2);
+		// remember not to use a squared video
+		setsubsceneHeight((documentWidth * 0.2 * 480) / 640);
 		// scene take entire screen
-		creatMainScene(
-			document.documentElement.clientWidth,
-			document.documentElement.clientHeight
-		);
+		creatMainScene(documentWidth, documentHeight);
 
-		Promise.all([loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")]).then(
-			([glb]) => {
-				// add 3d model to main scene
-				model.current = glb.scene.children[0];
-				model.current.position.set(0, -1, 0);
+		poseSync.current = new PoseSync();
 
-				// store all limbs to `model`
-				traverseModel(model.current, figureParts.current);
+		Promise.all([
+			poseDetection.createDetector(
+				poseDetection.SupportedModels.BlazePose,
+				BlazePoseConfig
+			),
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+		]).then(([detector, glb]) => {
+			poseDetector.current = detector;
 
-				console.log(Object.keys(figureParts.current));
+			// add 3d model to main scene
+			model.current = glb.scene.children[0];
+			model.current.position.set(0, -1.5, 0);
 
-				scene.current.add(model.current);
+			// store all limbs to `model`
+			traverseModel(model.current, figureParts.current);
 
-				animate();
+			setrotations([
+				["Hips", 0, 0, 0],
+				["Spine", 0, 0, 0],
+				["LeftArm", 0, 0, 0],
+				["LeftForeArm", 0, 0, 0],
+				["RightArm", 0, 0, 0],
+				["RightForeArm", 0, 0, 0],
+				[
+					"LeftUpLeg",
+					0.11285640658436813,
+					-0.000015584941724231824,
+					-3.074417877523973,
+				],
+				["LeftLeg", 0, 0, 0],
+				[
+					"RightUpLeg",
+					0.11285692054370032,
+					0.00013149488863397916,
+					3.0744073939835417,
+				],
+				["RightLeg", 0, 0, 0],
+			]);
 
-				mixer.current = new THREE.AnimationMixer(model.current);
+			// console.log(Object.keys(figureParts.current));
 
-				mixer.current.stopAllAction();
+			scene.current.add(model.current);
 
+			animate();
+
+			mixer.current = new THREE.AnimationMixer(model.current);
+
+			mixer.current.stopAllAction();
+
+			if (glb.animations & glb.animations[0]) {
 				// prepare the example exercise action
 				const action = mixer.current.clipAction(glb.animations[0]);
 
@@ -57,7 +122,7 @@ export default function PoseVectorDeviation() {
 				action.play();
 				// prepare the example exercise action
 			}
-		);
+		});
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -66,9 +131,23 @@ export default function PoseVectorDeviation() {
 		// eslint-disable-next-line
 	}, []);
 
+	useEffect(() => {
+		for (let v of rotations) {
+			figureParts.current[v[0]].rotation.set(v[1], v[2], v[3]);
+		}
+	}, [rotations]);
+
 	function animate() {
 		/**
 		 */
+
+		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 3 === 0
+		) {
+			capturePose();
+		}
 
 		/** play animation in example sub scene */
 		const delta = clock.getDelta();
@@ -79,6 +158,56 @@ export default function PoseVectorDeviation() {
 		renderer.current.render(scene.current, camera.current);
 
 		animationPointer.current = requestAnimationFrame(animate);
+	}
+
+	function capturePose() {
+		/**
+		 * when video is ready, we can capture the pose
+		 *
+		 * calculate `keypoints3D.current`
+		 *
+		 * maybe we can do calculation in async then, since the other place will check `keypoints3D.current`
+		 */
+		(async () => {
+			const poses = await poseDetector.current.estimatePoses(
+				videoRef.current
+				// { flipHorizontal: false }
+				// timestamp
+			);
+
+			if (
+				!poses ||
+				!poses[0] ||
+				!poses[0]["keypoints3D"] ||
+				!poseSync.current
+			) {
+				return;
+			}
+
+			const keypoints3D = cloneDeep(poses[0]["keypoints3D"]);
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of keypoints3D) {
+				v["x"] *= width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+
+			const g = drawPoseKeypoints(keypoints3D);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+
+			const res = poseSync.current.compareCurrentPose(
+				keypoints3D,
+				figureParts.current,
+				1000
+			);
+		})();
 	}
 
 	function creatMainScene(viewWidth, viewHeight) {
@@ -97,7 +226,7 @@ export default function PoseVectorDeviation() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 2);
+		camera.current.position.set(0, 0, 4);
 
 		{
 			// mimic the sun light
@@ -130,9 +259,117 @@ export default function PoseVectorDeviation() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
+	function onChangeRotation(idx, axis, v) {
+		const tmp = cloneDeep(rotations);
+
+		tmp[idx][axis] = v;
+
+		setrotations(tmp);
+	}
+
 	return (
 		<div className="glb-model">
+			<video
+				ref={videoRef}
+				autoPlay={true}
+				width={subsceneWidth + "px"}
+				height={subsceneHeight + "px"}
+				style={{
+					display: "none",
+				}}
+			></video>
+
 			<canvas ref={canvasRef} />
+
+			<div
+				style={{
+					width: subsceneWidth + "px",
+					height: subsceneHeight + "px",
+					position: "absolute",
+					bottom: 0,
+					left: 0,
+				}}
+			>
+				<SubThreeJsScene
+					width={subsceneWidth}
+					height={subsceneHeight}
+					objects={capturedPose}
+					cameraZ={200}
+				/>
+			</div>
+
+			<div
+				style={{
+					position: "absolute",
+					right: 0,
+					bottom: 0,
+				}}
+			>
+				<div>
+					<Button
+						onClick={() => {
+							startCamera(videoRef.current);
+						}}
+					>
+						Start camera
+					</Button>
+				</div>
+				{rotations.map((item, idx) => {
+					return (
+						<div key={idx}>
+							<span>{item[0]}</span>
+							<label>
+								x:
+								<input
+									style={{
+										width: 50,
+									}}
+									value={item[1]}
+									onChange={(e) => {
+										onChangeRotation(
+											idx,
+											1,
+											e.target.value
+										);
+									}}
+								/>
+							</label>
+							<label>
+								y:
+								<input
+									style={{
+										width: 50,
+									}}
+									value={item[2]}
+									onChange={(e) => {
+										onChangeRotation(
+											idx,
+											2,
+											e.target.value
+										);
+									}}
+								/>
+							</label>
+							<label>
+								z:
+								<input
+									style={{
+										width: 50,
+									}}
+									value={item[3]}
+									onChange={(e) => {
+										onChangeRotation(
+											idx,
+											3,
+											e.target.value
+										);
+									}}
+								/>
+							</label>
+						</div>
+					);
+				})}
+			</div>
 		</div>
 	);
 }
