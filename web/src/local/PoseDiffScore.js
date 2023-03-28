@@ -6,11 +6,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
 import PoseSync from "../components/PoseSync";
 import {
+	drawPoseKeypoints,
 	loadGLTF,
 	traverseModel,
 	startCamera,
 	BlazePoseConfig,
 } from "../components/ropes";
+import SubThreeJsScene from "../components/SubThreeJsScene";
 
 export default function PoseDiffScore() {
 	const canvasRef = useRef(null);
@@ -43,6 +45,8 @@ export default function PoseDiffScore() {
 	const poseSync = useRef(null);
 	const poseCurveRef = useRef(null);
 	const boneCurveRef = useRef(null);
+
+	const [capturedPose, setcapturedPose] = useState();
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -92,7 +96,7 @@ export default function PoseDiffScore() {
 
 			// add 3d model to main scene
 			model.current = glb.scene.children[0];
-			model.current.position.set(0, -1, 0);
+			model.current.position.set(0, -1.5, 0);
 
 			// store all limbs to `model`
 			traverseModel(model.current, figureParts.current);
@@ -219,6 +223,12 @@ export default function PoseDiffScore() {
 				v["z"] *= -width_ratio;
 			}
 
+			const g = drawPoseKeypoints(keypoints3D);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+
 			const res = poseSync.current.compareCurrentPose(
 				keypoints3D,
 				figureParts.current,
@@ -250,7 +260,7 @@ export default function PoseDiffScore() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 2);
+		camera.current.position.set(0, 0, 4);
 
 		{
 			// mimic the sun light
@@ -304,6 +314,23 @@ export default function PoseDiffScore() {
 			></video>
 
 			<canvas ref={canvasRef} />
+
+			<div
+				style={{
+					width: subsceneWidth + "px",
+					height: subsceneHeight + "px",
+					position: "absolute",
+					bottom: 0,
+					left: 0,
+				}}
+			>
+				<SubThreeJsScene
+					width={subsceneWidth}
+					height={subsceneHeight}
+					objects={capturedPose}
+					cameraZ={200}
+				/>
+			</div>
 
 			<div
 				style={{
