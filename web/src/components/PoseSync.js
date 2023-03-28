@@ -9,7 +9,7 @@ import * as THREE from "three";
 export default class PoseSync {
 	#bufferStepThreshold = 10;
 	#bufferStep = 10;
-	#longestTrack = 0;
+	// #longestTrack = 0;
 
 	diffScore = 0;
 	poseSpline = null;
@@ -115,7 +115,7 @@ export default class PoseSync {
 
 					bones[upper[i]].getWorldPosition(v1);
 					bones[upper[j]].getWorldPosition(v2);
-
+					console.log(upper[j], v2);
 					distances.push(distanceBetweenPoints(v1, v2));
 				}
 			}
@@ -182,9 +182,6 @@ export default class PoseSync {
 		let x = 0;
 
 		for (let i in d1) {
-			// d1v2.push(new Vector2(x, d1[i] * 50));
-			// d2v2.push(new Vector2(x, d2[i] * 50));
-
 			d1v2.push(new Vector2(x, d1[i]));
 			d2v2.push(new Vector2(x, d2[i]));
 

@@ -108,19 +108,9 @@ export default function PoseDiffScore() {
 				["LeftForeArm", 0, 0, 0],
 				["RightArm", 0, 0, 0],
 				["RightForeArm", 0, 0, 0],
-				[
-					"LeftUpLeg",
-					0.11285640658436813,
-					-0.000015584941724231824,
-					-3.074417877523973,
-				],
+				["LeftUpLeg", 0.11, 0, -3.07],
 				["LeftLeg", 0, 0, 0],
-				[
-					"RightUpLeg",
-					0.11285692054370032,
-					0.00013149488863397916,
-					3.0744073939835417,
-				],
+				["RightUpLeg", 0.11, 0, 3.07],
 				["RightLeg", 0, 0, 0],
 			]);
 
