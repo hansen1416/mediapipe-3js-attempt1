@@ -782,7 +782,9 @@ export default function DigitalTrainer() {
 
 				applyTransfer(
 					figureParts.current,
-					poseSync.current.animation_data.tracks,
+					animationJSONs.current[
+						exerciseQueue.current[exerciseQueueIndx.current].key
+					].tracks,
 					currentAnimationIndx.current
 				);
 
