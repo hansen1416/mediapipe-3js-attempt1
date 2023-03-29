@@ -6,6 +6,25 @@ import {
 } from "./ropes";
 import * as THREE from "three";
 
+const pcorr = (x, y) => {
+	let sumX = 0,
+	  sumY = 0,
+	  sumXY = 0,
+	  sumX2 = 0,
+	  sumY2 = 0;
+	const minLength = x.length = y.length = Math.min(x.length, y.length),
+	  reduce = (xi, idx) => {
+		const yi = y[idx];
+		sumX += xi;
+		sumY += yi;
+		sumXY += xi * yi;
+		sumX2 += xi * xi;
+		sumY2 += yi * yi;
+	  }
+	x.forEach(reduce);
+	return (minLength * sumXY - sumX * sumY) / Math.sqrt((minLength * sumX2 - sumX * sumX) * (minLength * sumY2 - sumY * sumY));
+};
+
 export default class PoseSync {
 	#bufferStepThreshold = 10;
 	#bufferStep = 10;
@@ -158,13 +177,23 @@ export default class PoseSync {
 			compare_upper,
 			compare_lower
 		);
+		// console.log(1, d1);
+		// console.log(1, d2);
 
-		const ratio = d1[0] / d2[0];
+		console.log(pcorr(d1, d2))
 
-		for (const i in d2) {
-			d2[i] *= ratio;
-		}
+		// const ratio = d1[0] / d2[0];
 
+		// for (const i in d2) {
+		// 	d2[i] *= ratio;
+		// }
+/**
+ * here we need to scale the two curves
+ * let them be at the same range
+ * then compare them
+ * because the bone structure are different
+ * simply scale them by shoulder distance will result in large loss
+ */
 		const unit1 = d1[0];
 
 		for (const i in d1) {
@@ -176,7 +205,8 @@ export default class PoseSync {
 		for (const i in d2) {
 			d2[i] /= unit2;
 		}
-
+		// console.log(2, d1);
+		// console.log(2, d2);
 		const d1v2 = [];
 		const d2v2 = [];
 		let x = 0;

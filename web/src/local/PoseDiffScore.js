@@ -43,10 +43,13 @@ export default function PoseDiffScore() {
 
 	// compare by joints distances
 	const poseSync = useRef(null);
+	const [diffScore, setdiffScore] = useState(0);
 	const poseCurveRef = useRef(null);
 	const boneCurveRef = useRef(null);
 
 	const [capturedPose, setcapturedPose] = useState();
+
+	const pause = useRef(false);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -161,10 +164,13 @@ export default function PoseDiffScore() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0
+			counter.current % 3 === 0 &&
+			!pause.current
 		) {
 			capturePose();
 		}
+
+		counter.current += 1;
 
 		/** play animation in example sub scene */
 		const delta = clock.getDelta();
@@ -219,11 +225,13 @@ export default function PoseDiffScore() {
 
 			setcapturedPose(g);
 
-			const res = poseSync.current.compareCurrentPose(
+			poseSync.current.compareCurrentPose(
 				keypoints3D,
 				figureParts.current,
 				1000
 			);
+
+			setdiffScore(parseInt(poseSync.current.diffScore));
 
 			poseCurveRef.current.geometry.setFromPoints(
 				poseSync.current.poseSpline.getPoints(50)
@@ -330,12 +338,24 @@ export default function PoseDiffScore() {
 				}}
 			>
 				<div>
-					<Button
+					<span style={{ fontSize: "30px", color: "#fff" }}>
+						{diffScore}
+					</span>
+				</div>
+				<div>
+				<Button
 						onClick={() => {
 							startCamera(videoRef.current);
 						}}
 					>
 						Start camera
+					</Button>
+					<Button
+						onClick={() => {
+							pause.current = !pause.current;
+						}}
+					>
+						Pause
 					</Button>
 				</div>
 				{rotations.map((item, idx) => {
