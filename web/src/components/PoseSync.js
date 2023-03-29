@@ -4,6 +4,7 @@ import {
 	BlazePoseKeypointsValues,
 	isLowerBodyVisible,
 	pearson_corr,
+	array_average,
 } from "./ropes";
 import * as THREE from "three";
 
@@ -159,33 +160,24 @@ export default class PoseSync {
 			compare_upper,
 			compare_lower
 		);
-		// console.log(1, d1);
-		// console.log(1, d2);
 
-		console.log(pearson_corr(d1, d2))
+		/**
+		 * because the bone structure are different
+		 * simply scale them by shoulder distance will result in large loss
+		 */
 
-		// const ratio = d1[0] / d2[0];
+		this.diffScore = pearson_corr(d1, d2);
 
-		// for (const i in d2) {
-		// 	d2[i] *= ratio;
-		// }
-/**
- * here we need to scale the two curves
- * let them be at the same range
- * then compare them
- * because the bone structure are different
- * simply scale them by shoulder distance will result in large loss
- */
-		const unit1 = d1[0];
+		const avg1 = array_average(d1);
 
 		for (const i in d1) {
-			d1[i] /= unit1;
+			d1[i] /= avg1;
 		}
 
-		const unit2 = d2[0];
+		const avg2 = array_average(d2);
 
 		for (const i in d2) {
-			d2[i] /= unit2;
+			d2[i] /= avg2;
 		}
 		// console.log(2, d1);
 		// console.log(2, d2);
@@ -202,16 +194,6 @@ export default class PoseSync {
 
 		this.poseSpline = new THREE.SplineCurve(d1v2);
 		this.boneSpline = new THREE.SplineCurve(d2v2);
-
-		let diff = 0;
-
-		// console.log(d1, d2);
-
-		for (let i in d1) {
-			diff += Math.abs(d1[i] - d2[i]) ** 2;
-		}
-
-		this.diffScore = 100 * diff;
 
 		if (this.diffScore <= scoreThreshold) {
 			this.#bufferStep = 0;

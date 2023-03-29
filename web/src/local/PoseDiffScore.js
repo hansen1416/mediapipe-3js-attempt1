@@ -11,6 +11,7 @@ import {
 	traverseModel,
 	startCamera,
 	BlazePoseConfig,
+	roundToTwo,
 } from "../components/ropes";
 import SubThreeJsScene from "../components/SubThreeJsScene";
 
@@ -231,7 +232,7 @@ export default function PoseDiffScore() {
 				1000
 			);
 
-			setdiffScore(parseInt(poseSync.current.diffScore));
+			setdiffScore(roundToTwo(poseSync.current.diffScore * 100));
 
 			poseCurveRef.current.geometry.setFromPoints(
 				poseSync.current.poseSpline.getPoints(50)
@@ -343,7 +344,7 @@ export default function PoseDiffScore() {
 					</span>
 				</div>
 				<div>
-				<Button
+					<Button
 						onClick={() => {
 							startCamera(videoRef.current);
 						}}

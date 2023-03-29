@@ -70,30 +70,44 @@ export function radiansToDegrees(radian) {
 	return (radian / Math.PI) * 180;
 }
 
+export function roundToTwo(num) {
+	return +(Math.round(num + "e+2") + "e-2");
+}
+
 export function srotIndex(arr) {
 	return Array.from(Array(arr.length).keys()).sort((a, b) =>
 		arr[a] < arr[b] ? -1 : (arr[b] < arr[a]) | 0
 	);
 }
 
+export function array_average(array) {
+	return array.reduce((a, b) => a + b) / array.length;
+}
+
 export function pearson_corr(x, y) {
 	let sumX = 0,
-	  sumY = 0,
-	  sumXY = 0,
-	  sumX2 = 0,
-	  sumY2 = 0;
-	const minLength = x.length = y.length = Math.min(x.length, y.length),
-	  reduce = (xi, idx) => {
-		const yi = y[idx];
-		sumX += xi;
-		sumY += yi;
-		sumXY += xi * yi;
-		sumX2 += xi * xi;
-		sumY2 += yi * yi;
-	  }
+		sumY = 0,
+		sumXY = 0,
+		sumX2 = 0,
+		sumY2 = 0;
+	const minLength = (x.length = y.length = Math.min(x.length, y.length)),
+		reduce = (xi, idx) => {
+			const yi = y[idx];
+			sumX += xi;
+			sumY += yi;
+			sumXY += xi * yi;
+			sumX2 += xi * xi;
+			sumY2 += yi * yi;
+		};
 	x.forEach(reduce);
-	return (minLength * sumXY - sumX * sumY) / Math.sqrt((minLength * sumX2 - sumX * sumX) * (minLength * sumY2 - sumY * sumY));
-};
+	return (
+		(minLength * sumXY - sumX * sumY) /
+		Math.sqrt(
+			(minLength * sumX2 - sumX * sumX) *
+				(minLength * sumY2 - sumY * sumY)
+		)
+	);
+}
 
 export function posePointsToVector(a, b, norm = true) {
 	let v;
@@ -1097,15 +1111,14 @@ export function getMeshSize(mesh, scene) {
 	var box3 = new THREE.Box3();
 	var size = new THREE.Vector3(); // create once and reuse
 
+	var boxHelper = new THREE.BoxHelper(mesh);
+	scene.add(boxHelper);
 
-	var boxHelper = new THREE.BoxHelper( mesh );
-	scene.add( boxHelper );
+	box3.setFromObject(boxHelper); // or from mesh, same answer
+	console.log("box3", box3);
 
-	box3.setFromObject( boxHelper ); // or from mesh, same answer
-	console.log( 'box3', box3 );
-
-	box3.getSize( size ); // pass in size so a new Vector3 is not allocated
-	console.log( 'size', size )
+	box3.getSize(size); // pass in size so a new Vector3 is not allocated
+	console.log("size", size);
 }
 
 export function jsonToBufferGeometry(data) {
