@@ -1099,6 +1099,9 @@ export default class Silhouette3D {
 
 	applyPose(pose3D) {
 		/**
+		 * todo, change limbs name to fit model bones
+		 */
+		/**
 		 * apply pose to mesh, adjust it's position and scale
 		 */
 		if (!pose3D || !pose3D.length) {

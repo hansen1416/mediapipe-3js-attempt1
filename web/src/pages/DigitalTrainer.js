@@ -17,7 +17,7 @@ import "../styles/css/DigitalTrainer.css";
 import Silhouette3D from "../components/Silhouette3D";
 import Counter from "../components/Counter";
 import PoseSync from "../components/PoseSync";
-// import PoseSyncVector from "../components/PoseSyncVector";
+
 import {
 	BlazePoseConfig,
 	loadJSON,
@@ -326,7 +326,7 @@ export default function DigitalTrainer() {
 		 * user tunning the threshold
 		 * it affect how strict user should follow the animation
 		 * pearson correlation * 100
-		 * default 80, 
+		 * default 80,
 		 */
 		poseSyncThresholdRef.current = poseSyncThreshold;
 	}, [poseSyncThreshold]);
@@ -533,7 +533,7 @@ export default function DigitalTrainer() {
 
 			// multiply x,y by differnt factor
 			for (let v of keypoints3D.current) {
-				v["x"] *= width_ratio;
+				v["x"] *= -width_ratio;
 				v["y"] *= -height_ratio;
 				v["z"] *= -width_ratio;
 			}
