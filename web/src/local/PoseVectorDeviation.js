@@ -46,8 +46,8 @@ export default function PoseDiffScore() {
 	const [capturedPose, setcapturedPose] = useState();
 
 	// compare by joints distances
-
-	
+	const [compareKeys, setcompareKeys] = useState([]);
+	const [compareValues, setcompareValues] = useState([]);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -198,7 +198,8 @@ export default function PoseDiffScore() {
 			// compare by vectors
 			const res = composeLimbVectors(keypoints3D, figureParts.current)
 
-			console.log(res)
+			setcompareKeys(Object.keys(res))
+			setcompareValues(Object.values(res))
 		})();
 	}
 
@@ -298,7 +299,14 @@ export default function PoseDiffScore() {
 				}}
 			>
 				<div>
-
+					{
+						compareKeys && compareKeys.map((item, idx) => {
+							return <div key={idx}>
+								<span>{item}: </span>
+								<span>{roundToTwo(compareValues[idx])}</span>
+							</div>
+						})
+					}
 				</div>
 				<div>
 					<Button
