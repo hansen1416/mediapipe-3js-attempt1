@@ -24,18 +24,18 @@ const poseJoints = {
  * pose node to model bone name mapping
  */
 const bonesJoints = {
-	"LEFT_SHOULDER": "LeftArm",
-	"LEFT_ELBOW": "LeftForeArm",
-	"LEFT_WRIST": "LeftHand",
-	"RIGHT_SHOULDER": "RightArm",
-	"RIGHT_ELBOW": "RightForeArm",
-	"RIGHT_WRIST": "RightHand",
-	"LEFT_HIP": "LeftUpLeg",
-	"LEFT_KNEE": "LeftLeg",
-	"LEFT_ANKLE": "LeftFoot",
-	"RIGHT_HIP": "RightUpLeg",
-	"RIGHT_KNEE": "RightLeg",
-	"RIGHT_ANKLE": "RightFoot",
+	"LEFT_SHOULDER": "RightArm",
+	"LEFT_ELBOW": "RightForeArm",
+	"LEFT_WRIST": "RightHand",
+	"RIGHT_SHOULDER": "LeftArm",
+	"RIGHT_ELBOW": "LeftForeArm",
+	"RIGHT_WRIST": "LeftHand",
+	"LEFT_HIP": "RightUpLeg",
+	"LEFT_KNEE": "RightLeg",
+	"LEFT_ANKLE": "RightFoot",
+	"RIGHT_HIP": "LeftUpLeg",
+	"RIGHT_KNEE": "LeftLeg",
+	"RIGHT_ANKLE": "LeftFoot",
 }
 
 /**
