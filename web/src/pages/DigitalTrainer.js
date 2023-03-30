@@ -325,8 +325,10 @@ export default function DigitalTrainer() {
 		/**
 		 * user tunning the threshold
 		 * it affect how strict user should follow the animation
+		 * pearson correlation * 100
+		 * default 80, 
 		 */
-		poseSyncThresholdRef.current = 100 + poseSyncThreshold * 10;
+		poseSyncThresholdRef.current = poseSyncThreshold;
 	}, [poseSyncThreshold]);
 
 	function creatMainScene(viewWidth, viewHeight) {
@@ -557,9 +559,9 @@ export default function DigitalTrainer() {
 				poseSyncThresholdRef.current
 			);
 
+			// `diffScore` is a pearson correlation
+			// 1 means pose perfectly matched
 			setdiffScore(parseInt(poseSync.current.diffScore));
-
-			// compare the distance curve between animation and pose
 		}
 	}
 
@@ -576,7 +578,6 @@ export default function DigitalTrainer() {
 		// pass keypoints3d data to web worker,
 		// so it can analysis the user's kinematics data
 		// decide its amplitude, speed
-
 		if (workerAvailable.current) {
 			workerAvailable.current = false;
 
@@ -997,7 +998,7 @@ export default function DigitalTrainer() {
 					>
 						<RangeSlider
 							className="single-thumb"
-							defaultValue={[0, 10]}
+							defaultValue={[0, poseSyncThreshold]}
 							thumbsDisabled={[true, false]}
 							rangeSlideDisabled={true}
 							onInput={(values) => {
