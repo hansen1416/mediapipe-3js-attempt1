@@ -4,13 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
-import PoseSync from "../components/PoseSync";
+import PoseSyncVector from "../components/PoseSyncVector";
 import {
 	drawPoseKeypoints,
 	loadGLTF,
 	traverseModel,
 	startCamera,
 	BlazePoseConfig,
+	roundToTwo,
 } from "../components/ropes";
 import SubThreeJsScene from "../components/SubThreeJsScene";
 
@@ -25,6 +26,7 @@ export default function PoseDiffScore() {
 	const counter = useRef(0);
 
 	const videoRef = useRef(null);
+	const pause = useRef(false);
 
 	// blazepose pose model
 	const poseDetector = useRef(null);
@@ -41,10 +43,12 @@ export default function PoseDiffScore() {
 	const [subsceneWidth, setsubsceneWidth] = useState(0);
 	const [subsceneHeight, setsubsceneHeight] = useState(0);
 
-	// compare by joints distances
-	const poseSync = useRef(null);
-
 	const [capturedPose, setcapturedPose] = useState();
+
+	// compare by joints distances
+	const poseSyncVector = useRef(null);
+
+	
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -56,7 +60,7 @@ export default function PoseDiffScore() {
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
 
-		poseSync.current = new PoseSync();
+		poseSyncVector.current = new PoseSyncVector();
 
 		Promise.all([
 			poseDetection.createDetector(
@@ -81,19 +85,9 @@ export default function PoseDiffScore() {
 				["LeftForeArm", 0, 0, 0],
 				["RightArm", 0, 0, 0],
 				["RightForeArm", 0, 0, 0],
-				[
-					"LeftUpLeg",
-					0.11285640658436813,
-					-0.000015584941724231824,
-					-3.074417877523973,
-				],
+				["LeftUpLeg", 0.11, 0, -3.07],
 				["LeftLeg", 0, 0, 0],
-				[
-					"RightUpLeg",
-					0.11285692054370032,
-					0.00013149488863397916,
-					3.0744073939835417,
-				],
+				["RightUpLeg", 0.11, 0, 3.07],
 				["RightLeg", 0, 0, 0],
 			]);
 
@@ -144,10 +138,13 @@ export default function PoseDiffScore() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0
+			counter.current % 3 === 0 &&
+			!pause.current
 		) {
 			capturePose();
 		}
+
+		counter.current += 1;
 
 		/** play animation in example sub scene */
 		const delta = clock.getDelta();
@@ -179,7 +176,7 @@ export default function PoseDiffScore() {
 				!poses ||
 				!poses[0] ||
 				!poses[0]["keypoints3D"] ||
-				!poseSync.current
+				!poseSyncVector.current
 			) {
 				return;
 			}
@@ -202,11 +199,10 @@ export default function PoseDiffScore() {
 
 			setcapturedPose(g);
 
-			const res = poseSync.current.compareCurrentPose(
-				keypoints3D,
-				figureParts.current,
-				1000
-			);
+			// compare by vectors
+			const res = poseSyncVector.current.compareCurrentPose(keypoints3D, figureParts.current)
+
+			console.log(res)
 		})();
 	}
 
@@ -306,12 +302,22 @@ export default function PoseDiffScore() {
 				}}
 			>
 				<div>
+
+				</div>
+				<div>
 					<Button
 						onClick={() => {
 							startCamera(videoRef.current);
 						}}
 					>
 						Start camera
+					</Button>
+					<Button
+						onClick={() => {
+							pause.current = !pause.current;
+						}}
+					>
+						Pause
 					</Button>
 				</div>
 				{rotations.map((item, idx) => {
@@ -323,6 +329,7 @@ export default function PoseDiffScore() {
 								<input
 									style={{
 										width: 50,
+										height: 20,
 									}}
 									value={item[1]}
 									onChange={(e) => {
@@ -339,6 +346,7 @@ export default function PoseDiffScore() {
 								<input
 									style={{
 										width: 50,
+										height: 20,
 									}}
 									value={item[2]}
 									onChange={(e) => {
@@ -355,6 +363,7 @@ export default function PoseDiffScore() {
 								<input
 									style={{
 										width: 50,
+										height: 20,
 									}}
 									value={item[3]}
 									onChange={(e) => {

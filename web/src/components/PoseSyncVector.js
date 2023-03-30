@@ -21,13 +21,13 @@ export default class PoseSyncVector {
 		"rightcalf",
 	];
 
-	constructor(animation_data) {
-		this.animationTracks = {};
+	// constructor(animation_data) {
+	// 	this.animationTracks = {};
 
-		for (const v of animation_data.tracks) {
-			this.animationTracks[v["name"]] = v;
-		}
-	}
+	// 	for (const v of animation_data.tracks) {
+	// 		this.animationTracks[v["name"]] = v;
+	// 	}
+	// }
 
 	poseTorso(pose3D) {
 		/**
@@ -176,15 +176,15 @@ export default class PoseSyncVector {
 	boneTorso(bones) {
 		const leftshoulder = new THREE.Vector3();
 
-		bones["upperarm_l"].getWorldPosition(leftshoulder);
+		bones["LeftArm"].getWorldPosition(leftshoulder);
 
 		const rightshoulder = new THREE.Vector3();
 
-		bones["upperarm_r"].getWorldPosition(rightshoulder);
+		bones["RightArm"].getWorldPosition(rightshoulder);
 
 		const pelvis = new THREE.Vector3();
 
-		bones["pelvis"].getWorldPosition(pelvis);
+		bones["Hips"].getWorldPosition(pelvis);
 
 		const x_basis = rightshoulder.sub(leftshoulder);
 		const y_tmp = pelvis.sub(leftshoulder);
@@ -207,16 +207,16 @@ export default class PoseSyncVector {
 		// left and right reversed
 		// compatible with blazepose
 		const upper = [
-			["upperarm_r", "upperarm_l"],
-			["upperarm_r", "lowerarm_r"],
-			["lowerarm_r", "hand_r"],
-			["upperarm_l", "lowerarm_l"],
-			["lowerarm_l", "hand_l"],
-			["thigh_r", "thigh_l"],
-			["thigh_r", "calf_r"],
-			["calf_r", "foot_r"],
-			["thigh_l", "calf_l"],
-			["calf_l", "foot_l"],
+			["RightArm", "LeftArm"],
+			["RightArm", "RightForeArm"],
+			["RightForeArm", "RightHand"],
+			["LeftArm", "LeftForeArm"],
+			["LeftForeArm", "LeftHand"],
+			["RightUpLeg", "LeftUpLeg"],
+			["RightUpLeg", "RightLeg"],
+			["RightLeg", "RightFoot"],
+			["LeftUpLeg", "LeftLeg"],
+			["LeftLeg", "LeftFoot"],
 		];
 
 		const basisMatrix = this.boneTorso(bones);

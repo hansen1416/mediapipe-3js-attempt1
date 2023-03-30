@@ -371,6 +371,7 @@ export default function PoseDiffScore() {
 								<input
 									style={{
 										width: 50,
+										height: 20,
 									}}
 									value={item[1]}
 									onChange={(e) => {
@@ -387,6 +388,7 @@ export default function PoseDiffScore() {
 								<input
 									style={{
 										width: 50,
+										height: 20,
 									}}
 									value={item[2]}
 									onChange={(e) => {
@@ -403,6 +405,7 @@ export default function PoseDiffScore() {
 								<input
 									style={{
 										width: 50,
+										height: 20,
 									}}
 									value={item[3]}
 									onChange={(e) => {
