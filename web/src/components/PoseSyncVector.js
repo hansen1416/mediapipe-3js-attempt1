@@ -187,7 +187,15 @@ function boneJointPos(bones) {
 	for (let name in bonesJoints) {
 		const v = new THREE.Vector3();
 
-		bones[bonesJoints[name]].getWorldPosition(v);
+		if (bones[bonesJoints[name]].getWorldPosition) {
+			// when using model bones
+			bones[bonesJoints[name]].getWorldPosition(v);
+		} else {
+			// when using animation states
+			v.x = bones[bonesJoints[name]][0]
+			v.y = bones[bonesJoints[name]][1]
+			v.z = bones[bonesJoints[name]][2]
+		}
 
 		pos[name] = v;
 	}
