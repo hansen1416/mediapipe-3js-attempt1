@@ -1052,6 +1052,19 @@ export function getBasisFromPose(poseData) {
 	);
 }
 
+export function isUpperBodyVisible(poseData) {
+	return (
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_WRIST"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].score > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].score > 0.5
+	);
+}
+
 export function isLowerBodyVisible(poseData) {
 	return (
 		poseData[BlazePoseKeypointsValues["LEFT_KNEE"]].score > 0.5 &&

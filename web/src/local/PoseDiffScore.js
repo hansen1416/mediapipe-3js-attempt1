@@ -229,17 +229,20 @@ export default function PoseDiffScore() {
 			poseSync.current.compareCurrentPose(
 				keypoints3D,
 				figureParts.current,
-				1000
+				80,
+				true
 			);
 
-			setdiffScore(roundToTwo(poseSync.current.diffScore * 100));
+			setdiffScore(roundToTwo(poseSync.current.diffScore));
 
-			poseCurveRef.current.geometry.setFromPoints(
-				poseSync.current.poseSpline.getPoints(50)
-			);
-			boneCurveRef.current.geometry.setFromPoints(
-				poseSync.current.boneSpline.getPoints(50)
-			);
+			if (poseSync.current.poseSpline && poseSync.current.boneSpline) {
+				poseCurveRef.current.geometry.setFromPoints(
+					poseSync.current.poseSpline.getPoints(50)
+				);
+				boneCurveRef.current.geometry.setFromPoints(
+					poseSync.current.boneSpline.getPoints(50)
+				);
+			}
 		})();
 	}
 

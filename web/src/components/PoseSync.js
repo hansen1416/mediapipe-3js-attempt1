@@ -2,6 +2,7 @@ import { Vector2, Vector3 } from "three";
 import {
 	distanceBetweenPoints,
 	BlazePoseKeypointsValues,
+	isUpperBodyVisible,
 	isLowerBodyVisible,
 	pearson_corr,
 	array_average,
@@ -144,10 +145,14 @@ export default class PoseSync {
 		pose3D,
 		bones,
 		scoreThreshold,
-		compare_upper = true,
-		compare_lower = false
+		spline=false
 	) {
-		compare_lower = isLowerBodyVisible(pose3D);
+		const compare_upper = isUpperBodyVisible(pose3D);
+		const compare_lower = isLowerBodyVisible(pose3D);
+
+		if (!compare_upper && !compare_lower) {
+			return false
+		}
 
 		const d1 = this.keypointsDistances(
 			pose3D,
@@ -163,11 +168,31 @@ export default class PoseSync {
 
 		/**
 		 * because the bone structure are different
-		 * simply scale them by shoulder distance will result in large loss
+		 * simply scale them by shoulder distance will result in large error
+		 * pearsn correlation is regardless of the scale
 		 */
+		this.diffScore = pearson_corr(d1, d2) * 100;
 
-		this.diffScore = pearson_corr(d1, d2);
+		// spline visual aid
+		if (spline) {
+			this.generateSpline(d1, d2)
+		}
+		
+		/**
+		 * when `diffScore` <= `scoreThreshold`, current frame is a pass
+		 * when current frame is failed, `#bufferStep` accumulate
+		 * when `#bufferStep` exceeds `#bufferStepThreshold` stop animation
+		 */
+		if (this.diffScore <= scoreThreshold) {
+			this.#bufferStep = 0;
+		} else {
+			this.#bufferStep += 1;
+		}
 
+		return this.#bufferStep < this.#bufferStepThreshold;
+	}
+
+	generateSpline(d1, d2) {
 		const avg1 = array_average(d1);
 
 		for (const i in d1) {
@@ -179,8 +204,7 @@ export default class PoseSync {
 		for (const i in d2) {
 			d2[i] /= avg2;
 		}
-		// console.log(2, d1);
-		// console.log(2, d2);
+
 		const d1v2 = [];
 		const d2v2 = [];
 		let x = 0;
@@ -194,13 +218,5 @@ export default class PoseSync {
 
 		this.poseSpline = new THREE.SplineCurve(d1v2);
 		this.boneSpline = new THREE.SplineCurve(d2v2);
-
-		if (this.diffScore <= scoreThreshold) {
-			this.#bufferStep = 0;
-		} else {
-			this.#bufferStep += 1;
-		}
-
-		return this.#bufferStep < this.#bufferStepThreshold;
 	}
 }
