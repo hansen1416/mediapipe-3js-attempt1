@@ -7,19 +7,100 @@ import {
 	middlePosition,
 } from "./ropes";
 
+function basisFromTorso(left_shoulder, right_shoulder, left_hip, right_hip) {
+	const left_oblique = new THREE.Vector3(
+		(left_shoulder.x + left_hip.x) / 2,
+		(left_shoulder.y + left_hip.y) / 2,
+		(left_shoulder.z + left_hip.z) / 2
+	);
+	const right_oblique = new THREE.Vector3(
+		(right_shoulder.x + right_hip.x) / 2,
+		(right_shoulder.y + right_hip.y) / 2,
+		(right_shoulder.z + right_hip.z) / 2
+	);
+	const center = new THREE.Vector3(
+		(left_oblique.x + right_oblique.x) / 2,
+		(left_oblique.y + right_oblique.y) / 2,
+		(left_oblique.z + right_oblique.z) / 2
+	);
+
+	// new basis of chest from pose data
+	const xaxis = new THREE.Vector3(
+		left_shoulder.x - right_shoulder.x,
+		left_shoulder.y - right_shoulder.y,
+		left_shoulder.z - right_shoulder.z
+	).normalize();
+
+	const y_tmp = new THREE.Vector3(
+		left_shoulder.x - center.x,
+		left_shoulder.y - center.y,
+		left_shoulder.z - center.z
+	).normalize();
+
+	const zaxis = new THREE.Vector3().crossVectors(xaxis, y_tmp).normalize();
+
+	const yaxis = new THREE.Vector3().crossVectors(xaxis, zaxis).normalize();
+
+	const chest_basis= new THREE.Matrix4().makeBasis(xaxis, yaxis, zaxis);
+
+	// new basis of abs from pose data
+	const xaxis3 = new THREE.Vector3(
+		left_hip.x - right_hip.x,
+		left_hip.y - right_hip.y,
+		left_hip.z - right_hip.z
+	).normalize();
+
+	const y_tmp3 = new THREE.Vector3(
+		center.x - left_hip.x,
+		center.y - left_hip.y,
+		center.z - left_hip.z
+	).normalize();
+
+	const zaxis3 = new THREE.Vector3().crossVectors(xaxis3, y_tmp3).normalize();
+
+	const yaxis3 = new THREE.Vector3().crossVectors(zaxis3, xaxis3).normalize();
+
+	const abs_basis= new THREE.Matrix4().makeBasis(xaxis3, yaxis3, zaxis3);
+
+	return [chest_basis, abs_basis]
+}
+
+function boneToPoseMatrix(bones, pose3D) {
+	const leftshoulder = new THREE.Vector3();
+
+	bones["LeftArm"].getWorldPosition(leftshoulder);
+
+	const rightshoulder = new THREE.Vector3();
+
+	bones["RightArm"].getWorldPosition(rightshoulder);
+
+	const leftHip = new THREE.Vector3();
+
+	bones["LeftUpLeg"].getWorldPosition(leftHip);
+
+	const rightHip = new THREE.Vector3();
+
+	bones["RightUpLeg"].getWorldPosition(rightHip);
+
+	const [chest_m0, abs_m0] = basisFromTorso(leftshoulder,
+		rightshoulder,
+		leftHip,
+		rightHip
+	)
+
+	const [chest_m1, abs_m1] = basisFromTorso(pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+	pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+	pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
+	pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+	)
+
+	const chest_m = chest_m1.multiply(chest_m0.invert());
+	const abs_m = abs_m1.multiply(abs_m0.invert());
+
+	return [chest_m, abs_m]
+}
+
 export default class PoseSyncVector {
-	limbs = [
-		"chest",
-		"leftupperarm",
-		"leftforearm",
-		"rightupperarm",
-		"rightforearm",
-		"abdominal",
-		"leftthigh",
-		"leftcalf",
-		"rightthigh",
-		"rightcalf",
-	];
 
 	// constructor(animation_data) {
 	// 	this.animationTracks = {};
