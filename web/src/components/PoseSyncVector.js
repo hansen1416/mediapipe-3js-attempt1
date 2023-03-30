@@ -2,11 +2,50 @@ import * as THREE from "three";
 
 import {
 	BlazePoseKeypointsValues,
-	poseToVector,
-	posePointsToVector,
-	middlePosition,
 } from "./ropes";
 
+
+const poseJoints = {
+	"LEFT_SHOULDER": "LEFT_SHOULDER",
+	"LEFT_ELBOW": "LEFT_ELBOW",
+	"LEFT_WRIST": "LEFT_WRIST",
+	"RIGHT_SHOULDER": "RIGHT_SHOULDER",
+	"RIGHT_ELBOW": "RIGHT_ELBOW",
+	"RIGHT_WRIST": "RIGHT_WRIST",
+	"LEFT_HIP": "LEFT_HIP",
+	"LEFT_KNEE": "LEFT_KNEE",
+	"LEFT_ANKLE": "LEFT_ANKLE",
+	"RIGHT_HIP": "RIGHT_HIP",
+	"RIGHT_KNEE": "RIGHT_KNEE",
+	"RIGHT_ANKLE": "RIGHT_ANKLE",
+}
+
+/**
+ * pose node to model bone name mapping
+ */
+const bonesJoints = {
+	"LEFT_SHOULDER": "LeftArm",
+	"LEFT_ELBOW": "LeftForeArm",
+	"LEFT_WRIST": "LeftHand",
+	"RIGHT_SHOULDER": "RightArm",
+	"RIGHT_ELBOW": "RightForeArm",
+	"RIGHT_WRIST": "RightHand",
+	"LEFT_HIP": "LeftUpLeg",
+	"LEFT_KNEE": "LeftLeg",
+	"LEFT_ANKLE": "LeftFoot",
+	"RIGHT_HIP": "RightUpLeg",
+	"RIGHT_KNEE": "RightLeg",
+	"RIGHT_ANKLE": "RightFoot",
+}
+
+/**
+ * calculate chest, abs basis matrix based on 4 joint positions
+ * @param {obj} left_shoulder 
+ * @param {obj} right_shoulder 
+ * @param {obj} left_hip 
+ * @param {obj} right_hip 
+ * @returns 
+ */
 function basisFromTorso(left_shoulder, right_shoulder, left_hip, right_hip) {
 	const left_oblique = new THREE.Vector3(
 		(left_shoulder.x + left_hip.x) / 2,
@@ -65,33 +104,24 @@ function basisFromTorso(left_shoulder, right_shoulder, left_hip, right_hip) {
 	return [chest_basis, abs_basis]
 }
 
-function boneToPoseMatrix(bones, pose3D) {
-	const leftshoulder = new THREE.Vector3();
+/**
+ * conversion matrix convert vector from bone basis to pose basis
+ * @param {obj} bones_pos 
+ * @param {obj} pose_pos 
+ * @returns 
+ */
+function boneToPoseMatrix(bones_pos, pose_pos) {
 
-	bones["LeftArm"].getWorldPosition(leftshoulder);
-
-	const rightshoulder = new THREE.Vector3();
-
-	bones["RightArm"].getWorldPosition(rightshoulder);
-
-	const leftHip = new THREE.Vector3();
-
-	bones["LeftUpLeg"].getWorldPosition(leftHip);
-
-	const rightHip = new THREE.Vector3();
-
-	bones["RightUpLeg"].getWorldPosition(rightHip);
-
-	const [chest_m0, abs_m0] = basisFromTorso(leftshoulder,
-		rightshoulder,
-		leftHip,
-		rightHip
+	const [chest_m0, abs_m0] = basisFromTorso(bones_pos['LEFT_SHOULDER'],
+			bones_pos['RIGHT_SHOULDER'],
+			bones_pos['LEFT_HIP'],
+			bones_pos['RIGHT_HIP'],
 	)
 
-	const [chest_m1, abs_m1] = basisFromTorso(pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
-	pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
-	pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
-	pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+	const [chest_m1, abs_m1] = basisFromTorso(pose_pos["LEFT_SHOULDER"],
+		pose_pos["RIGHT_SHOULDER"],
+		pose_pos["LEFT_HIP"],
+		pose_pos["RIGHT_HIP"]
 	)
 
 	const chest_m = chest_m1.multiply(chest_m0.invert());
@@ -100,240 +130,102 @@ function boneToPoseMatrix(bones, pose3D) {
 	return [chest_m, abs_m]
 }
 
-export default class PoseSyncVector {
 
-	// constructor(animation_data) {
-	// 	this.animationTracks = {};
+/**
+ * joint position to limb vector
+ * @param {obj} start_joint 
+ * @param {obj} end_joint 
+ * @returns 
+ */
+function limbVector(start_joint, end_joint) {
+	return new THREE.Vector3(end_joint.x - start_joint.x, end_joint.y - start_joint.y, end_joint.z - start_joint.z);
+}
 
-	// 	for (const v of animation_data.tracks) {
-	// 		this.animationTracks[v["name"]] = v;
-	// 	}
-	// }
+/**
+ * all limbs for comparison
+ * @param {obj} pos 
+ * @returns 
+ */
+function posToLimb(pos) {
+	return {
+		chest: limbVector(pos['RIGHT_SHOULDER'], pos['LEFT_SHOULDER']),
+		leftArm: limbVector(pos['LEFT_SHOULDER'], pos['LEFT_ELBOW']),
+		leftForeArm: limbVector(pos['LEFT_ELBOW'], pos['LEFT_WRIST']),
+		rightArm: limbVector(pos['RIGHT_SHOULDER'], pos['RIGHT_ELBOW']),
+		rightForeArm: limbVector(pos['RIGHT_ELBOW'], pos['RIGHT_WRIST']),
+		abdominal: limbVector(pos['RIGHT_HIP'], pos['LEFT_HIP']),
+		leftThigh: limbVector(pos['LEFT_HIP'], pos['LEFT_KNEE']),
+		leftCalf: limbVector(pos['LEFT_KNEE'], pos['LEFT_ANKLE']),
+		rightThigh: limbVector(pos['RIGHT_HIP'], pos['RIGHT_KNEE']),
+		rightCalf: limbVector(pos['RIGHT_KNEE'], pos['RIGHT_ANKLE']),
+	};
+}
 
-	poseTorso(pose3D) {
-		/**
-		 * matrix that transfer the torso plane to original basis
-		 * so that torso is plane formed by x,y axis and facing +z axis
-		 */
-		const rightshoulder = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-		);
-		const leftshoulder = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
-		);
+/**
+ * get joint positions from pose 3d landmark
+ * @param {obj} pose3D 
+ * @returns 
+ */
+function poseJointPos(pose3D) {
+	const pos = {}
 
-		const righthip = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
-		);
-		const lefthip = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
-		);
-
-		const pelvis = middlePosition(lefthip, righthip, false);
-
-		const x_basis = posePointsToVector(leftshoulder, rightshoulder);
-		const y_tmp = posePointsToVector(leftshoulder, pelvis);
-		const z_basis = new THREE.Vector3()
-			.crossVectors(x_basis, y_tmp)
-			.normalize();
-
-		const y_basis = new THREE.Vector3()
-			.crossVectors(x_basis, z_basis)
-			.normalize();
-
-		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
-
-		return new THREE.Matrix4()
-			.makeBasis(x_basis, y_basis, z_basis)
-			.invert();
+	for (let name in poseJoints) {
+		pos[name] = pose3D[BlazePoseKeypointsValues[poseJoints[name]]]
 	}
 
-	pose3dlimbs(pose3D) {
-		/**
-		 * transfer joints positions to limbs vectors
-		 */
-		const left_shoulder = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-		);
-		const left_elbow = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_ELBOW"]]
-		);
-		const left_wrist = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_WRIST"]]
-		);
+	return pos
+}
 
-		const right_shoulder = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
-		);
-		const right_elbow = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]]
-		);
-		const right_wrist = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_WRIST"]]
-		);
+/**
+ * get bone position from model
+ * @param {obj} bones 
+ * @returns 
+ */
+function boneJointPos(bones) {
+	const pos = {}
 
-		const left_hip = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
-		);
-		const left_knee = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]]
-		);
-		const left_ankle = poseToVector(
-			pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]]
-		);
+	for (let name in bonesJoints) {
+		const v = new THREE.Vector3();
 
-		const right_hip = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
-		);
-		const right_knee = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]]
-		);
-		const right_ankle = poseToVector(
-			pose3D[BlazePoseKeypointsValues["RIGHT_ANKLE"]]
-		);
+		bones[bonesJoints[name]].getWorldPosition(v);
 
-		const chestOrientation = posePointsToVector(
-			left_shoulder,
-			right_shoulder
-		);
-
-		const leftArmOrientation = posePointsToVector(
-			left_elbow,
-			left_shoulder
-		);
-		const leftForeArmOrientation = posePointsToVector(
-			left_wrist,
-			left_elbow
-		);
-
-		const rightArmOrientation = posePointsToVector(
-			right_elbow,
-			right_shoulder
-		);
-		const rightForeArmOrientation = posePointsToVector(
-			right_wrist,
-			right_elbow
-		);
-
-		const abdominalOrientation = posePointsToVector(left_hip, right_hip);
-
-		const leftThighOrientation = posePointsToVector(left_hip, left_knee);
-		const leftCalfOrientation = posePointsToVector(left_knee, left_ankle);
-
-		const rightThighOrientation = posePointsToVector(right_hip, right_knee);
-		const rightCalfOrientation = posePointsToVector(
-			right_knee,
-			right_ankle
-		);
-
-		const basisMatrix = this.poseTorso(pose3D);
-
-		// todo, test the math here
-		chestOrientation.applyMatrix4(basisMatrix);
-		leftArmOrientation.applyMatrix4(basisMatrix);
-		leftForeArmOrientation.applyMatrix4(basisMatrix);
-		rightArmOrientation.applyMatrix4(basisMatrix);
-		rightForeArmOrientation.applyMatrix4(basisMatrix);
-		abdominalOrientation.applyMatrix4(basisMatrix);
-		leftThighOrientation.applyMatrix4(basisMatrix);
-		leftCalfOrientation.applyMatrix4(basisMatrix);
-		rightThighOrientation.applyMatrix4(basisMatrix);
-		rightCalfOrientation.applyMatrix4(basisMatrix);
-
-		return [
-			chestOrientation,
-			leftArmOrientation,
-			leftForeArmOrientation,
-			rightArmOrientation,
-			rightForeArmOrientation,
-			abdominalOrientation,
-			leftThighOrientation,
-			leftCalfOrientation,
-			rightThighOrientation,
-			rightCalfOrientation,
-		];
+		pos[name] = v;
 	}
 
-	boneTorso(bones) {
-		const leftshoulder = new THREE.Vector3();
+	return pos
+}
 
-		bones["LeftArm"].getWorldPosition(leftshoulder);
+/**
+ * compare bone and pose limbs
+ * @param {obj} pose 
+ * @param {obj} bones 
+ * @returns 
+ */
+export default function composeLimbVectors(pose, bones) {
 
-		const rightshoulder = new THREE.Vector3();
+	const pose_pos = poseJointPos(pose)
+	const bone_pos = boneJointPos(bones)
 
-		bones["RightArm"].getWorldPosition(rightshoulder);
+	const pose_limb = posToLimb(pose_pos)
+	const bone_limb = posToLimb(bone_pos)
 
-		const pelvis = new THREE.Vector3();
+	const [chest_matrix, abs_matrix] = boneToPoseMatrix(bone_pos, pose_pos)
 
-		bones["Hips"].getWorldPosition(pelvis);
+	bone_limb.leftArm.applyMatrix4(chest_matrix)
+	bone_limb.leftForeArm.applyMatrix4(chest_matrix)
+	bone_limb.rightArm.applyMatrix4(chest_matrix)
+	bone_limb.rightForeArm.applyMatrix4(chest_matrix)
 
-		const x_basis = rightshoulder.sub(leftshoulder);
-		const y_tmp = pelvis.sub(leftshoulder);
-		const z_basis = new THREE.Vector3()
-			.crossVectors(x_basis, y_tmp)
-			.normalize();
+	bone_limb.leftThigh.applyMatrix4(abs_matrix)
+	bone_limb.leftCalf.applyMatrix4(abs_matrix)
+	bone_limb.rightThigh.applyMatrix4(abs_matrix)
+	bone_limb.rightCalf.applyMatrix4(abs_matrix)
 
-		const y_basis = new THREE.Vector3()
-			.crossVectors(x_basis, z_basis)
-			.normalize();
+	const res = {};
 
-		// console.log("x_basis", x_basis, "y_basis", y_basis, "z_basis", z_basis);
-
-		return new THREE.Matrix4()
-			.makeBasis(x_basis, y_basis, z_basis)
-			.invert();
+	for (let name in pose_limb) {
+		res[name] = pose_limb[name].angleTo(bone_limb[name]);
 	}
 
-	boneLimbs(bones) {
-		// left and right reversed
-		// compatible with blazepose
-		const upper = [
-			["RightArm", "LeftArm"],
-			["RightArm", "RightForeArm"],
-			["RightForeArm", "RightHand"],
-			["LeftArm", "LeftForeArm"],
-			["LeftForeArm", "LeftHand"],
-			["RightUpLeg", "LeftUpLeg"],
-			["RightUpLeg", "RightLeg"],
-			["RightLeg", "RightFoot"],
-			["LeftUpLeg", "LeftLeg"],
-			["LeftLeg", "LeftFoot"],
-		];
-
-		const basisMatrix = this.boneTorso(bones);
-
-		const res = [];
-
-		for (let limb of upper) {
-			const v_start = new THREE.Vector3();
-			const v_end = new THREE.Vector3();
-
-			bones[limb[0]].getWorldPosition(v_start);
-			bones[limb[1]].getWorldPosition(v_end);
-
-			const v = v_end.sub(v_start).normalize();
-
-			v.applyMatrix4(basisMatrix);
-
-			res.push(v);
-		}
-
-		// console.log(res)
-
-		return res;
-	}
-
-	compareCurrentPose(pose3D, bones) {
-		const l1 = this.boneLimbs(bones);
-		// const l2 = this.animationLimbs(frameIndx);
-		const l2 = this.pose3dlimbs(pose3D);
-
-		const res = [];
-
-		for (let i in l1) {
-			res.push(l1[i].angleTo(l2[i]));
-		}
-
-		return res;
-	}
+	return res;
 }

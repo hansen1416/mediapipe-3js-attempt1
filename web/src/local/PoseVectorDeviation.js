@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
-import PoseSyncVector from "../components/PoseSyncVector";
+import composeLimbVectors from "../components/PoseSyncVector";
 import {
 	drawPoseKeypoints,
 	loadGLTF,
@@ -46,7 +46,6 @@ export default function PoseDiffScore() {
 	const [capturedPose, setcapturedPose] = useState();
 
 	// compare by joints distances
-	const poseSyncVector = useRef(null);
 
 	
 
@@ -59,8 +58,6 @@ export default function PoseDiffScore() {
 		setsubsceneHeight((documentWidth * 0.2 * 480) / 640);
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
-
-		poseSyncVector.current = new PoseSyncVector();
 
 		Promise.all([
 			poseDetection.createDetector(
@@ -175,8 +172,7 @@ export default function PoseDiffScore() {
 			if (
 				!poses ||
 				!poses[0] ||
-				!poses[0]["keypoints3D"] ||
-				!poseSyncVector.current
+				!poses[0]["keypoints3D"]
 			) {
 				return;
 			}
@@ -188,7 +184,7 @@ export default function PoseDiffScore() {
 
 			// multiply x,y by differnt factor
 			for (let v of keypoints3D) {
-				v["x"] *= width_ratio;
+				v["x"] *= -width_ratio;
 				v["y"] *= -height_ratio;
 				v["z"] *= -width_ratio;
 			}
@@ -200,7 +196,7 @@ export default function PoseDiffScore() {
 			setcapturedPose(g);
 
 			// compare by vectors
-			const res = poseSyncVector.current.compareCurrentPose(keypoints3D, figureParts.current)
+			const res = composeLimbVectors(keypoints3D, figureParts.current)
 
 			console.log(res)
 		})();
