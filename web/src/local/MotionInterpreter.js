@@ -374,6 +374,10 @@ export default function MotionInterpreter() {
 						name:
 						<input
 							type={"text"}
+							style={{
+								width: 80,
+								height: 20,
+							}}
 							value={animationName}
 							onChange={(e) => {
 								setanimationName(e.target.value);
@@ -386,6 +390,10 @@ export default function MotionInterpreter() {
 						key:
 						<input
 							type={"text"}
+							style={{
+								width: 80,
+								height: 20,
+							}}
 							value={animationKey}
 							onChange={(e) => {
 								setanimationKey(e.target.value);
@@ -401,6 +409,10 @@ export default function MotionInterpreter() {
 								{axis}
 								<input
 									type={"text"}
+									style={{
+										width: 30,
+										height: 20,
+									}}
 									value={modelPosition[axis]}
 									onChange={(e) => {
 										const tmp = clone(modelPosition);
@@ -409,7 +421,6 @@ export default function MotionInterpreter() {
 
 										setmodelPosition(tmp);
 									}}
-									style={{ width: "30px" }}
 								/>
 							</label>
 						);
@@ -423,6 +434,10 @@ export default function MotionInterpreter() {
 								{axis}
 								<input
 									type={"text"}
+									style={{
+										width: 30,
+										height: 20,
+									}}
 									value={modelRotation[axis]}
 									onChange={(e) => {
 										const tmp = clone(modelRotation);
@@ -431,7 +446,6 @@ export default function MotionInterpreter() {
 
 										setmodelRotation(tmp);
 									}}
-									style={{ width: "30px" }}
 								/>
 							</label>
 						);
@@ -467,9 +481,13 @@ export default function MotionInterpreter() {
 					{allMuscleGroups.map((item) => {
 						return (
 							<label key={item}>
-								{item}
+								{item}: 
 								<input
-									type={"checkbox"}
+									type={"text"}
+									style={{
+										width: 40,
+										height: 20,
+									}}
 									checked={muscleGroups.indexOf(item) !== -1}
 									onChange={(e) => {
 										let tmp = clone(muscleGroups);
