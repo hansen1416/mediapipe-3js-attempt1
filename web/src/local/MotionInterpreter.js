@@ -29,16 +29,16 @@ export default function MotionInterpreter() {
 	const [modelRotation, setmodelRotation] = useState({ x: 0, y: 0, z: 0 });
 
 	const allParts = [
-		"abs",
+		"abdominal",
 		"chest",
-		"upperarm_l",
-		"lowerarm_l",
-		"upperarm_r",
-		"lowerarm_r",
-		"thigh_l",
-		"calf_l",
-		"thigh_r",
-		"calf_r",
+		"leftArm",
+		"leftForeArm",
+		"rightArm",
+		"rightForeArm",
+		"leftThigh",
+		"leftCalf",
+		"rightThigh",
+		"rightCalf",
 	];
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
