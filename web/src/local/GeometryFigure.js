@@ -171,7 +171,7 @@ export default function GeometryFigure() {
 
 					// multiply x,y by differnt factor
 					for (let v of drawdata) {
-						v["x"] *= width_ratio;
+						v["x"] *= -width_ratio;
 						v["y"] *= -height_ratio;
 						v["z"] *= -width_ratio;
 					}

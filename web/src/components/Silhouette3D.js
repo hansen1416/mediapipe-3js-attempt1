@@ -145,10 +145,10 @@ function getQuaternions(pose3D) {
 	const result = {};
 
 	const [abs_q, chest_q] = torsoRotation(
-		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
 		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
 		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
-		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
 	);
 
 	result["abs"] = abs_q;
@@ -158,29 +158,29 @@ function getQuaternions(pose3D) {
 
 	result["leftArm"] = getLimbQuaternion(
 		pose3D,
-		"LEFT_SHOULDER",
-		"LEFT_ELBOW",
+		"RIGHT_SHOULDER",
+		"RIGHT_ELBOW",
 		new THREE.Vector3(1, 0, 0)
 	);
 
 	result["rightArm"] = getLimbQuaternion(
 		pose3D,
-		"RIGHT_SHOULDER",
-		"RIGHT_ELBOW",
+		"LEFT_SHOULDER",
+		"LEFT_ELBOW",
 		new THREE.Vector3(-1, 0, 0)
 	);
 
 	result["leftForeArm"] = getLimbQuaternion(
 		pose3D,
-		"LEFT_ELBOW",
-		"LEFT_WRIST",
+		"RIGHT_ELBOW",
+		"RIGHT_WRIST",
 		new THREE.Vector3(1, 0, 0)
 	);
 
 	result["rightForeArm"] = getLimbQuaternion(
 		pose3D,
-		"RIGHT_ELBOW",
-		"RIGHT_WRIST",
+		"LEFT_ELBOW",
+		"LEFT_WRIST",
 		new THREE.Vector3(-1, 0, 0)
 	);
 
@@ -190,43 +190,43 @@ function getQuaternions(pose3D) {
 
 	result["leftThigh"] = getLimbQuaternion(
 		pose3D,
-		"LEFT_HIP",
-		"LEFT_KNEE",
-		new THREE.Vector3(0, -1, 0)
-	);
-
-	result["rightThigh"] = getLimbQuaternion(
-		pose3D,
 		"RIGHT_HIP",
 		"RIGHT_KNEE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["leftCalf"] = getLimbQuaternion(
+	result["rightThigh"] = getLimbQuaternion(
 		pose3D,
+		"LEFT_HIP",
 		"LEFT_KNEE",
-		"LEFT_ANKLE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["rightCalf"] = getLimbQuaternion(
+	result["leftCalf"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_KNEE",
 		"RIGHT_ANKLE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
+	result["rightCalf"] = getLimbQuaternion(
+		pose3D,
+		"LEFT_KNEE",
+		"LEFT_ANKLE",
+		new THREE.Vector3(0, -1, 0)
+	);
+
 	result["leftFoot"] = getLimbQuaternion(
 		pose3D,
-		"LEFT_HEEL",
-		"LEFT_FOOT_INDEX",
+		"RIGHT_HEEL",
+		"RIGHT_FOOT_INDEX",
 		new THREE.Vector3(0, 0, 1)
 	);
 
 	result["rightFoot"] = getLimbQuaternion(
 		pose3D,
-		"RIGHT_HEEL",
-		"RIGHT_FOOT_INDEX",
+		"LEFT_HEEL",
+		"LEFT_FOOT_INDEX",
 		new THREE.Vector3(0, 0, 1)
 	);
 
@@ -1098,9 +1098,6 @@ export default class Silhouette3D {
 	}
 
 	applyPose(pose3D) {
-		/**
-		 * todo, change limbs name to fit model bones
-		 */
 		/**
 		 * apply pose to mesh, adjust it's position and scale
 		 */
