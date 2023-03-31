@@ -166,7 +166,7 @@ export default class PoseSync {
 		}
 		
 		/**
-		 * when `diffScore` <= `scoreThreshold`, current frame is a pass
+		 * when `diffScore` >= `scoreThreshold`, correlation is higher than threshold, current frame is a pass
 		 * when current frame is failed, `#bufferStep` accumulate
 		 * when `#bufferStep` exceeds `#bufferStepThreshold` stop animation
 		 */
