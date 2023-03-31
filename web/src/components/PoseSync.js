@@ -170,7 +170,7 @@ export default class PoseSync {
 		 * when current frame is failed, `#bufferStep` accumulate
 		 * when `#bufferStep` exceeds `#bufferStepThreshold` stop animation
 		 */
-		if (this.diffScore <= scoreThreshold) {
+		if (this.diffScore >= scoreThreshold) {
 			this.#bufferStep = 0;
 		} else {
 			this.#bufferStep += 1;
