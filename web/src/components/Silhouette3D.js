@@ -156,74 +156,74 @@ function getQuaternions(pose3D) {
 
 	// result["head"] = new THREE.Quaternion();
 
-	result["upperarm_l"] = getLimbQuaternion(
+	result["leftArm"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_SHOULDER",
 		"LEFT_ELBOW",
 		new THREE.Vector3(1, 0, 0)
 	);
 
-	result["upperarm_r"] = getLimbQuaternion(
+	result["rightArm"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_SHOULDER",
 		"RIGHT_ELBOW",
 		new THREE.Vector3(-1, 0, 0)
 	);
 
-	result["lowerarm_l"] = getLimbQuaternion(
+	result["leftForeArm"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_ELBOW",
 		"LEFT_WRIST",
 		new THREE.Vector3(1, 0, 0)
 	);
 
-	result["lowerarm_r"] = getLimbQuaternion(
+	result["rightForeArm"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_ELBOW",
 		"RIGHT_WRIST",
 		new THREE.Vector3(-1, 0, 0)
 	);
 
-	// result["hand_l"] = new THREE.Quaternion();
+	// result["leftHand"] = new THREE.Quaternion();
 
-	// result["hand_r"] = new THREE.Quaternion();
+	// result["rightHand"] = new THREE.Quaternion();
 
-	result["thigh_l"] = getLimbQuaternion(
+	result["leftThigh"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_HIP",
 		"LEFT_KNEE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["thigh_r"] = getLimbQuaternion(
+	result["rightThigh"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_HIP",
 		"RIGHT_KNEE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["calf_l"] = getLimbQuaternion(
+	result["leftCalf"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_KNEE",
 		"LEFT_ANKLE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["calf_r"] = getLimbQuaternion(
+	result["rightCalf"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_KNEE",
 		"RIGHT_ANKLE",
 		new THREE.Vector3(0, -1, 0)
 	);
 
-	result["foot_l"] = getLimbQuaternion(
+	result["leftFoot"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_HEEL",
 		"LEFT_FOOT_INDEX",
 		new THREE.Vector3(0, 0, 1)
 	);
 
-	result["foot_r"] = getLimbQuaternion(
+	result["rightFoot"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_HEEL",
 		"RIGHT_FOOT_INDEX",
@@ -243,30 +243,30 @@ export default class Silhouette3D {
 		"chest",
 		"neck",
 		"head",
-		"shoulder_l",
-		"shoulder_r",
-		"upperarm_l",
-		"upperarm_r",
-		"elbow_l",
-		"elbow_r",
-		"lowerarm_l",
-		"lowerarm_r",
-		"wrist_l",
-		"wrist_r",
-		"hand_l",
-		"hand_r",
-		"hip_l",
-		"hip_r",
-		"thigh_l",
-		"thigh_r",
-		"knee_l",
-		"knee_r",
-		"calf_l",
-		"calf_r",
-		"ankle_l",
-		"ankle_r",
-		"foot_l",
-		"foot_r",
+		"leftShoulder",
+		"rightShoulder",
+		"leftArm",
+		"rightArm",
+		"leftElbow",
+		"rightElbow",
+		"leftForeArm",
+		"rightForeArm",
+		"leftWrist",
+		"rightWrist",
+		"leftHand",
+		"rightHand",
+		"leftHip",
+		"rightHip",
+		"leftThigh",
+		"rightThigh",
+		"leftKnee",
+		"rightKnee",
+		"leftCalf",
+		"rightCalf",
+		"leftAnkle",
+		"rightAnkle",
+		"leftFoot",
+		"rightFoot",
 	];
 
 	pos = {
@@ -290,122 +290,122 @@ export default class Silhouette3D {
 			y: 115.1942367553711,
 			z: 2.442631244659424,
 		},
-		foot_l: {
+		leftFoot: {
 			x: 6.038201689720154,
 			y: 4.189789369702339,
 			z: 5.3377227783203125,
 		},
-		foot_r: {
+		rightFoot: {
 			x: -6.038201689720154,
 			y: 4.189789369702339,
 			z: 5.3377227783203125,
 		},
-		calf_l: {
+		leftCalf: {
 			x: 6.078888535499573,
 			y: 24.266510009765625,
 			z: 1.186724066734314,
 		},
-		calf_r: {
+		rightCalf: {
 			x: -6.078888535499573,
 			y: 24.266510009765625,
 			z: 1.186724066734314,
 		},
-		lowerarm_l: {
+		leftForeArm: {
 			x: 34.57040786743164,
 			y: 98.3515853881836,
 			z: -0.5303339958190918,
 		},
-		lowerarm_r: {
+		rightForeArm: {
 			x: -34.57040786743164,
 			y: 98.3515853881836,
 			z: -0.5303339958190918,
 		},
-		thigh_l: {
+		leftThigh: {
 			x: 6.465143918991089,
 			y: 52.77687644958496,
 			z: 1.2393369674682617,
 		},
-		thigh_r: {
+		rightThigh: {
 			x: -6.465143918991089,
 			y: 52.77687644958496,
 			z: 1.2393369674682617,
 		},
-		knee_l: {
+		leftKnee: {
 			x: 5.950271725654602,
 			y: 39.12459182739258,
 			z: 1.4469028115272522,
 		},
-		knee_r: {
+		rightKnee: {
 			x: -5.950271725654602,
 			y: 39.12459182739258,
 			z: 1.4469028115272522,
 		},
-		wrist_l: {
+		leftWrist: {
 			x: 42.58299446105957,
 			y: 97.59692001342773,
 			z: 0.7862309217453003,
 		},
-		wrist_r: {
+		rightWrist: {
 			x: -42.58299446105957,
 			y: 97.59692001342773,
 			z: 0.7862309217453003,
 		},
-		shoulder_l: {
+		leftShoulder: {
 			x: 10.224750518798828,
 			y: 99.86847686767578,
 			z: 1.8163499236106873,
 		},
-		shoulder_r: {
+		rightShoulder: {
 			x: -10.224750518798828,
 			y: 99.86847686767578,
 			z: 1.8163499236106873,
 		},
-		elbow_l: {
+		leftElbow: {
 			x: 26.771096229553223,
 			y: 98.29524612426758,
 			z: -0.9946861267089844,
 		},
-		elbow_r: {
+		rightElbow: {
 			x: -26.771096229553223,
 			y: 98.29524612426758,
 			z: -0.9946861267089844,
 		},
-		hand_l: {
+		leftHand: {
 			x: 49.42721748352051,
 			y: 97.63338470458984,
 			z: 3.562742054462433,
 		},
-		hand_r: {
+		rightHand: {
 			x: -49.42721748352051,
 			y: 97.63338470458984,
 			z: 3.562742054462433,
 		},
-		upperarm_l: {
+		leftArm: {
 			x: 18.69175386428833,
 			y: 99.65556335449219,
 			z: 0.5235534906387329,
 		},
-		upperarm_r: {
+		rightArm: {
 			x: -18.69175386428833,
 			y: 99.65556335449219,
 			z: 0.5235534906387329,
 		},
-		hip_l: {
+		leftHip: {
 			x: 5.822864592075348,
 			y: 66.59577178955078,
 			z: 1.9783098697662354,
 		},
-		hip_r: {
+		rightHip: {
 			x: -5.822864592075348,
 			y: 66.59577178955078,
 			z: 1.9783098697662354,
 		},
-		ankle_l: {
+		leftAnkle: {
 			x: 5.950271844863892,
 			y: 8.869707345962524,
 			z: -4.76837158203125e-7,
 		},
-		ankle_r: {
+		rightAnkle: {
 			x: -5.950271844863892,
 			y: 8.869707345962524,
 			z: -4.76837158203125e-7,
@@ -533,16 +533,16 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.shoulder_l = {
+		this.leftShoulder = {
 			group: new THREE.Group(),
-			mesh: meshes.shoulder_l,
+			mesh: meshes.leftShoulder,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.shoulder_l.x - this.pos.chest.x,
-					this.pos.shoulder_l.y -
+					this.pos.leftShoulder.x - this.pos.chest.x,
+					this.pos.leftShoulder.y -
 						this.pos.chest.y +
 						this.size.chest.y / 2,
-					this.pos.shoulder_l.z - this.pos.chest.z
+					this.pos.leftShoulder.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -554,16 +554,16 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.shoulder_r = {
+		this.rightShoulder = {
 			group: new THREE.Group(),
-			mesh: meshes.shoulder_r,
+			mesh: meshes.rightShoulder,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.shoulder_r.x - this.pos.chest.x,
-					this.pos.shoulder_r.y -
+					this.pos.rightShoulder.x - this.pos.chest.x,
+					this.pos.rightShoulder.y -
 						this.pos.chest.y +
 						this.size.chest.y / 2,
-					this.pos.shoulder_r.z - this.pos.chest.z
+					this.pos.rightShoulder.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -575,18 +575,18 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.upperarm_l = {
+		this.leftArm = {
 			group: new THREE.Group(),
-			mesh: meshes.upperarm_l,
+			mesh: meshes.leftArm,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_l.x -
+					this.pos.leftArm.x -
 						this.pos.chest.x -
-						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
-					this.pos.upperarm_l.y -
+						(this.pos.leftElbow.x - this.pos.leftShoulder.x) / 2,
+					this.pos.leftArm.y -
 						this.pos.chest.y +
 						this.size.chest.y / 2,
-					this.pos.upperarm_l.z - this.pos.chest.z
+					this.pos.leftArm.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -597,23 +597,23 @@ export default class Silhouette3D {
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+				(this.pos.leftElbow.x - this.pos.leftShoulder.x) / 2,
 				0,
 				0
 			),
 		};
-		this.upperarm_r = {
+		this.rightArm = {
 			group: new THREE.Group(),
-			mesh: meshes.upperarm_r,
+			mesh: meshes.rightArm,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.upperarm_r.x -
+					this.pos.rightArm.x -
 						this.pos.chest.x -
-						(this.pos.elbow_r.x - this.pos.shoulder_r.x) / 2,
-					this.pos.upperarm_r.y -
+						(this.pos.rightElbow.x - this.pos.rightShoulder.x) / 2,
+					this.pos.rightArm.y -
 						this.pos.chest.y +
 						this.size.chest.y / 2,
-					this.pos.upperarm_r.z - this.pos.chest.z
+					this.pos.rightArm.z - this.pos.chest.z
 				);
 
 				v0.applyQuaternion(this.chest.group.quaternion);
@@ -624,195 +624,195 @@ export default class Silhouette3D {
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				-(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
+				-(this.pos.leftElbow.x - this.pos.leftShoulder.x) / 2,
 				0,
 				0
 			),
 		};
-		this.elbow_l = {
+		this.leftElbow = {
 			group: new THREE.Group(),
-			mesh: meshes.elbow_l,
+			mesh: meshes.leftElbow,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.elbow_l.x -
-						this.pos.upperarm_l.x +
-						(this.pos.elbow_l.x - this.pos.shoulder_l.x) / 2,
-					this.pos.elbow_l.y - this.pos.upperarm_l.y,
-					this.pos.elbow_l.z - this.pos.upperarm_l.z
+					this.pos.leftElbow.x -
+						this.pos.leftArm.x +
+						(this.pos.leftElbow.x - this.pos.leftShoulder.x) / 2,
+					this.pos.leftElbow.y - this.pos.leftArm.y,
+					this.pos.leftElbow.z - this.pos.leftArm.z
 				);
 
-				v0.applyQuaternion(this.upperarm_l.group.quaternion);
+				v0.applyQuaternion(this.leftArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.upperarm_l.group.position,
+					this.leftArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.elbow_r = {
+		this.rightElbow = {
 			group: new THREE.Group(),
-			mesh: meshes.elbow_r,
+			mesh: meshes.rightElbow,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.elbow_r.x -
-						this.pos.upperarm_r.x +
-						(this.pos.elbow_r.x - this.pos.shoulder_r.x) / 2,
-					this.pos.elbow_r.y - this.pos.upperarm_r.y,
-					this.pos.elbow_r.z - this.pos.upperarm_r.z
+					this.pos.rightElbow.x -
+						this.pos.rightArm.x +
+						(this.pos.rightElbow.x - this.pos.rightShoulder.x) / 2,
+					this.pos.rightElbow.y - this.pos.rightArm.y,
+					this.pos.rightElbow.z - this.pos.rightArm.z
 				);
 
-				v0.applyQuaternion(this.upperarm_r.group.quaternion);
+				v0.applyQuaternion(this.rightArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.upperarm_r.group.position,
+					this.rightArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.lowerarm_l = {
+		this.leftForeArm = {
 			group: new THREE.Group(),
-			mesh: meshes.lowerarm_l,
+			mesh: meshes.leftForeArm,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.lowerarm_l.x - this.pos.upperarm_l.x,
-					this.pos.lowerarm_l.y - this.pos.upperarm_l.y,
-					this.pos.lowerarm_l.z - this.pos.upperarm_l.z
+					this.pos.leftForeArm.x - this.pos.leftArm.x,
+					this.pos.leftForeArm.y - this.pos.leftArm.y,
+					this.pos.leftForeArm.z - this.pos.leftArm.z
 				);
 
-				v0.applyQuaternion(this.upperarm_l.group.quaternion);
+				v0.applyQuaternion(this.leftArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.upperarm_l.group.position,
+					this.leftArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				(this.pos.wrist_l.x - this.pos.elbow_l.x) / 2,
+				(this.pos.leftWrist.x - this.pos.leftElbow.x) / 2,
 				0,
 				0
 			),
 		};
-		this.lowerarm_r = {
+		this.rightForeArm = {
 			group: new THREE.Group(),
-			mesh: meshes.lowerarm_r,
+			mesh: meshes.rightForeArm,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.lowerarm_r.x - this.pos.upperarm_r.x,
-					this.pos.lowerarm_r.y - this.pos.upperarm_r.y,
-					this.pos.lowerarm_r.z - this.pos.upperarm_r.z
+					this.pos.rightForeArm.x - this.pos.rightArm.x,
+					this.pos.rightForeArm.y - this.pos.rightArm.y,
+					this.pos.rightForeArm.z - this.pos.rightArm.z
 				);
 
-				v0.applyQuaternion(this.upperarm_r.group.quaternion);
+				v0.applyQuaternion(this.rightArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.upperarm_r.group.position,
+					this.rightArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				(this.pos.wrist_r.x - this.pos.elbow_r.x) / 2,
+				(this.pos.rightWrist.x - this.pos.rightElbow.x) / 2,
 				0,
 				0
 			),
 		};
-		this.wrist_l = {
+		this.leftWrist = {
 			group: new THREE.Group(),
-			mesh: meshes.wrist_l,
+			mesh: meshes.leftWrist,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.wrist_l.x - this.pos.lowerarm_l.x,
-					this.pos.wrist_l.y - this.pos.lowerarm_l.y,
-					this.pos.wrist_l.z - this.pos.lowerarm_l.z
+					this.pos.leftWrist.x - this.pos.leftForeArm.x,
+					this.pos.leftWrist.y - this.pos.leftForeArm.y,
+					this.pos.leftWrist.z - this.pos.leftForeArm.z
 				);
 
-				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
+				v0.applyQuaternion(this.leftForeArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.lowerarm_l.group.position,
+					this.leftForeArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				(this.pos.wrist_l.x - this.pos.elbow_l.x) / 2,
+				(this.pos.leftWrist.x - this.pos.leftElbow.x) / 2,
 				0,
 				0
 			),
 		};
-		this.wrist_r = {
+		this.rightWrist = {
 			group: new THREE.Group(),
-			mesh: meshes.wrist_r,
+			mesh: meshes.rightWrist,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.wrist_r.x - this.pos.lowerarm_r.x,
-					this.pos.wrist_r.y - this.pos.lowerarm_r.y,
-					this.pos.wrist_r.z - this.pos.lowerarm_r.z
+					this.pos.rightWrist.x - this.pos.rightForeArm.x,
+					this.pos.rightWrist.y - this.pos.rightForeArm.y,
+					this.pos.rightWrist.z - this.pos.rightForeArm.z
 				);
 
-				v0.applyQuaternion(this.lowerarm_r.group.quaternion);
+				v0.applyQuaternion(this.rightForeArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.lowerarm_r.group.position,
+					this.rightForeArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
-				(this.pos.wrist_r.x - this.pos.elbow_r.x) / 2,
+				(this.pos.rightWrist.x - this.pos.rightElbow.x) / 2,
 				0,
 				0
 			),
 		};
-		this.hand_l = {
+		this.leftHand = {
 			group: new THREE.Group(),
-			mesh: meshes.hand_l,
+			mesh: meshes.leftHand,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.hand_l.x -
-						this.pos.lowerarm_l.x +
-						(this.pos.wrist_l.x - this.pos.elbow_l.x) / 2,
-					this.pos.hand_l.y - this.pos.lowerarm_l.y,
-					this.pos.hand_l.z - this.pos.lowerarm_l.z
+					this.pos.leftHand.x -
+						this.pos.leftForeArm.x +
+						(this.pos.leftWrist.x - this.pos.leftElbow.x) / 2,
+					this.pos.leftHand.y - this.pos.leftForeArm.y,
+					this.pos.leftHand.z - this.pos.leftForeArm.z
 				);
 
-				v0.applyQuaternion(this.lowerarm_l.group.quaternion);
+				v0.applyQuaternion(this.leftForeArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.lowerarm_l.group.position,
+					this.leftForeArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.hand_r = {
+		this.rightHand = {
 			group: new THREE.Group(),
-			mesh: meshes.hand_r,
+			mesh: meshes.rightHand,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.hand_r.x -
-						this.pos.lowerarm_r.x +
-						(this.pos.wrist_r.x - this.pos.elbow_r.x) / 2,
-					this.pos.hand_r.y - this.pos.lowerarm_r.y,
-					this.pos.hand_r.z - this.pos.lowerarm_r.z
+					this.pos.rightHand.x -
+						this.pos.rightForeArm.x +
+						(this.pos.rightWrist.x - this.pos.rightElbow.x) / 2,
+					this.pos.rightHand.y - this.pos.rightForeArm.y,
+					this.pos.rightHand.z - this.pos.rightForeArm.z
 				);
 
-				v0.applyQuaternion(this.lowerarm_r.group.quaternion);
+				v0.applyQuaternion(this.rightForeArm.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.lowerarm_r.group.position,
+					this.rightForeArm.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.hip_l = {
+		this.leftHip = {
 			group: new THREE.Group(),
-			mesh: meshes.hip_l,
+			mesh: meshes.leftHip,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.hip_l.x - this.pos.abs.x,
-					this.pos.hip_l.y - this.pos.abs.y,
-					this.pos.hip_l.z - this.pos.abs.z
+					this.pos.leftHip.x - this.pos.abs.x,
+					this.pos.leftHip.y - this.pos.abs.y,
+					this.pos.leftHip.z - this.pos.abs.z
 				);
 
 				v0.applyQuaternion(this.abs.group.quaternion);
@@ -824,14 +824,14 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.hip_r = {
+		this.rightHip = {
 			group: new THREE.Group(),
-			mesh: meshes.hip_r,
+			mesh: meshes.rightHip,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.hip_r.x - this.pos.abs.x,
-					this.pos.hip_r.y - this.pos.abs.y,
-					this.pos.hip_r.z - this.pos.abs.z
+					this.pos.rightHip.x - this.pos.abs.x,
+					this.pos.rightHip.y - this.pos.abs.y,
+					this.pos.rightHip.z - this.pos.abs.z
 				);
 
 				v0.applyQuaternion(this.abs.group.quaternion);
@@ -843,16 +843,16 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.thigh_l = {
+		this.leftThigh = {
 			group: new THREE.Group(),
-			mesh: meshes.thigh_l,
+			mesh: meshes.leftThigh,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.thigh_l.x - this.pos.abs.x,
-					this.pos.thigh_l.y -
+					this.pos.leftThigh.x - this.pos.abs.x,
+					this.pos.leftThigh.y -
 						this.pos.abs.y -
-						(this.pos.knee_l.y - this.pos.hip_l.y) / 2,
-					this.pos.thigh_l.z - this.pos.abs.z
+						(this.pos.leftKnee.y - this.pos.leftHip.y) / 2,
+					this.pos.leftThigh.z - this.pos.abs.z
 				);
 
 				v0.applyQuaternion(this.abs.group.quaternion);
@@ -864,20 +864,20 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(
 				0,
-				(this.pos.knee_l.y - this.pos.hip_l.y) / 2,
+				(this.pos.leftKnee.y - this.pos.leftHip.y) / 2,
 				0
 			),
 		};
-		this.thigh_r = {
+		this.rightThigh = {
 			group: new THREE.Group(),
-			mesh: meshes.thigh_r,
+			mesh: meshes.rightThigh,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.thigh_r.x - this.pos.abs.x,
-					this.pos.thigh_r.y -
+					this.pos.rightThigh.x - this.pos.abs.x,
+					this.pos.rightThigh.y -
 						this.pos.abs.y -
-						(this.pos.knee_r.y - this.pos.hip_r.y) / 2,
-					this.pos.thigh_r.z - this.pos.abs.z
+						(this.pos.rightKnee.y - this.pos.rightHip.y) / 2,
+					this.pos.rightThigh.z - this.pos.abs.z
 				);
 
 				v0.applyQuaternion(this.abs.group.quaternion);
@@ -889,181 +889,181 @@ export default class Silhouette3D {
 			},
 			mesh_position: new THREE.Vector3(
 				0,
-				(this.pos.knee_r.y - this.pos.hip_r.y) / 2,
+				(this.pos.rightKnee.y - this.pos.rightHip.y) / 2,
 				0
 			),
 		};
-		this.knee_l = {
+		this.leftKnee = {
 			group: new THREE.Group(),
-			mesh: meshes.knee_l,
+			mesh: meshes.leftKnee,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.knee_l.x - this.pos.thigh_l.x,
-					this.pos.knee_l.y -
-						this.pos.thigh_l.y +
-						(this.pos.knee_l.y - this.pos.hip_l.y) / 2,
-					this.pos.knee_l.z - this.pos.thigh_l.z
+					this.pos.leftKnee.x - this.pos.leftThigh.x,
+					this.pos.leftKnee.y -
+						this.pos.leftThigh.y +
+						(this.pos.leftKnee.y - this.pos.leftHip.y) / 2,
+					this.pos.leftKnee.z - this.pos.leftThigh.z
 				);
 
-				v0.applyQuaternion(this.thigh_l.group.quaternion);
+				v0.applyQuaternion(this.leftThigh.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.thigh_l.group.position,
+					this.leftThigh.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.knee_r = {
+		this.rightKnee = {
 			group: new THREE.Group(),
-			mesh: meshes.knee_r,
+			mesh: meshes.rightKnee,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.knee_r.x - this.pos.thigh_r.x,
-					this.pos.knee_r.y -
-						this.pos.thigh_r.y +
-						(this.pos.knee_r.y - this.pos.hip_r.y) / 2,
-					this.pos.knee_r.z - this.pos.thigh_r.z
+					this.pos.rightKnee.x - this.pos.rightThigh.x,
+					this.pos.rightKnee.y -
+						this.pos.rightThigh.y +
+						(this.pos.rightKnee.y - this.pos.rightHip.y) / 2,
+					this.pos.rightKnee.z - this.pos.rightThigh.z
 				);
 
-				v0.applyQuaternion(this.thigh_r.group.quaternion);
+				v0.applyQuaternion(this.rightThigh.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.thigh_r.group.position,
+					this.rightThigh.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, 0),
 		};
-		this.calf_l = {
+		this.leftCalf = {
 			group: new THREE.Group(),
-			mesh: meshes.calf_l,
+			mesh: meshes.leftCalf,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.calf_l.x - this.pos.thigh_l.x,
-					this.pos.calf_l.y - this.pos.thigh_l.y,
-					this.pos.calf_l.z - this.pos.thigh_l.z
+					this.pos.leftCalf.x - this.pos.leftThigh.x,
+					this.pos.leftCalf.y - this.pos.leftThigh.y,
+					this.pos.leftCalf.z - this.pos.leftThigh.z
 				);
 
-				v0.applyQuaternion(this.thigh_l.group.quaternion);
+				v0.applyQuaternion(this.leftThigh.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.thigh_l.group.position,
+					this.leftThigh.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
 				0,
-				(this.pos.ankle_l.y - this.pos.knee_l.y) / 2,
+				(this.pos.leftAnkle.y - this.pos.leftKnee.y) / 2,
 				0
 			),
 		};
-		this.calf_r = {
+		this.rightCalf = {
 			group: new THREE.Group(),
-			mesh: meshes.calf_r,
+			mesh: meshes.rightCalf,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.calf_r.x - this.pos.thigh_r.x,
-					this.pos.calf_r.y - this.pos.thigh_r.y,
-					this.pos.calf_r.z - this.pos.thigh_r.z
+					this.pos.rightCalf.x - this.pos.rightThigh.x,
+					this.pos.rightCalf.y - this.pos.rightThigh.y,
+					this.pos.rightCalf.z - this.pos.rightThigh.z
 				);
 
-				v0.applyQuaternion(this.thigh_r.group.quaternion);
+				v0.applyQuaternion(this.rightThigh.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.thigh_r.group.position,
+					this.rightThigh.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
 				0,
-				(this.pos.ankle_r.y - this.pos.knee_r.y) / 2,
+				(this.pos.rightAnkle.y - this.pos.rightKnee.y) / 2,
 				0
 			),
 		};
-		this.ankle_l = {
+		this.leftAnkle = {
 			group: new THREE.Group(),
-			mesh: meshes.ankle_l,
+			mesh: meshes.leftAnkle,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.ankle_l.x - this.pos.calf_l.x,
-					this.pos.ankle_l.y - this.pos.calf_l.y,
-					this.pos.ankle_l.z - this.pos.calf_l.z
+					this.pos.leftAnkle.x - this.pos.leftCalf.x,
+					this.pos.leftAnkle.y - this.pos.leftCalf.y,
+					this.pos.leftAnkle.z - this.pos.leftCalf.z
 				);
 
-				v0.applyQuaternion(this.calf_l.group.quaternion);
+				v0.applyQuaternion(this.leftCalf.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.calf_l.group.position,
+					this.leftCalf.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
 				0,
-				(this.pos.ankle_l.y - this.pos.knee_l.y) / 2,
+				(this.pos.leftAnkle.y - this.pos.leftKnee.y) / 2,
 				0
 			),
 		};
-		this.ankle_r = {
+		this.rightAnkle = {
 			group: new THREE.Group(),
-			mesh: meshes.ankle_r,
+			mesh: meshes.rightAnkle,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.ankle_r.x - this.pos.calf_r.x,
-					this.pos.ankle_r.y - this.pos.calf_r.y,
-					this.pos.ankle_r.z - this.pos.calf_r.z
+					this.pos.rightAnkle.x - this.pos.rightCalf.x,
+					this.pos.rightAnkle.y - this.pos.rightCalf.y,
+					this.pos.rightAnkle.z - this.pos.rightCalf.z
 				);
 
-				v0.applyQuaternion(this.calf_r.group.quaternion);
+				v0.applyQuaternion(this.rightCalf.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.calf_r.group.position,
+					this.rightCalf.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(
 				0,
-				(this.pos.ankle_r.y - this.pos.knee_r.y) / 2,
+				(this.pos.rightAnkle.y - this.pos.rightKnee.y) / 2,
 				0
 			),
 		};
-		this.foot_l = {
+		this.leftFoot = {
 			group: new THREE.Group(),
-			mesh: meshes.foot_l,
+			mesh: meshes.leftFoot,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.foot_l.x - this.pos.calf_l.x,
-					this.pos.foot_l.y -
-						this.pos.calf_l.y +
-						(this.pos.ankle_l.y - this.pos.knee_l.y) / 2,
-					this.pos.foot_l.z - this.pos.calf_l.z - this.size.foot.z / 2
+					this.pos.leftFoot.x - this.pos.leftCalf.x,
+					this.pos.leftFoot.y -
+						this.pos.leftCalf.y +
+						(this.pos.leftAnkle.y - this.pos.leftKnee.y) / 2,
+					this.pos.leftFoot.z - this.pos.leftCalf.z - this.size.foot.z / 2
 				);
 
-				v0.applyQuaternion(this.calf_l.group.quaternion);
+				v0.applyQuaternion(this.leftCalf.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.calf_l.group.position,
+					this.leftCalf.group.position,
 					v0
 				);
 			},
 			mesh_position: new THREE.Vector3(0, 0, this.size.foot.z / 2),
 		};
-		this.foot_r = {
+		this.rightFoot = {
 			group: new THREE.Group(),
-			mesh: meshes.foot_r,
+			mesh: meshes.rightFoot,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.foot_r.x - this.pos.calf_r.x,
-					this.pos.foot_r.y -
-						this.pos.calf_r.y +
-						(this.pos.ankle_r.y - this.pos.knee_r.y) / 2,
-					this.pos.foot_r.z - this.pos.calf_r.z - this.size.foot.z / 2
+					this.pos.rightFoot.x - this.pos.rightCalf.x,
+					this.pos.rightFoot.y -
+						this.pos.rightCalf.y +
+						(this.pos.rightAnkle.y - this.pos.rightKnee.y) / 2,
+					this.pos.rightFoot.z - this.pos.rightCalf.z - this.size.foot.z / 2
 				);
 
-				v0.applyQuaternion(this.calf_r.group.quaternion);
+				v0.applyQuaternion(this.rightCalf.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.calf_r.group.position,
+					this.rightCalf.group.position,
 					v0
 				);
 			},
@@ -1112,41 +1112,41 @@ export default class Silhouette3D {
 
 		rotations.neck = rotations.chest ? rotations.chest.clone() : false;
 		rotations.head = rotations.chest ? rotations.chest.clone() : false;
-		rotations.shoulder_l = rotations.upperarm_l
-			? rotations.upperarm_l.clone()
+		rotations.leftShoulder = rotations.leftArm
+			? rotations.leftArm.clone()
 			: false;
-		rotations.shoulder_r = rotations.upperarm_r
-			? rotations.upperarm_r.clone()
+		rotations.rightShoulder = rotations.rightArm
+			? rotations.rightArm.clone()
 			: false;
-		rotations.elbow_l = rotations.lowerarm_l
-			? rotations.lowerarm_l.clone()
+		rotations.leftElbow = rotations.leftForeArm
+			? rotations.leftForeArm.clone()
 			: false;
-		rotations.elbow_r = rotations.lowerarm_r
-			? rotations.lowerarm_r.clone()
+		rotations.rightElbow = rotations.rightForeArm
+			? rotations.rightForeArm.clone()
 			: false;
-		rotations.wrist_l = rotations.lowerarm_l
-			? rotations.lowerarm_l.clone()
+		rotations.leftWrist = rotations.leftForeArm
+			? rotations.leftForeArm.clone()
 			: false;
-		rotations.wrist_r = rotations.lowerarm_r
-			? rotations.lowerarm_r.clone()
+		rotations.rightWrist = rotations.rightForeArm
+			? rotations.rightForeArm.clone()
 			: false;
-		rotations.hand_l = rotations.lowerarm_l
-			? rotations.lowerarm_l.clone()
+		rotations.leftHand = rotations.leftForeArm
+			? rotations.leftForeArm.clone()
 			: false;
-		rotations.hand_r = rotations.lowerarm_r
-			? rotations.lowerarm_r.clone()
+		rotations.rightHand = rotations.rightForeArm
+			? rotations.rightForeArm.clone()
 			: false;
 		// todo, make thigh, calf follow abs if there is no pose data
-		rotations.hip_l = rotations.abs ? rotations.abs.clone() : false;
-		rotations.hip_r = rotations.abs ? rotations.abs.clone() : false;
-		rotations.knee_l = rotations.thigh_l
-			? rotations.thigh_l.clone()
+		rotations.leftHip = rotations.abs ? rotations.abs.clone() : false;
+		rotations.rightHip = rotations.abs ? rotations.abs.clone() : false;
+		rotations.leftKnee = rotations.leftThigh
+			? rotations.leftThigh.clone()
 			: false;
-		rotations.knee_r = rotations.thigh_r
-			? rotations.thigh_r.clone()
+		rotations.rightKnee = rotations.rightThigh
+			? rotations.rightThigh.clone()
 			: false;
-		rotations.ankle_l = rotations.calf_l ? rotations.calf_l.clone() : false;
-		rotations.ankle_r = rotations.calf_r ? rotations.calf_r.clone() : false;
+		rotations.leftAnkle = rotations.leftCalf ? rotations.leftCalf.clone() : false;
+		rotations.rightAnkle = rotations.rightCalf ? rotations.rightCalf.clone() : false;
 
 		for (let name of Silhouette3D.limbs) {
 			const pos = this[name].position();
