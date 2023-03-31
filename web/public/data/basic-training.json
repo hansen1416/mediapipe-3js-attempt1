@@ -13,8 +13,8 @@
 	},
 	"exercises": [
 		{
-			"key": "waving",
-			"name": "waving",
+			"key": "kettlebell-swing",
+			"name": "kettlebell swing",
 			"img": "",
 			"intensity": 10,
 			"calories": 10,
@@ -27,7 +27,25 @@
 				"abdominals": 0.0,
 				"legs": 0.0
 			},
-			"reps": 2,
+			"reps": 5,
+			"rest": 20
+		},
+		{
+			"key": "arm-stretching",
+			"name": "arm stretching",
+			"img": "",
+			"intensity": 10,
+			"calories": 10,
+			"duration": 2,
+			"muscles": {
+				"chest": 0.0,
+				"shoulders": 0.0,
+				"back": 0.0,
+				"arms": 0.0,
+				"abdominals": 0.0,
+				"legs": 0.0
+			},
+			"reps": 5,
 			"rest": 20
 		}
 	]

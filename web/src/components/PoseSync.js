@@ -18,19 +18,6 @@ export default class PoseSync {
 	poseSpline = null;
 	bnoneSpline = null;
 
-	// constructor(animation_data) {
-	// 	// this.animation_data = animation_data;
-
-	// 	// for (const v of animation_data.tracks) {
-	// 	// 	if (
-	// 	// 		v.type === "quaternion" &&
-	// 	// 		v.quaternions.length > this.#longestTrack
-	// 	// 	) {
-	// 	// 		this.#longestTrack = v.quaternions.length;
-	// 	// 	}
-	// 	// }
-	// }
-
 	keypointsDistances(
 		keypoints3D,
 		compare_upper = true,
@@ -118,7 +105,7 @@ export default class PoseSync {
 
 					bones[upper[i]].getWorldPosition(v1);
 					bones[upper[j]].getWorldPosition(v2);
-					console.log(upper[j], v2);
+
 					distances.push(distanceBetweenPoints(v1, v2));
 				}
 			}
