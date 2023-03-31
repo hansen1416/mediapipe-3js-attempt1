@@ -29,6 +29,7 @@ import {
 	loadGLTF,
 	// loadFBX,
 	jsonToBufferGeometry,
+	roundToTwo,
 } from "../components/ropes";
 
 const createWorker = createWorkerFactory(() =>
@@ -561,7 +562,7 @@ export default function DigitalTrainer() {
 
 			// `diffScore` is a pearson correlation
 			// 1 means pose perfectly matched
-			setdiffScore(parseInt(poseSync.current.diffScore));
+			setdiffScore(roundToTwo(poseSync.current.diffScore));
 		}
 	}
 
