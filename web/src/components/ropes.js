@@ -535,24 +535,6 @@ export function radianGradientColor(radian) {
 	} else {
 		return [68, 170, 136];
 	}
-
-	const cap = Math.PI / 2;
-
-	radian = cap - radian;
-
-	if (radian < 0) {
-		return [250, 190, 179];
-	}
-
-	const startColour = { r: 250, g: 190, b: 179 };
-	const endColour = { r: 248, g: 37, b: 0 };
-	const percent = radian / cap;
-
-	return [
-		Math.floor(startColour.r * (1 - percent) + endColour.r * percent),
-		Math.floor(startColour.g * (1 - percent) + endColour.g * percent),
-		Math.floor(startColour.b * (1 - percent) + endColour.b * percent),
-	];
 }
 
 export function calculateSilhouetteColors(vectorDistances) {

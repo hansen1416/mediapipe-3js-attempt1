@@ -78,12 +78,12 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		zaxis1
 	);
 
-	// origin basis of abs
+	// origin basis of abdominal
 	const xaxis2 = new THREE.Vector3(1, 0, 0);
 	const yaxis2 = new THREE.Vector3(0, 1, 0);
 	const zaxis2 = new THREE.Vector3(0, 0, 1);
 
-	// new basis of abs from pose data
+	// new basis of abdominal from pose data
 	const xaxis3 = new THREE.Vector3(
 		left_hip2.x - right_hip2.x,
 		left_hip2.y - right_hip2.y,
@@ -151,7 +151,7 @@ function getQuaternions(pose3D) {
 		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
 	);
 
-	result["abs"] = abs_q;
+	result["abdominal"] = abs_q;
 	result["chest"] = chest_q;
 
 	// result["head"] = new THREE.Quaternion();
@@ -239,7 +239,7 @@ export default class Silhouette3D {
 	 */
 
 	static limbs = [
-		"abs",
+		"abdominal",
 		"chest",
 		"neck",
 		"head",
@@ -270,7 +270,7 @@ export default class Silhouette3D {
 	];
 
 	pos = {
-		abs: {
+		abdominal: {
 			x: 0,
 			y: 73.06646537780762,
 			z: 2.173459053039551,
@@ -413,7 +413,7 @@ export default class Silhouette3D {
 	};
 
 	size = {
-		abs: {
+		abdominal: {
 			x: 21.701854705810547,
 			y: 22.411624908447266,
 			z: 16.466567993164062,
@@ -437,15 +437,15 @@ export default class Silhouette3D {
 
 	constructor(geometry) {
 		this.pos_adjusted = {
-			abs: {
+			abdominal: {
 				x: 0,
 				y: 0,
 				z: 0,
 			},
 			chest: {
-				x: this.pos.chest.x - this.pos.abs.x,
-				y: this.pos.chest.y - this.pos.abs.y - this.size.chest.y / 2,
-				z: this.pos.chest.z - this.pos.abs.z,
+				x: this.pos.chest.x - this.pos.abdominal.x,
+				y: this.pos.chest.y - this.pos.abdominal.y - this.size.chest.y / 2,
+				z: this.pos.chest.z - this.pos.abdominal.z,
 			},
 		};
 
@@ -470,9 +470,9 @@ export default class Silhouette3D {
 			);
 		}
 
-		this.abs = {
+		this.abdominal = {
 			group: new THREE.Group(),
-			mesh: meshes.abs,
+			mesh: meshes.abdominal,
 			position: () => {
 				return new THREE.Vector3(0, 0, 0);
 			},
@@ -483,16 +483,16 @@ export default class Silhouette3D {
 			mesh: meshes.chest,
 			position: () => {
 				const v = new THREE.Vector3(
-					this.pos.chest.x - this.pos.abs.x,
-					this.pos.chest.y - this.pos.abs.y - this.size.chest.y / 2,
-					this.pos.chest.z - this.pos.abs.z
+					this.pos.chest.x - this.pos.abdominal.x,
+					this.pos.chest.y - this.pos.abdominal.y - this.size.chest.y / 2,
+					this.pos.chest.z - this.pos.abdominal.z
 				);
 				// adjust the chest position lower in y, make the rotation center to be at the bottom of the chest mesh
-				v.applyQuaternion(this.abs.group.quaternion);
+				v.applyQuaternion(this.abdominal.group.quaternion);
 
 				return v;
 			},
-			//since the group position moved toward negative y, move mesh to positive y, so the mesh is above `abs` mesh
+			//since the group position moved toward negative y, move mesh to positive y, so the mesh is above `abdominal` mesh
 			mesh_position: new THREE.Vector3(0, this.size.chest.y / 2, 0),
 		};
 		this.neck = {
@@ -810,15 +810,15 @@ export default class Silhouette3D {
 			mesh: meshes.leftHip,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.leftHip.x - this.pos.abs.x,
-					this.pos.leftHip.y - this.pos.abs.y,
-					this.pos.leftHip.z - this.pos.abs.z
+					this.pos.leftHip.x - this.pos.abdominal.x,
+					this.pos.leftHip.y - this.pos.abdominal.y,
+					this.pos.leftHip.z - this.pos.abdominal.z
 				);
 
-				v0.applyQuaternion(this.abs.group.quaternion);
+				v0.applyQuaternion(this.abdominal.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.abs.group.position,
+					this.abdominal.group.position,
 					v0
 				);
 			},
@@ -829,15 +829,15 @@ export default class Silhouette3D {
 			mesh: meshes.rightHip,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.rightHip.x - this.pos.abs.x,
-					this.pos.rightHip.y - this.pos.abs.y,
-					this.pos.rightHip.z - this.pos.abs.z
+					this.pos.rightHip.x - this.pos.abdominal.x,
+					this.pos.rightHip.y - this.pos.abdominal.y,
+					this.pos.rightHip.z - this.pos.abdominal.z
 				);
 
-				v0.applyQuaternion(this.abs.group.quaternion);
+				v0.applyQuaternion(this.abdominal.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.abs.group.position,
+					this.abdominal.group.position,
 					v0
 				);
 			},
@@ -848,17 +848,17 @@ export default class Silhouette3D {
 			mesh: meshes.leftThigh,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.leftThigh.x - this.pos.abs.x,
+					this.pos.leftThigh.x - this.pos.abdominal.x,
 					this.pos.leftThigh.y -
-						this.pos.abs.y -
+						this.pos.abdominal.y -
 						(this.pos.leftKnee.y - this.pos.leftHip.y) / 2,
-					this.pos.leftThigh.z - this.pos.abs.z
+					this.pos.leftThigh.z - this.pos.abdominal.z
 				);
 
-				v0.applyQuaternion(this.abs.group.quaternion);
+				v0.applyQuaternion(this.abdominal.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.abs.group.position,
+					this.abdominal.group.position,
 					v0
 				);
 			},
@@ -873,17 +873,17 @@ export default class Silhouette3D {
 			mesh: meshes.rightThigh,
 			position: () => {
 				const v0 = new THREE.Vector3(
-					this.pos.rightThigh.x - this.pos.abs.x,
+					this.pos.rightThigh.x - this.pos.abdominal.x,
 					this.pos.rightThigh.y -
-						this.pos.abs.y -
+						this.pos.abdominal.y -
 						(this.pos.rightKnee.y - this.pos.rightHip.y) / 2,
-					this.pos.rightThigh.z - this.pos.abs.z
+					this.pos.rightThigh.z - this.pos.abdominal.z
 				);
 
-				v0.applyQuaternion(this.abs.group.quaternion);
+				v0.applyQuaternion(this.abdominal.group.quaternion);
 
 				return new THREE.Vector3().addVectors(
-					this.abs.group.position,
+					this.abdominal.group.position,
 					v0
 				);
 			},
@@ -1133,9 +1133,9 @@ export default class Silhouette3D {
 		rotations.rightHand = rotations.rightForeArm
 			? rotations.rightForeArm.clone()
 			: false;
-		// todo, make thigh, calf follow abs if there is no pose data
-		rotations.leftHip = rotations.abs ? rotations.abs.clone() : false;
-		rotations.rightHip = rotations.abs ? rotations.abs.clone() : false;
+		// todo, make thigh, calf follow abdominal if there is no pose data
+		rotations.leftHip = rotations.abdominal ? rotations.abdominal.clone() : false;
+		rotations.rightHip = rotations.abdominal ? rotations.abdominal.clone() : false;
 		rotations.leftKnee = rotations.leftThigh
 			? rotations.leftThigh.clone()
 			: false;

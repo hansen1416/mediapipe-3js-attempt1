@@ -612,10 +612,10 @@ export default function DigitalTrainer() {
 						animationJSONs.current[
 							exerciseQueue.current[exerciseQueueIndx.current].key
 						].key_parts || [
-							"upperarm_l",
-							"upperarm_r",
-							"lowerarm_l",
-							"lowerarm_r",
+							"LeftArm",
+							"RightArm",
+							"LeftForeArm",
+							"RightForeArm",
 						]
 					);
 
@@ -675,15 +675,15 @@ export default function DigitalTrainer() {
 		Object.assign(statistics.current.exercises[exerciseQueueIndx.current], {
 			error_angles: {
 				chest: 0,
-				upperarm_l: 0,
-				lowerarm_l: 0,
-				upperarm_r: 0,
-				lowerarm_r: 0,
-				abs: 0,
-				thigh_l: 0,
-				calf_l: 0,
-				thigh_r: 0,
-				calf_r: 0,
+				LeftArm: 0,
+				LeftForeArm: 0,
+				RightArm: 0,
+				RightForeArm: 0,
+				abdominal: 0,
+				leftThigh: 0,
+				leftCalf: 0,
+				rightThigh: 0,
+				rightCalf: 0,
 			},
 			unfollowed: 0,
 			start_time: Date.now(),
