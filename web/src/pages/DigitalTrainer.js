@@ -150,9 +150,9 @@ export default function DigitalTrainer() {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
 
-		setsubsceneWidth(documentWidth * 0.2);
+		setsubsceneWidth(documentWidth * 0.3);
 		// remember not to use a squared video
-		setsubsceneHeight((documentWidth * 0.2 * 480) / 640);
+		setsubsceneHeight((documentWidth * 0.3 * 480) / 640);
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
 		// sub scene play captured pose
@@ -167,8 +167,10 @@ export default function DigitalTrainer() {
 				poseDetection.SupportedModels.BlazePose,
 				BlazePoseConfig
 			),
-			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
+			// loadGLTF(process.env.PUBLIC_URL + "/glb/yundong.glb"),
+			// loadGLTF(process.env.PUBLIC_URL + "/glb/girl.glb"),
 		]).then(([detector, glb, glbEg]) => {
 			poseDetector.current = detector;
 
@@ -876,6 +878,7 @@ export default function DigitalTrainer() {
 					style={{
 						width: subsceneWidth + "px",
 						height: subsceneHeight + "px",
+						marginLeft: (subsceneWidth * -1) / 6 + "px",
 					}}
 				>
 					<canvas ref={canvasRefEg}></canvas>
@@ -887,6 +890,7 @@ export default function DigitalTrainer() {
 					style={{
 						width: subsceneWidth + "px",
 						height: subsceneHeight + "px",
+						marginLeft: (subsceneWidth * -1) / 6 + "px",
 					}}
 				>
 					<canvas ref={canvasRefSub}></canvas>

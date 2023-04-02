@@ -148,7 +148,7 @@ function getQuaternions(pose3D) {
 		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
 		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
 		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
-		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
+		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
 	);
 
 	result["abdominal"] = abs_q;
@@ -444,7 +444,10 @@ export default class Silhouette3D {
 			},
 			chest: {
 				x: this.pos.chest.x - this.pos.abdominal.x,
-				y: this.pos.chest.y - this.pos.abdominal.y - this.size.chest.y / 2,
+				y:
+					this.pos.chest.y -
+					this.pos.abdominal.y -
+					this.size.chest.y / 2,
 				z: this.pos.chest.z - this.pos.abdominal.z,
 			},
 		};
@@ -452,8 +455,8 @@ export default class Silhouette3D {
 		// color of material
 		this.color = 0x44aa88;
 		// opacity of material, when pose score is lower/higher then 0.5
-		this.invisible_opacity = 0.5;
-		this.visible_opacity = 0.8;
+		this.invisible_opacity = 0.2;
+		this.visible_opacity = 0.6;
 
 		this.body = new THREE.Group();
 
@@ -465,7 +468,7 @@ export default class Silhouette3D {
 				new THREE.MeshLambertMaterial({
 					color: 0x12c2e9,
 					transparent: true,
-					opacity: 0.6,
+					opacity: this.invisible_opacity,
 				})
 			);
 		}
@@ -484,7 +487,9 @@ export default class Silhouette3D {
 			position: () => {
 				const v = new THREE.Vector3(
 					this.pos.chest.x - this.pos.abdominal.x,
-					this.pos.chest.y - this.pos.abdominal.y - this.size.chest.y / 2,
+					this.pos.chest.y -
+						this.pos.abdominal.y -
+						this.size.chest.y / 2,
 					this.pos.chest.z - this.pos.abdominal.z
 				);
 				// adjust the chest position lower in y, make the rotation center to be at the bottom of the chest mesh
@@ -1036,7 +1041,9 @@ export default class Silhouette3D {
 					this.pos.leftFoot.y -
 						this.pos.leftCalf.y +
 						(this.pos.leftAnkle.y - this.pos.leftKnee.y) / 2,
-					this.pos.leftFoot.z - this.pos.leftCalf.z - this.size.foot.z / 2
+					this.pos.leftFoot.z -
+						this.pos.leftCalf.z -
+						this.size.foot.z / 2
 				);
 
 				v0.applyQuaternion(this.leftCalf.group.quaternion);
@@ -1057,7 +1064,9 @@ export default class Silhouette3D {
 					this.pos.rightFoot.y -
 						this.pos.rightCalf.y +
 						(this.pos.rightAnkle.y - this.pos.rightKnee.y) / 2,
-					this.pos.rightFoot.z - this.pos.rightCalf.z - this.size.foot.z / 2
+					this.pos.rightFoot.z -
+						this.pos.rightCalf.z -
+						this.size.foot.z / 2
 				);
 
 				v0.applyQuaternion(this.rightCalf.group.quaternion);
@@ -1134,27 +1143,38 @@ export default class Silhouette3D {
 			? rotations.rightForeArm.clone()
 			: false;
 		// todo, make thigh, calf follow abdominal if there is no pose data
-		rotations.leftHip = rotations.abdominal ? rotations.abdominal.clone() : false;
-		rotations.rightHip = rotations.abdominal ? rotations.abdominal.clone() : false;
+		rotations.leftHip = rotations.abdominal
+			? rotations.abdominal.clone()
+			: false;
+		rotations.rightHip = rotations.abdominal
+			? rotations.abdominal.clone()
+			: false;
 		rotations.leftKnee = rotations.leftThigh
 			? rotations.leftThigh.clone()
 			: false;
 		rotations.rightKnee = rotations.rightThigh
 			? rotations.rightThigh.clone()
 			: false;
-		rotations.leftAnkle = rotations.leftCalf ? rotations.leftCalf.clone() : false;
-		rotations.rightAnkle = rotations.rightCalf ? rotations.rightCalf.clone() : false;
+		rotations.leftAnkle = rotations.leftCalf
+			? rotations.leftCalf.clone()
+			: false;
+		rotations.rightAnkle = rotations.rightCalf
+			? rotations.rightCalf.clone()
+			: false;
 
 		for (let name of Silhouette3D.limbs) {
 			const pos = this[name].position();
 
 			this[name].group.position.set(pos.x, pos.y, pos.z);
 
-			if (!rotations[name]) {
+			if (rotations[name]) {
+				this[name].group.rotation.setFromQuaternion(rotations[name]);
+				this[name].mesh.material.opacity = this.visible_opacity;
+			} else {
+				this[name].mesh.material.opacity = this.invisible_opacity;
+
 				continue;
 			}
-
-			this[name].group.rotation.setFromQuaternion(rotations[name]);
 		}
 	}
 
