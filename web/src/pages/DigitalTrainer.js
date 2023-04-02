@@ -205,8 +205,6 @@ export default function DigitalTrainer() {
 
 			mixer.current = new THREE.AnimationMixer(modelEg);
 
-			mixer.current.stopAllAction();
-
 			animate();
 		});
 
@@ -747,6 +745,8 @@ export default function DigitalTrainer() {
 			animation_data.rotation.y,
 			animation_data.rotation.z
 		);
+
+		mixer.current.stopAllAction();
 
 		// prepare the example exercise action
 		const action = mixer.current.clipAction(
