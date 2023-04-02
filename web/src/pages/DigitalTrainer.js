@@ -61,6 +61,7 @@ export default function DigitalTrainer() {
 	// blazepose pose model
 	const poseDetector = useRef(null);
 	// landmarks of human joints
+	const keypoints2D = useRef(null);
 	const keypoints3D = useRef(null);
 	// compare by joints distances
 	const poseSync = useRef(null);
@@ -91,7 +92,14 @@ export default function DigitalTrainer() {
 	// subscen size
 	const [subsceneWidth, setsubsceneWidth] = useState(0);
 	const [subsceneHeight, setsubsceneHeight] = useState(0);
+	const subsceneWidthRef = useRef(0);
+	const subsceneHeightRef = useRef(0);
 
+	// the width and height in the 3.js world
+	const visibleWidthSub = useRef(0);
+	const visibleHeightSub = useRef(0);
+
+	// the pose retargetting model instance
 	const silhouette = useRef(null);
 	// ======== sub scene end
 
@@ -153,6 +161,10 @@ export default function DigitalTrainer() {
 		setsubsceneWidth(documentWidth * 0.3);
 		// remember not to use a squared video
 		setsubsceneHeight((documentWidth * 0.3 * 480) / 640);
+
+		subsceneWidthRef.current = documentWidth * 0.3;
+		subsceneHeightRef.current = (documentWidth * 0.3 * 480) / 640;
+
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
 		// sub scene play captured pose
@@ -404,6 +416,19 @@ export default function DigitalTrainer() {
 
 		cameraSub.current.position.set(0, 30, 100);
 
+		/**
+		 * visible_height = 2 * tan(camera_fov / 2) * camera_z
+		 * visible_width = visible_height * camera_aspect
+		 */
+
+		const vFOV = THREE.MathUtils.degToRad(cameraSub.current.fov); // convert vertical fov to radians
+
+		visibleHeightSub.current =
+			2 * Math.tan(vFOV / 2) * cameraSub.current.position.z; // visible height
+
+		visibleWidthSub.current =
+			visibleHeightSub.current * cameraSub.current.aspect; // visible width
+
 		sceneSub.current.add(new THREE.AmbientLight(0xffffff, 1));
 
 		rendererSub.current = new THREE.WebGLRenderer({
@@ -525,10 +550,12 @@ export default function DigitalTrainer() {
 				!poses[0]["keypoints3D"] ||
 				!poseSync.current
 			) {
+				keypoints2D.current = null;
 				keypoints3D.current = null;
 				return;
 			}
 
+			keypoints2D.current = cloneDeep(poses[0]["keypoints"]);
 			keypoints3D.current = cloneDeep(poses[0]["keypoints3D"]);
 
 			const width_ratio = 30;
@@ -575,6 +602,14 @@ export default function DigitalTrainer() {
 		if (!keypoints3D.current) {
 			return;
 		}
+
+		silhouette.current.applyPosition(
+			keypoints2D.current,
+			subsceneWidthRef.current,
+			subsceneHeightRef.current,
+			visibleWidthSub.current,
+			visibleHeightSub.current
+		);
 
 		silhouette.current.applyPose(keypoints3D.current);
 

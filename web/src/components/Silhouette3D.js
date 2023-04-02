@@ -140,7 +140,9 @@ function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
 }
 
 function getQuaternions(pose3D) {
-	// get position of joints
+	/**
+	 * get rotation of limbs
+	 */
 
 	const result = {};
 
@@ -436,22 +438,6 @@ export default class Silhouette3D {
 	};
 
 	constructor(geometry) {
-		this.pos_adjusted = {
-			abdominal: {
-				x: 0,
-				y: 0,
-				z: 0,
-			},
-			chest: {
-				x: this.pos.chest.x - this.pos.abdominal.x,
-				y:
-					this.pos.chest.y -
-					this.pos.abdominal.y -
-					this.size.chest.y / 2,
-				z: this.pos.chest.z - this.pos.abdominal.z,
-			},
-		};
-
 		// color of material
 		this.color = 0x44aa88;
 		// opacity of material, when pose score is lower/higher then 0.5
@@ -1168,14 +1154,63 @@ export default class Silhouette3D {
 			this[name].group.position.set(pos.x, pos.y, pos.z);
 
 			if (rotations[name]) {
+				// a quaternion calculated, it means the limb is visible
+				// increase opacity
 				this[name].group.rotation.setFromQuaternion(rotations[name]);
 				this[name].mesh.material.opacity = this.visible_opacity;
 			} else {
+				// when rotation is false, the limb in invisible
+				// decrease opacity
 				this[name].mesh.material.opacity = this.invisible_opacity;
-
-				continue;
 			}
 		}
+	}
+
+	applyPosition(
+		pose2D,
+		videoWidth,
+		videoHeight,
+		visibleWidth,
+		visibleHeight
+	) {
+		if (!pose2D || !pose2D.length) {
+			return;
+		}
+
+		const left_shoulder =
+			pose2D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+		const right_shoulder =
+			pose2D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
+		const left_hip = pose2D[BlazePoseKeypointsValues["RIGHT_HIP"]];
+		const right_hip = pose2D[BlazePoseKeypointsValues["LEFT_HIP"]];
+
+		if (
+			left_shoulder.score < 0.5 ||
+			right_shoulder.score < 0.5 ||
+			left_hip.score < 0.5 ||
+			right_hip.score < 0.5
+		) {
+			return;
+		}
+
+		// use middle point of hips as model position
+		// because we placed abdominal at (0,0,0)
+		const pixel_pos = {
+			x: (left_hip.x + right_hip.x) / 2,
+			y: (left_hip.y + right_hip.y) / 2,
+		};
+
+		// 1 - x because left/right are swaped
+		const object_x =
+			(1 - pixel_pos.x / videoWidth) * visibleWidth - visibleWidth / 2;
+		// 1 - y because in threejs y axis is twowards top
+		const object_y =
+			(1 - pixel_pos.y / videoHeight) * visibleHeight - visibleHeight / 2;
+		console.log(videoWidth, videoHeight);
+		console.log(visibleWidth, visibleHeight);
+		console.log(object_x, object_y);
+
+		this.body.position.set(object_x, object_y, 0);
 	}
 
 	applyColor(colors, muscles = []) {

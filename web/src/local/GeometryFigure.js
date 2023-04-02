@@ -49,6 +49,11 @@ export default function GeometryFigure() {
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
 	const [subsceneWidth, setsubsceneWidth] = useState(334);
 	const [subsceneHeight, setsubsceneHeight] = useState(250);
+	const subsceneWidthRef = useRef(0);
+	const subsceneHeightRef = useRef(0);
+	// the width and height in the 3.js world
+	const visibleWidth = useRef(0);
+	const visibleHeight = useRef(0);
 
 	const [startBtnShow, setstartBtnShow] = useState(true);
 	const [stopBtnShow, setstopBtnShow] = useState(false);
@@ -61,6 +66,9 @@ export default function GeometryFigure() {
 
 		setsubsceneWidth(documentWidth * 0.25);
 		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
+
+		subsceneWidthRef.current = documentWidth * 0.25;
+		subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
 
 		_scene(documentWidth, documentHeight);
 
@@ -103,31 +111,6 @@ export default function GeometryFigure() {
 			scene.current.add(body);
 		});
 
-		// const tasks1 = [];
-
-		// for (let name of T.limbs) {
-		// 	tasks1.push(
-		// 		loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-		// 	);
-		// }
-
-		// Promise.all(tasks1).then((results) => {
-		// 	const geos = {};
-
-		// 	for (let data of results) {
-		// 		geos[data.name] = jsonToBufferGeometry(data);
-		// 	}
-
-		// 	const tpose = new T(geos);
-		// 	const body = tpose.init();
-
-		// 	scene.current.add(body);
-		// });
-
-		// const axesHelper = new THREE.AxesHelper(40);
-
-		// scene.current.add(axesHelper);
-
 		animate();
 
 		return () => {
@@ -164,29 +147,35 @@ export default function GeometryFigure() {
 				}
 
 				{
-					const drawdata = cloneDeep(poses[0]["keypoints3D"]);
+					const pose3D = cloneDeep(poses[0]["keypoints3D"]);
 
 					const width_ratio = 30;
 					const height_ratio = (width_ratio * 480) / 640;
 
 					// multiply x,y by differnt factor
-					for (let v of drawdata) {
+					for (let v of pose3D) {
 						v["x"] *= -width_ratio;
 						v["y"] *= -height_ratio;
 						v["z"] *= -width_ratio;
 					}
 
-					const g = drawPoseKeypoints(drawdata);
+					const g = drawPoseKeypoints(pose3D);
 
 					g.scale.set(8, 8, 8);
 
 					setcapturedPose(g);
 
-					// for (let i in figures.current) {
-					// 	figures.current[i].applyPose(drawdata, true);
-					// }
+					figure.current.applyPose(pose3D);
 
-					figure.current.applyPose(drawdata);
+					const pose2D = cloneDeep(poses[0]["keypoints"]);
+
+					figure.current.applyPosition(
+						pose2D,
+						subsceneWidthRef.current,
+						subsceneHeightRef.current,
+						visibleWidth.current,
+						visibleHeight.current
+					);
 				}
 			})();
 		}
@@ -256,6 +245,18 @@ export default function GeometryFigure() {
 
 		camera.current.position.set(0, 0, 150);
 
+		/**
+		 * visible_height = 2 * tan(camera_fov / 2) * camera_z
+		 * visible_width = visible_height * camera_aspect
+		 */
+
+		const vFOV = THREE.MathUtils.degToRad(camera.current.fov); // convert vertical fov to radians
+
+		visibleHeight.current =
+			2 * Math.tan(vFOV / 2) * camera.current.position.z; // visible height
+
+		visibleWidth.current = visibleHeight.current * camera.current.aspect; // visible width
+
 		{
 			const light = new THREE.PointLight(0xffffff, 1);
 			// light.position.set(10, 10, 10);
@@ -283,12 +284,6 @@ export default function GeometryFigure() {
 				style={{
 					display: "none",
 				}}
-				// style={{
-				// 	display: "block",
-				// 	position: "absolute",
-				// 	top: 0,
-				// 	left: subsceneWidth + "px",
-				// }}
 			></video>
 
 			<canvas ref={canvasRef} />
