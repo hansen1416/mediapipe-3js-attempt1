@@ -481,7 +481,7 @@ export default function MotionInterpreter() {
 					{allMuscleGroups.map((item) => {
 						return (
 							<label key={item}>
-								{item}: 
+								{item}:
 								<input
 									type={"text"}
 									style={{

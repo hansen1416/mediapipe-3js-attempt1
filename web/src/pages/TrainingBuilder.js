@@ -40,7 +40,11 @@ export default function TrainingBuilder() {
 			resizeObserver.observe(kasten.current);
 		}
 
-		fetch(process.env.PUBLIC_URL + "/data/exercise-list.json?r=" + process.env.RANDOM_STRING)
+		fetch(
+			process.env.PUBLIC_URL +
+				"/data/exercise-list.json?r=" +
+				process.env.RANDOM_STRING
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				const tmp = [[]];
@@ -141,7 +145,14 @@ export default function TrainingBuilder() {
 							<div>
 								<img
 									style={{ width: "100%", height: "100%" }}
-									src={exercise.img ? process.env.PUBLIC_URL + "/" + exercise.img : process.env.PUBLIC_URL + "/thumb1.png"}
+									src={
+										exercise.img
+											? process.env.PUBLIC_URL +
+											  "/" +
+											  exercise.img
+											: process.env.PUBLIC_URL +
+											  "/thumb1.png"
+									}
 									alt=""
 								/>
 							</div>

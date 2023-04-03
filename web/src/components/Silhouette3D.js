@@ -1208,19 +1208,19 @@ export default class Silhouette3D {
 			(1 - pixel_pos.y / videoHeight) * visibleHeight - visibleHeight / 2;
 
 		if (object_x < -videoWidth / 2) {
-			object_x = -videoWidth / 2
+			object_x = -videoWidth / 2;
 		}
 
 		if (object_x > videoWidth / 2) {
-			object_x = videoWidth / 2
+			object_x = videoWidth / 2;
 		}
 
 		if (object_y < -visibleHeight / 2) {
-			object_y = -visibleHeight / 2
+			object_y = -visibleHeight / 2;
 		}
 
 		if (object_y > visibleHeight / 2) {
-			object_y = visibleHeight / 2
+			object_y = visibleHeight / 2;
 		}
 
 		this.body.position.set(object_x, object_y, 0);

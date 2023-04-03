@@ -336,31 +336,29 @@ import composeLimbVectors from "../components/PoseSyncVector";
 // }
 
 function getJointsPosAtIdx(joints_position, idx) {
-	
 	const bonesJoints = [
-		 "RightArm",
-		 "RightForeArm",
-		 "RightHand",
+		"RightArm",
+		"RightForeArm",
+		"RightHand",
 		"LeftArm",
-		 "LeftForeArm",
-		 "LeftHand",
-		 "RightUpLeg",
-		 "RightLeg",
-		 "RightFoot",
-		 "LeftUpLeg",
-		 "LeftLeg",
-		 "LeftFoot",
-	]
+		"LeftForeArm",
+		"LeftHand",
+		"RightUpLeg",
+		"RightLeg",
+		"RightFoot",
+		"LeftUpLeg",
+		"LeftLeg",
+		"LeftFoot",
+	];
 
-	const res = {}
+	const res = {};
 
 	for (let name of bonesJoints) {
 		res[name] = joints_position[name][idx];
 	}
 
-	return res
+	return res;
 }
-
 
 let animation_states = null;
 
@@ -384,10 +382,9 @@ export function analyzePose(pose3D, idx) {
 		return "";
 	}
 
-	const bones = getJointsPosAtIdx(animation_states, idx)
+	const bones = getJointsPosAtIdx(animation_states, idx);
 
-	const result = composeLimbVectors(pose3D, bones)
-
+	const result = composeLimbVectors(pose3D, bones);
 
 	// compare current pose with all frames from the animation
 	// const result = calculateLimbsDistance(pose3D, animation_states, idx);

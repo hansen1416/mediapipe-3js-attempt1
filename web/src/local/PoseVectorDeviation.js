@@ -169,11 +169,7 @@ export default function PoseDiffScore() {
 				// timestamp
 			);
 
-			if (
-				!poses ||
-				!poses[0] ||
-				!poses[0]["keypoints3D"]
-			) {
+			if (!poses || !poses[0] || !poses[0]["keypoints3D"]) {
 				return;
 			}
 
@@ -196,10 +192,10 @@ export default function PoseDiffScore() {
 			setcapturedPose(g);
 
 			// compare by vectors
-			const res = composeLimbVectors(keypoints3D, figureParts.current)
+			const res = composeLimbVectors(keypoints3D, figureParts.current);
 
-			setcompareKeys(Object.keys(res))
-			setcompareValues(Object.values(res))
+			setcompareKeys(Object.keys(res));
+			setcompareValues(Object.values(res));
 		})();
 	}
 
@@ -299,14 +295,17 @@ export default function PoseDiffScore() {
 				}}
 			>
 				<div>
-					{
-						compareKeys && compareKeys.map((item, idx) => {
-							return <div key={idx}>
-								<span>{item}: </span>
-								<span>{roundToTwo(compareValues[idx])}</span>
-							</div>
-						})
-					}
+					{compareKeys &&
+						compareKeys.map((item, idx) => {
+							return (
+								<div key={idx}>
+									<span>{item}: </span>
+									<span>
+										{roundToTwo(compareValues[idx])}
+									</span>
+								</div>
+							);
+						})}
 				</div>
 				<div>
 					<Button

@@ -73,9 +73,9 @@ export default function DigitalTrainer() {
 	// ======== for comparing end
 
 	// ======== loading status
-	const [loadingCharacter, setloadingCharacter] =  useState(true);
-	const [loadingSilhouette, setloadingSilhouette] =  useState(true);
-	const [loadingTraining, setloadingTraining] =  useState(true);
+	const [loadingCharacter, setloadingCharacter] = useState(true);
+	const [loadingSilhouette, setloadingSilhouette] = useState(true);
+	const [loadingTraining, setloadingTraining] = useState(true);
 	// ======== loading status
 
 	// ======== sub scene start
@@ -213,7 +213,7 @@ export default function DigitalTrainer() {
 
 			animate();
 
-			setloadingCharacter(false)
+			setloadingCharacter(false);
 		});
 
 		// add silhouette to subscene
@@ -235,17 +235,21 @@ export default function DigitalTrainer() {
 
 			sceneSub.current.add(body);
 
-			setloadingSilhouette(false)
+			setloadingSilhouette(false);
 		});
 
 		// we can load training list separately
 		// todo, use API for this feature
 		Promise.all([
-			loadJSON(process.env.PUBLIC_URL + "/data/basic-training.json?r=" + process.env.RANDOM_STRING),
+			loadJSON(
+				process.env.PUBLIC_URL +
+					"/data/basic-training.json?r=" +
+					process.env.RANDOM_STRING
+			),
 		]).then(([training1]) => {
 			settrainingList([training1]);
 
-			setloadingTraining(false)
+			setloadingTraining(false);
 		});
 
 		return () => {
@@ -1080,12 +1084,25 @@ export default function DigitalTrainer() {
 				</div>
 			)}
 
-			{(loadingCharacter || loadingSilhouette || loadingTraining) && 
-			<div className="mask">
-				{loadingCharacter && <div><span>Loading Character....</span></div>}
-				{loadingSilhouette && <div><span>Loading Silhouette...</span>.</div>}
-				{loadingTraining && <div><span>Loading Training Data....</span></div>}	
-			</div>}
+			{(loadingCharacter || loadingSilhouette || loadingTraining) && (
+				<div className="mask">
+					{loadingCharacter && (
+						<div>
+							<span>Loading Character....</span>
+						</div>
+					)}
+					{loadingSilhouette && (
+						<div>
+							<span>Loading Silhouette...</span>.
+						</div>
+					)}
+					{loadingTraining && (
+						<div>
+							<span>Loading Training Data....</span>
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

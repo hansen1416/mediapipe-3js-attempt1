@@ -41,7 +41,7 @@ const routes = [
 			{
 				path: "/vagabond",
 				element: <CloudVagabond />,
-			}
+			},
 		],
 	},
 ];

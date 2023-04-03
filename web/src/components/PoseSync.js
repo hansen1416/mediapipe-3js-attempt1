@@ -128,17 +128,12 @@ export default class PoseSync {
 		return distances;
 	}
 
-	compareCurrentPose(
-		pose3D,
-		bones,
-		scoreThreshold,
-		spline=false
-	) {
+	compareCurrentPose(pose3D, bones, scoreThreshold, spline = false) {
 		const compare_upper = isUpperBodyVisible(pose3D);
 		const compare_lower = isLowerBodyVisible(pose3D);
 
 		if (!compare_upper && !compare_lower) {
-			return false
+			return false;
 		}
 
 		const d1 = this.keypointsDistances(
@@ -162,9 +157,9 @@ export default class PoseSync {
 
 		// spline visual aid
 		if (spline) {
-			this.generateSpline(d1, d2)
+			this.generateSpline(d1, d2);
 		}
-		
+
 		/**
 		 * when `diffScore` >= `scoreThreshold`, correlation is higher than threshold, current frame is a pass
 		 * when current frame is failed, `#bufferStep` accumulate
