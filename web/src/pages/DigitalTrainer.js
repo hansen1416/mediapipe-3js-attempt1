@@ -72,6 +72,12 @@ export default function DigitalTrainer() {
 	// const poseSyncVector = useRef(null);
 	// ======== for comparing end
 
+	// ======== loading status
+	const [loadingCharacter, setloadingCharacter] =  useState(true);
+	const [loadingSilhouette, setloadingSilhouette] =  useState(true);
+	const [loadingTraining, setloadingTraining] =  useState(true);
+	// ======== loading status
+
 	// ======== sub scene start
 	// example exercise subscene
 	const canvasRefEg = useRef(null);
@@ -206,6 +212,8 @@ export default function DigitalTrainer() {
 			mixer.current = new THREE.AnimationMixer(modelEg);
 
 			animate();
+
+			setloadingCharacter(false)
 		});
 
 		// add silhouette to subscene
@@ -226,6 +234,8 @@ export default function DigitalTrainer() {
 			// getMeshSize(figure.current.foot_l.mesh, scene.current)
 
 			sceneSub.current.add(body);
+
+			setloadingSilhouette(false)
 		});
 
 		// we can load training list separately
@@ -234,6 +244,8 @@ export default function DigitalTrainer() {
 			loadJSON(process.env.PUBLIC_URL + "/data/basic-training.json"),
 		]).then(([training1]) => {
 			settrainingList([training1]);
+
+			setloadingTraining(false)
 		});
 
 		return () => {
@@ -1067,6 +1079,13 @@ export default function DigitalTrainer() {
 					Congratulations, check <a href="/training-report">result</a>
 				</div>
 			)}
+
+			{(loadingCharacter || loadingSilhouette || loadingTraining) && 
+			<div className="mask">
+				{loadingCharacter && <div><span>Loading Character....</span></div>}
+				{loadingSilhouette && <div><span>Loading Silhouette...</span>.</div>}
+				{loadingTraining && <div><span>Loading Training Data....</span></div>}	
+			</div>}
 		</div>
 	);
 }
