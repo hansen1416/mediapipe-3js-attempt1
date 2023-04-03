@@ -241,7 +241,7 @@ export default function DigitalTrainer() {
 		// we can load training list separately
 		// todo, use API for this feature
 		Promise.all([
-			loadJSON(process.env.PUBLIC_URL + "/data/basic-training.json"),
+			loadJSON(process.env.PUBLIC_URL + "/data/basic-training.json?r=" + process.env.RANDOM_STRING),
 		]).then(([training1]) => {
 			settrainingList([training1]);
 

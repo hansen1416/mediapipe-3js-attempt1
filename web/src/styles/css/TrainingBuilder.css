@@ -1,4 +1,8 @@
-.training-builder .exercise-block {
+.training-builder .exercise-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+.training-builder .exercise-list .exercise-block {
   display: inline-block;
   box-sizing: border-box;
   padding: 10px;

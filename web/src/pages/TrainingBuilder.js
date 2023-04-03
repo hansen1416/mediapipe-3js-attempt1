@@ -35,12 +35,12 @@ export default function TrainingBuilder() {
 				);
 
 				setitemWidth(width);
-				setitemHeight(width + 200);
+				setitemHeight(width + 300);
 			});
 			resizeObserver.observe(kasten.current);
 		}
 
-		fetch(process.env.PUBLIC_URL + "/data/exercise-list.json")
+		fetch(process.env.PUBLIC_URL + "/data/exercise-list.json?r=" + process.env.RANDOM_STRING)
 			.then((response) => response.json())
 			.then((data) => {
 				const tmp = [[]];
@@ -127,7 +127,7 @@ export default function TrainingBuilder() {
 					<span>Filter placeholder</span>
 				</div>
 			</div>
-			<div>
+			<div className="exercise-list">
 				{pageData.map((exercise, idx) => {
 					return (
 						<div
@@ -141,7 +141,7 @@ export default function TrainingBuilder() {
 							<div>
 								<img
 									style={{ width: "100%", height: "100%" }}
-									src={process.env.PUBLIC_URL + "/thumb1.png"}
+									src={exercise.img ? process.env.PUBLIC_URL + "/" + exercise.img : process.env.PUBLIC_URL + "/thumb1.png"}
 									alt=""
 								/>
 							</div>
