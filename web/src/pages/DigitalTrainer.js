@@ -658,30 +658,34 @@ export default function DigitalTrainer() {
 					}
 
 					// record the error rate for statistics
-					statistics.current.exercises[
-						exerciseQueueIndx.current
-					].total_compared_frame += 1;
-
-					for (let name in angleBetweenLimbs) {
+					if (statistics.current && statistics.current.exercises) {
 						statistics.current.exercises[
 							exerciseQueueIndx.current
-						].error_angles[name] += angleBetweenLimbs[name];
+						].total_compared_frame += 1;
+
+						for (let name in angleBetweenLimbs) {
+							statistics.current.exercises[
+								exerciseQueueIndx.current
+							].error_angles[name] += angleBetweenLimbs[name];
+						}
 					}
 
 					// apply color to silhouette
 					// passed key parts limbs to `applyColor`,
 					// only change the color of the key parts
-					silhouette.current.applyColor(
-						colors,
-						animationJSONs.current[
-							exerciseQueue.current[exerciseQueueIndx.current].key
-						].key_parts || [
-							"LeftArm",
-							"RightArm",
-							"LeftForeArm",
-							"RightForeArm",
-						]
-					);
+					if (silhouette.current && animationJSONs.current && exerciseQueue.current && exerciseQueueIndx.current) {
+						silhouette.current.applyColor(
+							colors,
+							animationJSONs.current[
+								exerciseQueue.current[exerciseQueueIndx.current].key
+							].key_parts || [
+								"LeftArm",
+								"RightArm",
+								"LeftForeArm",
+								"RightForeArm",
+							]
+						);
+					}
 
 					workerAvailable.current = true;
 				});
