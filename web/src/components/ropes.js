@@ -88,18 +88,22 @@ export function startCamera(videoElement) {
 }
 
 export function invokeCamera(videoElement, callback) {
-
-	const errorCallback = (e) => {alert('camera error!!', e)}
+	const errorCallback = (e) => {
+		alert("camera error!!", e);
+	};
 
 	const constraints = {
-		audio: false, 
+		audio: false,
 		// facingMode: "user", // selfie camera
 		// facingMode: "environment", // back camera
-		video: { frameRate: { ideal: 20, max: 30 }, width: { ideal: 640, max: 640 }, height: { ideal: 480, max: 480 } },
-	}
+		video: {
+			frameRate: { ideal: 20, max: 30 },
+			width: { ideal: 640, max: 640 },
+			height: { ideal: 480, max: 480 },
+		},
+	};
 
 	const successCallback = (stream) => {
-
 		// Yay, now our webcam input is treated as a normal video and
 		// we can start having fun
 		try {
@@ -109,16 +113,17 @@ export function invokeCamera(videoElement, callback) {
 		} catch (error) {
 			videoElement.src = window.URL.createObjectURL(stream);
 		}
-		
-		if (callback) {
-			callback()
-		}
-	}
 
-	navigator.getUserMedia = navigator.getUserMedia ||
-	navigator.webkitGetUserMedia ||
-	navigator.mozGetUserMedia ||
-	navigator.msGetUserMedia;
+		if (callback) {
+			callback();
+		}
+	};
+
+	navigator.getUserMedia =
+		navigator.getUserMedia ||
+		navigator.webkitGetUserMedia ||
+		navigator.mozGetUserMedia ||
+		navigator.msGetUserMedia;
 
 	if (navigator.mediaDevices) {
 		navigator.mediaDevices
@@ -127,7 +132,7 @@ export function invokeCamera(videoElement, callback) {
 	} else if (navigator.getUserMedia) {
 		navigator.getUserMedia(constraints, successCallback, errorCallback);
 	} else {
-		alert('getUserMedia() is not supported in your browser');
+		alert("getUserMedia() is not supported in your browser");
 	}
 }
 
@@ -934,8 +939,7 @@ export function drawPoseKeypointsMediaPipe(keypoints) {
 	const visibleparts = {};
 
 	for (const i in keypoints) {
-
-		const point = keypoints[i]
+		const point = keypoints[i];
 
 		if (point.visibility > 0.5) {
 			const d = box(0.3);
@@ -949,26 +953,86 @@ export function drawPoseKeypointsMediaPipe(keypoints) {
 	}
 
 	const pairs = [
-		[BlazePoseKeypointsValues['LEFT_EYE'], BlazePoseKeypointsValues['NOSE']],
-		[BlazePoseKeypointsValues['RIGHT_EYE'], BlazePoseKeypointsValues['NOSE']],
-		[BlazePoseKeypointsValues['LEFT_SHOULDER'], BlazePoseKeypointsValues['RIGHT_SHOULDER']],
-		[BlazePoseKeypointsValues['LEFT_SHOULDER'], BlazePoseKeypointsValues['LEFT_ELBOW']],
-		[BlazePoseKeypointsValues['LEFT_ELBOW'], BlazePoseKeypointsValues['LEFT_WRIST']],
-		[BlazePoseKeypointsValues['LEFT_WRIST'], BlazePoseKeypointsValues['LEFT_THUMB']],
-		[BlazePoseKeypointsValues['LEFT_WRIST'], BlazePoseKeypointsValues['LEFT_INDEX']],
-		[BlazePoseKeypointsValues['LEFT_WRIST'], BlazePoseKeypointsValues['LEFT_PINKY']],
-		[BlazePoseKeypointsValues['RIGHT_SHOULDER'], BlazePoseKeypointsValues['RIGHT_ELBOW']],
-		[BlazePoseKeypointsValues['RIGHT_ELBOW'], BlazePoseKeypointsValues['RIGHT_WRIST']],
-		[BlazePoseKeypointsValues['RIGHT_WRIST'], BlazePoseKeypointsValues['RIGHT_THUMB']],
-		[BlazePoseKeypointsValues['RIGHT_WRIST'], BlazePoseKeypointsValues['RIGHT_INDEX']],
-		[BlazePoseKeypointsValues['RIGHT_WRIST'], BlazePoseKeypointsValues['RIGHT_PINKY']],
-		[BlazePoseKeypointsValues['LEFT_SHOULDER'], BlazePoseKeypointsValues['LEFT_HIP']],
-		[BlazePoseKeypointsValues['RIGHT_SHOULDER'], BlazePoseKeypointsValues['RIGHT_HIP']],
-		[BlazePoseKeypointsValues['LEFT_HIP'], BlazePoseKeypointsValues['RIGHT_HIP']],
-		[BlazePoseKeypointsValues['LEFT_HIP'], BlazePoseKeypointsValues['LEFT_KNEE']],
-		[BlazePoseKeypointsValues['LEFT_KNEE'], BlazePoseKeypointsValues['LEFT_ANKLE']],
-		[BlazePoseKeypointsValues['RIGHT_HIP'], BlazePoseKeypointsValues['RIGHT_KNEE']],
-		[BlazePoseKeypointsValues['RIGHT_KNEE'], BlazePoseKeypointsValues['RIGHT_ANKLE']],
+		[
+			BlazePoseKeypointsValues["LEFT_EYE"],
+			BlazePoseKeypointsValues["NOSE"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_EYE"],
+			BlazePoseKeypointsValues["NOSE"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_SHOULDER"],
+			BlazePoseKeypointsValues["RIGHT_SHOULDER"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_SHOULDER"],
+			BlazePoseKeypointsValues["LEFT_ELBOW"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_ELBOW"],
+			BlazePoseKeypointsValues["LEFT_WRIST"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_WRIST"],
+			BlazePoseKeypointsValues["LEFT_THUMB"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_WRIST"],
+			BlazePoseKeypointsValues["LEFT_INDEX"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_WRIST"],
+			BlazePoseKeypointsValues["LEFT_PINKY"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_SHOULDER"],
+			BlazePoseKeypointsValues["RIGHT_ELBOW"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_ELBOW"],
+			BlazePoseKeypointsValues["RIGHT_WRIST"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_WRIST"],
+			BlazePoseKeypointsValues["RIGHT_THUMB"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_WRIST"],
+			BlazePoseKeypointsValues["RIGHT_INDEX"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_WRIST"],
+			BlazePoseKeypointsValues["RIGHT_PINKY"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_SHOULDER"],
+			BlazePoseKeypointsValues["LEFT_HIP"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_SHOULDER"],
+			BlazePoseKeypointsValues["RIGHT_HIP"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_HIP"],
+			BlazePoseKeypointsValues["RIGHT_HIP"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_HIP"],
+			BlazePoseKeypointsValues["LEFT_KNEE"],
+		],
+		[
+			BlazePoseKeypointsValues["LEFT_KNEE"],
+			BlazePoseKeypointsValues["LEFT_ANKLE"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_HIP"],
+			BlazePoseKeypointsValues["RIGHT_KNEE"],
+		],
+		[
+			BlazePoseKeypointsValues["RIGHT_KNEE"],
+			BlazePoseKeypointsValues["RIGHT_ANKLE"],
+		],
 	];
 
 	for (let p of pairs) {
@@ -1076,10 +1140,10 @@ export const MoveNetKeypoints = {
 
 export function getBasisFromPose(poseData) {
 	if (
-		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].score < 0.5 ||
-		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].score < 0.5 ||
-		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].score < 0.5 ||
-		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].score < 0.5
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].visibility < 0.5 ||
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].visibility < 0.5 ||
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].visibility < 0.5 ||
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].visibility < 0.5
 	) {
 		return new Matrix4();
 	}
@@ -1134,23 +1198,23 @@ export function getBasisFromPose(poseData) {
 
 export function isUpperBodyVisible(poseData) {
 	return (
-		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["LEFT_WRIST"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].score > 0.5
+		poseData[BlazePoseKeypointsValues["LEFT_SHOULDER"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_SHOULDER"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_ELBOW"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_ELBOW"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_WRIST"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_WRIST"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_HIP"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_HIP"]].visibility > 0.5
 	);
 }
 
 export function isLowerBodyVisible(poseData) {
 	return (
-		poseData[BlazePoseKeypointsValues["LEFT_KNEE"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["RIGHT_KNEE"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["LEFT_ANKLE"]].score > 0.5 &&
-		poseData[BlazePoseKeypointsValues["RIGHT_ANKLE"]].score > 0.5
+		poseData[BlazePoseKeypointsValues["LEFT_KNEE"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_KNEE"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["LEFT_ANKLE"]].visibility > 0.5 &&
+		poseData[BlazePoseKeypointsValues["RIGHT_ANKLE"]].visibility > 0.5
 	);
 }
 
@@ -1163,7 +1227,7 @@ export function visibleJoints(poseData) {
 	const joints = [];
 
 	for (let name in BlazePoseKeypointsValues) {
-		if (poseData[BlazePoseKeypointsValues[name]].score > 0.5) {
+		if (poseData[BlazePoseKeypointsValues[name]].visibility > 0.5) {
 			joints.push(name);
 		}
 	}

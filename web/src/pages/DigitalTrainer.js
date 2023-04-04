@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
-import {Pose} from "@mediapipe/pose";
+import { Pose } from "@mediapipe/pose";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
 // import "@tensorflow/tfjs-backend-webgl";
@@ -182,8 +182,8 @@ export default function DigitalTrainer() {
 		createEgScene();
 
 		invokeCamera(videoRef.current, () => {
-			setloadingCamera(false)
-		})
+			setloadingCamera(false);
+		});
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
@@ -203,7 +203,7 @@ export default function DigitalTrainer() {
 		poseDetector.current.onResults(capturePoseCallback);
 
 		poseDetector.current.initialize().then(() => {
-			setloadingModel(false)
+			setloadingModel(false);
 
 			animate();
 		});
@@ -218,7 +218,6 @@ export default function DigitalTrainer() {
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/yundong.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/girl.glb"),
 		]).then(([glb, glbEg]) => {
-
 			// add 3d model to main scene
 			mannequinModel.current = glb.scene.children[0];
 			mannequinModel.current.position.set(0, -1, 0);
@@ -536,7 +535,6 @@ export default function DigitalTrainer() {
 			videoRef.current.readyState >= 2 &&
 			counter.current % 3 === 0
 		) {
-
 			poseDetector.current.send({ image: videoRef.current });
 		} else {
 			keypoints3D.current = null;
@@ -569,11 +567,7 @@ export default function DigitalTrainer() {
 		/**
 		 * after get pose results
 		 */
-		if (
-			!result ||
-			!result.poseLandmarks ||
-			!result.poseWorldLandmarks
-		) {
+		if (!result || !result.poseLandmarks || !result.poseWorldLandmarks) {
 			// keypoints2D.current = null;
 			keypoints3D.current = null;
 			return;
@@ -594,7 +588,6 @@ export default function DigitalTrainer() {
 		comparePose();
 
 		manipulateSilhouette();
-	
 	}
 
 	function comparePose() {
@@ -673,11 +666,17 @@ export default function DigitalTrainer() {
 					// apply color to silhouette
 					// passed key parts limbs to `applyColor`,
 					// only change the color of the key parts
-					if (silhouette.current && animationJSONs.current && exerciseQueue.current && exerciseQueueIndx.current) {
+					if (
+						silhouette.current &&
+						animationJSONs.current &&
+						exerciseQueue.current &&
+						exerciseQueueIndx.current
+					) {
 						silhouette.current.applyColor(
 							colors,
 							animationJSONs.current[
-								exerciseQueue.current[exerciseQueueIndx.current].key
+								exerciseQueue.current[exerciseQueueIndx.current]
+									.key
 							].key_parts || [
 								"LeftArm",
 								"RightArm",
@@ -1101,7 +1100,11 @@ export default function DigitalTrainer() {
 				</div>
 			)}
 
-			{(loadingCamera || loadingModel || loadingCharacter || loadingSilhouette || loadingTraining) && (
+			{(loadingCamera ||
+				loadingModel ||
+				loadingCharacter ||
+				loadingSilhouette ||
+				loadingTraining) && (
 				<div className="mask">
 					{loadingCamera && (
 						<div>
