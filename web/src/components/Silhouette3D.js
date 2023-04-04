@@ -23,10 +23,10 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	 */
 
 	if (
-		(left_shoulder2.score && left_shoulder2.score < 0.5) ||
-		(right_shoulder2.score && right_shoulder2.score < 0.5) ||
-		(left_hip2.score && left_hip2.score < 0.5) ||
-		(right_hip2.score && right_hip2.score < 0.5)
+		(left_shoulder2.visibility && left_shoulder2.visibility < 0.5) ||
+		(right_shoulder2.visibility && right_shoulder2.visibility < 0.5) ||
+		(left_hip2.visibility && left_hip2.visibility < 0.5) ||
+		(right_hip2.visibility && right_hip2.visibility < 0.5)
 	) {
 		return [false, false];
 	}
@@ -123,8 +123,8 @@ function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
 	const end_pos = pose3D[BlazePoseKeypointsValues[joint_end]];
 
 	if (
-		(start_pos.score && start_pos.score < 0.5) ||
-		(end_pos.score && end_pos.score < 0.5)
+		(start_pos.visibility && start_pos.visibility < 0.5) ||
+		(end_pos.visibility && end_pos.visibility < 0.5)
 	) {
 		return false;
 	}
@@ -440,7 +440,7 @@ export default class Silhouette3D {
 	constructor(geometry) {
 		// color of material
 		this.color = 0x44aa88;
-		// opacity of material, when pose score is lower/higher then 0.5
+		// opacity of material, when pose.visibility is lower/higher then 0.5
 		this.invisible_opacity = 0.2;
 		this.visible_opacity = 0.6;
 
@@ -1185,10 +1185,10 @@ export default class Silhouette3D {
 		const right_hip = pose2D[BlazePoseKeypointsValues["LEFT_HIP"]];
 
 		if (
-			left_shoulder.score < 0.5 ||
-			right_shoulder.score < 0.5 ||
-			left_hip.score < 0.5 ||
-			right_hip.score < 0.5
+			left_shoulder.visibility < 0.5 ||
+			right_shoulder.visibility < 0.5 ||
+			left_hip.visibility < 0.5 ||
+			right_hip.visibility < 0.5
 		) {
 			return;
 		}

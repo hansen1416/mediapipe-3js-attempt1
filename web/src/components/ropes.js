@@ -884,6 +884,60 @@ export function drawPoseKeypoints(keypoints, z_value) {
 	return g;
 }
 
+export function drawPoseKeypointsMediaPipe(keypoints) {
+	const g = new Group();
+
+	const visibleparts = {};
+
+	for (const i in keypoints) {
+
+		const point = keypoints[i]
+
+		if (point.visibility > 0.5) {
+			const d = box(0.3);
+
+			d.position.set(point.x, point.y, point.z);
+
+			g.add(d);
+
+			visibleparts[i] = new Vector3(point.x, point.y, point.z);
+		}
+	}
+
+	const pairs = [
+		[BlazePoseKeypointsValues['LEFT_EYE'], BlazePoseKeypointsValues['NOSE']],
+		[BlazePoseKeypointsValues['RIGHT_EYE'], BlazePoseKeypointsValues['NOSE']],
+		[BlazePoseKeypointsValues['LEFT_SHOULDER'], BlazePoseKeypointsValues['RIGHT_SHOULDER']],
+		[BlazePoseKeypointsValues['LEFT_SHOULDER'], BlazePoseKeypointsValues['LEFT_ELBOW']],
+		[BlazePoseKeypointsValues['LEFT_ELBOW'], BlazePoseKeypointsValues['LEFT_WRIST']],
+		[BlazePoseKeypointsValues['LEFT_WRIST'], BlazePoseKeypointsValues['LEFT_THUMB']],
+		[BlazePoseKeypointsValues['LEFT_WRIST'], BlazePoseKeypointsValues['LEFT_INDEX']],
+		[BlazePoseKeypointsValues['LEFT_WRIST'], BlazePoseKeypointsValues['LEFT_PINKY']],
+		[BlazePoseKeypointsValues['RIGHT_SHOULDER'], BlazePoseKeypointsValues['RIGHT_ELBOW']],
+		[BlazePoseKeypointsValues['RIGHT_ELBOW'], BlazePoseKeypointsValues['RIGHT_WRIST']],
+		[BlazePoseKeypointsValues['RIGHT_WRIST'], BlazePoseKeypointsValues['RIGHT_THUMB']],
+		[BlazePoseKeypointsValues['RIGHT_WRIST'], BlazePoseKeypointsValues['RIGHT_INDEX']],
+		[BlazePoseKeypointsValues['RIGHT_WRIST'], BlazePoseKeypointsValues['RIGHT_PINKY']],
+		[BlazePoseKeypointsValues['LEFT_SHOULDER'], BlazePoseKeypointsValues['LEFT_HIP']],
+		[BlazePoseKeypointsValues['RIGHT_SHOULDER'], BlazePoseKeypointsValues['RIGHT_HIP']],
+		[BlazePoseKeypointsValues['LEFT_HIP'], BlazePoseKeypointsValues['RIGHT_HIP']],
+		[BlazePoseKeypointsValues['LEFT_HIP'], BlazePoseKeypointsValues['LEFT_KNEE']],
+		[BlazePoseKeypointsValues['LEFT_KNEE'], BlazePoseKeypointsValues['LEFT_ANKLE']],
+		[BlazePoseKeypointsValues['RIGHT_HIP'], BlazePoseKeypointsValues['RIGHT_KNEE']],
+		[BlazePoseKeypointsValues['RIGHT_KNEE'], BlazePoseKeypointsValues['RIGHT_ANKLE']],
+	];
+
+	for (let p of pairs) {
+		if (visibleparts[p[0]] && visibleparts[p[1]]) {
+			const l = line(visibleparts[p[0]], visibleparts[p[1]]);
+
+			g.add(l);
+		}
+	}
+
+	return g;
+}
+
 export const BlazePoseKeypoints = {
 	0: "NOSE",
 	1: "LEFT_EYE_INNER",

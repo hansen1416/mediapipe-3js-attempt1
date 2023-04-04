@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
-import * as poseDetection from "@tensorflow-models/pose-detection";
+// import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
+import {Pose} from "@mediapipe/pose";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
 import Silhouette3D from "../components/Silhouette3D";
 // import T from "../components/T";
 import {
 	// BlazePoseKeypoints,
-	BlazePoseConfig,
-	drawPoseKeypoints,
+	// BlazePoseConfig,
+	drawPoseKeypointsMediaPipe,
 	loadJSON,
 	// loadFBX,
 	startCamera,
@@ -65,14 +66,78 @@ export default function CloudVagabond() {
 
 		_scene(documentWidth, documentHeight);
 
-		Promise.all([
-			poseDetection.createDetector(
-				poseDetection.SupportedModels.BlazePose,
-				BlazePoseConfig
-			),
-		]).then(([detector]) => {
-			poseDetector.current = detector;
+		poseDetector.current = new Pose({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+			},
 		});
+		poseDetector.current.setOptions({
+			modelComplexity: 2,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+
+		poseDetector.current.onResults((result) => {
+			
+			if (
+				!result ||
+				!result.poseLandmarks ||
+				!result.poseWorldLandmarks
+			) {
+				return;
+			}
+
+			{
+				const pose3D = cloneDeep(result.poseWorldLandmarks);
+
+				const width_ratio = 30;
+				const height_ratio = (width_ratio * 480) / 640;
+
+				// multiply x,y by differnt factor
+				for (let v of pose3D) {
+					v["x"] *= -width_ratio;
+					v["y"] *= -height_ratio;
+					v["z"] *= -width_ratio;
+				}
+
+				const g = drawPoseKeypointsMediaPipe(pose3D);
+
+				g.scale.set(8, 8, 8);
+
+				setcapturedPose(g);
+
+				figure.current.applyPose(pose3D);
+
+				// const pose2D = cloneDeep(poses[0]["keypoints"]);
+
+				// figure.current.applyPosition(
+				// 	pose2D,
+				// 	subsceneWidthRef.current,
+				// 	subsceneHeightRef.current,
+				// 	visibleWidth.current,
+				// 	visibleHeight.current
+				// );
+			}
+		});
+
+		poseDetector.current.initialize().then(() => {
+			console.info("Loaded pose model");
+
+			animate();
+		});
+
+		// Promise.all([
+		// 	poseDetection.createDetector(
+		// 		poseDetection.SupportedModels.BlazePose,
+		// 		BlazePoseConfig
+		// 	),
+		// ]).then(([detector]) => {
+		// 	poseDetector.current = detector;
+		// });
 
 		Promise.all(
 			Silhouette3D.limbs.map((name) =>
@@ -93,8 +158,6 @@ export default function CloudVagabond() {
 			scene.current.add(body);
 		});
 
-		animate();
-
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
 		};
@@ -107,54 +170,10 @@ export default function CloudVagabond() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 6 === 0
+			counter.current % 3 === 0
 		) {
-			(async () => {
-				const poses = await poseDetector.current.estimatePoses(
-					videoRef.current
-				);
 
-				if (
-					!poses ||
-					!poses[0] ||
-					!poses[0]["keypoints"] ||
-					!poses[0]["keypoints3D"]
-				) {
-					return;
-				}
-
-				{
-					const pose3D = cloneDeep(poses[0]["keypoints3D"]);
-
-					const width_ratio = 30;
-					const height_ratio = (width_ratio * 480) / 640;
-
-					// multiply x,y by differnt factor
-					for (let v of pose3D) {
-						v["x"] *= -width_ratio;
-						v["y"] *= -height_ratio;
-						v["z"] *= -width_ratio;
-					}
-
-					const g = drawPoseKeypoints(pose3D);
-
-					g.scale.set(8, 8, 8);
-
-					setcapturedPose(g);
-
-					figure.current.applyPose(pose3D);
-
-					const pose2D = cloneDeep(poses[0]["keypoints"]);
-
-					figure.current.applyPosition(
-						pose2D,
-						subsceneWidthRef.current,
-						subsceneHeightRef.current,
-						visibleWidth.current,
-						visibleHeight.current
-					);
-				}
-			})();
+			poseDetector.current.send({ image: videoRef.current });
 		}
 
 		counter.current += 1;
