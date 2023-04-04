@@ -22,7 +22,7 @@ import PoseSync from "../components/PoseSync";
 import {
 	// BlazePoseConfig,
 	loadJSON,
-	startCamera,
+	invokeCamera,
 	traverseModel,
 	calculateLongestTrackFromAnimation,
 	applyTransfer,
@@ -74,6 +74,7 @@ export default function DigitalTrainer() {
 	// ======== for comparing end
 
 	// ======== loading status
+	const [loadingCamera, setloadingCamera] = useState(true);
 	const [loadingModel, setloadingModel] = useState(true);
 	const [loadingCharacter, setloadingCharacter] = useState(true);
 	const [loadingSilhouette, setloadingSilhouette] = useState(true);
@@ -181,6 +182,10 @@ export default function DigitalTrainer() {
 		createEgScene();
 
 		animate();
+
+		invokeCamera(videoRef.current, () => {
+			setloadingCamera(false)
+		})
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
@@ -354,7 +359,7 @@ export default function DigitalTrainer() {
 				initializeExercise();
 
 				if (videoRef.current) {
-					startCamera(videoRef.current);
+					// startCamera(videoRef.current);
 
 					inExercise.current = true;
 
@@ -1092,26 +1097,31 @@ export default function DigitalTrainer() {
 				</div>
 			)}
 
-			{(loadingModel || loadingCharacter || loadingSilhouette || loadingTraining) && (
+			{(loadingCamera || loadingModel || loadingCharacter || loadingSilhouette || loadingTraining) && (
 				<div className="mask">
+					{loadingCamera && (
+						<div>
+							<span>Preparing Model....</span>
+						</div>
+					)}
 					{loadingModel && (
 						<div>
-							<span>Loading Model....</span>
+							<span>Preparing Model....</span>
 						</div>
 					)}
 					{loadingCharacter && (
 						<div>
-							<span>Loading Character....</span>
+							<span>Preparing Character....</span>
 						</div>
 					)}
 					{loadingSilhouette && (
 						<div>
-							<span>Loading Silhouette...</span>.
+							<span>Preparing Silhouette...</span>.
 						</div>
 					)}
 					{loadingTraining && (
 						<div>
-							<span>Loading Training Data....</span>
+							<span>Preparing Training Data....</span>
 						</div>
 					)}
 				</div>

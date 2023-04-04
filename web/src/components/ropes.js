@@ -62,6 +62,75 @@ export function getUserMedia(constraints, successCallback, errorCallback) {
 	}
 }
 
+export function startCamera(videoElement) {
+	getUserMedia(
+		{ video: true },
+		(stream) => {
+			// Yay, now our webcam input is treated as a normal video and
+			// we can start having fun
+			try {
+				videoElement.srcObject = stream;
+
+				// let stream_settings = stream
+				// 	.getVideoTracks()[0]
+				// 	.getSettings();
+
+				// console.log(stream_settings);
+			} catch (error) {
+				videoElement.src = URL.createObjectURL(stream);
+			}
+			// Let's start drawing the canvas!
+		},
+		(err) => {
+			throw err;
+		}
+	);
+}
+
+export function invokeCamera(videoElement, callback) {
+
+	const errorCallback = (e) => {console.errro('camera error!!', e)}
+
+	const constraints = {
+		audio: false, 
+		facingMode: "user", // selfie camera
+		// facingMode: "environment", // back camera
+		video: { frameRate: { ideal: 20, max: 30 }, width: { ideal: 640, max: 640 }, height: { ideal: 480, max: 480 } },
+	}
+
+	const successCallback = (stream) => {
+
+		// Yay, now our webcam input is treated as a normal video and
+		// we can start having fun
+		try {
+			videoElement.srcObject = stream;
+
+			// console.log(stream_settings);
+		} catch (error) {
+			videoElement.src = URL.createObjectURL(stream);
+		}
+		
+		if (callback) {
+			callback()
+		}
+	}
+
+	navigator.getUserMedia = navigator.getUserMedia ||
+	navigator.webkitGetUserMedia ||
+	navigator.mozGetUserMedia ||
+	navigator.msGetUserMedia;
+
+	if (navigator.mediaDevices) {
+		navigator.mediaDevices
+			.getUserMedia(constraints)
+			.then(successCallback, errorCallback);
+	} else if (navigator.getUserMedia) {
+		navigator.getUserMedia(constraints, successCallback, errorCallback);
+	} else {
+		alert('getUserMedia() is not supported in your browser');
+	}
+}
+
 export function degreesToRadians(degrees) {
 	return degrees * (Math.PI / 180);
 }
@@ -638,31 +707,6 @@ export function bvhToQuaternion(x, y, z) {
 			THREE.MathUtils.degToRad(y),
 			order
 		)
-	);
-}
-
-export function startCamera(videoElement) {
-	getUserMedia(
-		{ video: true },
-		(stream) => {
-			// Yay, now our webcam input is treated as a normal video and
-			// we can start having fun
-			try {
-				videoElement.srcObject = stream;
-
-				// let stream_settings = stream
-				// 	.getVideoTracks()[0]
-				// 	.getSettings();
-
-				// console.log(stream_settings);
-			} catch (error) {
-				videoElement.src = URL.createObjectURL(stream);
-			}
-			// Let's start drawing the canvas!
-		},
-		(err) => {
-			throw err;
-		}
 	);
 }
 
