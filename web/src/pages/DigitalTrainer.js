@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
-import * as poseDetection from "@tensorflow-models/pose-detection";
+// import * as poseDetection from "@tensorflow-models/pose-detection";
+import {Pose} from "@mediapipe/pose";
 // import * as tf from "@tensorflow/tfjs-core";
 // Register one of the TF.js backends.
-import "@tensorflow/tfjs-backend-webgl";
+// import "@tensorflow/tfjs-backend-webgl";
 import RangeSlider from "react-range-slider-input";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
@@ -19,7 +20,7 @@ import Counter from "../components/Counter";
 import PoseSync from "../components/PoseSync";
 
 import {
-	BlazePoseConfig,
+	// BlazePoseConfig,
 	loadJSON,
 	startCamera,
 	traverseModel,
@@ -61,7 +62,7 @@ export default function DigitalTrainer() {
 	// blazepose pose model
 	const poseDetector = useRef(null);
 	// landmarks of human joints
-	const keypoints2D = useRef(null);
+	// const keypoints2D = useRef(null);
 	const keypoints3D = useRef(null);
 	// compare by joints distances
 	const poseSync = useRef(null);
@@ -73,6 +74,7 @@ export default function DigitalTrainer() {
 	// ======== for comparing end
 
 	// ======== loading status
+	const [loadingModel, setloadingModel] = useState(true);
 	const [loadingCharacter, setloadingCharacter] = useState(true);
 	const [loadingSilhouette, setloadingSilhouette] = useState(true);
 	const [loadingTraining, setloadingTraining] = useState(true);
@@ -178,19 +180,39 @@ export default function DigitalTrainer() {
 		// sub scene play example exercise
 		createEgScene();
 
-		// setsilhouetteSize(0.2 * documentHeight);
+		animate();
+
+		poseDetector.current = new Pose({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+			},
+		});
+		poseDetector.current.setOptions({
+			modelComplexity: 2,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+
+		poseDetector.current.onResults(capturePoseCallback);
+
+		poseDetector.current.initialize().then(() => {
+			setloadingModel(false)
+		});
 
 		Promise.all([
-			poseDetection.createDetector(
-				poseDetection.SupportedModels.BlazePose,
-				BlazePoseConfig
-			),
+			// poseDetection.createDetector(
+			// 	poseDetection.SupportedModels.BlazePose,
+			// 	BlazePoseConfig
+			// ),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/yundong.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/girl.glb"),
-		]).then(([detector, glb, glbEg]) => {
-			poseDetector.current = detector;
+		]).then(([glb, glbEg]) => {
 
 			// add 3d model to main scene
 			mannequinModel.current = glb.scene.children[0];
@@ -210,8 +232,6 @@ export default function DigitalTrainer() {
 			modelEg.position.set(0, -1, 0);
 
 			mixer.current = new THREE.AnimationMixer(modelEg);
-
-			animate();
 
 			setloadingCharacter(false);
 		});
@@ -511,11 +531,8 @@ export default function DigitalTrainer() {
 			videoRef.current.readyState >= 2 &&
 			counter.current % 3 === 0
 		) {
-			capturePose();
 
-			comparePose();
-
-			manipulateSilhouette();
+			poseDetector.current.send({ image: videoRef.current });
 		} else {
 			keypoints3D.current = null;
 		}
@@ -543,45 +560,36 @@ export default function DigitalTrainer() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	function capturePose() {
+	function capturePoseCallback(result) {
 		/**
-		 * when video is ready, we can capture the pose
-		 *
-		 * calculate `keypoints3D.current`
-		 *
-		 * maybe we can do calculation in async then, since the other place will check `keypoints3D.current`
+		 * after get pose results
 		 */
-		(async () => {
-			const poses = await poseDetector.current.estimatePoses(
-				videoRef.current
-				// { flipHorizontal: false }
-				// timestamp
-			);
+		if (
+			!result ||
+			!result.poseLandmarks ||
+			!result.poseWorldLandmarks
+		) {
+			// keypoints2D.current = null;
+			keypoints3D.current = null;
+			return;
+		}
 
-			if (
-				!poses ||
-				!poses[0] ||
-				!poses[0]["keypoints3D"] ||
-				!poseSync.current
-			) {
-				keypoints2D.current = null;
-				keypoints3D.current = null;
-				return;
-			}
+		keypoints3D.current = cloneDeep(result.poseWorldLandmarks);
 
-			keypoints2D.current = cloneDeep(poses[0]["keypoints"]);
-			keypoints3D.current = cloneDeep(poses[0]["keypoints3D"]);
+		const width_ratio = 30;
+		const height_ratio = (width_ratio * 480) / 640;
 
-			const width_ratio = 30;
-			const height_ratio = (width_ratio * 480) / 640;
+		// multiply x,y by differnt factor
+		for (let v of keypoints3D.current) {
+			v["x"] *= -width_ratio;
+			v["y"] *= -height_ratio;
+			v["z"] *= -width_ratio;
+		}
 
-			// multiply x,y by differnt factor
-			for (let v of keypoints3D.current) {
-				v["x"] *= -width_ratio;
-				v["y"] *= -height_ratio;
-				v["z"] *= -width_ratio;
-			}
-		})();
+		comparePose();
+
+		manipulateSilhouette();
+	
 	}
 
 	function comparePose() {
@@ -617,13 +625,13 @@ export default function DigitalTrainer() {
 			return;
 		}
 
-		silhouette.current.applyPosition(
-			keypoints2D.current,
-			subsceneWidthRef.current,
-			subsceneHeightRef.current,
-			visibleWidthSub.current,
-			visibleHeightSub.current
-		);
+		// silhouette.current.applyPosition(
+		// 	keypoints2D.current,
+		// 	subsceneWidthRef.current,
+		// 	subsceneHeightRef.current,
+		// 	visibleWidthSub.current,
+		// 	visibleHeightSub.current
+		// );
 
 		silhouette.current.applyPose(keypoints3D.current);
 
@@ -1084,8 +1092,13 @@ export default function DigitalTrainer() {
 				</div>
 			)}
 
-			{(loadingCharacter || loadingSilhouette || loadingTraining) && (
+			{(loadingModel || loadingCharacter || loadingSilhouette || loadingTraining) && (
 				<div className="mask">
+					{loadingModel && (
+						<div>
+							<span>Loading Model....</span>
+						</div>
+					)}
 					{loadingCharacter && (
 						<div>
 							<span>Loading Character....</span>

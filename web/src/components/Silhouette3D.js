@@ -1102,8 +1102,9 @@ export default class Silhouette3D {
 
 		const rotations = getQuaternions(pose3D);
 
-		rotations.neck = rotations.chest ? rotations.chest.clone() : false;
-		rotations.head = rotations.chest ? rotations.chest.clone() : false;
+		rotations.neck = pose3D[BlazePoseKeypointsValues["NOSE"]].visibility > 0.5 ? new THREE.Quaternion() : false
+		rotations.head = pose3D[BlazePoseKeypointsValues["NOSE"]].visibility > 0.5 ? new THREE.Quaternion() : false
+
 		rotations.leftShoulder = rotations.leftArm
 			? rotations.leftArm.clone()
 			: false;
