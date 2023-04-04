@@ -1101,7 +1101,7 @@ export default function DigitalTrainer() {
 				<div className="mask">
 					{loadingCamera && (
 						<div>
-							<span>Preparing Model....</span>
+							<span>Preparing Camera....</span>
 						</div>
 					)}
 					{loadingModel && (

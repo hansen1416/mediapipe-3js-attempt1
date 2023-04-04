@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import Button from "react-bootstrap/Button";
+// import Button from "react-bootstrap/Button";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import {Pose} from "@mediapipe/pose";
@@ -15,7 +15,7 @@ import {
 	drawPoseKeypointsMediaPipe,
 	loadJSON,
 	// loadFBX,
-	startCamera,
+	invokeCamera,
 	// getMeshSize,
 	jsonToBufferGeometry,
 } from "../components/ropes";
@@ -49,8 +49,8 @@ export default function CloudVagabond() {
 	const visibleWidth = useRef(0);
 	const visibleHeight = useRef(0);
 
-	const [startBtnShow, setstartBtnShow] = useState(true);
-	const [stopBtnShow, setstopBtnShow] = useState(false);
+	// const [startBtnShow, setstartBtnShow] = useState(true);
+	// const [stopBtnShow, setstopBtnShow] = useState(false);
 
 	// const meshes = useRef({});
 
@@ -65,6 +65,12 @@ export default function CloudVagabond() {
 		subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
 
 		_scene(documentWidth, documentHeight);
+
+		animate();
+
+		invokeCamera(videoRef.current, () => {
+			
+		})
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
@@ -126,8 +132,6 @@ export default function CloudVagabond() {
 
 		poseDetector.current.initialize().then(() => {
 			console.info("Loaded pose model");
-
-			animate();
 		});
 
 		// Promise.all([
@@ -170,7 +174,8 @@ export default function CloudVagabond() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0
+			counter.current % 3 === 0 &&
+			poseDetector.current
 		) {
 
 			poseDetector.current.send({ image: videoRef.current });
@@ -261,7 +266,7 @@ export default function CloudVagabond() {
 				/>
 			</div>
 			{/* // ========= captured pose logic */}
-			<div className="controls">
+			{/* <div className="controls">
 				<div style={{ marginBottom: "40px" }}>
 					{startBtnShow && (
 						<Button
@@ -295,7 +300,7 @@ export default function CloudVagabond() {
 						</Button>
 					)}
 				</div>
-			</div>
+			</div> */}
 		</div>
 	);
 }
