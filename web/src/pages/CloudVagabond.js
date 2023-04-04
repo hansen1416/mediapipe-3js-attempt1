@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // import Button from "react-bootstrap/Button";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
-import {Pose} from "@mediapipe/pose";
+import { Pose } from "@mediapipe/pose";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
 import Silhouette3D from "../components/Silhouette3D";
@@ -49,10 +49,9 @@ export default function CloudVagabond() {
 	const visibleWidth = useRef(0);
 	const visibleHeight = useRef(0);
 
-	// const [startBtnShow, setstartBtnShow] = useState(true);
-	// const [stopBtnShow, setstopBtnShow] = useState(false);
-
-	// const meshes = useRef({});
+	const [loadingCamera, setloadingCamera] = useState(true);
+	const [loadingModel, setloadingModel] = useState(true);
+	const [loadingSilhouette, setloadingSilhouette] = useState(true);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -67,8 +66,8 @@ export default function CloudVagabond() {
 		_scene(documentWidth, documentHeight);
 
 		invokeCamera(videoRef.current, () => {
-			
-		})
+			setloadingCamera(false);
+		});
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
@@ -86,7 +85,6 @@ export default function CloudVagabond() {
 		});
 
 		poseDetector.current.onResults((result) => {
-			
 			if (
 				!result ||
 				!result.poseLandmarks ||
@@ -103,7 +101,7 @@ export default function CloudVagabond() {
 
 				// multiply x,y by differnt factor
 				for (let v of pose3D) {
-					v["x"] *= -width_ratio;
+					v["x"] *= width_ratio;
 					v["y"] *= -height_ratio;
 					v["z"] *= -width_ratio;
 				}
@@ -129,6 +127,7 @@ export default function CloudVagabond() {
 		});
 
 		poseDetector.current.initialize().then(() => {
+			setloadingModel(false);
 			animate();
 		});
 
@@ -158,6 +157,8 @@ export default function CloudVagabond() {
 			// getMeshSize(figure.current.foot_l.mesh, scene.current)
 
 			scene.current.add(body);
+
+			setloadingSilhouette(false);
 		});
 
 		return () => {
@@ -175,7 +176,6 @@ export default function CloudVagabond() {
 			counter.current % 3 === 0 &&
 			poseDetector.current
 		) {
-
 			poseDetector.current.send({ image: videoRef.current });
 		}
 
@@ -263,42 +263,25 @@ export default function CloudVagabond() {
 					cameraZ={200}
 				/>
 			</div>
-			{/* // ========= captured pose logic */}
-			{/* <div className="controls">
-				<div style={{ marginBottom: "40px" }}>
-					{startBtnShow && (
-						<Button
-							variant="primary"
-							onClick={() => {
-								if (videoRef.current) {
-									startCamera(videoRef.current);
-
-									// count down loop hook. default 5 seconds
-
-									setstartBtnShow(false);
-									setstopBtnShow(true);
-								}
-							}}
-						>
-							Start
-						</Button>
+			{(loadingCamera || loadingModel || loadingSilhouette) && (
+				<div className="mask">
+					{loadingCamera && (
+						<div>
+							<span>Preparing Camera....</span>
+						</div>
 					)}
-					{stopBtnShow && (
-						<Button
-							variant="secondary"
-							onClick={() => {
-								if (videoRef.current) {
-									videoRef.current.srcObject = null;
-
-									setstopBtnShow(false);
-								}
-							}}
-						>
-							Stop
-						</Button>
+					{loadingModel && (
+						<div>
+							<span>Preparing Model....</span>
+						</div>
+					)}
+					{loadingSilhouette && (
+						<div>
+							<span>Preparing Silhouette...</span>.
+						</div>
 					)}
 				</div>
-			</div> */}
+			)}
 		</div>
 	);
 }
