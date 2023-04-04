@@ -89,11 +89,11 @@ export function startCamera(videoElement) {
 
 export function invokeCamera(videoElement, callback) {
 
-	const errorCallback = (e) => {console.errro('camera error!!', e)}
+	const errorCallback = (e) => {alert('camera error!!', e)}
 
 	const constraints = {
 		audio: false, 
-		facingMode: "user", // selfie camera
+		// facingMode: "user", // selfie camera
 		// facingMode: "environment", // back camera
 		video: { frameRate: { ideal: 20, max: 30 }, width: { ideal: 640, max: 640 }, height: { ideal: 480, max: 480 } },
 	}
@@ -107,7 +107,7 @@ export function invokeCamera(videoElement, callback) {
 
 			// console.log(stream_settings);
 		} catch (error) {
-			videoElement.src = URL.createObjectURL(stream);
+			videoElement.src = window.URL.createObjectURL(stream);
 		}
 		
 		if (callback) {

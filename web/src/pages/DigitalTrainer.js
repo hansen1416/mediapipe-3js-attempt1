@@ -181,8 +181,6 @@ export default function DigitalTrainer() {
 		// sub scene play example exercise
 		createEgScene();
 
-		animate();
-
 		invokeCamera(videoRef.current, () => {
 			setloadingCamera(false)
 		})
@@ -206,6 +204,8 @@ export default function DigitalTrainer() {
 
 		poseDetector.current.initialize().then(() => {
 			setloadingModel(false)
+
+			animate();
 		});
 
 		Promise.all([

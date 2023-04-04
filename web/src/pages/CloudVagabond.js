@@ -66,8 +66,6 @@ export default function CloudVagabond() {
 
 		_scene(documentWidth, documentHeight);
 
-		animate();
-
 		invokeCamera(videoRef.current, () => {
 			
 		})
@@ -131,7 +129,7 @@ export default function CloudVagabond() {
 		});
 
 		poseDetector.current.initialize().then(() => {
-			console.info("Loaded pose model");
+			animate();
 		});
 
 		// Promise.all([
