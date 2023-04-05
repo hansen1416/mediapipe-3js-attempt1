@@ -10,11 +10,42 @@
 }
 .digital-trainer .controls {
   position: absolute;
-  min-width: 200px;
-  width: auto;
-  right: 6vh;
-  bottom: 6vh;
+  min-width: 160px;
+  right: 16px;
+  bottom: 0;
+  font-size: 20px;
+}
+.digital-trainer .controls > div {
+  margin-bottom: 16px;
+}
+.digital-trainer .controls .buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.digital-trainer .controls .training-list i {
+  font-size: 14px;
+}
+.digital-trainer .controls .training-list ul li {
+  text-decoration: underline;
+}
+.digital-trainer .controls .training-list ul li:hover {
+  opacity: 0.8;
+}
+.digital-trainer .controls .diff-score {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.digital-trainer .controls .diff-score .current-score {
   font-size: 24px;
+}
+.digital-trainer .controls .diff-score .set-score {
+  margin: 0 10px;
+}
+.digital-trainer .controls .diff-score .slider {
+  flex-grow: 1;
 }
 .digital-trainer .info {
   position: absolute;

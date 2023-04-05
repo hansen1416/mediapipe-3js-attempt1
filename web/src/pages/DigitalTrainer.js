@@ -30,7 +30,7 @@ import {
 	loadGLTF,
 	// loadFBX,
 	jsonToBufferGeometry,
-	roundToTwo,
+	// roundToTwo,
 } from "../components/ropes";
 
 const createWorker = createWorkerFactory(() =>
@@ -611,7 +611,7 @@ export default function DigitalTrainer() {
 
 			// `diffScore` is a pearson correlation
 			// 1 means pose perfectly matched
-			setdiffScore(roundToTwo(poseSync.current.diffScore));
+			setdiffScore(~~poseSync.current.diffScore);
 		}
 	}
 
@@ -636,7 +636,10 @@ export default function DigitalTrainer() {
 		// pass keypoints3d data to web worker,
 		// so it can analysis the user's kinematics data
 		// decide its amplitude, speed
-		if (workerAvailable.current) {
+		if (
+			workerAvailable.current &&
+			currentAnimationIndx.current < currentLongestTrack.current
+		) {
 			workerAvailable.current = false;
 
 			worker
@@ -978,25 +981,50 @@ export default function DigitalTrainer() {
 				</div>
 			</div>
 			<div className="controls">
-				<div>
-					<span style={{ fontSize: "40px", color: "#fff" }}>
-						{diffScore}
-					</span>
-				</div>
-				{/* <div style={{ color: "#fff" }}>
-					{distacneSortIndex &&
-						distacneSortIndex.map((indx, i) => {
-							return (
-								<div key={i}>
-									<span>{distanceNames[indx]}</span>
-									<span>
-										{vectorDistances[indx].toFixed(3)}
-									</span>
-								</div>
-							);
-						})}
-				</div> */}
-				<div style={{ marginBottom: "40px" }}>
+				{(startBtnShow || stopBtnShow) && (
+					<div className="buttons">
+						{startBtnShow && (
+							<Button
+								variant="primary"
+								onClick={() => {
+									// if (videoRef.current) {
+									// startCamera(videoRef.current);
+
+									inExercise.current = true;
+
+									// // count down loop hook. default 5 seconds
+
+									// getReadyCountDown.current = 300;
+
+									setstartBtnShow(false);
+									setstopBtnShow(true);
+									// }
+								}}
+							>
+								Continue
+							</Button>
+						)}
+						{stopBtnShow && (
+							<Button
+								variant="secondary"
+								onClick={() => {
+									// if (videoRef.current) {
+									// 	videoRef.current.srcObject = null;
+									// }
+
+									inExercise.current = false;
+
+									setstartBtnShow(true);
+									setstopBtnShow(false);
+								}}
+							>
+								Pause
+							</Button>
+						)}
+					</div>
+				)}
+				<div className="training-list">
+					<i>Choose a training to start</i>
 					<ul>
 						{trainingList &&
 							trainingList.map((item, i) => {
@@ -1014,60 +1042,16 @@ export default function DigitalTrainer() {
 							})}
 					</ul>
 				</div>
-				<div style={{ marginBottom: "40px" }}>
-					{startBtnShow && (
-						<Button
-							variant="primary"
-							onClick={() => {
-								// if (videoRef.current) {
-								// startCamera(videoRef.current);
-
-								inExercise.current = true;
-
-								// // count down loop hook. default 5 seconds
-
-								// getReadyCountDown.current = 300;
-
-								setstartBtnShow(false);
-								setstopBtnShow(true);
-								// }
-							}}
-						>
-							Continue
-						</Button>
-					)}
-					{stopBtnShow && (
-						<Button
-							variant="secondary"
-							onClick={() => {
-								// if (videoRef.current) {
-								// 	videoRef.current.srcObject = null;
-								// }
-
-								inExercise.current = false;
-
-								setstartBtnShow(true);
-								setstopBtnShow(false);
-							}}
-						>
-							Pause
-						</Button>
-					)}
-				</div>
-				<div
-					style={{
-						marginTop: "20px",
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "center",
-						alignItems: "center",
-					}}
-				>
-					<div
-						style={{
-							flexGrow: 1,
-						}}
-					>
+				<div className="diff-score">
+					<div className="current-score">
+						<span>{diffScore}</span>
+					</div>
+					<div className="set-score">
+						<Badge pill bg="primary">
+							{poseSyncThreshold}
+						</Badge>
+					</div>
+					<div className="slider">
 						<RangeSlider
 							className="single-thumb"
 							defaultValue={[0, poseSyncThreshold]}
@@ -1077,15 +1061,6 @@ export default function DigitalTrainer() {
 								setposeSyncThreshold(values[1]);
 							}}
 						/>
-					</div>
-					<div
-						style={{
-							marginLeft: "10px",
-						}}
-					>
-						<Badge pill bg="primary">
-							{poseSyncThreshold}
-						</Badge>
 					</div>
 				</div>
 			</div>
