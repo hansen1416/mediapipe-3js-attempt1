@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
 
 import "../styles/css/TrainingBuilder.css";
@@ -8,6 +10,12 @@ import MusclePercentage from "../components/MusclePercentage";
 
 export default function TrainingBuilder() {
 	const canvasRef = useRef(null);
+	const scene = useRef(null);
+	const camera = useRef(null);
+	const renderer = useRef(null);
+	const controls = useRef(null);
+
+	const [scenePos, setscenePos] = useState({ top: -1000, left: -1000 });
 
 	const kasten = useRef(null);
 
@@ -115,96 +123,164 @@ export default function TrainingBuilder() {
 		settrainingData(tmp);
 	}
 
+	function creatMainScene(viewWidth, viewHeight) {
+		/**
+		 * main scene, which plays exercise animation
+		 * @param {number} viewWidth
+		 * @param {number} viewHeight
+		 */
+		scene.current = new THREE.Scene();
+		// scene.current.background = new THREE.Color(0x022244);
+
+		camera.current = new THREE.PerspectiveCamera(
+			90,
+			viewWidth / viewHeight,
+			0.1,
+			1000
+		);
+
+		camera.current.position.set(0, 0, 2);
+
+		{
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.4);
+			dlight.position.set(0, 10, 10);
+			scene.current.add(dlight);
+			// env light
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
+		}
+
+		// drawScene();
+
+		renderer.current = new THREE.WebGLRenderer({
+			canvas: canvasRef.current,
+			alpha: true,
+			antialias: true,
+		});
+
+		renderer.current.toneMappingExposure = 0.5;
+
+		controls.current = new OrbitControls(camera.current, canvasRef.current);
+
+		controls.current.enablePan = false;
+		// controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
+		// controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
+		controls.current.minDistance = 2;
+		controls.current.maxDistance = 1000;
+		controls.current.enableDamping = true;
+
+		renderer.current.setSize(viewWidth, viewHeight);
+	}
+
 	return (
-		<div className="main-content training-builder" ref={kasten}>
-			<div className="title">
-				<h1>Training Builder</h1>
-			</div>
-			<div>
-				<TrainingSlideEditor
-					trainingData={trainingData}
-					settrainingData={settrainingData}
-				/>
-			</div>
-			<div className="filters">
-				<div>
-					<span>Filter placeholder</span>
+		<>
+			<div className="main-content training-builder" ref={kasten}>
+				<div className="title">
+					<h1>Training Builder</h1>
 				</div>
-			</div>
-			<div className="exercise-list">
-				{pageData.map((exercise, idx) => {
-					return (
-						<div
-							key={idx}
-							className="exercise-block"
-							style={{
-								width: itemWidth + "px",
-								height: itemHeight + "px",
-							}}
-						>
-							<div>
-								<img
-									style={{ width: "100%", height: "100%" }}
-									src={
-										exercise.img
-											? process.env.PUBLIC_URL +
-											  "/" +
-											  exercise.img
-											: process.env.PUBLIC_URL +
-											  "/thumb1.png"
-									}
-									alt=""
-								/>
-							</div>
-							<div>
-								<span>{exercise.name}</span>
-							</div>
-							<div>
-								<p>intensity: {exercise.intensity}</p>
-								<p>calories: {exercise.calories}</p>
-							</div>
-							<div>
-								<MusclePercentage
-									musclesPercent={exercise.muscles}
-								/>
-							</div>
-							<div>
-								<div>
-									<Button
-										variant="primary"
-										onClick={() => {
-											addExerciseToTraining(exercise);
+				<div>
+					<TrainingSlideEditor
+						trainingData={trainingData}
+						settrainingData={settrainingData}
+					/>
+				</div>
+				<div className="filters">
+					<div>
+						<span>Filter placeholder</span>
+					</div>
+				</div>
+				<div className="exercise-list">
+					{pageData.map((exercise, idx) => {
+						return (
+							<div
+								key={idx}
+								className="exercise-block"
+								style={{
+									width: itemWidth + "px",
+									height: itemHeight + "px",
+								}}
+							>
+								<div
+									onClick={(e) => {
+										const { top, left } =
+											e.target.getBoundingClientRect();
+
+										setscenePos({ top: top, left: left });
+									}}
+								>
+									<img
+										style={{
+											width: itemWidth - 20 + "px",
+											height: itemWidth - 20 + "px",
 										}}
-									>
-										Add
-									</Button>
+										src={
+											exercise.img
+												? process.env.PUBLIC_URL +
+												  "/" +
+												  exercise.img
+												: process.env.PUBLIC_URL +
+												  "/thumb1.png"
+										}
+										alt=""
+									/>
+								</div>
+								<div>
+									<span>{exercise.name}</span>
+								</div>
+								<div>
+									<p>intensity: {exercise.intensity}</p>
+									<p>calories: {exercise.calories}</p>
+								</div>
+								<div>
+									<MusclePercentage
+										musclesPercent={exercise.muscles}
+									/>
+								</div>
+								<div>
+									<div>
+										<Button
+											variant="primary"
+											onClick={() => {
+												addExerciseToTraining(exercise);
+											}}
+										>
+											Add
+										</Button>
+									</div>
 								</div>
 							</div>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
+				<div className="pagination">
+					{totalPage.map((p) => {
+						return (
+							<div
+								key={p}
+								className={[
+									"page",
+									currentPage === p ? "active" : "",
+								].join(" ")}
+								onClick={() => {
+									loadPageData(p);
+								}}
+							>
+								<span>{p}</span>
+							</div>
+						);
+					})}
+				</div>
 			</div>
-			<div className="pagination">
-				{totalPage.map((p) => {
-					return (
-						<div
-							key={p}
-							className={[
-								"page",
-								currentPage === p ? "active" : "",
-							].join(" ")}
-							onClick={() => {
-								loadPageData(p);
-							}}
-						>
-							<span>{p}</span>
-						</div>
-					);
-				})}
-			</div>
-			<div>
-				<canvas ref={canvasRef} />
-			</div>
-		</div>
+			<canvas
+				ref={canvasRef}
+				style={{
+					position: "absolute",
+					top: scenePos.top + "px",
+					left: scenePos.left + "px",
+					width: itemWidth - 20 + "px",
+					height: itemWidth - 20 + "px",
+				}}
+			/>
+		</>
 	);
 }
