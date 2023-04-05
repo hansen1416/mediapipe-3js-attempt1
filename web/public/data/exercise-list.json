@@ -15,7 +15,7 @@
 		}
 	},
 	{
-		"name": "capoeira",
+		"key": "capoeira",
 		"img": "",
 		"intensity": 10,
 		"calories": 20,
@@ -30,7 +30,7 @@
 		}
 	},
 	{
-		"name": "hip-hop-dancing2",
+		"key": "hip-hop-dancing2",
 		"img": "",
 		"intensity": 10,
 		"calories": 20,
@@ -45,7 +45,7 @@
 		}
 	},
 	{
-		"name": "jumping-jacks",
+		"key": "jumping-jacks",
 		"img": "",
 		"intensity": 10,
 		"calories": 20,
@@ -60,7 +60,7 @@
 		}
 	},
 	{
-		"name": "kettlebell-swing",
+		"key": "kettlebell-swing",
 		"img": "",
 		"intensity": 8,
 		"calories": 16,
@@ -75,7 +75,7 @@
 		}
 	},
 	{
-		"name": "push-up",
+		"key": "push-up",
 		"img": "",
 		"intensity": 10,
 		"calories": 24,

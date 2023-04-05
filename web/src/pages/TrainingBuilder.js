@@ -7,6 +7,7 @@ import { cloneDeep } from "lodash";
 import "../styles/css/TrainingBuilder.css";
 import TrainingSlideEditor from "../components/TrainingSlideEditor";
 import MusclePercentage from "../components/MusclePercentage";
+import { loadGLTF, loadJSON } from "../components/ropes";
 
 export default function TrainingBuilder() {
 	const canvasRef = useRef(null);
@@ -16,11 +17,15 @@ export default function TrainingBuilder() {
 	const controls = useRef(null);
 
 	const [scenePos, setscenePos] = useState({ top: -1000, left: -1000 });
+	const mixer = useRef(null);
+	const clock = new THREE.Clock();
+
+	const animationPointer = useRef(0);
 
 	const kasten = useRef(null);
 
-	const [itemWidth, setitemWidth] = useState(0);
-	const [itemHeight, setitemHeight] = useState(0);
+	const [itemWidth, setitemWidth] = useState(100);
+	const [itemHeight, setitemHeight] = useState(100);
 
 	const pageSize = 12;
 
@@ -44,9 +49,15 @@ export default function TrainingBuilder() {
 
 				setitemWidth(width);
 				setitemHeight(width + 300);
+
+				// todo resize scene
 			});
 			resizeObserver.observe(kasten.current);
 		}
+
+		creatMainScene(itemWidth - 20, itemWidth - 20);
+
+		animate();
 
 		fetch(
 			process.env.PUBLIC_URL +
@@ -67,6 +78,14 @@ export default function TrainingBuilder() {
 
 				setallData(tmp);
 			});
+
+		loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb").then(
+			(glb) => {
+				scene.current.add(glb.scene.children[0]);
+
+				mixer.current = new THREE.AnimationMixer(glb.scene.children[0]);
+			}
+		);
 
 		return () => {
 			if (resizeObserver) {
@@ -154,8 +173,8 @@ export default function TrainingBuilder() {
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
-			alpha: true,
-			antialias: true,
+			// alpha: true,
+			// antialias: true,
 		});
 
 		renderer.current.toneMappingExposure = 0.5;
@@ -170,6 +189,45 @@ export default function TrainingBuilder() {
 		controls.current.enableDamping = true;
 
 		renderer.current.setSize(viewWidth, viewHeight);
+	}
+	function animate() {
+		/** play animation in example sub scene */
+		const delta = clock.getDelta();
+
+		if (mixer.current) mixer.current.update(delta);
+
+		controls.current.update();
+		renderer.current.render(scene.current, camera.current);
+
+		animationPointer.current = requestAnimationFrame(animate);
+	}
+
+	function viewExercise(e, exercise_key) {
+		const { top, left } = e.target.getBoundingClientRect();
+
+		setscenePos({ top: top, left: left });
+
+		loadJSON(
+			process.env.PUBLIC_URL + "/data/exercises/" + exercise_key + ".json"
+		).then((animation_data) => {
+			mixer.current.stopAllAction();
+
+			// prepare the example exercise action
+			const action = mixer.current.clipAction(
+				THREE.AnimationClip.parse(animation_data)
+			);
+
+			action.reset();
+			action.setLoop(THREE.LoopRepeat);
+
+			// keep model at the position where it stops
+			action.clampWhenFinished = true;
+
+			action.enable = true;
+
+			action.play();
+			// prepare the example exercise action
+		});
 	}
 
 	return (
@@ -202,10 +260,7 @@ export default function TrainingBuilder() {
 							>
 								<div
 									onClick={(e) => {
-										const { top, left } =
-											e.target.getBoundingClientRect();
-
-										setscenePos({ top: top, left: left });
+										viewExercise(e, exercise.key);
 									}}
 								>
 									<img
