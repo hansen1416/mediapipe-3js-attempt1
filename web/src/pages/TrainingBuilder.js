@@ -16,11 +16,13 @@ export default function TrainingBuilder() {
 	const renderer = useRef(null);
 	const controls = useRef(null);
 
+	// subscene and its animation
 	const [scenePos, setscenePos] = useState({ top: -1000, left: -1000 });
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
-
 	const animationPointer = useRef(0);
+	const subsceneModel = useRef(null);
+	// subscene and its animation
 
 	const kasten = useRef(null);
 
@@ -47,10 +49,14 @@ export default function TrainingBuilder() {
 					ResizeObserverEntry.contentRect.width / 4
 				);
 
-				setitemWidth(width);
-				setitemHeight(width + 300);
+				const height = width + 300; 
 
-				// todo resize scene
+				setitemWidth(width);
+				setitemHeight(height);
+
+				// camera.current.aspect = width / height;
+				// camera.current.updateProjectionMatrix();
+				renderer.current.setSize(width-20, width-20);
 			});
 			resizeObserver.observe(kasten.current);
 		}
@@ -81,9 +87,12 @@ export default function TrainingBuilder() {
 
 		loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb").then(
 			(glb) => {
-				scene.current.add(glb.scene.children[0]);
 
-				mixer.current = new THREE.AnimationMixer(glb.scene.children[0]);
+				subsceneModel.current = glb.scene.children[0]
+
+				scene.current.add(subsceneModel.current);
+
+				mixer.current = new THREE.AnimationMixer(subsceneModel.current);
 			}
 		);
 
@@ -210,6 +219,19 @@ export default function TrainingBuilder() {
 		loadJSON(
 			process.env.PUBLIC_URL + "/data/exercises/" + exercise_key + ".json"
 		).then((animation_data) => {
+
+			if (animation_data.position) {
+				subsceneModel.current.position.set(animation_data.position.x, animation_data.position.y, animation_data.position.z)
+			} else {
+				subsceneModel.current.position.set(0, 0, 0)
+			}
+
+			if (animation_data.rotation) {
+				subsceneModel.current.rotation.set(animation_data.rotation.x, animation_data.rotation.y, animation_data.rotation.z)
+			} else {
+				subsceneModel.current.rotation.set(0, 0, 0)
+			}
+
 			mixer.current.stopAllAction();
 
 			// prepare the example exercise action

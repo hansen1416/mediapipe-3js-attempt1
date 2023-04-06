@@ -42,9 +42,7 @@ export default function MotionInterpreter() {
 	];
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
-	const allMuscleGroups = Object.keys(muscleGroupsColors);
-
-	const [muscleGroups, setmuscleGroups] = useState([]);
+	const [muscleGroups, setmuscleGroups] = useState(Object.keys(muscleGroupsColors).map(v => [v, 0]));
 
 	const animation_data = useRef(null);
 
@@ -286,7 +284,7 @@ export default function MotionInterpreter() {
 			animation_data.current["rotation"] = modelRotation;
 			animation_data.current["position"] = modelPosition;
 			animation_data.current["key_parts"] = keyParts;
-			animation_data.current["muscle_groups"] = muscleGroups;
+			animation_data.current["muscle_groups"] = Object.fromEntries(muscleGroups);
 			animation_data.current["joints_position"] = joints_position;
 
 			// todo, use API to save this animation to json file
@@ -478,26 +476,22 @@ export default function MotionInterpreter() {
 				</div>
 				<div className="block grenze">
 					<span>Muscles: </span>
-					{allMuscleGroups.map((item) => {
+					{muscleGroups.map((item, i) => {
 						return (
-							<label key={item}>
-								{item}:
+							<label key={i}>
+								{item[0]}:
 								<input
 									type={"text"}
 									style={{
 										width: 40,
 										height: 20,
 									}}
-									checked={muscleGroups.indexOf(item) !== -1}
+									value={item[1]}
 									onChange={(e) => {
 										let tmp = clone(muscleGroups);
-
-										if (e.target.checked) {
-											tmp.push(item);
-										} else {
-											tmp = tmp.filter((x) => x !== item);
-										}
-
+										
+										tmp[i][1] = ~~(e.target.value) // = tmp.filter((x) => x !== item);
+										
 										setmuscleGroups(tmp);
 									}}
 								/>

@@ -1,9 +1,9 @@
 [
 	{
-		"key": "arm-stretching",
-		"img": "thumb.png",
-		"intensity": 3,
-		"calories": 10,
+		"key": "capoeira",
+		"img": "",
+		"intensity": 10,
+		"calories": 20,
 		"duration": 2,
 		"muscles": {
 			"chest": 0.0,
@@ -15,10 +15,10 @@
 		}
 	},
 	{
-		"key": "capoeira",
-		"img": "",
-		"intensity": 10,
-		"calories": 20,
+		"key": "arm-stretching",
+		"img": "thumb.png",
+		"intensity": 3,
+		"calories": 10,
 		"duration": 2,
 		"muscles": {
 			"chest": 0.0,
