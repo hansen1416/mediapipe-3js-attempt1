@@ -4,6 +4,9 @@
   justify-content: space-between;
   align-items: flex-end;
 }
+.training-slide-editor .title .stats span {
+  margin-right: 10px;
+}
 .training-slide-editor .operation {
   display: flex;
   flex-direction: row;

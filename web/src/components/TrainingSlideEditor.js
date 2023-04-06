@@ -87,7 +87,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 			{trainingData && trainingData.name && (
 				<section>
 					<div className="title">
-						<div className="info">
+						<div>
 							<div className="name">
 								<span>
 									name:{" "}
@@ -118,8 +118,13 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 							<Button
 								variant="primary"
 								onClick={() => {
-									// todo, save to user's
-									console.log(trainingData);
+									// todo, save to API
+									window.localStorage.setItem(
+										"mytraining",
+										JSON.stringify(trainingData)
+									);
+
+									alert("Training Saved, let's try it!")
 								}}
 							>
 								Save to my list
@@ -165,15 +170,6 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 														"/thumb1.png"
 													}
 													alt=""
-												/>
-											</div>
-											<div>
-												<p>{exercise.name}</p>
-												<MusclePercentage
-													musclesPercent={
-														exercise.muscle_groups
-													}
-													limit={3}
 												/>
 											</div>
 											<div>
