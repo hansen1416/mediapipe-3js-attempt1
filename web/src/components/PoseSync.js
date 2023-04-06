@@ -129,12 +129,13 @@ export default class PoseSync {
 	}
 
 	compareCurrentPose(pose3D, bones, scoreThreshold, spline = false) {
-		const compare_upper = isUpperBodyVisible(pose3D);
+		// const compare_upper = isUpperBodyVisible(pose3D);
+		const compare_upper = true;
 		const compare_lower = isLowerBodyVisible(pose3D);
 
-		if (!compare_upper && !compare_lower) {
-			return false;
-		}
+		// if (!compare_upper && !compare_lower) {
+		// 	return false;
+		// }
 
 		const d1 = this.keypointsDistances(
 			pose3D,

@@ -1,52 +1,33 @@
 {
-	"name": "Beginner's Training",
-	"duration": 1800,
-	"intensity": 10,
-	"calories": 1000,
-	"muscles": {
-		"chest": 0.6,
-		"shoulders": 0.3,
-		"back": 0.1,
-		"arms": 0.0,
-		"abdominals": 0.0,
-		"legs": 0.0
-	},
-	"exercises": [
-		{
-			"key": "kettlebell-swing",
-			"name": "kettlebell swing",
-			"img": "",
-			"intensity": 10,
-			"calories": 10,
-			"duration": 2,
-			"muscles": {
-				"chest": 0.0,
-				"shoulders": 0.0,
-				"back": 0.0,
-				"arms": 0.0,
-				"abdominals": 0.0,
-				"legs": 0.0
-			},
-			"reps": 5,
-			"rest": 20
-		},
-		{
-			"key": "arm-stretching",
-			"name": "arm stretching",
-			"img": "",
-			"intensity": 10,
-			"calories": 10,
-			"duration": 2,
-			"muscles": {
-				"chest": 0.0,
-				"shoulders": 0.0,
-				"back": 0.0,
-				"arms": 0.0,
-				"abdominals": 0.0,
-				"legs": 0.0
-			},
-			"reps": 2,
-			"rest": 20
-		}
-	]
+    "name": "First training",
+    "duration": 1.9666666984558105,
+    "intensity": 8,
+    "calories": 20,
+    "muscle_groups": {
+        "chest": 0.6,
+        "shoulders": 0.3,
+        "back": 0.1,
+        "arms": 0,
+        "abdominals": 0,
+        "legs": 0
+    },
+    "exercises": [
+        {
+            "reps": 1,
+            "rest": 5,
+            "name": "kettlebell-swing",
+            "display_name": "Kettlebell Swing",
+            "muscle_groups": {
+                "chest": 0,
+                "shoulders": 0,
+                "back": 0,
+                "arms": 40,
+                "abdominals": 0,
+                "legs": 60
+            },
+            "duration": 1.9666666984558105,
+            "intensity": 8,
+            "calories": 20
+        }
+    ]
 }

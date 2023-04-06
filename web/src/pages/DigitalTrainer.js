@@ -271,7 +271,14 @@ export default function DigitalTrainer() {
 					process.env.RANDOM_STRING
 			),
 		]).then(([training1]) => {
-			settrainingList([training1]);
+
+			let mytraining = window.localStorage.getItem('mytraining')
+
+			if (mytraining) {
+				mytraining = JSON.parse(mytraining)
+			}
+
+			settrainingList([training1, mytraining]);
 
 			setloadingTraining(false);
 		});
@@ -332,7 +339,7 @@ export default function DigitalTrainer() {
 					loadJSON(
 						process.env.PUBLIC_URL +
 							"/data/exercises/" +
-							e.key +
+							e.name +
 							".json"
 					)
 				);
@@ -346,7 +353,7 @@ export default function DigitalTrainer() {
 				/**
 				 * load exercise animation data
 				 * save them to `animationJSONs`
-				 * note: training.exercises[i].key must be equal to data[i].name
+				 * note: training.exercises[i].name must be equal to data[i].name
 				 */
 
 				for (const v of data) {
@@ -364,7 +371,7 @@ export default function DigitalTrainer() {
 
 					// count down loop hook. default 5 seconds
 
-					getReadyCountDown.current = 300;
+					getReadyCountDown.current = 60;
 
 					setstartBtnShow(false);
 					setstopBtnShow(true);
@@ -679,7 +686,7 @@ export default function DigitalTrainer() {
 							colors,
 							animationJSONs.current[
 								exerciseQueue.current[exerciseQueueIndx.current]
-									.key
+									.name
 							].key_parts || [
 								"LeftArm",
 								"RightArm",
@@ -738,7 +745,7 @@ export default function DigitalTrainer() {
 
 		const animation_data =
 			animationJSONs.current[
-				exerciseQueue.current[exerciseQueueIndx.current].key
+				exerciseQueue.current[exerciseQueueIndx.current].name
 			];
 
 		// initialize statistics for exercise
@@ -857,7 +864,7 @@ export default function DigitalTrainer() {
 				applyTransfer(
 					figureParts.current,
 					animationJSONs.current[
-						exerciseQueue.current[exerciseQueueIndx.current].key
+						exerciseQueue.current[exerciseQueueIndx.current].name
 					].tracks,
 					currentAnimationIndx.current
 				);
