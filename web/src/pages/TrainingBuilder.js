@@ -7,7 +7,7 @@ import { cloneDeep } from "lodash";
 import "../styles/css/TrainingBuilder.css";
 import TrainingSlideEditor from "../components/TrainingSlideEditor";
 import MusclePercentage from "../components/MusclePercentage";
-import { loadGLTF, loadJSON, roundToTwo } from "../components/ropes";
+import { compareArms, loadGLTF, loadJSON, roundToTwo } from "../components/ropes";
 
 export default function TrainingBuilder() {
 	const canvasRef = useRef(null);
@@ -153,10 +153,10 @@ export default function TrainingBuilder() {
 		if (!tmp || !tmp.exercises) {
 			Object.assign(tmp, {
 				name: "training name",
-				duration: 1800,
-				intensity: 10,
-				calories: 1000,
-				muscles: {
+				duration: 0,
+				intensity: 0,
+				calories: 0,
+				muscle_groups: {
 					chest: 0.6,
 					shoulders: 0.3,
 					back: 0.1,
@@ -168,7 +168,25 @@ export default function TrainingBuilder() {
 			});
 		}
 
-		tmp.exercises.push(Object.assign({ reps: 0, rest: 10 }, exercise));
+		tmp.exercises.push(Object.assign({ reps: 1, rest: 5 }, exercise));
+
+		let calories = 0;
+		let duration = 0;
+		let intensity = 0;
+		let reps = 0
+
+		for (let e of tmp.exercises) {
+			calories += (e.reps * e.calories)
+			duration += (e.reps * e.duration)
+			intensity += (e.reps * e.intensity)
+			reps += e.reps
+		}
+
+		intensity /= reps
+	
+		tmp.duration = duration;
+		tmp.intensity = intensity;
+		tmp.calories = calories;
 
 		settrainingData(tmp);
 	}
@@ -325,17 +343,15 @@ export default function TrainingBuilder() {
 										musclesPercent={exercise.muscle_groups}
 									/>
 								</div>
-								<div>
-									<div>
-										<Button
-											variant="primary"
-											onClick={() => {
-												addExerciseToTraining(exercise);
-											}}
-										>
-											Add
-										</Button>
-									</div>
+								<div className="add">
+									<Button
+										variant="primary"
+										onClick={() => {
+											addExerciseToTraining(exercise);
+										}}
+									>
+										Add
+									</Button>
 								</div>
 							</div>
 						);

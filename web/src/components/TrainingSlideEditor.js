@@ -6,6 +6,7 @@ import { cloneDeep } from "lodash";
 import "../styles/css/TrainingSlideEditor.css";
 import MusclePercentage from "./MusclePercentage";
 import InputIncreaseDecrease from "./InputIncreaseDecrease";
+import { roundToTwo } from "./ropes";
 
 export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 	const kasten = useRef(null);
@@ -48,12 +49,12 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 		trainingData.calories = 0;
 		trainingData.intensity = 0;
 
-		trainingData.muscles.chest = 0;
-		trainingData.muscles.shoulders = 0;
-		trainingData.muscles.back = 0;
-		trainingData.muscles.arms = 0;
-		trainingData.muscles.abdominals = 0;
-		trainingData.muscles.legs = 0;
+		trainingData.muscle_groups.chest = 0;
+		trainingData.muscle_groups.shoulders = 0;
+		trainingData.muscle_groups.back = 0;
+		trainingData.muscle_groups.arms = 0;
+		trainingData.muscle_groups.abdominals = 0;
+		trainingData.muscle_groups.legs = 0;
 
 		for (let e of trainingData.exercises) {
 			trainingData.duration +=
@@ -61,23 +62,23 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 			trainingData.calories += Number(e.reps) * Number(e.calories);
 			trainingData.intensity += Number(e.intensity);
 
-			trainingData.muscles.chest += Number(e.muscles.chest);
-			trainingData.muscles.shoulders += Number(e.muscles.shoulders);
-			trainingData.muscles.back += Number(e.muscles.back);
-			trainingData.muscles.arms += Number(e.muscles.arms);
-			trainingData.muscles.abdominals += Number(e.muscles.abdominals);
-			trainingData.muscles.legs += Number(e.muscles.legs);
+			trainingData.muscle_groups.chest += Number(e.muscle_groups.chest);
+			trainingData.muscle_groups.shoulders += Number(e.muscle_groups.shoulders);
+			trainingData.muscle_groups.back += Number(e.muscle_groups.back);
+			trainingData.muscle_groups.arms += Number(e.muscle_groups.arms);
+			trainingData.muscle_groups.abdominals += Number(e.muscle_groups.abdominals);
+			trainingData.muscle_groups.legs += Number(e.muscle_groups.legs);
 		}
 
 		if (trainingData.exercises.length) {
 			trainingData.intensity /= trainingData.exercises.length;
 
-			trainingData.muscles.chest /= trainingData.exercises.length;
-			trainingData.muscles.shoulders /= trainingData.exercises.length;
-			trainingData.muscles.back /= trainingData.exercises.length;
-			trainingData.muscles.arms /= trainingData.exercises.length;
-			trainingData.muscles.abdominals /= trainingData.exercises.length;
-			trainingData.muscles.legs /= trainingData.exercises.length;
+			trainingData.muscle_groups.chest /= trainingData.exercises.length;
+			trainingData.muscle_groups.shoulders /= trainingData.exercises.length;
+			trainingData.muscle_groups.back /= trainingData.exercises.length;
+			trainingData.muscle_groups.arms /= trainingData.exercises.length;
+			trainingData.muscle_groups.abdominals /= trainingData.exercises.length;
+			trainingData.muscle_groups.legs /= trainingData.exercises.length;
 		}
 	}
 
@@ -87,7 +88,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 				<section>
 					<div className="title">
 						<div className="info">
-							<div>
+							<div className="name">
 								<span>
 									name:{" "}
 									<input
@@ -102,14 +103,14 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 									/>
 								</span>
 							</div>
-							<div>
-								<span>duration: {trainingData.duration}</span>
-								<span>intensity: {trainingData.intensity}</span>
-								<span>calories: {trainingData.calories}</span>
+							<div className="stats">
+								<span>duration: {roundToTwo(trainingData.duration)}</span>
+								<span>intensity: {roundToTwo(trainingData.intensity)}</span>
+								<span>calories: {roundToTwo(trainingData.calories)}</span>
 							</div>
 							<div>
 								<MusclePercentage
-									musclesPercent={trainingData.muscles}
+									musclesPercent={trainingData.muscle_groups}
 								/>
 							</div>
 						</div>
@@ -170,7 +171,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 												<p>{exercise.name}</p>
 												<MusclePercentage
 													musclesPercent={
-														exercise.muscles
+														exercise.muscle_groups
 													}
 													limit={3}
 												/>
