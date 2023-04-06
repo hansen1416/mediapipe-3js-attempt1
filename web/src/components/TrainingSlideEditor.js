@@ -35,13 +35,14 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 		if (
 			trainingDataRef.current &&
 			(!trainingDataRef.current.exercises ||
-				trainingDataRef.current.exercises.length !=
+				trainingDataRef.current.exercises.length !==
 					trainingData.exercises.length)
 		) {
 			calculateTrainingInfo(trainingData);
 		}
 
 		trainingDataRef.current = trainingData;
+		// eslint-disable-next-line
 	}, [trainingData]);
 
 	function updateExercise(idx, dict) {

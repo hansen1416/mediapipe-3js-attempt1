@@ -2,7 +2,7 @@ import { Vector2, Vector3 } from "three";
 import {
 	distanceBetweenPoints,
 	BlazePoseKeypointsValues,
-	isUpperBodyVisible,
+	// isUpperBodyVisible,
 	isLowerBodyVisible,
 	pearson_corr,
 	array_average,

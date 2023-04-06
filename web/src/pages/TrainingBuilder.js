@@ -8,7 +8,7 @@ import "../styles/css/TrainingBuilder.css";
 import TrainingSlideEditor from "../components/TrainingSlideEditor";
 import MusclePercentage from "../components/MusclePercentage";
 import {
-	compareArms,
+	// compareArms,
 	loadGLTF,
 	loadJSON,
 	roundToTwo,
