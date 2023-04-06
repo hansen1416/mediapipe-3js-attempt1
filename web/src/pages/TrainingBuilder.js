@@ -153,6 +153,10 @@ export default function TrainingBuilder() {
 	}
 
 	function addExerciseToTraining(exercise) {
+		setscenePos({ top: -1000, left: -1000 });
+
+		mixer.current.stopAllAction();
+
 		const tmp = cloneDeep(trainingData);
 
 		if (!tmp || !tmp.exercises) {
@@ -232,6 +236,8 @@ export default function TrainingBuilder() {
 	}
 
 	function viewExercise(e, exercise_key) {
+		mixer.current.stopAllAction();
+
 		const { top, left } = e.target.getBoundingClientRect();
 
 		setscenePos({ top: top + window.scrollY, left: left });
@@ -258,8 +264,6 @@ export default function TrainingBuilder() {
 			} else {
 				subsceneModel.current.rotation.set(0, 0, 0);
 			}
-
-			mixer.current.stopAllAction();
 
 			// prepare the example exercise action
 			const action = mixer.current.clipAction(

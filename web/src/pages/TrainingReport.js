@@ -24,7 +24,7 @@ export default function TrainingReport() {
 				}
 			}
 
-			console.log(res);
+			// console.log(res);
 
 			setreport(res);
 		} catch (e) {
@@ -71,7 +71,7 @@ export default function TrainingReport() {
 							<div>
 								<span>Muscles exercised:</span>
 							</div>
-							{report.muscles && (
+							{report.muscle_groups && (
 								<div>
 									<div>
 										<span>
