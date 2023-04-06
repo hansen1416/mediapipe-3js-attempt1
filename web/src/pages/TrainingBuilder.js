@@ -170,24 +170,6 @@ export default function TrainingBuilder() {
 
 		tmp.exercises.push(Object.assign({ reps: 1, rest: 5 }, exercise));
 
-		let calories = 0;
-		let duration = 0;
-		let intensity = 0;
-		let reps = 0
-
-		for (let e of tmp.exercises) {
-			calories += (e.reps * e.calories)
-			duration += (e.reps * e.duration)
-			intensity += (e.reps * e.intensity)
-			reps += e.reps
-		}
-
-		intensity /= reps
-	
-		tmp.duration = duration;
-		tmp.intensity = intensity;
-		tmp.calories = calories;
-
 		settrainingData(tmp);
 	}
 

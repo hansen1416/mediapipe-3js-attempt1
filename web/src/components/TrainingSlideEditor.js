@@ -12,6 +12,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 	const kasten = useRef(null);
 
 	const [itemWidth, setitemWidth] = useState(0);
+	const trainingDataRef = useRef(null)
 
 	useEffect(() => {
 		let resizeObserver;
@@ -30,6 +31,15 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 		}
 	}, []);
 
+	useEffect(() => {
+
+		if (trainingDataRef.current && (!trainingDataRef.current.exercises || trainingDataRef.current.exercises.length != trainingData.exercises.length)) {
+			calculateTrainingInfo(trainingData)
+		}
+
+		trainingDataRef.current = trainingData
+	}, [trainingData]);
+
 	function updateExercise(idx, dict) {
 		const tmp = cloneDeep(trainingData);
 
@@ -40,11 +50,12 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 		}
 
 		calculateTrainingInfo(tmp);
-
-		settrainingData(tmp);
 	}
 
-	function calculateTrainingInfo(trainingData) {
+	function calculateTrainingInfo(data) {
+
+		const trainingData = cloneDeep(data)
+
 		trainingData.duration = 0;
 		trainingData.calories = 0;
 		trainingData.intensity = 0;
@@ -71,15 +82,19 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 		}
 
 		if (trainingData.exercises.length) {
-			trainingData.intensity /= trainingData.exercises.length;
+			trainingData.intensity = Math.round(trainingData.intensity / trainingData.exercises.length);
 
-			trainingData.muscle_groups.chest /= trainingData.exercises.length;
-			trainingData.muscle_groups.shoulders /= trainingData.exercises.length;
-			trainingData.muscle_groups.back /= trainingData.exercises.length;
-			trainingData.muscle_groups.arms /= trainingData.exercises.length;
-			trainingData.muscle_groups.abdominals /= trainingData.exercises.length;
-			trainingData.muscle_groups.legs /= trainingData.exercises.length;
+			trainingData.muscle_groups.chest = Math.round(trainingData.muscle_groups.chest / trainingData.exercises.length);
+			trainingData.muscle_groups.shoulders  = Math.round(trainingData.muscle_groups.shoulders /  trainingData.exercises.length);
+			trainingData.muscle_groups.back  = Math.round(trainingData.muscle_groups.back /  trainingData.exercises.length);
+			trainingData.muscle_groups.arms  = Math.round(trainingData.muscle_groups.arms /  trainingData.exercises.length);
+			trainingData.muscle_groups.abdominals  = Math.round(trainingData.muscle_groups.abdominals /  trainingData.exercises.length);
+			trainingData.muscle_groups.legs  = Math.round(trainingData.muscle_groups.legs /  trainingData.exercises.length);
 		}
+
+		trainingDataRef.current = trainingData
+
+		settrainingData(trainingData);
 	}
 
 	return (
@@ -166,8 +181,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 														height: "100%",
 													}}
 													src={
-														process.env.PUBLIC_URL +
-														"/thumb1.png"
+														process.env.PUBLIC_URL + "/data/imgs/" + exercise.name +".png"
 													}
 													alt=""
 												/>

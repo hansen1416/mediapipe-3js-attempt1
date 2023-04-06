@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import "../styles/css/TrainingReport.css";
 import MusclePercentage from "../components/MusclePercentage";
+import { roundToTwo } from "../components/ropes";
 
 export default function TrainingReport() {
 	const [report, setreport] = useState(null);
@@ -44,11 +45,11 @@ export default function TrainingReport() {
 						</div>
 						<div>
 							<span>Total time:</span>
-							<span>{report.duration}</span>
+							<span>{roundToTwo(report.duration)}</span>
 						</div>
 						<div>
 							<span>Total calories:</span>
-							<span>{report.calories}</span>
+							<span>{roundToTwo(report.calories)}</span>
 						</div>
 						{/* <div>
 							<span>Total followed time:</span>
@@ -75,7 +76,7 @@ export default function TrainingReport() {
 									<div>
 										<span>
 											<MusclePercentage
-												musclesPercent={report.muscles}
+												musclesPercent={report.muscle_groups}
 											/>
 										</span>
 									</div>
@@ -99,7 +100,7 @@ export default function TrainingReport() {
 										className="exercise-info grenze"
 									>
 										<div className="name">
-											<span>name: {exercise.name}</span>
+											<span>name: {exercise.display_name}</span>
 										</div>
 										<div>
 											<span>Reps: {exercise.reps}</span>
@@ -122,7 +123,7 @@ export default function TrainingReport() {
 											<span>
 												<MusclePercentage
 													musclesPercent={
-														exercise.muscles
+														exercise.muscle_groups
 													}
 												/>
 											</span>
@@ -130,7 +131,7 @@ export default function TrainingReport() {
 										<div>
 											<span>
 												Unfollowed duration:
-												{exercise.unfollowed}
+												{roundToTwo(exercise.unfollowed / 1000)}
 											</span>
 										</div>
 										<div className="explain">
@@ -151,7 +152,7 @@ export default function TrainingReport() {
 																	{item[0]}:
 																</span>
 																<span>
-																	{item[1]}
+																	{roundToTwo(item[1])}
 																</span>
 															</div>
 														);
