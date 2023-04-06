@@ -94,6 +94,7 @@ export default function TrainingBuilder() {
 
 						tmp[tmp.length - 1].push({
 							name: e.name,
+							display_name: e.display_name,
 							muscle_groups: e.muscle_groups,
 							duration: e.duration,
 							intensity: 8,
@@ -311,8 +312,8 @@ export default function TrainingBuilder() {
 										alt=""
 									/>
 								</div>
-								<div>
-									<span>{exercise.dusplay_name}</span>
+								<div className="name">
+									<i>{exercise.display_name}</i>
 								</div>
 								<div>
 									<p>duration: {roundToTwo(exercise.duration)}</p>
