@@ -7,7 +7,12 @@ import { cloneDeep } from "lodash";
 import "../styles/css/TrainingBuilder.css";
 import TrainingSlideEditor from "../components/TrainingSlideEditor";
 import MusclePercentage from "../components/MusclePercentage";
-import { compareArms, loadGLTF, loadJSON, roundToTwo } from "../components/ropes";
+import {
+	compareArms,
+	loadGLTF,
+	loadJSON,
+	roundToTwo,
+} from "../components/ropes";
 
 export default function TrainingBuilder() {
 	const canvasRef = useRef(null);
@@ -49,14 +54,14 @@ export default function TrainingBuilder() {
 					ResizeObserverEntry.contentRect.width / 4
 				);
 
-				const height = width + 300; 
+				const height = width + 300;
 
 				setitemWidth(width);
 				setitemHeight(height);
 
 				// camera.current.aspect = width / height;
 				// camera.current.updateProjectionMatrix();
-				renderer.current.setSize(width-20, width-20);
+				renderer.current.setSize(width - 20, width - 20);
 			});
 			resizeObserver.observe(kasten.current);
 		}
@@ -72,19 +77,21 @@ export default function TrainingBuilder() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-
-				const tasks = []
+				const tasks = [];
 
 				for (let name of data) {
 					tasks.push(
 						loadJSON(
-							process.env.PUBLIC_URL + "/data/exercises/" + name + ".json"
+							process.env.PUBLIC_URL +
+								"/data/exercises/" +
+								name +
+								".json?r=" +
+								process.env.RANDOM_STRING
 						)
-					)
+					);
 				}
 
-				Promise.all(tasks)
-				.then((results) => {
+				Promise.all(tasks).then((results) => {
 					const tmp = [[]];
 
 					for (let e of results) {
@@ -103,14 +110,12 @@ export default function TrainingBuilder() {
 					}
 
 					setallData(tmp);
-				})
-
+				});
 			});
 
 		loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb").then(
 			(glb) => {
-
-				subsceneModel.current = glb.scene.children[0]
+				subsceneModel.current = glb.scene.children[0];
 
 				scene.current.add(subsceneModel.current);
 
@@ -180,7 +185,7 @@ export default function TrainingBuilder() {
 		 * @param {number} viewHeight
 		 */
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(0xF7797D);
+		scene.current.background = new THREE.Color(0xf7797d);
 
 		camera.current = new THREE.PerspectiveCamera(
 			90,
@@ -234,17 +239,24 @@ export default function TrainingBuilder() {
 		loadJSON(
 			process.env.PUBLIC_URL + "/data/exercises/" + exercise_key + ".json"
 		).then((animation_data) => {
-
 			if (animation_data.position) {
-				subsceneModel.current.position.set(animation_data.position.x, animation_data.position.y, animation_data.position.z)
+				subsceneModel.current.position.set(
+					animation_data.position.x,
+					animation_data.position.y,
+					animation_data.position.z
+				);
 			} else {
-				subsceneModel.current.position.set(0, 0, 0)
+				subsceneModel.current.position.set(0, 0, 0);
 			}
 
 			if (animation_data.rotation) {
-				subsceneModel.current.rotation.set(animation_data.rotation.x, animation_data.rotation.y, animation_data.rotation.z)
+				subsceneModel.current.rotation.set(
+					animation_data.rotation.x,
+					animation_data.rotation.y,
+					animation_data.rotation.z
+				);
 			} else {
-				subsceneModel.current.rotation.set(0, 0, 0)
+				subsceneModel.current.rotation.set(0, 0, 0);
 			}
 
 			mixer.current.stopAllAction();
@@ -308,7 +320,12 @@ export default function TrainingBuilder() {
 											width: itemWidth - 20 + "px",
 											height: itemWidth - 20 + "px",
 										}}
-										src={process.env.PUBLIC_URL + "/data/imgs/" + exercise.name +".png"}
+										src={
+											process.env.PUBLIC_URL +
+											"/data/imgs/" +
+											exercise.name +
+											".png"
+										}
 										alt=""
 									/>
 								</div>
@@ -316,7 +333,10 @@ export default function TrainingBuilder() {
 									<i>{exercise.display_name}</i>
 								</div>
 								<div>
-									<p>duration: {roundToTwo(exercise.duration)}</p>
+									<p>
+										duration:{" "}
+										{roundToTwo(exercise.duration)}
+									</p>
 									<p>intensity: {exercise.intensity}</p>
 									<p>calories: {exercise.calories}</p>
 								</div>

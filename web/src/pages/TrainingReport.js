@@ -76,7 +76,9 @@ export default function TrainingReport() {
 									<div>
 										<span>
 											<MusclePercentage
-												musclesPercent={report.muscle_groups}
+												musclesPercent={
+													report.muscle_groups
+												}
 											/>
 										</span>
 									</div>
@@ -100,7 +102,9 @@ export default function TrainingReport() {
 										className="exercise-info grenze"
 									>
 										<div className="name">
-											<span>name: {exercise.display_name}</span>
+											<span>
+												name: {exercise.display_name}
+											</span>
 										</div>
 										<div>
 											<span>Reps: {exercise.reps}</span>
@@ -131,7 +135,9 @@ export default function TrainingReport() {
 										<div>
 											<span>
 												Unfollowed duration:
-												{roundToTwo(exercise.unfollowed / 1000)}
+												{roundToTwo(
+													exercise.unfollowed / 1000
+												)}
 											</span>
 										</div>
 										<div className="explain">
@@ -152,7 +158,9 @@ export default function TrainingReport() {
 																	{item[0]}:
 																</span>
 																<span>
-																	{roundToTwo(item[1])}
+																	{roundToTwo(
+																		item[1]
+																	)}
 																</span>
 															</div>
 														);

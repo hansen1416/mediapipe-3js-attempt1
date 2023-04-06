@@ -12,7 +12,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 	const kasten = useRef(null);
 
 	const [itemWidth, setitemWidth] = useState(0);
-	const trainingDataRef = useRef(null)
+	const trainingDataRef = useRef(null);
 
 	useEffect(() => {
 		let resizeObserver;
@@ -32,12 +32,16 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 	}, []);
 
 	useEffect(() => {
-
-		if (trainingDataRef.current && (!trainingDataRef.current.exercises || trainingDataRef.current.exercises.length != trainingData.exercises.length)) {
-			calculateTrainingInfo(trainingData)
+		if (
+			trainingDataRef.current &&
+			(!trainingDataRef.current.exercises ||
+				trainingDataRef.current.exercises.length !=
+					trainingData.exercises.length)
+		) {
+			calculateTrainingInfo(trainingData);
 		}
 
-		trainingDataRef.current = trainingData
+		trainingDataRef.current = trainingData;
 	}, [trainingData]);
 
 	function updateExercise(idx, dict) {
@@ -53,8 +57,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 	}
 
 	function calculateTrainingInfo(data) {
-
-		const trainingData = cloneDeep(data)
+		const trainingData = cloneDeep(data);
 
 		trainingData.duration = 0;
 		trainingData.calories = 0;
@@ -74,25 +77,45 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 			trainingData.intensity += Number(e.intensity);
 
 			trainingData.muscle_groups.chest += Number(e.muscle_groups.chest);
-			trainingData.muscle_groups.shoulders += Number(e.muscle_groups.shoulders);
+			trainingData.muscle_groups.shoulders += Number(
+				e.muscle_groups.shoulders
+			);
 			trainingData.muscle_groups.back += Number(e.muscle_groups.back);
 			trainingData.muscle_groups.arms += Number(e.muscle_groups.arms);
-			trainingData.muscle_groups.abdominals += Number(e.muscle_groups.abdominals);
+			trainingData.muscle_groups.abdominals += Number(
+				e.muscle_groups.abdominals
+			);
 			trainingData.muscle_groups.legs += Number(e.muscle_groups.legs);
 		}
 
 		if (trainingData.exercises.length) {
-			trainingData.intensity = Math.round(trainingData.intensity / trainingData.exercises.length);
+			trainingData.intensity = Math.round(
+				trainingData.intensity / trainingData.exercises.length
+			);
 
-			trainingData.muscle_groups.chest = Math.round(trainingData.muscle_groups.chest / trainingData.exercises.length);
-			trainingData.muscle_groups.shoulders  = Math.round(trainingData.muscle_groups.shoulders /  trainingData.exercises.length);
-			trainingData.muscle_groups.back  = Math.round(trainingData.muscle_groups.back /  trainingData.exercises.length);
-			trainingData.muscle_groups.arms  = Math.round(trainingData.muscle_groups.arms /  trainingData.exercises.length);
-			trainingData.muscle_groups.abdominals  = Math.round(trainingData.muscle_groups.abdominals /  trainingData.exercises.length);
-			trainingData.muscle_groups.legs  = Math.round(trainingData.muscle_groups.legs /  trainingData.exercises.length);
+			trainingData.muscle_groups.chest = Math.round(
+				trainingData.muscle_groups.chest / trainingData.exercises.length
+			);
+			trainingData.muscle_groups.shoulders = Math.round(
+				trainingData.muscle_groups.shoulders /
+					trainingData.exercises.length
+			);
+			trainingData.muscle_groups.back = Math.round(
+				trainingData.muscle_groups.back / trainingData.exercises.length
+			);
+			trainingData.muscle_groups.arms = Math.round(
+				trainingData.muscle_groups.arms / trainingData.exercises.length
+			);
+			trainingData.muscle_groups.abdominals = Math.round(
+				trainingData.muscle_groups.abdominals /
+					trainingData.exercises.length
+			);
+			trainingData.muscle_groups.legs = Math.round(
+				trainingData.muscle_groups.legs / trainingData.exercises.length
+			);
 		}
 
-		trainingDataRef.current = trainingData
+		trainingDataRef.current = trainingData;
 
 		settrainingData(trainingData);
 	}
@@ -119,9 +142,18 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 								</span>
 							</div>
 							<div className="stats">
-								<span>duration: {roundToTwo(trainingData.duration)}</span>
-								<span>intensity: {roundToTwo(trainingData.intensity)}</span>
-								<span>calories: {roundToTwo(trainingData.calories)}</span>
+								<span>
+									duration:{" "}
+									{roundToTwo(trainingData.duration)}
+								</span>
+								<span>
+									intensity:{" "}
+									{roundToTwo(trainingData.intensity)}
+								</span>
+								<span>
+									calories:{" "}
+									{roundToTwo(trainingData.calories)}
+								</span>
 							</div>
 							<div>
 								<MusclePercentage
@@ -139,7 +171,7 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 										JSON.stringify(trainingData)
 									);
 
-									alert("Training Saved, let's try it!")
+									alert("Training Saved, let's try it!");
 								}}
 							>
 								Save to my list
@@ -181,7 +213,10 @@ export default function TrainingSlideEditor({ trainingData, settrainingData }) {
 														height: "100%",
 													}}
 													src={
-														process.env.PUBLIC_URL + "/data/imgs/" + exercise.name +".png"
+														process.env.PUBLIC_URL +
+														"/data/imgs/" +
+														exercise.name +
+														".png"
 													}
 													alt=""
 												/>

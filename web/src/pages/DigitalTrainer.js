@@ -271,11 +271,10 @@ export default function DigitalTrainer() {
 					process.env.RANDOM_STRING
 			),
 		]).then(([training1]) => {
-
-			let mytraining = window.localStorage.getItem('mytraining')
+			let mytraining = window.localStorage.getItem("mytraining");
 
 			if (mytraining) {
-				mytraining = JSON.parse(mytraining)
+				mytraining = JSON.parse(mytraining);
 			}
 
 			settrainingList([training1, mytraining]);
@@ -340,7 +339,8 @@ export default function DigitalTrainer() {
 						process.env.PUBLIC_URL +
 							"/data/exercises/" +
 							e.name +
-							".json"
+							".json?r=" +
+							process.env.RANDOM_STRING
 					)
 				);
 
