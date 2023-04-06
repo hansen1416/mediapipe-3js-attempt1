@@ -16,7 +16,7 @@ export default function MusclePercentage({ musclesPercent, limit = 10 }) {
 				return (
 					<i key={idx}>
 						{Boolean(
-							idx < Number(limit) && name in musclesPercent
+							idx < Number(limit) && name in musclesPercent && ~~(musclesPercent[name])
 						) && (
 							<span>
 								{name}: {musclesPercent[name]}%

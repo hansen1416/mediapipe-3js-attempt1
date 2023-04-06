@@ -7,7 +7,7 @@ import { cloneDeep } from "lodash";
 import "../styles/css/TrainingBuilder.css";
 import TrainingSlideEditor from "../components/TrainingSlideEditor";
 import MusclePercentage from "../components/MusclePercentage";
-import { loadGLTF, loadJSON } from "../components/ropes";
+import { loadGLTF, loadJSON, roundToTwo } from "../components/ropes";
 
 export default function TrainingBuilder() {
 	const canvasRef = useRef(null);
@@ -72,17 +72,38 @@ export default function TrainingBuilder() {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				const tmp = [[]];
 
-				for (let e of data) {
-					if (tmp[tmp.length - 1].length >= pageSize) {
-						tmp.push([]);
-					}
+				const tasks = []
 
-					tmp[tmp.length - 1].push(e);
+				for (let name of data) {
+					tasks.push(
+						loadJSON(
+							process.env.PUBLIC_URL + "/data/exercises/" + name + ".json"
+						)
+					)
 				}
 
-				setallData(tmp);
+				Promise.all(tasks)
+				.then((results) => {
+					const tmp = [[]];
+
+					for (let e of results) {
+						if (tmp[tmp.length - 1].length >= pageSize) {
+							tmp.push([]);
+						}
+
+						tmp[tmp.length - 1].push({
+							name: e.name,
+							muscle_groups: e.muscle_groups,
+							duration: e.duration,
+							intensity: 8,
+							calories: 20,
+						});
+					}
+
+					setallData(tmp);
+				})
+
 			});
 
 		loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb").then(
@@ -282,7 +303,7 @@ export default function TrainingBuilder() {
 							>
 								<div
 									onClick={(e) => {
-										viewExercise(e, exercise.key);
+										viewExercise(e, exercise.name);
 									}}
 								>
 									<img
@@ -302,15 +323,16 @@ export default function TrainingBuilder() {
 									/>
 								</div>
 								<div>
-									<span>{exercise.name}</span>
+									<span>{exercise.dusplay_name}</span>
 								</div>
 								<div>
+									<p>duration: {roundToTwo(exercise.duration)}</p>
 									<p>intensity: {exercise.intensity}</p>
 									<p>calories: {exercise.calories}</p>
 								</div>
 								<div>
 									<MusclePercentage
-										musclesPercent={exercise.muscles}
+										musclesPercent={exercise.muscle_groups}
 									/>
 								</div>
 								<div>

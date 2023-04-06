@@ -1,92 +1,13 @@
 [
-	{
-		"key": "capoeira",
-		"img": "",
-		"intensity": 10,
-		"calories": 20,
-		"duration": 2,
-		"muscles": {
-			"chest": 0.0,
-			"shoulders": 0.0,
-			"back": 0.0,
-			"arms": 0.0,
-			"abdominals": 0.0,
-			"legs": 0.0
-		}
-	},
-	{
-		"key": "arm-stretching",
-		"img": "thumb.png",
-		"intensity": 3,
-		"calories": 10,
-		"duration": 2,
-		"muscles": {
-			"chest": 0.0,
-			"shoulders": 0.0,
-			"back": 0.0,
-			"arms": 0.0,
-			"abdominals": 0.0,
-			"legs": 0.0
-		}
-	},
-	{
-		"key": "hip-hop-dancing2",
-		"img": "",
-		"intensity": 10,
-		"calories": 20,
-		"duration": 2,
-		"muscles": {
-			"chest": 0.0,
-			"shoulders": 0.0,
-			"back": 0.0,
-			"arms": 0.0,
-			"abdominals": 0.0,
-			"legs": 0.0
-		}
-	},
-	{
-		"key": "jumping-jacks",
-		"img": "",
-		"intensity": 10,
-		"calories": 20,
-		"duration": 2,
-		"muscles": {
-			"chest": 0.0,
-			"shoulders": 0.0,
-			"back": 0.0,
-			"arms": 0.0,
-			"abdominals": 0.0,
-			"legs": 0.0
-		}
-	},
-	{
-		"key": "kettlebell-swing",
-		"img": "",
-		"intensity": 8,
-		"calories": 16,
-		"duration": 2,
-		"muscles": {
-			"chest": 0.0,
-			"shoulders": 0.0,
-			"back": 0.0,
-			"arms": 0.0,
-			"abdominals": 0.0,
-			"legs": 0.0
-		}
-	},
-	{
-		"key": "push-up",
-		"img": "",
-		"intensity": 10,
-		"calories": 24,
-		"duration": 2,
-		"muscles": {
-			"chest": 0.0,
-			"shoulders": 0.0,
-			"back": 0.0,
-			"arms": 0.0,
-			"abdominals": 0.0,
-			"legs": 0.0
-		}
-	}
+	"air-squat",
+	"arm-stretching",
+	"capoeira",
+	"hiphop-dancing1",
+	"hiphop-dancing2",
+	"jumping-jacks",
+	"kettlebell-swing",
+	"push-up",
+	"situp",
+	"snatch",
+	"standing-up"
 ]
