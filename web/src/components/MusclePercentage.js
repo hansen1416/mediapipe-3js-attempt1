@@ -1,14 +1,9 @@
 import "../styles/css/MusclePercentage.css";
+import { muscleGroupsColors } from "../components/ropes";
 
 export default function MusclePercentage({ musclesPercent, limit = 10 }) {
-	const muscleArr = [
-		"chest",
-		"shoulders",
-		"back",
-		"arms",
-		"abdominals",
-		"legs",
-	];
+
+	const muscleArr = Object.keys(muscleGroupsColors);
 
 	return (
 		<div className="muscle-percentage">

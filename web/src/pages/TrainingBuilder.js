@@ -179,7 +179,7 @@ export default function TrainingBuilder() {
 		 * @param {number} viewHeight
 		 */
 		scene.current = new THREE.Scene();
-		// scene.current.background = new THREE.Color(0x022244);
+		scene.current.background = new THREE.Color(0xF7797D);
 
 		camera.current = new THREE.PerspectiveCamera(
 			90,
@@ -188,7 +188,7 @@ export default function TrainingBuilder() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 2);
+		camera.current.position.set(0, 0.2, 1.4);
 
 		{
 			// mimic the sun light
@@ -211,13 +211,6 @@ export default function TrainingBuilder() {
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
-		controls.current.enablePan = false;
-		// controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
-		// controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
-		controls.current.minDistance = 2;
-		controls.current.maxDistance = 1000;
-		controls.current.enableDamping = true;
-
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 	function animate() {
@@ -235,7 +228,7 @@ export default function TrainingBuilder() {
 	function viewExercise(e, exercise_key) {
 		const { top, left } = e.target.getBoundingClientRect();
 
-		setscenePos({ top: top, left: left });
+		setscenePos({ top: top + window.scrollY, left: left });
 
 		loadJSON(
 			process.env.PUBLIC_URL + "/data/exercises/" + exercise_key + ".json"
@@ -262,6 +255,7 @@ export default function TrainingBuilder() {
 
 			action.reset();
 			action.setLoop(THREE.LoopRepeat);
+			// action.setLoop(THREE.LoopOnce);
 
 			// keep model at the position where it stops
 			action.clampWhenFinished = true;
@@ -269,6 +263,8 @@ export default function TrainingBuilder() {
 			action.enable = true;
 
 			action.play();
+
+			// mixer.current.setTime(0.01)
 			// prepare the example exercise action
 		});
 	}
@@ -311,14 +307,7 @@ export default function TrainingBuilder() {
 											width: itemWidth - 20 + "px",
 											height: itemWidth - 20 + "px",
 										}}
-										src={
-											exercise.img
-												? process.env.PUBLIC_URL +
-												  "/" +
-												  exercise.img
-												: process.env.PUBLIC_URL +
-												  "/thumb1.png"
-										}
+										src={process.env.PUBLIC_URL + "/data/imgs/" + exercise.name +".png"}
 										alt=""
 									/>
 								</div>
