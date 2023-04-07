@@ -20,7 +20,26 @@ import {
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-export default function CloudVagabond() {
+/**
+ * To calculate the child's local quaternion, you can use the following steps:
+
+First, compute the inverse of the parent's quaternion. This is necessary because quaternions don't commute, so we need to invert the parent's rotation to move from the world coordinate system to the parent's coordinate system.
+
+Multiply the child's world quaternion by the inverse of the parent's quaternion. This will give you the child's quaternion relative to the parent's coordinate system.
+
+Normalize the resulting quaternion to ensure that it represents a valid rotation.
+
+The math equation for this operation is:
+
+local_quaternion = parent_quaternion.inverse() * child_world_quaternion
+
+Here, parent_quaternion.inverse() refers to the inverse of the parent's quaternion and child_world_quaternion refers to the child's quaternion in world coordinates.
+
+It's important to note that quaternions represent rotations in 3D space, so this calculation assumes that both the child and parent are rotating objects. If one or both of them are static, then their quaternions would be identity quaternions (i.e., [1, 0, 0, 0]), and the local quaternion would be equal to the child's world quaternion.
+ * 
+ * @returns 
+ */
+export default function CloudVagabond1() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
 	const camera = useRef(null);
