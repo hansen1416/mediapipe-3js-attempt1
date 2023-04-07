@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-// import Button from "react-bootstrap/Button";
+import Button from "react-bootstrap/Button";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
@@ -68,9 +68,12 @@ export default function CloudVagabond1() {
 	const visibleWidth = useRef(0);
 	const visibleHeight = useRef(0);
 
-	const [loadingCamera, setloadingCamera] = useState(true);
+	const [loadingCamera, setloadingCamera] = useState(false);
 	const [loadingModel, setloadingModel] = useState(true);
 	const [loadingSilhouette, setloadingSilhouette] = useState(true);
+
+	const poseDataArr = useRef(null);
+	const poseIndx = useRef(0);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -84,9 +87,9 @@ export default function CloudVagabond1() {
 
 		_scene(documentWidth, documentHeight);
 
-		invokeCamera(videoRef.current, () => {
-			setloadingCamera(false);
-		});
+		// invokeCamera(videoRef.current, () => {
+		// 	setloadingCamera(false);
+		// });
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
@@ -198,6 +201,24 @@ export default function CloudVagabond1() {
 			poseDetector.current.send({ image: videoRef.current });
 		}
 
+		if (poseDataArr.current && counter.current % 3 === 0) {
+			const pose3D = poseDataArr.current[poseIndx.current];
+
+			const g = drawPoseKeypointsMediaPipe(pose3D);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+
+			figure.current.applyPose(pose3D);
+
+			poseIndx.current += 1;
+
+			if (poseIndx.current >= poseDataArr.current.length) {
+				poseIndx.current = 0;
+			}
+		}
+
 		counter.current += 1;
 		// ========= captured pose logic
 
@@ -252,6 +273,26 @@ export default function CloudVagabond1() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
+	function playpose() {
+		loadJSON(
+			process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+		).then((data) => {
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (const p of data) {
+				for (const v of p) {
+					v["x"] *= -width_ratio;
+					v["y"] *= -height_ratio;
+					v["z"] *= -width_ratio;
+				}
+			}
+
+			poseDataArr.current = data;
+		});
+	}
+
 	return (
 		<div className="digital-trainer">
 			<video
@@ -281,6 +322,21 @@ export default function CloudVagabond1() {
 					objects={capturedPose}
 					cameraZ={200}
 				/>
+			</div>
+			<div
+				style={{
+					position: "absolute",
+					right: 10,
+					bottom: 10,
+				}}
+			>
+				<Button
+					onClick={() => {
+						playpose();
+					}}
+				>
+					play pose
+				</Button>
 			</div>
 			{(loadingCamera || loadingModel || loadingSilhouette) && (
 				<div className="mask">
