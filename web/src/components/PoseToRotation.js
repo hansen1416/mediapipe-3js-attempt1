@@ -169,21 +169,21 @@ function getQuaternions(pose3D) {
 		pose3D,
 		"LEFT_SHOULDER",
 		"LEFT_ELBOW",
-		new THREE.Vector3(-1, 0, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["leftForeArm"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_ELBOW",
 		"RIGHT_WRIST",
-		new THREE.Vector3(1, 0, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["rightForeArm"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_ELBOW",
 		"LEFT_WRIST",
-		new THREE.Vector3(-1, 0, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	// result["leftHand"] = new THREE.Quaternion();
@@ -194,42 +194,42 @@ function getQuaternions(pose3D) {
 		pose3D,
 		"RIGHT_HIP",
 		"RIGHT_KNEE",
-		new THREE.Vector3(0, -1, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["rightThigh"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_HIP",
 		"LEFT_KNEE",
-		new THREE.Vector3(0, -1, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["leftCalf"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_KNEE",
 		"RIGHT_ANKLE",
-		new THREE.Vector3(0, -1, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["rightCalf"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_KNEE",
 		"LEFT_ANKLE",
-		new THREE.Vector3(0, -1, 0)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["leftFoot"] = getLimbQuaternion(
 		pose3D,
 		"RIGHT_HEEL",
 		"RIGHT_FOOT_INDEX",
-		new THREE.Vector3(0, 0, 1)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	result["rightFoot"] = getLimbQuaternion(
 		pose3D,
 		"LEFT_HEEL",
 		"LEFT_FOOT_INDEX",
-		new THREE.Vector3(0, 0, 1)
+		new THREE.Vector3(0, 1, 0)
 	);
 
 	return result;
@@ -342,6 +342,29 @@ export function applyPoseToBone(pose3D, bones) {
 
 	bones.Spine2.rotation.setFromQuaternion(chest_local);
 
+	const a = pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]];
+	const b = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
+
+	const LeftUpLeg_vector = new THREE.Vector3(
+		b.x - a.x,
+		b.y - a.y,
+		b.z - a.z
+	).normalize();
+
+	console.log(LeftUpLeg_vector);
+
+	const LeftUpLeg_world = new THREE.Quaternion().setFromUnitVectors(
+		new THREE.Vector3(0, 1, 0),
+		LeftUpLeg_vector.normalize()
+	);
+
+	const LeftUpLeg_local = new THREE.Quaternion().multiplyQuaternions(
+		quas.abdominal.conjugate(),
+		LeftUpLeg_world.normalize()
+	);
+
+	bones.LeftUpLeg.rotation.setFromQuaternion(LeftUpLeg_local.normalize());
+
 	const leftShoulder_local = new THREE.Quaternion(
 		0.4816877883688483,
 		0.49276938581965446,
@@ -362,23 +385,23 @@ export function applyPoseToBone(pose3D, bones) {
 	// bones.LeftShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
 	// bones.RightShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
 
-	const a = pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
-	const b = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
+	// const a = pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+	// const b = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
 
-	const vec = new THREE.Vector3(b.x - a.x, b.y - a.y, b.z - a.z).normalize();
+	// const vec = new THREE.Vector3(b.x - a.x, b.y - a.y, b.z - a.z).normalize();
 
-	// console.log(vec);
+	// // console.log(vec);
 
-	const leftArm_world = new THREE.Quaternion().setFromUnitVectors(
-		new THREE.Vector3(0, 1, 0),
-		new THREE.Vector3(0, 0, 1).normalize()
-		// vec
-	);
+	// const leftArm_world = new THREE.Quaternion().setFromUnitVectors(
+	// 	new THREE.Vector3(0, 1, 0),
+	// 	new THREE.Vector3(0, 0, 1).normalize()
+	// 	// vec
+	// );
 
-	const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
-		chest_local.conjugate(),
-		leftArm_world
-	);
+	// const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
+	// 	chest_local.conjugate(),
+	// 	leftArm_world
+	// );
 
 	// bones.LeftArm.rotation.setFromQuaternion(leftArm_local.normalize());
 }
