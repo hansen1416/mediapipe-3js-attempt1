@@ -335,7 +335,7 @@ export function applyPoseToBone(pose3D, bones) {
 
 	// new THREE.Object3D().rotation.setFromQuaternion;
 
-	bones.Hips.rotation.setFromQuaternion(quas.abdominal);
+	// bones.Hips.rotation.setFromQuaternion(quas.abdominal);
 
 	const chest_local = new THREE.Quaternion().multiplyQuaternions(
 		quas.abdominal.conjugate(),
@@ -344,13 +344,19 @@ export function applyPoseToBone(pose3D, bones) {
 
 	// console.log(chest_local, chest_local.normalize());
 
-	bones.Spine2.rotation.setFromQuaternion(chest_local);
+	// bones.Spine2.rotation.setFromQuaternion(chest_local);
 
 	// bones.LeftShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
+	// bones.RightShoulder.rotation.set(0, 0, 0);
 
-	const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
-		chest_local.conjugate(),
-		quas.leftArm
+	// const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
+	// 	chest_local.conjugate(),
+	// 	quas.rightArm
+	// );
+
+	const leftArm_local = new THREE.Quaternion().setFromUnitVectors(
+		new THREE.Vector3(1, 0, 0),
+		new THREE.Vector3(0.5, 0.5, 0).normalize()
 	);
 
 	bones.LeftArm.rotation.setFromQuaternion(leftArm_local);

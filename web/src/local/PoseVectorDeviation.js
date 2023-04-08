@@ -103,6 +103,8 @@ export default function PoseDiffScore() {
 			setrotations([
 				["Hips", 0, 0, 0],
 				["Spine", 0, 0, 0],
+				["LeftShoulder", 1.52, -0.15, -1.75],
+				["RightShoulder", 1.52, 0.15, 1.75],
 				["LeftArm", 0, 0, 0],
 				["LeftForeArm", 0, 0, 0],
 				["RightArm", 0, 0, 0],

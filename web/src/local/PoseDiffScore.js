@@ -130,9 +130,13 @@ export default function PoseDiffScore() {
 			// store all limbs to `model`
 			traverseModel(model.current, figureParts.current);
 
+			// console.log(figureParts.current.LeftShoulder.rotation);
+
 			setrotations([
 				["Hips", 0, 0, 0],
 				["Spine", 0, 0, 0],
+				["LeftShoulder", 1.52, -0.15, -1.75],
+				["RightShoulder", 1.52, 0.15, 1.75],
 				["LeftArm", 0, 0, 0],
 				["LeftForeArm", 0, 0, 0],
 				["RightArm", 0, 0, 0],
@@ -142,8 +146,6 @@ export default function PoseDiffScore() {
 				["RightUpLeg", 0.11, 0, 3.07],
 				["RightLeg", 0, 0, 0],
 			]);
-
-			// console.log(Object.keys(figureParts.current));
 
 			scene.current.add(model.current);
 
