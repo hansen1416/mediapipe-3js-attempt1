@@ -406,7 +406,7 @@ export default function DigitalTrainer() {
 			90,
 			viewWidth / viewHeight,
 			0.1,
-			1000
+			500
 		);
 
 		camera.current.position.set(0, 0, 2);
@@ -432,12 +432,14 @@ export default function DigitalTrainer() {
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
-		controls.current.enablePan = false;
+		// controls.current.enablePan = false;
 		// controls.current.minPolarAngle = THREE.MathUtils.degToRad(60);
 		// controls.current.maxPolarAngle = THREE.MathUtils.degToRad(90);
-		controls.current.minDistance = 2;
-		controls.current.maxDistance = 1000;
-		controls.current.enableDamping = true;
+		controls.current.minDistance = 1;
+		controls.current.maxDistance = 500;
+
+		// this line will cause the control to be lagging
+		// controls.current.enableDamping = true;
 
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
