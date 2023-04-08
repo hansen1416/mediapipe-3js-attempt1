@@ -1,16 +1,19 @@
-import { cloneDeep } from "lodash";
-import * as poseDetection from "@tensorflow-models/pose-detection";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
+import { cloneDeep } from "lodash";
+// import * as poseDetection from "@tensorflow-models/pose-detection";
+import { Pose } from "@mediapipe/pose";
+
 import PoseSync from "../components/PoseSync";
 import {
 	drawPoseKeypoints,
 	loadGLTF,
 	traverseModel,
 	startCamera,
-	BlazePoseConfig,
+	// BlazePoseConfig,
+	drawPoseKeypointsMediaPipe,
 	roundToTwo,
 } from "../components/ropes";
 import SubThreeJsScene from "../components/SubThreeJsScene";
@@ -89,14 +92,36 @@ export default function PoseDiffScore() {
 		scene.current.add(poseCurveRef.current);
 		scene.current.add(boneCurveRef.current);
 
+		poseDetector.current = new Pose({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+			},
+		});
+		poseDetector.current.setOptions({
+			modelComplexity: 2,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+
+		poseDetector.current.onResults(onPoseCallback);
+
+		poseDetector.current.initialize().then(() => {
+			// setloadingModel(false);
+			animate();
+		});
+
 		Promise.all([
-			poseDetection.createDetector(
-				poseDetection.SupportedModels.BlazePose,
-				BlazePoseConfig
-			),
+			// poseDetection.createDetector(
+			// 	poseDetection.SupportedModels.BlazePose,
+			// 	BlazePoseConfig
+			// ),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-		]).then(([detector, glb]) => {
-			poseDetector.current = detector;
+		]).then(([glb]) => {
+			// poseDetector.current = detector;
 
 			// add 3d model to main scene
 			model.current = glb.scene.children[0];
@@ -121,8 +146,6 @@ export default function PoseDiffScore() {
 			// console.log(Object.keys(figureParts.current));
 
 			scene.current.add(model.current);
-
-			animate();
 
 			mixer.current = new THREE.AnimationMixer(model.current);
 
@@ -168,7 +191,7 @@ export default function PoseDiffScore() {
 			counter.current % 3 === 0 &&
 			!pause.current
 		) {
-			capturePose();
+			poseDetector.current.send({ image: videoRef.current });
 		}
 
 		counter.current += 1;
@@ -184,47 +207,41 @@ export default function PoseDiffScore() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	function capturePose() {
-		/**
-		 * when video is ready, we can capture the pose
-		 *
-		 * calculate `keypoints3D.current`
-		 *
-		 * maybe we can do calculation in async then, since the other place will check `keypoints3D.current`
-		 */
-		(async () => {
-			const poses = await poseDetector.current.estimatePoses(
-				videoRef.current
-				// { flipHorizontal: false }
-				// timestamp
-			);
+	function onPoseCallback(result) {
+		if (!result || !result.poseLandmarks || !result.poseWorldLandmarks) {
+			return;
+		}
 
-			if (
-				!poses ||
-				!poses[0] ||
-				!poses[0]["keypoints3D"] ||
-				!poseSync.current
-			) {
-				return;
-			}
-
-			const keypoints3D = cloneDeep(poses[0]["keypoints3D"]);
+		{
+			const keypoints3D = cloneDeep(result.poseWorldLandmarks);
 
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
 
 			// multiply x,y by differnt factor
 			for (let v of keypoints3D) {
-				v["x"] *= width_ratio;
+				v["x"] *= -width_ratio;
 				v["y"] *= -height_ratio;
 				v["z"] *= -width_ratio;
 			}
 
-			const g = drawPoseKeypoints(keypoints3D);
+			const g = drawPoseKeypointsMediaPipe(keypoints3D);
 
 			g.scale.set(8, 8, 8);
 
 			setcapturedPose(g);
+
+			// figure.current.applyPose(pose3D);
+
+			// const pose2D = cloneDeep(poses[0]["keypoints"]);
+
+			// figure.current.applyPosition(
+			// 	pose2D,
+			// 	subsceneWidthRef.current,
+			// 	subsceneHeightRef.current,
+			// 	visibleWidth.current,
+			// 	visibleHeight.current
+			// );
 
 			poseSync.current.compareCurrentPose(
 				keypoints3D,
@@ -243,7 +260,7 @@ export default function PoseDiffScore() {
 					poseSync.current.boneSpline.getPoints(50)
 				);
 			}
-		})();
+		}
 	}
 
 	function creatMainScene(viewWidth, viewHeight) {

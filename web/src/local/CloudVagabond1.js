@@ -12,6 +12,7 @@ import SubThreeJsScene from "../components/SubThreeJsScene";
 import {
 	// BlazePoseKeypoints,
 	// BlazePoseConfig,
+	drawPoseKeypoints1,
 	drawPoseKeypointsMediaPipe,
 	loadJSON,
 	loadGLTF,
@@ -161,7 +162,7 @@ export default function CloudVagabond1() {
 		if (poseDataArr.current && counter.current % 3 === 0) {
 			const pose3D = poseDataArr.current[poseIndx.current];
 
-			const g = drawPoseKeypointsMediaPipe(pose3D);
+			const g = drawPoseKeypoints1(pose3D);
 
 			g.scale.set(8, 8, 8);
 

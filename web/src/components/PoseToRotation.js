@@ -255,34 +255,83 @@ It's important to note that quaternions represent rotations in 3D space, so this
  */
 export function applyPoseToBone(pose3D, bones) {
 	/**
-     * [
-    "Hips",
-    "Spine",
-    "Spine1",
-    "Spine2",
-    "Neck",
-    "Head",
-    "LeftShoulder",
-    "LeftArm",
-    "LeftForeArm",
-    "LeftHand",
-    "RightShoulder",
-    "RightArm",
-    "RightForeArm",
-    "RightHand",
-    "LeftUpLeg",
-    "LeftLeg",
-    "LeftFoot",
-    "LeftToeBase",
-    "RightUpLeg",
-    "RightLeg",
-    "RightFoot",
-    "RightToeBase"
-]
+     * 
+     * bones keys
+     [
+        "Hips",
+        "Spine",
+        "Spine1",
+        "Spine2",
+        "Neck",
+        "Head",
+        "LeftShoulder",
+        "LeftArm",
+        "LeftForeArm",
+        "LeftHand",
+        "LeftHandThumb1",
+        "LeftHandThumb2",
+        "LeftHandThumb3",
+        "LeftHandIndex1",
+        "LeftHandIndex2",
+        "LeftHandIndex3",
+        "LeftHandMiddle1",
+        "LeftHandMiddle2",
+        "LeftHandMiddle3",
+        "LeftHandRing1",
+        "LeftHandRing2",
+        "LeftHandRing3",
+        "LeftHandPinky1",
+        "LeftHandPinky2",
+        "LeftHandPinky3",
+        "RightShoulder",
+        "RightArm",
+        "RightForeArm",
+        "RightHand",
+        "RightHandThumb1",
+        "RightHandThumb2",
+        "RightHandThumb3",
+        "RightHandIndex1",
+        "RightHandIndex2",
+        "RightHandIndex3",
+        "RightHandMiddle1",
+        "RightHandMiddle2",
+        "RightHandMiddle3",
+        "RightHandRing1",
+        "RightHandRing2",
+        "RightHandRing3",
+        "RightHandPinky1",
+        "RightHandPinky2",
+        "RightHandPinky3",
+        "LeftUpLeg",
+        "LeftLeg",
+        "LeftFoot",
+        "LeftToeBase",
+        "RightUpLeg",
+        "RightLeg",
+        "RightFoot",
+        "RightToeBase"
+    ]
      */
-	const quas = getQuaternions(pose3D);
 
-	console.log(quas);
+	/**
+     * `getQuaternions` return keys
+     *  [
+        "abdominal",
+        "chest",
+        "leftArm",
+        "rightArm",
+        "leftForeArm",
+        "rightForeArm",
+        "leftThigh",
+        "rightThigh",
+        "leftCalf",
+        "rightCalf",
+        "leftFoot",
+        "rightFoot"
+    ]
+    */
+
+	const quas = getQuaternions(pose3D);
 
 	// new THREE.Object3D().rotation.setFromQuaternion;
 
@@ -293,5 +342,16 @@ export function applyPoseToBone(pose3D, bones) {
 		quas.chest
 	);
 
+	// console.log(chest_local, chest_local.normalize());
+
 	bones.Spine2.rotation.setFromQuaternion(chest_local);
+
+	// bones.LeftShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
+
+	const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
+		chest_local.conjugate(),
+		quas.leftArm
+	);
+
+	bones.LeftArm.rotation.setFromQuaternion(leftArm_local);
 }
