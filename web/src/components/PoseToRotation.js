@@ -287,4 +287,11 @@ export function applyPoseToBone(pose3D, bones) {
 	// new THREE.Object3D().rotation.setFromQuaternion;
 
 	bones.Hips.rotation.setFromQuaternion(quas.abdominal);
+
+	const chest_local = new THREE.Quaternion().multiplyQuaternions(
+		quas.abdominal.conjugate(),
+		quas.chest
+	);
+
+	bones.Spine2.rotation.setFromQuaternion(chest_local);
 }
