@@ -275,9 +275,11 @@ export default function DigitalTrainer() {
 
 			if (mytraining) {
 				mytraining = JSON.parse(mytraining);
-			}
 
-			settrainingList([training1, mytraining]);
+				settrainingList([training1, mytraining]);
+			} else {
+				settrainingList([training1]);
+			}
 
 			setloadingTraining(false);
 		});
