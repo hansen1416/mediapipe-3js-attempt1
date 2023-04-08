@@ -7,38 +7,22 @@ import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
-import Silhouette3D from "../components/Silhouette3D";
+// import Silhouette3D from "../components/Silhouette3D";
 // import T from "../components/T";
 import {
 	// BlazePoseKeypoints,
 	// BlazePoseConfig,
 	drawPoseKeypointsMediaPipe,
 	loadJSON,
+	loadGLTF,
 	// loadFBX,
 	invokeCamera,
-	// getMeshSize,
+	traverseModel,
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-/**
- * To calculate the child's local quaternion, you can use the following steps:
+import { applyPoseToBone } from "../components/PoseToRotation";
 
-First, compute the inverse of the parent's quaternion. This is necessary because quaternions don't commute, so we need to invert the parent's rotation to move from the world coordinate system to the parent's coordinate system.
-
-Multiply the child's world quaternion by the inverse of the parent's quaternion. This will give you the child's quaternion relative to the parent's coordinate system.
-
-Normalize the resulting quaternion to ensure that it represents a valid rotation.
-
-The math equation for this operation is:
-
-local_quaternion = parent_quaternion.inverse() * child_world_quaternion
-
-Here, parent_quaternion.inverse() refers to the inverse of the parent's quaternion and child_world_quaternion refers to the child's quaternion in world coordinates.
-
-It's important to note that quaternions represent rotations in 3D space, so this calculation assumes that both the child and parent are rotating objects. If one or both of them are static, then their quaternions would be identity quaternions (i.e., [1, 0, 0, 0]), and the local quaternion would be equal to the child's world quaternion.
- * 
- * @returns 
- */
 export default function CloudVagabond1() {
 	const canvasRef = useRef(null);
 	const scene = useRef(null);
@@ -49,7 +33,7 @@ export default function CloudVagabond1() {
 	const animationPointer = useRef(0);
 
 	const figure = useRef([]);
-	// const fbxmodel = useRef(null);
+	const figureParts = useRef({});
 
 	// ========= captured pose logic
 	const [capturedPose, setcapturedPose] = useState();
@@ -85,7 +69,7 @@ export default function CloudVagabond1() {
 		subsceneWidthRef.current = documentWidth * 0.25;
 		subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
 
-		_scene(documentWidth, documentHeight);
+		creatMainScene(documentWidth, documentHeight);
 
 		// invokeCamera(videoRef.current, () => {
 		// 	setloadingCamera(false);
@@ -106,47 +90,7 @@ export default function CloudVagabond1() {
 			minTrackingConfidence: 0.5,
 		});
 
-		poseDetector.current.onResults((result) => {
-			if (
-				!result ||
-				!result.poseLandmarks ||
-				!result.poseWorldLandmarks
-			) {
-				return;
-			}
-
-			{
-				const pose3D = cloneDeep(result.poseWorldLandmarks);
-
-				const width_ratio = 30;
-				const height_ratio = (width_ratio * 480) / 640;
-
-				// multiply x,y by differnt factor
-				for (let v of pose3D) {
-					v["x"] *= -width_ratio;
-					v["y"] *= -height_ratio;
-					v["z"] *= -width_ratio;
-				}
-
-				const g = drawPoseKeypointsMediaPipe(pose3D);
-
-				g.scale.set(8, 8, 8);
-
-				setcapturedPose(g);
-
-				figure.current.applyPose(pose3D);
-
-				// const pose2D = cloneDeep(poses[0]["keypoints"]);
-
-				// figure.current.applyPosition(
-				// 	pose2D,
-				// 	subsceneWidthRef.current,
-				// 	subsceneHeightRef.current,
-				// 	visibleWidth.current,
-				// 	visibleHeight.current
-				// );
-			}
-		});
+		poseDetector.current.onResults(onPoseCallback);
 
 		poseDetector.current.initialize().then(() => {
 			setloadingModel(false);
@@ -162,23 +106,36 @@ export default function CloudVagabond1() {
 		// 	poseDetector.current = detector;
 		// });
 
-		Promise.all(
-			Silhouette3D.limbs.map((name) =>
-				loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-			)
-		).then((results) => {
-			const geos = {};
+		// Promise.all(
+		// 	Silhouette3D.limbs.map((name) =>
+		// 		loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
+		// 	)
+		// ).then((results) => {
+		// 	const geos = {};
 
-			for (let data of results) {
-				geos[data.name] = jsonToBufferGeometry(data);
-			}
+		// 	for (let data of results) {
+		// 		geos[data.name] = jsonToBufferGeometry(data);
+		// 	}
 
-			figure.current = new Silhouette3D(geos);
-			const body = figure.current.init();
+		// 	figure.current = new Silhouette3D(geos);
+		// 	const body = figure.current.init();
 
-			// getMeshSize(figure.current.foot_l.mesh, scene.current)
+		// 	// getMeshSize(figure.current.foot_l.mesh, scene.current)
 
-			scene.current.add(body);
+		// 	scene.current.add(body);
+
+		// 	setloadingSilhouette(false);
+		// });
+
+		Promise.all([
+			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
+		]).then(([glb]) => {
+			figure.current = glb.scene.children[0];
+			figure.current.position.set(0, -1, 0);
+
+			traverseModel(figure.current, figureParts.current);
+
+			scene.current.add(figure.current);
 
 			setloadingSilhouette(false);
 		});
@@ -210,7 +167,8 @@ export default function CloudVagabond1() {
 
 			setcapturedPose(g);
 
-			figure.current.applyPose(pose3D);
+			// figure.current.applyPose(pose3D);
+			applyPoseToBone(pose3D, figureParts.current);
 
 			poseIndx.current += 1;
 
@@ -229,11 +187,14 @@ export default function CloudVagabond1() {
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
-	function _scene(viewWidth, viewHeight) {
-		const backgroundColor = 0x022244;
-
+	function creatMainScene(viewWidth, viewHeight) {
+		/**
+		 * main scene, which plays exercise animation
+		 * @param {number} viewWidth
+		 * @param {number} viewHeight
+		 */
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(backgroundColor);
+		// scene.current.background = new THREE.Color(0x022244);
 
 		camera.current = new THREE.PerspectiveCamera(
 			90,
@@ -242,35 +203,68 @@ export default function CloudVagabond1() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 150);
-
-		/**
-		 * visible_height = 2 * tan(camera_fov / 2) * camera_z
-		 * visible_width = visible_height * camera_aspect
-		 */
-
-		const vFOV = THREE.MathUtils.degToRad(camera.current.fov); // convert vertical fov to radians
-
-		visibleHeight.current =
-			2 * Math.tan(vFOV / 2) * camera.current.position.z; // visible height
-
-		visibleWidth.current = visibleHeight.current * camera.current.aspect; // visible width
+		camera.current.position.set(0, 0, 2);
 
 		{
-			const light = new THREE.PointLight(0xffffff, 1);
-			// light.position.set(10, 10, 10);
-			camera.current.add(light);
-
-			scene.current.add(camera.current);
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.4);
+			dlight.position.set(0, 10, 10);
+			scene.current.add(dlight);
+			// env light
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
 		}
+
+		// drawScene();
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
+			alpha: true,
+			antialias: true,
 		});
+
+		renderer.current.toneMappingExposure = 0.5;
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
 		renderer.current.setSize(viewWidth, viewHeight);
+	}
+
+	function onPoseCallback(result) {
+		if (!result || !result.poseLandmarks || !result.poseWorldLandmarks) {
+			return;
+		}
+
+		{
+			const pose3D = cloneDeep(result.poseWorldLandmarks);
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of pose3D) {
+				v["x"] *= -width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+
+			const g = drawPoseKeypointsMediaPipe(pose3D);
+
+			g.scale.set(8, 8, 8);
+
+			setcapturedPose(g);
+
+			figure.current.applyPose(pose3D);
+
+			// const pose2D = cloneDeep(poses[0]["keypoints"]);
+
+			// figure.current.applyPosition(
+			// 	pose2D,
+			// 	subsceneWidthRef.current,
+			// 	subsceneHeightRef.current,
+			// 	visibleWidth.current,
+			// 	visibleHeight.current
+			// );
+		}
 	}
 
 	function playpose() {
@@ -326,8 +320,8 @@ export default function CloudVagabond1() {
 			<div
 				style={{
 					position: "absolute",
-					right: 10,
-					bottom: 10,
+					right: 20,
+					bottom: 20,
 				}}
 			>
 				<Button
@@ -336,6 +330,13 @@ export default function CloudVagabond1() {
 					}}
 				>
 					play pose
+				</Button>
+				<Button
+					onClick={() => {
+						poseDataArr.current = null;
+					}}
+				>
+					stop play pose
 				</Button>
 			</div>
 			{(loadingCamera || loadingModel || loadingSilhouette) && (
