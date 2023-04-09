@@ -22,7 +22,7 @@ import {
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-import { applyPoseToBone } from "../components/PoseToRotation";
+import { applyPoseToBone, testPoseToBone } from "../components/PoseToRotation";
 
 export default function CloudVagabond1() {
 	const canvasRef = useRef(null);
@@ -169,7 +169,8 @@ export default function CloudVagabond1() {
 			setcapturedPose(g);
 
 			// figure.current.applyPose(pose3D);
-			applyPoseToBone(pose3D, figureParts.current);
+			// applyPoseToBone(pose3D, figureParts.current);
+			testPoseToBone(figureParts.current);
 
 			poseIndx.current += 1;
 

@@ -236,22 +236,68 @@ function getQuaternions(pose3D) {
 }
 
 /**
- * To calculate the child's local quaternion, you can use the following steps:
 
-First, compute the inverse of the parent's quaternion. This is necessary because quaternions don't commute, so we need to invert the parent's rotation to move from the world coordinate system to the parent's coordinate system.
 
-Multiply the child's world quaternion by the inverse of the parent's quaternion. This will give you the child's quaternion relative to the parent's coordinate system.
+local_quaternion = parent_local_quaternion.inverse() * child_world_quaternion
 
-Normalize the resulting quaternion to ensure that it represents a valid rotation.
 
-The math equation for this operation is:
+ */
 
-local_quaternion = parent_quaternion.inverse() * child_world_quaternion
+/**
+ * // Define the necessary inputs
+var Q_abd = new THREE.Quaternion(); // abdominal quaternion
+var L_hip = new THREE.Vector3(); // left hip position
+var R_hip = new THREE.Vector3(); // right hip position
+var L_knee = new THREE.Vector3(); // left knee position
+var R_knee = new THREE.Vector3(); // right knee position
+var L_ankle = new THREE.Vector3(); // left ankle position
+var R_ankle = new THREE.Vector3(); // right ankle position
 
-Here, parent_quaternion.inverse() refers to the inverse of the parent's quaternion and child_world_quaternion refers to the child's quaternion in world coordinates.
+// Calculate the left leg vector
+var L_leg = new THREE.Vector3().subVectors(L_ankle, L_hip);
 
-It's important to note that quaternions represent rotations in 3D space, so this calculation assumes that both the child and parent are rotating objects. If one or both of them are static, then their quaternions would be identity quaternions (i.e., [1, 0, 0, 0]), and the local quaternion would be equal to the child's world quaternion.
+// Calculate the right leg vector
+var R_leg = new THREE.Vector3().subVectors(R_ankle, R_hip);
 
+// Calculate the angle between the legs (in radians)
+var cos_ang = L_leg.dot(R_leg) / (L_leg.length() * R_leg.length());
+var ang = Math.acos(cos_ang);
+
+// Calculate the thigh axis
+var thigh_axis = new THREE.Vector3().crossVectors(L_leg, R_leg).normalize();
+
+// Calculate the cosine of half the thigh angle
+var cos_half_theta = Math.cos(ang / 2);
+
+// Calculate the sine of half the thigh angle
+var sin_half_theta = Math.sin(ang / 2);
+
+// Combine the thigh axis, cosine, and sine into a quaternion
+var Q_thigh = new THREE.Quaternion(sin_half_theta * thigh_axis.x, sin_half_theta * thigh_axis.y, sin_half_theta * thigh_axis.z, cos_half_theta);
+
+// Apply the abdominal quaternion to the thigh quaternion
+Q_thigh.multiply(Q_abd);
+
+// Print the resulting thigh quaternion
+console.log("Thigh Quaternion: (" + Q_thigh.x + ", " + Q_thigh.y + ", " + Q_thigh.z + ", " + Q_thigh.w + ")");
+ */
+
+/**
+ * We are applying the abdominal quaternion to the thigh quaternion. The reason we need to do this is that the thigh quaternion represents the orientation of the thigh relative to the hip and knee joints, but does not take into account the orientation of the torso.
+
+By applying the abdominal quaternion to the thigh quaternion, we can combine the orientation of the thigh with the orientation of the torso, resulting in a quaternion that represents the overall orientation of the thigh relative to the global coordinate system.
+
+Quaternion multiplication is non-commutative, so the order in which we apply the quaternions matters. In this case, we want to apply the abdominal quaternion to the thigh quaternion, so we use the multiply() method on the thigh quaternion and pass in the abdominal quaternion as an argument.
+
+The multiply() method applies the rotation represented by the passed-in quaternion to the current quaternion, effectively combining the two rotations. The result is a new quaternion that represents the combined orientation of the thigh and abdominal segments.
+
+Overall, the line of code applies the abdominal quaternion to the thigh quaternion to combine the orientation of the thigh with the orientation of the torso, resulting in a quaternion that represents the overall orientation of the thigh relative to the global coordinate system.
+ */
+
+/**
+ *
+ * @param {*} pose3D
+ * @param {*} bones
  */
 export function applyPoseToBone(pose3D, bones) {
 	/**
@@ -404,4 +450,16 @@ export function applyPoseToBone(pose3D, bones) {
 	// );
 
 	// bones.LeftArm.rotation.setFromQuaternion(leftArm_local.normalize());
+}
+
+export function testPoseToBone(bones) {
+	bones.LeftUpLeg.rotation.setFromQuaternion(
+		new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, -3.14))
+	);
+	bones.RightUpLeg.rotation.setFromQuaternion(
+		new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 3.14))
+	);
+
+	const left_foot_init_vec = new THREE.Vector3(0, 0, 1);
+	const left_foot_target_vec = new THREE.Vector3(0.8, 0.2, 0.3).normalize();
 }
