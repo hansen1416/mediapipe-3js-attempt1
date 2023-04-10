@@ -136,6 +136,15 @@ export default function CloudVagabond1() {
 
 			traverseModel(figure.current, figureParts.current);
 
+			// The X axis is red. The Y axis is green. The Z axis is blue.
+			const axesHelper = new THREE.AxesHelper(1.5);
+
+			figureParts.current.Hips.add(axesHelper);
+
+			// const axesHelper1 = new THREE.AxesHelper(1.5);
+
+			// figureParts.current.LeftUpLeg.add(axesHelper1);
+
 			scene.current.add(figure.current);
 
 			setloadingSilhouette(false);
@@ -170,7 +179,7 @@ export default function CloudVagabond1() {
 
 			// figure.current.applyPose(pose3D);
 			// applyPoseToBone(pose3D, figureParts.current);
-			testPoseToBone(figureParts.current);
+			testPoseToBone(figureParts.current, pose3D);
 
 			poseIndx.current += 1;
 

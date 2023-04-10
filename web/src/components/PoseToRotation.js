@@ -111,7 +111,16 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		zaxis3
 	);
 
-	return [abs_q, chest_q];
+	const abs_q_inv = quaternionFromBasis(
+		xaxis3,
+		yaxis3,
+		zaxis3,
+		xaxis2,
+		yaxis2,
+		zaxis2
+	);
+
+	return [abs_q, chest_q, abs_q_inv];
 }
 
 function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
@@ -452,14 +461,54 @@ export function applyPoseToBone(pose3D, bones) {
 	// bones.LeftArm.rotation.setFromQuaternion(leftArm_local.normalize());
 }
 
-export function testPoseToBone(bones) {
-	bones.LeftUpLeg.rotation.setFromQuaternion(
-		new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, -3.14))
-	);
-	bones.RightUpLeg.rotation.setFromQuaternion(
-		new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 3.14))
+export function testPoseToBone(bones, pose3D) {
+	const [abs_q, chest_q, abs_q_inv] = torsoRotation(
+		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
+		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
 	);
 
-	const left_foot_init_vec = new THREE.Vector3(0, 0, 1);
-	const left_foot_target_vec = new THREE.Vector3(0.8, 0.2, 0.3).normalize();
+	bones.Hips.rotation.setFromQuaternion(abs_q);
+
+	const world_upvector_leftleg = new THREE.Vector3(0, 1, 0);
+
+	world_upvector_leftleg.applyQuaternion(abs_q);
+
+	const a = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
+	const b = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
+
+	const world_targetvector_leftleg = new THREE.Vector3(
+		b.x - a.x,
+		b.y - a.y,
+		b.z - a.z
+	).normalize();
+
+	world_targetvector_leftleg.applyQuaternion(abs_q_inv);
+
+	console.log(world_targetvector_leftleg);
+
+	const local_quaternion_leftleg = new THREE.Quaternion().setFromUnitVectors(
+		new THREE.Vector3(0, 1, 0),
+		// new THREE.Vector3(
+		// 	-0.1382173498418132,
+		// 	-0.9719826598163486,
+		// 	0.19012015468919283
+		// ).normalize()
+		world_targetvector_leftleg.normalize()
+	);
+
+	// bones.LeftUpLeg.rotation.setFromQuaternion(new THREE.Quaternion());
+
+	// const qq = new THREE.Quaternion().set
+
+	// bones.LeftUpLeg.rotation.setFromQuaternion();
+
+	bones.LeftUpLeg.rotation.setFromQuaternion(
+		local_quaternion_leftleg.normalize()
+	);
+
+	// bones.RightUpLeg.rotation.setFromQuaternion(
+	// 	new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 3.14))
+	// );
 }
