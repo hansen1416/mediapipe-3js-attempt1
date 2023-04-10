@@ -486,16 +486,22 @@ export function testPoseToBone(bones, pose3D) {
 
 	world_targetvector_leftleg.applyQuaternion(abs_q_inv);
 
-	console.log(world_targetvector_leftleg);
+	// console.log(world_targetvector_leftleg);
 
-	const local_quaternion_leftleg = new THREE.Quaternion().setFromUnitVectors(
-		new THREE.Vector3(0, 1, 0),
-		// new THREE.Vector3(
-		// 	-0.1382173498418132,
-		// 	-0.9719826598163486,
-		// 	0.19012015468919283
-		// ).normalize()
+	const local_quaternion_leftleg1 = new THREE.Quaternion().setFromEuler(
+		new THREE.Euler(0, 0, -3.14)
+	);
+
+	const local_quaternion_leftleg2 = new THREE.Quaternion().setFromUnitVectors(
+		new THREE.Vector3(0, -1, 0),
 		world_targetvector_leftleg.normalize()
+	);
+
+	// const local_quaternion_leftleg2 = new THREE.Quaternion();
+
+	const local_quaternion_leftleg = new THREE.Quaternion().multiplyQuaternions(
+		local_quaternion_leftleg2,
+		local_quaternion_leftleg1
 	);
 
 	// bones.LeftUpLeg.rotation.setFromQuaternion(new THREE.Quaternion());
