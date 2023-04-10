@@ -486,12 +486,14 @@ export function testPoseToBone(bones, pose3D) {
 
 	world_targetvector_leftleg.applyQuaternion(abs_q_inv);
 
-	// console.log(world_targetvector_leftleg);
-
+	// first place the leg to the nature position, which is pointing towards ground, (0,-1,0)
 	const local_quaternion_leftleg1 = new THREE.Quaternion().setFromEuler(
 		new THREE.Euler(0, 0, -3.14)
 	);
 
+	// this is the real rotation,
+	// todo, limit this rotation by human body restrain
+	// todo, use matrix basis rotations instead of vectors
 	const local_quaternion_leftleg2 = new THREE.Quaternion().setFromUnitVectors(
 		new THREE.Vector3(0, -1, 0),
 		world_targetvector_leftleg.normalize()
@@ -499,6 +501,11 @@ export function testPoseToBone(bones, pose3D) {
 
 	// const local_quaternion_leftleg2 = new THREE.Quaternion();
 
+	/*
+	Notice that rotating by `a` and then by `b` is equivalent to 
+	performing a single rotation by the quaternion product `ba`. 
+	This is a key observation.
+	*/
 	const local_quaternion_leftleg = new THREE.Quaternion().multiplyQuaternions(
 		local_quaternion_leftleg2,
 		local_quaternion_leftleg1
