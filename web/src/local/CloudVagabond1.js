@@ -147,7 +147,7 @@ export default function CloudVagabond1() {
 
 			const axesHelper1 = new THREE.AxesHelper(1.5);
 
-			figureParts.current.LeftUpLeg.add(axesHelper1);
+			figureParts.current.LeftShoulder.add(axesHelper1);
 
 			scene.current.add(figure.current);
 

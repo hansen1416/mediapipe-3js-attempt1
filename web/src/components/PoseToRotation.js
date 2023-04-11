@@ -596,14 +596,45 @@ export default class PoseToRotation {
 
 		this.bones.Hips.rotation.setFromQuaternion(abs_q);
 
-		this.rotateLimb('LeftUpLeg', 'Hips', 'LEFT_HIP', 'LEFT_KNEE', 
+		const chest_local = new THREE.Quaternion().multiplyQuaternions(
+			abs_q.conjugate(),
+			chest_q
+		);
+
+		this.bones.Spine2.rotation.setFromQuaternion(chest_local);
+
+		this.rotateLimb('LeftArm', 'LeftShoulder', 'RIGHT_SHOULDER', 'RIGHT_ELBOW', 
+		new THREE.Euler(0, 0, 0), new THREE.Vector3(0, 1, 0))
+
+		this.rotateLimb('LeftForeArm', 'LeftArm', 'RIGHT_ELBOW', 'RIGHT_WRIST', 
+		new THREE.Euler(0, 0, 0), new THREE.Vector3(0, 1, 0))
+
+		this.rotateLimb('RightArm', 'RightShoulder', 'LEFT_SHOULDER', 'LEFT_ELBOW', 
+		new THREE.Euler(0, 0, 0), new THREE.Vector3(0, 1, 0))
+
+		this.rotateLimb('RightForeArm', 'RightArm', 'LEFT_ELBOW', 'LEFT_WRIST', 
+		new THREE.Euler(0, 0, 0), new THREE.Vector3(0, 1, 0))
+
+
+
+		this.rotateLimb('LeftUpLeg', 'Hips', 'RIGHT_HIP', 'RIGHT_KNEE', 
 		new THREE.Euler(0, 0, -3.14), new THREE.Vector3(0, -1, 0))
 
-		this.rotateLimb('LeftLeg', 'LeftUpLeg', 'LEFT_KNEE', 'LEFT_ANKLE', 
-		new THREE.Euler(0, 0, -3.14), new THREE.Vector3(0, -1, 0))
+		this.rotateLimb('LeftLeg', 'LeftUpLeg', 'RIGHT_KNEE', 'RIGHT_ANKLE', 
+		new THREE.Euler(0, 0, 0), new THREE.Vector3(0, 1, 0))
 
-		this.rotateLimb('LeftFoot', 'LeftLeg', 'LEFT_ANKLE', 'LEFT_FOOT_INDEX', 
+		this.rotateLimb('LeftFoot', 'LeftLeg', 'RIGHT_ANKLE', 'RIGHT_FOOT_INDEX', 
 		new THREE.Euler(1.035,0,0), new THREE.Vector3(0, 0, 1))
+
+		this.rotateLimb('RightUpLeg', 'Hips', 'LEFT_HIP', 'LEFT_KNEE', 
+		new THREE.Euler(0, 0, 3.14), new THREE.Vector3(0, -1, 0))
+
+		this.rotateLimb('RightLeg', 'LeftUpLeg', 'LEFT_KNEE', 'LEFT_ANKLE', 
+		new THREE.Euler(0, 0, 0), new THREE.Vector3(0, 1, 0))
+
+		this.rotateLimb('RightFoot', 'LeftLeg', 'LEFT_ANKLE', 'LEFT_FOOT_INDEX', 
+		new THREE.Euler(1.035,0,0), new THREE.Vector3(0, 0, 1))
+		
 	}
 
 
