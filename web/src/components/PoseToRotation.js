@@ -28,7 +28,7 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		(left_hip2.visibility && left_hip2.visibility < 0.5) ||
 		(right_hip2.visibility && right_hip2.visibility < 0.5)
 	) {
-		return [false, false];
+		return [new THREE.Quaternion(), new THREE.Quaternion()];
 	}
 
 	const left_oblique = new THREE.Vector3(
@@ -114,7 +114,6 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	return [abs_q, chest_q];
 }
 
-// export function applyPoseToBone(pose3D, bones) {
 // 	/**
 //      *
 //      * bones keys

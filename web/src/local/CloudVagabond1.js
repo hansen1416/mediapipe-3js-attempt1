@@ -17,9 +17,9 @@ import {
 	loadJSON,
 	loadGLTF,
 	// loadFBX,
-	invokeCamera,
+	// invokeCamera,
 	traverseModel,
-	jsonToBufferGeometry,
+	// jsonToBufferGeometry,
 } from "../components/ropes";
 
 import PoseToRotation from "../components/PoseToRotation";
@@ -99,36 +99,6 @@ export default function CloudVagabond1() {
 			setloadingModel(false);
 			animate();
 		});
-
-		// Promise.all([
-		// 	poseDetection.createDetector(
-		// 		poseDetection.SupportedModels.BlazePose,
-		// 		BlazePoseConfig
-		// 	),
-		// ]).then(([detector]) => {
-		// 	poseDetector.current = detector;
-		// });
-
-		// Promise.all(
-		// 	Silhouette3D.limbs.map((name) =>
-		// 		loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-		// 	)
-		// ).then((results) => {
-		// 	const geos = {};
-
-		// 	for (let data of results) {
-		// 		geos[data.name] = jsonToBufferGeometry(data);
-		// 	}
-
-		// 	figure.current = new Silhouette3D(geos);
-		// 	const body = figure.current.init();
-
-		// 	// getMeshSize(figure.current.foot_l.mesh, scene.current)
-
-		// 	scene.current.add(body);
-
-		// 	setloadingSilhouette(false);
-		// });
 
 		Promise.all([
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
