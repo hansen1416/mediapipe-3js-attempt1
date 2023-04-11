@@ -111,138 +111,129 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		zaxis3
 	);
 
-	const abs_q_inv = quaternionFromBasis(
-		xaxis3,
-		yaxis3,
-		zaxis3,
-		xaxis2,
-		yaxis2,
-		zaxis2
-	);
-
-	return [abs_q, chest_q, abs_q_inv];
+	return [abs_q, chest_q];
 }
 
-function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
-	/**
-	 * calculate quaternion for a limb,
-	 * which start from `joint_start` end at `joint_end`
-	 */
-	const start_pos = pose3D[BlazePoseKeypointsValues[joint_start]];
-	const end_pos = pose3D[BlazePoseKeypointsValues[joint_end]];
+// function getLimbQuaternion(pose3D, joint_start, joint_end, upVector) {
+// 	/**
+// 	 * calculate quaternion for a limb,
+// 	 * which start from `joint_start` end at `joint_end`
+// 	 */
+// 	const start_pos = pose3D[BlazePoseKeypointsValues[joint_start]];
+// 	const end_pos = pose3D[BlazePoseKeypointsValues[joint_end]];
 
-	if (
-		(start_pos.visibility && start_pos.visibility < 0.5) ||
-		(end_pos.visibility && end_pos.visibility < 0.5)
-	) {
-		return false;
-	}
+// 	if (
+// 		(start_pos.visibility && start_pos.visibility < 0.5) ||
+// 		(end_pos.visibility && end_pos.visibility < 0.5)
+// 	) {
+// 		return false;
+// 	}
 
-	return new THREE.Quaternion().setFromUnitVectors(
-		upVector,
-		new THREE.Vector3(
-			end_pos.x - start_pos.x,
-			end_pos.y - start_pos.y,
-			end_pos.z - start_pos.z
-		).normalize()
-	);
-}
+// 	return new THREE.Quaternion().setFromUnitVectors(
+// 		upVector,
+// 		new THREE.Vector3(
+// 			end_pos.x - start_pos.x,
+// 			end_pos.y - start_pos.y,
+// 			end_pos.z - start_pos.z
+// 		).normalize()
+// 	);
+// }
 
-function getQuaternions(pose3D) {
-	/**
-	 * get rotation of limbs
-	 */
+// function getQuaternions(pose3D) {
+// 	/**
+// 	 * get rotation of limbs
+// 	 */
 
-	const result = {};
+// 	const result = {};
 
-	const [abs_q, chest_q] = torsoRotation(
-		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
-		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
-		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
-		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
-	);
+// 	const [abs_q, chest_q] = torsoRotation(
+// 		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+// 		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+// 		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
+// 		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+// 	);
 
-	result["abdominal"] = abs_q;
-	result["chest"] = chest_q;
+// 	result["abdominal"] = abs_q;
+// 	result["chest"] = chest_q;
 
-	// result["head"] = new THREE.Quaternion();
+// 	// result["head"] = new THREE.Quaternion();
 
-	result["leftArm"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_SHOULDER",
-		"RIGHT_ELBOW",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["leftArm"] = getLimbQuaternion(
+// 		pose3D,
+// 		"RIGHT_SHOULDER",
+// 		"RIGHT_ELBOW",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["rightArm"] = getLimbQuaternion(
-		pose3D,
-		"LEFT_SHOULDER",
-		"LEFT_ELBOW",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["rightArm"] = getLimbQuaternion(
+// 		pose3D,
+// 		"LEFT_SHOULDER",
+// 		"LEFT_ELBOW",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["leftForeArm"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_ELBOW",
-		"RIGHT_WRIST",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["leftForeArm"] = getLimbQuaternion(
+// 		pose3D,
+// 		"RIGHT_ELBOW",
+// 		"RIGHT_WRIST",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["rightForeArm"] = getLimbQuaternion(
-		pose3D,
-		"LEFT_ELBOW",
-		"LEFT_WRIST",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["rightForeArm"] = getLimbQuaternion(
+// 		pose3D,
+// 		"LEFT_ELBOW",
+// 		"LEFT_WRIST",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	// result["leftHand"] = new THREE.Quaternion();
+// 	// result["leftHand"] = new THREE.Quaternion();
 
-	// result["rightHand"] = new THREE.Quaternion();
+// 	// result["rightHand"] = new THREE.Quaternion();
 
-	result["leftThigh"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_HIP",
-		"RIGHT_KNEE",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["leftThigh"] = getLimbQuaternion(
+// 		pose3D,
+// 		"RIGHT_HIP",
+// 		"RIGHT_KNEE",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["rightThigh"] = getLimbQuaternion(
-		pose3D,
-		"LEFT_HIP",
-		"LEFT_KNEE",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["rightThigh"] = getLimbQuaternion(
+// 		pose3D,
+// 		"LEFT_HIP",
+// 		"LEFT_KNEE",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["leftCalf"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_KNEE",
-		"RIGHT_ANKLE",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["leftCalf"] = getLimbQuaternion(
+// 		pose3D,
+// 		"RIGHT_KNEE",
+// 		"RIGHT_ANKLE",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["rightCalf"] = getLimbQuaternion(
-		pose3D,
-		"LEFT_KNEE",
-		"LEFT_ANKLE",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["rightCalf"] = getLimbQuaternion(
+// 		pose3D,
+// 		"LEFT_KNEE",
+// 		"LEFT_ANKLE",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["leftFoot"] = getLimbQuaternion(
-		pose3D,
-		"RIGHT_HEEL",
-		"RIGHT_FOOT_INDEX",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["leftFoot"] = getLimbQuaternion(
+// 		pose3D,
+// 		"RIGHT_HEEL",
+// 		"RIGHT_FOOT_INDEX",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	result["rightFoot"] = getLimbQuaternion(
-		pose3D,
-		"LEFT_HEEL",
-		"LEFT_FOOT_INDEX",
-		new THREE.Vector3(0, 1, 0)
-	);
+// 	result["rightFoot"] = getLimbQuaternion(
+// 		pose3D,
+// 		"LEFT_HEEL",
+// 		"LEFT_FOOT_INDEX",
+// 		new THREE.Vector3(0, 1, 0)
+// 	);
 
-	return result;
-}
+// 	return result;
+// }
 
 /**
 
@@ -308,230 +299,358 @@ Overall, the line of code applies the abdominal quaternion to the thigh quaterni
  * @param {*} pose3D
  * @param {*} bones
  */
-export function applyPoseToBone(pose3D, bones) {
-	/**
-     * 
-     * bones keys
-     [
-        "Hips",
-        "Spine",
-        "Spine1",
-        "Spine2",
-        "Neck",
-        "Head",
-        "LeftShoulder",
-        "LeftArm",
-        "LeftForeArm",
-        "LeftHand",
-        "LeftHandThumb1",
-        "LeftHandThumb2",
-        "LeftHandThumb3",
-        "LeftHandIndex1",
-        "LeftHandIndex2",
-        "LeftHandIndex3",
-        "LeftHandMiddle1",
-        "LeftHandMiddle2",
-        "LeftHandMiddle3",
-        "LeftHandRing1",
-        "LeftHandRing2",
-        "LeftHandRing3",
-        "LeftHandPinky1",
-        "LeftHandPinky2",
-        "LeftHandPinky3",
-        "RightShoulder",
-        "RightArm",
-        "RightForeArm",
-        "RightHand",
-        "RightHandThumb1",
-        "RightHandThumb2",
-        "RightHandThumb3",
-        "RightHandIndex1",
-        "RightHandIndex2",
-        "RightHandIndex3",
-        "RightHandMiddle1",
-        "RightHandMiddle2",
-        "RightHandMiddle3",
-        "RightHandRing1",
-        "RightHandRing2",
-        "RightHandRing3",
-        "RightHandPinky1",
-        "RightHandPinky2",
-        "RightHandPinky3",
-        "LeftUpLeg",
-        "LeftLeg",
-        "LeftFoot",
-        "LeftToeBase",
-        "RightUpLeg",
-        "RightLeg",
-        "RightFoot",
-        "RightToeBase"
-    ]
-     */
+// export function applyPoseToBone(pose3D, bones) {
+// 	/**
+//      * 
+//      * bones keys
+//      [
+//         "Hips",
+//         "Spine",
+//         "Spine1",
+//         "Spine2",
+//         "Neck",
+//         "Head",
+//         "LeftShoulder",
+//         "LeftArm",
+//         "LeftForeArm",
+//         "LeftHand",
+//         "LeftHandThumb1",
+//         "LeftHandThumb2",
+//         "LeftHandThumb3",
+//         "LeftHandIndex1",
+//         "LeftHandIndex2",
+//         "LeftHandIndex3",
+//         "LeftHandMiddle1",
+//         "LeftHandMiddle2",
+//         "LeftHandMiddle3",
+//         "LeftHandRing1",
+//         "LeftHandRing2",
+//         "LeftHandRing3",
+//         "LeftHandPinky1",
+//         "LeftHandPinky2",
+//         "LeftHandPinky3",
+//         "RightShoulder",
+//         "RightArm",
+//         "RightForeArm",
+//         "RightHand",
+//         "RightHandThumb1",
+//         "RightHandThumb2",
+//         "RightHandThumb3",
+//         "RightHandIndex1",
+//         "RightHandIndex2",
+//         "RightHandIndex3",
+//         "RightHandMiddle1",
+//         "RightHandMiddle2",
+//         "RightHandMiddle3",
+//         "RightHandRing1",
+//         "RightHandRing2",
+//         "RightHandRing3",
+//         "RightHandPinky1",
+//         "RightHandPinky2",
+//         "RightHandPinky3",
+//         "LeftUpLeg",
+//         "LeftLeg",
+//         "LeftFoot",
+//         "LeftToeBase",
+//         "RightUpLeg",
+//         "RightLeg",
+//         "RightFoot",
+//         "RightToeBase"
+//     ]
+//      */
 
-	/**
-     * `getQuaternions` return keys
-     *  [
-        "abdominal",
-        "chest",
-        "leftArm",
-        "rightArm",
-        "leftForeArm",
-        "rightForeArm",
-        "leftThigh",
-        "rightThigh",
-        "leftCalf",
-        "rightCalf",
-        "leftFoot",
-        "rightFoot"
-    ]
-    */
+// 	/**
+//      * `getQuaternions` return keys
+//      *  [
+//         "abdominal",
+//         "chest",
+//         "leftArm",
+//         "rightArm",
+//         "leftForeArm",
+//         "rightForeArm",
+//         "leftThigh",
+//         "rightThigh",
+//         "leftCalf",
+//         "rightCalf",
+//         "leftFoot",
+//         "rightFoot"
+//     ]
+//     */
 
-	const quas = getQuaternions(pose3D);
+// 	const quas = getQuaternions(pose3D);
 
-	bones.Hips.rotation.setFromQuaternion(quas.abdominal);
+// 	bones.Hips.rotation.setFromQuaternion(quas.abdominal);
 
-	const chest_local = new THREE.Quaternion().multiplyQuaternions(
-		quas.abdominal.conjugate(),
-		quas.chest
-	);
+// 	const chest_local = new THREE.Quaternion().multiplyQuaternions(
+// 		quas.abdominal.conjugate(),
+// 		quas.chest
+// 	);
 
-	bones.Spine2.rotation.setFromQuaternion(chest_local);
+// 	bones.Spine2.rotation.setFromQuaternion(chest_local);
 
-	const a = pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]];
-	const b = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
+// 	const a = pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]];
+// 	const b = pose3D[BlazePoseKeypointsValues["RIGHT_KNEE"]];
 
-	const LeftUpLeg_vector = new THREE.Vector3(
-		b.x - a.x,
-		b.y - a.y,
-		b.z - a.z
-	).normalize();
+// 	const LeftUpLeg_vector = new THREE.Vector3(
+// 		b.x - a.x,
+// 		b.y - a.y,
+// 		b.z - a.z
+// 	).normalize();
 
-	console.log(LeftUpLeg_vector);
+// 	console.log(LeftUpLeg_vector);
 
-	const LeftUpLeg_world = new THREE.Quaternion().setFromUnitVectors(
-		new THREE.Vector3(0, 1, 0),
-		LeftUpLeg_vector.normalize()
-	);
+// 	const LeftUpLeg_world = new THREE.Quaternion().setFromUnitVectors(
+// 		new THREE.Vector3(0, 1, 0),
+// 		LeftUpLeg_vector.normalize()
+// 	);
 
-	const LeftUpLeg_local = new THREE.Quaternion().multiplyQuaternions(
-		quas.abdominal.conjugate(),
-		LeftUpLeg_world.normalize()
-	);
+// 	const LeftUpLeg_local = new THREE.Quaternion().multiplyQuaternions(
+// 		quas.abdominal.conjugate(),
+// 		LeftUpLeg_world.normalize()
+// 	);
 
-	bones.LeftUpLeg.rotation.setFromQuaternion(LeftUpLeg_local.normalize());
+// 	bones.LeftUpLeg.rotation.setFromQuaternion(LeftUpLeg_local.normalize());
 
-	const leftShoulder_local = new THREE.Quaternion(
-		0.4816877883688483,
-		0.49276938581965446,
-		-0.5889065916037074,
-		0.4223082207356995
-	);
+// 	const leftShoulder_local = new THREE.Quaternion(
+// 		0.4816877883688483,
+// 		0.49276938581965446,
+// 		-0.5889065916037074,
+// 		0.4223082207356995
+// 	);
 
-	const rightShoulder_local = new THREE.Quaternion(
-		0.4816877883688483,
-		-0.49276938581965446,
-		0.5889065916037074,
-		0.4223082207356995
-	);
+// 	const rightShoulder_local = new THREE.Quaternion(
+// 		0.4816877883688483,
+// 		-0.49276938581965446,
+// 		0.5889065916037074,
+// 		0.4223082207356995
+// 	);
 
-	bones.LeftShoulder.rotation.setFromQuaternion(leftShoulder_local);
-	bones.RightShoulder.rotation.setFromQuaternion(rightShoulder_local);
+// 	bones.LeftShoulder.rotation.setFromQuaternion(leftShoulder_local);
+// 	bones.RightShoulder.rotation.setFromQuaternion(rightShoulder_local);
 
-	// bones.LeftShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
-	// bones.RightShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
+// 	// bones.LeftShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
+// 	// bones.RightShoulder.rotation.setFromQuaternion(new THREE.Quaternion());
 
-	// const a = pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
-	// const b = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
+// 	// const a = pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+// 	// const b = pose3D[BlazePoseKeypointsValues["RIGHT_ELBOW"]];
 
-	// const vec = new THREE.Vector3(b.x - a.x, b.y - a.y, b.z - a.z).normalize();
+// 	// const vec = new THREE.Vector3(b.x - a.x, b.y - a.y, b.z - a.z).normalize();
 
-	// // console.log(vec);
+// 	// // console.log(vec);
 
-	// const leftArm_world = new THREE.Quaternion().setFromUnitVectors(
-	// 	new THREE.Vector3(0, 1, 0),
-	// 	new THREE.Vector3(0, 0, 1).normalize()
-	// 	// vec
-	// );
+// 	// const leftArm_world = new THREE.Quaternion().setFromUnitVectors(
+// 	// 	new THREE.Vector3(0, 1, 0),
+// 	// 	new THREE.Vector3(0, 0, 1).normalize()
+// 	// 	// vec
+// 	// );
 
-	// const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
-	// 	chest_local.conjugate(),
-	// 	leftArm_world
-	// );
+// 	// const leftArm_local = new THREE.Quaternion().multiplyQuaternions(
+// 	// 	chest_local.conjugate(),
+// 	// 	leftArm_world
+// 	// );
 
-	// bones.LeftArm.rotation.setFromQuaternion(leftArm_local.normalize());
-}
+// 	// bones.LeftArm.rotation.setFromQuaternion(leftArm_local.normalize());
+// }
 
-export function testPoseToBone(bones, pose3D) {
-	const [abs_q, chest_q, abs_q_inv] = torsoRotation(
-		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
-		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
-		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
-		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
-	);
+// export function testPoseToBone(bones, pose3D) {
+// 	const [abs_q, chest_q] = torsoRotation(
+// 		pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+// 		pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+// 		pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
+// 		pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+// 	);
 
-	bones.Hips.rotation.setFromQuaternion(abs_q);
+// 	bones.Hips.rotation.setFromQuaternion(abs_q);
 
-	const left_hip = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
-	const left_knee = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
+// 	const left_hip = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
+// 	const left_knee = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
 
-	const world_targetvector_leftleg = new THREE.Vector3(
-		left_knee.x - left_hip.x,
-		left_knee.y - left_hip.y,
-		left_knee.z - left_hip.z
-	).normalize();
+// 	const world_targetvector_leftleg = new THREE.Vector3(
+// 		left_knee.x - left_hip.x,
+// 		left_knee.y - left_hip.y,
+// 		left_knee.z - left_hip.z
+// 	).normalize();
 
-	world_targetvector_leftleg.applyQuaternion(abs_q_inv);
+// 	const world_quaternion_hips = new THREE.Quaternion();
 
-	// first place the leg to the nature position, which is pointing towards ground, (0,-1,0)
-	const local_quaternion_leftleg1 = new THREE.Quaternion().setFromEuler(
-		new THREE.Euler(0, 0, -3.14)
-	);
+// 	bones.Hips.getWorldQuaternion(world_quaternion_hips);
 
-	// this is the real rotation,
-	// todo, limit this rotation by human body restrain
-	// todo, use matrix basis rotations to adjust the orientations
-	const local_quaternion_leftleg2 = new THREE.Quaternion().setFromUnitVectors(
-		new THREE.Vector3(0, -1, 0),
-		world_targetvector_leftleg.normalize()
-	);
+// 	world_targetvector_leftleg.applyQuaternion(world_quaternion_hips.conjugate())
 
-	/*
-	Notice that rotating by `a` and then by `b` is equivalent to 
-	performing a single rotation by the quaternion product `ba`. 
-	This is a key observation.
-	*/
-	const local_quaternion_leftleg = new THREE.Quaternion().multiplyQuaternions(
-		local_quaternion_leftleg2,
-		local_quaternion_leftleg1
-	);
+// 	// first place the leg to the nature position, which is pointing towards ground, (0,-1,0)
+// 	const local_quaternion_leftleg1 = new THREE.Quaternion().setFromEuler(
+// 		new THREE.Euler(0, 0, -3.14)
+// 	);
 
-	bones.LeftUpLeg.rotation.setFromQuaternion(
-		local_quaternion_leftleg.normalize()
-	);
+// 	// this is the real rotation,
+// 	// todo, limit this rotation by human body restrain
+// 	// todo, use matrix basis rotations to adjust the orientations
+// 	const local_quaternion_leftleg2 = new THREE.Quaternion().setFromUnitVectors(
+// 		new THREE.Vector3(0, -1, 0),
+// 		world_targetvector_leftleg.normalize()
+// 	);
 
-	// start calf
-	const left_ankle = pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]];
+// 	/*
+// 	Notice that rotating by `a` and then by `b` is equivalent to 
+// 	performing a single rotation by the quaternion product `ba`. 
+// 	This is a key observation.
+// 	*/
+// 	const local_quaternion_leftleg = new THREE.Quaternion().multiplyQuaternions(
+// 		local_quaternion_leftleg2,
+// 		local_quaternion_leftleg1
+// 	);
 
-	const world_targetvector_leftcalf = new THREE.Vector3(
-		left_ankle.x - left_knee.x,
-		left_ankle.y - left_knee.y,
-		left_ankle.z - left_knee.z
-	).normalize();
+// 	bones.LeftUpLeg.rotation.setFromQuaternion(
+// 		local_quaternion_leftleg.normalize()
+// 	);
 
-	const leftthigh_matrix = bones.LeftUpLeg.matrixWorld;
+// 	// start calf
+// 	const left_ankle = pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]];
 
-	world_targetvector_leftcalf.applyMatrix4(leftthigh_matrix.invert())
+// 	const world_targetvector_leftcalf = new THREE.Vector3(
+// 		left_ankle.x - left_knee.x,
+// 		left_ankle.y - left_knee.y,
+// 		left_ankle.z - left_knee.z
+// 	).normalize();
 
-	console.log(world_targetvector_leftcalf)
+// 	const world_quaternion_leftthigh = new THREE.Quaternion();
+// 	bones.LeftUpLeg.getWorldQuaternion(world_quaternion_leftthigh);
 
-	// this is the local rotation of calf
-	const local_quaternion_leftcalf = new THREE.Quaternion().setFromUnitVectors(
-		new THREE.Vector3(0, 1, 0),
-		world_targetvector_leftcalf.normalize()
-	);
+// 	world_targetvector_leftcalf.applyQuaternion(world_quaternion_leftthigh.conjugate())
 
-	bones.LeftLeg.rotation.setFromQuaternion(
-		local_quaternion_leftcalf.normalize()
-	);
+// 	const local_quaternion_leftcalf1 = new THREE.Quaternion().setFromEuler(
+// 		new THREE.Euler(0, 0, -3.14)
+// 	);
+
+// 	// this is the local rotation of calf
+// 	const local_quaternion_leftcalf2 = new THREE.Quaternion().setFromUnitVectors(
+// 		new THREE.Vector3(0, -1, 0),
+// 		world_targetvector_leftcalf.normalize()
+// 	);
+
+// 	const local_quaternion_leftcalf = new THREE.Quaternion().multiplyQuaternions(
+// 		local_quaternion_leftcalf2,
+// 		local_quaternion_leftcalf1
+// 	);
+
+// 	bones.LeftLeg.rotation.setFromQuaternion(
+// 		local_quaternion_leftcalf.normalize()
+// 	);
+
+// 	// start foot
+// 	// const left_heel = pose3D[BlazePoseKeypointsValues["LEFT_HEEL"]];
+// 	const left_footindex = pose3D[BlazePoseKeypointsValues["LEFT_FOOT_INDEX"]];
+
+// 	const world_targetvector_leftfoot = new THREE.Vector3(
+// 		left_footindex.x - left_ankle.x,
+// 		left_footindex.y - left_ankle.y,
+// 		left_footindex.z - left_ankle.z
+// 	).normalize();
+
+// 	const world_quaternion_leftcalf = new THREE.Quaternion();
+// 	bones.LeftLeg.getWorldQuaternion(world_quaternion_leftcalf);
+
+// 	world_targetvector_leftfoot.applyQuaternion(world_quaternion_leftcalf.conjugate())
+
+// 	// first place the foot to the nature position, which is pointing towards ground, (0,0,1)
+// 	const local_quaternion_leftfoot1 = new THREE.Quaternion().setFromEuler(
+// 		new THREE.Euler(1.035,0,0)
+// 	);
+
+// 	// this is the local rotation of calf
+// 	const local_quaternion_leftfoot2 = new THREE.Quaternion().setFromUnitVectors(
+// 		new THREE.Vector3(0, 0, 1),
+// 		world_targetvector_leftfoot.normalize()
+// 	);
+
+// 	const local_quaternion_leftfoot = new THREE.Quaternion().multiplyQuaternions(
+// 		local_quaternion_leftfoot2,
+// 		local_quaternion_leftfoot1
+// 	);
+
+// 	bones.LeftFoot.rotation.setFromQuaternion(
+// 		local_quaternion_leftfoot.normalize()
+// 	);
+
+// }
+
+export default class PoseToRotation {
+
+	constructor(bones) {
+		this.bones = bones
+	}
+
+	// updatePose(pose3D) {
+	// 	this.pose3D = pose3D
+	// }
+
+	applyPoseToBone(pose3D) {
+		this.pose3D = pose3D
+
+		const [abs_q, chest_q] = torsoRotation(
+			this.pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+			this.pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+			this.pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
+			this.pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+		);
+
+		this.bones.Hips.rotation.setFromQuaternion(abs_q);
+
+		this.rotateLimb('LeftUpLeg', 'Hips', 'LEFT_HIP', 'LEFT_KNEE', 
+		new THREE.Euler(0, 0, -3.14), new THREE.Vector3(0, -1, 0))
+
+		this.rotateLimb('LeftLeg', 'LeftUpLeg', 'LEFT_KNEE', 'LEFT_ANKLE', 
+		new THREE.Euler(0, 0, -3.14), new THREE.Vector3(0, -1, 0))
+
+		this.rotateLimb('LeftFoot', 'LeftLeg', 'LEFT_ANKLE', 'LEFT_FOOT_INDEX', 
+		new THREE.Euler(1.035,0,0), new THREE.Vector3(0, 0, 1))
+	}
+
+
+	rotateLimb(bone_name, parent_bone_name, start_joint_name, end_joint_name, init_euler, up_vector) {
+		const start_joint = this.pose3D[BlazePoseKeypointsValues[start_joint_name]];
+		const end_joint = this.pose3D[BlazePoseKeypointsValues[end_joint_name]];
+
+		const world_target_vector = new THREE.Vector3(
+			end_joint.x - start_joint.x,
+			end_joint.y - start_joint.y,
+			end_joint.z - start_joint.z
+		).normalize();
+
+		const world_quaternion = new THREE.Quaternion();
+
+		this.bones[parent_bone_name].getWorldQuaternion(world_quaternion);
+
+		world_target_vector.applyQuaternion(world_quaternion.conjugate())
+
+		// all the bones rest pose in the model is (0,1,0)
+		// first place the limb to the human body nature position
+		const init_quaternion = new THREE.Quaternion().setFromEuler(
+			init_euler
+		);
+
+		// this is the real human body rotation,
+		// todo, limit this rotation by human body restrain
+		// todo, use matrix basis rotations to adjust the orientations
+		const local_quaternion_bio = new THREE.Quaternion().setFromUnitVectors(
+			up_vector,
+			world_target_vector.normalize()
+		);
+
+		/*
+		Notice that rotating by `a` and then by `b` is equivalent to 
+		performing a single rotation by the quaternion product `ba`. 
+		This is a key observation.
+		*/
+		const local_quaternion_bone = new THREE.Quaternion().multiplyQuaternions(
+			local_quaternion_bio,
+			init_quaternion
+		);
+
+		this.bones[bone_name].rotation.setFromQuaternion(
+			local_quaternion_bone.normalize()
+		);
+
+	}
 
 }

@@ -22,7 +22,7 @@ import {
 	jsonToBufferGeometry,
 } from "../components/ropes";
 
-import { applyPoseToBone, testPoseToBone } from "../components/PoseToRotation";
+import PoseToRotation from "../components/PoseToRotation";
 
 export default function CloudVagabond1() {
 	const canvasRef = useRef(null);
@@ -59,6 +59,8 @@ export default function CloudVagabond1() {
 
 	const poseDataArr = useRef(null);
 	const poseIndx = useRef(0);
+
+	const poseToRotation = useRef(null);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -136,6 +138,8 @@ export default function CloudVagabond1() {
 
 			traverseModel(figure.current, figureParts.current);
 
+			poseToRotation.current = new PoseToRotation(figureParts.current);
+
 			// The X axis is red. The Y axis is green. The Z axis is blue.
 			// const axesHelper = new THREE.AxesHelper(1.5);
 
@@ -179,7 +183,8 @@ export default function CloudVagabond1() {
 
 			// figure.current.applyPose(pose3D);
 			// applyPoseToBone(pose3D, figureParts.current);
-			testPoseToBone(figureParts.current, pose3D);
+			// testPoseToBone(figureParts.current, pose3D);
+			poseToRotation.current.applyPoseToBone(pose3D)
 
 			poseIndx.current += 1;
 
