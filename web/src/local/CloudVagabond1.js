@@ -145,9 +145,9 @@ export default function CloudVagabond1() {
 
 			// figureParts.current.Hips.add(axesHelper);
 
-			const axesHelper1 = new THREE.AxesHelper(1.5);
+			// const axesHelper1 = new THREE.AxesHelper(1.5);
 
-			figureParts.current.LeftShoulder.add(axesHelper1);
+			// figureParts.current.LeftShoulder.add(axesHelper1);
 
 			scene.current.add(figure.current);
 
@@ -181,10 +181,7 @@ export default function CloudVagabond1() {
 
 			setcapturedPose(g);
 
-			// figure.current.applyPose(pose3D);
-			// applyPoseToBone(pose3D, figureParts.current);
-			// testPoseToBone(figureParts.current, pose3D);
-			poseToRotation.current.applyPoseToBone(pose3D)
+			poseToRotation.current.applyPoseToBone(pose3D);
 
 			poseIndx.current += 1;
 
@@ -285,9 +282,9 @@ export default function CloudVagabond1() {
 
 	function playpose() {
 		loadJSON(
-			// process.env.PUBLIC_URL + "/posejson/wlm800-900.npy.json"
+			process.env.PUBLIC_URL + "/posejson/wlm800-900.npy.json"
 			// process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
-			process.env.PUBLIC_URL + "/posejson/wlm2300-2400.npy.json"
+			// process.env.PUBLIC_URL + "/posejson/wlm2300-2400.npy.json"
 		).then((data) => {
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
