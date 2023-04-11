@@ -74,7 +74,7 @@ export default function CloudVagabond() {
 		subsceneWidthRef.current = documentWidth * 0.25;
 		subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
 
-		_scene(documentWidth, documentHeight);
+		creatMainScene(documentWidth, documentHeight);
 
 		invokeCamera(videoRef.current, () => {
 			setloadingCamera(false);
@@ -163,11 +163,8 @@ export default function CloudVagabond() {
 		// eslint-disable-next-line
 	}, []);
 
-	function _scene(viewWidth, viewHeight) {
-		const backgroundColor = 0x022244;
-
+	function creatMainScene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
-		scene.current.background = new THREE.Color(backgroundColor);
 
 		camera.current = new THREE.PerspectiveCamera(
 			90,
@@ -191,16 +188,21 @@ export default function CloudVagabond() {
 		visibleWidth.current = visibleHeight.current * camera.current.aspect; // visible width
 
 		{
-			const light = new THREE.PointLight(0xffffff, 1);
-			// light.position.set(10, 10, 10);
-			camera.current.add(light);
-
-			scene.current.add(camera.current);
+			// mimic the sun light
+			const dlight = new THREE.PointLight(0xffffff, 0.4);
+			dlight.position.set(0, 10, 10);
+			scene.current.add(dlight);
+			// env light
+			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
 		}
 
 		renderer.current = new THREE.WebGLRenderer({
 			canvas: canvasRef.current,
+			alpha: true,
+			antialias: true,
 		});
+
+		renderer.current.toneMappingExposure = 0.5;
 
 		controls.current = new OrbitControls(camera.current, canvasRef.current);
 
