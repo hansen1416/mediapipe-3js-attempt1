@@ -286,8 +286,8 @@ export default function CloudVagabond1() {
 	function playpose() {
 		loadJSON(
 			// process.env.PUBLIC_URL + "/posejson/wlm800-900.npy.json"
-			process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
-			// process.env.PUBLIC_URL + "/posejson/wlm2300-2400.npy.json"
+			// process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
+			process.env.PUBLIC_URL + "/posejson/wlm2300-2400.npy.json"
 		).then((data) => {
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
