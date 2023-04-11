@@ -137,13 +137,13 @@ export default function CloudVagabond1() {
 			traverseModel(figure.current, figureParts.current);
 
 			// The X axis is red. The Y axis is green. The Z axis is blue.
-			const axesHelper = new THREE.AxesHelper(1.5);
+			// const axesHelper = new THREE.AxesHelper(1.5);
 
-			figureParts.current.Hips.add(axesHelper);
+			// figureParts.current.Hips.add(axesHelper);
 
-			// const axesHelper1 = new THREE.AxesHelper(1.5);
+			const axesHelper1 = new THREE.AxesHelper(1.5);
 
-			// figureParts.current.LeftUpLeg.add(axesHelper1);
+			figureParts.current.LeftUpLeg.add(axesHelper1);
 
 			scene.current.add(figure.current);
 

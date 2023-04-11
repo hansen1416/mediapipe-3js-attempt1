@@ -471,17 +471,13 @@ export function testPoseToBone(bones, pose3D) {
 
 	bones.Hips.rotation.setFromQuaternion(abs_q);
 
-	const world_upvector_leftleg = new THREE.Vector3(0, 1, 0);
-
-	world_upvector_leftleg.applyQuaternion(abs_q);
-
-	const a = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
-	const b = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
+	const left_hip = pose3D[BlazePoseKeypointsValues["LEFT_HIP"]];
+	const left_knee = pose3D[BlazePoseKeypointsValues["LEFT_KNEE"]];
 
 	const world_targetvector_leftleg = new THREE.Vector3(
-		b.x - a.x,
-		b.y - a.y,
-		b.z - a.z
+		left_knee.x - left_hip.x,
+		left_knee.y - left_hip.y,
+		left_knee.z - left_hip.z
 	).normalize();
 
 	world_targetvector_leftleg.applyQuaternion(abs_q_inv);
@@ -493,13 +489,11 @@ export function testPoseToBone(bones, pose3D) {
 
 	// this is the real rotation,
 	// todo, limit this rotation by human body restrain
-	// todo, use matrix basis rotations instead of vectors
+	// todo, use matrix basis rotations to adjust the orientations
 	const local_quaternion_leftleg2 = new THREE.Quaternion().setFromUnitVectors(
 		new THREE.Vector3(0, -1, 0),
 		world_targetvector_leftleg.normalize()
 	);
-
-	// const local_quaternion_leftleg2 = new THREE.Quaternion();
 
 	/*
 	Notice that rotating by `a` and then by `b` is equivalent to 
@@ -511,17 +505,33 @@ export function testPoseToBone(bones, pose3D) {
 		local_quaternion_leftleg1
 	);
 
-	// bones.LeftUpLeg.rotation.setFromQuaternion(new THREE.Quaternion());
-
-	// const qq = new THREE.Quaternion().set
-
-	// bones.LeftUpLeg.rotation.setFromQuaternion();
-
 	bones.LeftUpLeg.rotation.setFromQuaternion(
 		local_quaternion_leftleg.normalize()
 	);
 
-	// bones.RightUpLeg.rotation.setFromQuaternion(
-	// 	new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 3.14))
-	// );
+	// start calf
+	const left_ankle = pose3D[BlazePoseKeypointsValues["LEFT_ANKLE"]];
+
+	const world_targetvector_leftcalf = new THREE.Vector3(
+		left_ankle.x - left_knee.x,
+		left_ankle.y - left_knee.y,
+		left_ankle.z - left_knee.z
+	).normalize();
+
+	const leftthigh_matrix = bones.LeftUpLeg.matrixWorld;
+
+	world_targetvector_leftcalf.applyMatrix4(leftthigh_matrix.invert())
+
+	console.log(world_targetvector_leftcalf)
+
+	// this is the local rotation of calf
+	const local_quaternion_leftcalf = new THREE.Quaternion().setFromUnitVectors(
+		new THREE.Vector3(0, 1, 0),
+		world_targetvector_leftcalf.normalize()
+	);
+
+	bones.LeftLeg.rotation.setFromQuaternion(
+		local_quaternion_leftcalf.normalize()
+	);
+
 }
