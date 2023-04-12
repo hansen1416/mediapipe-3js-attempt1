@@ -5,6 +5,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
+import { Hands } from "@mediapipe/hands";
+// import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
+// import { Holistic } from "@mediapipe/holistic";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
 // import Silhouette3D from "../components/Silhouette3D";
@@ -38,6 +41,10 @@ export default function CloudVagabond() {
 	const figure = useRef([]);
 	// bones of 3d model
 	const figureParts = useRef({});
+
+	const poseDetector = useRef(null);
+
+	const handDetector = useRef(null);
 	// apply pose to bones
 	const poseToRotation = useRef(null);
 
@@ -47,8 +54,6 @@ export default function CloudVagabond() {
 	const [capturedPose, setcapturedPose] = useState();
 	const counter = useRef(0);
 	// ========= captured pose logic
-
-	const poseDetector = useRef(null);
 
 	const videoRef = useRef(null);
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
@@ -80,6 +85,8 @@ export default function CloudVagabond() {
 			setloadingCamera(false);
 		});
 
+		// setloadingCamera(false);
+
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
 				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
@@ -100,38 +107,66 @@ export default function CloudVagabond() {
 		poseDetector.current.initialize().then(() => {
 			setloadingModel(false);
 			animate();
+
+			// // there was some issue if we do pose and hand async
+			// FilesetResolver.forVisionTasks(
+			// 	process.env.PUBLIC_URL + "/mediapipe/vision"
+			// 	// "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+			// ).then((vision) => {
+			// 	HandLandmarker.createFromOptions(vision, {
+			// 		baseOptions: {
+			// 			modelAssetPath:
+			// 				process.env.PUBLIC_URL +
+			// 				"/mediapipe/hand/hand_landmarker.task",
+			// 			// `https://storage.googleapis.com/mediapipe-assets/hand_landmarker.task`,
+			// 		},
+			// 		numHands: 2,
+			// 		runningMode: "IMAGE",
+			// 	}).then((handLandmarker) => {
+			// 		handDetector.current = handLandmarker;
+			// 	});
+			// });
 		});
 
-		// Promise.all([
-		// 	poseDetection.createDetector(
-		// 		poseDetection.SupportedModels.BlazePose,
-		// 		BlazePoseConfig
-		// 	),
-		// ]).then(([detector]) => {
-		// 	poseDetector.current = detector;
-		// });
+		handDetector.current = new Hands({
+			locateFile: (file) => {
+				// return process.env.PUBLIC_URL + "/mediapipe/hands/${file}";
+				return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+			},
+		});
+		handDetector.current.setOptions({
+			maxNumHands: 2,
+			modelComplexity: 1,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+		handDetector.current.onResults((result) => {
+			console.log(result);
+		});
 
-		// Promise.all(
-		// 	Silhouette3D.limbs.map((name) =>
-		// 		loadJSON(process.env.PUBLIC_URL + "/t/" + name + ".json")
-		// 	)
-		// ).then((results) => {
-		// 	const geos = {};
+		/*
+		poseDetector.current = new Holistic({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/holistic/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+			},
+		});
+		poseDetector.current.setOptions({
+			modelComplexity: 1,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			refineFaceLandmarks: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+		poseDetector.current.onResults(onPoseCallback);
 
-		// 	for (let data of results) {
-		// 		geos[data.name] = jsonToBufferGeometry(data);
-		// 	}
-
-		// 	figure.current = new Silhouette3D(geos);
-		// 	const body = figure.current.init();
-
-		// 	// getMeshSize(figure.current.foot_l.mesh, scene.current)
-
-		// 	scene.current.add(body);
-
-		// 	setloadingSilhouette(false);
-		// });
-
+		poseDetector.current.initialize().then(() => {
+			setloadingModel(false);
+			animate();
+		});
+*/
 		Promise.all([
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
 		]).then(([glb]) => {
@@ -220,6 +255,26 @@ export default function CloudVagabond() {
 			poseDetector.current.send({ image: videoRef.current });
 		}
 
+		if (
+			videoRef.current &&
+			videoRef.current.readyState >= 2 &&
+			counter.current % 10 === 0 &&
+			handDetector.current
+		) {
+			handDetector.current.send({ image: videoRef.current });
+			// if (handDetector.current) {
+			// 	handDetector.current
+			// 		.setOptions({ runningMode: "IMAGE" })
+			// 		.then(() => {
+			// 			const handlandmarks = handDetector.current.detect(
+			// 				videoRef.current
+			// 			);
+
+			// 			console.log(handlandmarks);
+			// 		});
+			// }
+		}
+
 		counter.current += 1;
 		// ========= captured pose logic
 
@@ -231,11 +286,12 @@ export default function CloudVagabond() {
 	}
 
 	function onPoseCallback(result) {
-		if (!result || !result.poseLandmarks || !result.poseWorldLandmarks) {
+		if (!result) {
 			return;
 		}
-
+		// console.log(result);
 		const pose3D = cloneDeep(result.poseWorldLandmarks);
+		// const pose3D = cloneDeep(result.poseLandmarks);
 
 		const width_ratio = 30;
 		const height_ratio = (width_ratio * 480) / 640;
@@ -266,6 +322,10 @@ export default function CloudVagabond() {
 		// 	visibleWidth.current,
 		// 	visibleHeight.current
 		// );
+	}
+
+	function onHandCallback(result) {
+		console.log(result);
 	}
 
 	return (
