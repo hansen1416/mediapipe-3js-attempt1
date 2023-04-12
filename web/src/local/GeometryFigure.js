@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Button from "react-bootstrap/Button";
-import * as poseDetection from "@tensorflow-models/pose-detection";
+// import * as poseDetection from "@tensorflow-models/pose-detection";
+import { Pose } from "@mediapipe/pose";
 import { cloneDeep } from "lodash";
 
 import SubThreeJsScene from "../components/SubThreeJsScene";
@@ -10,7 +11,7 @@ import Silhouette3D from "../components/Silhouette3D";
 // import T from "../components/T";
 import {
 	BlazePoseKeypoints,
-	BlazePoseConfig,
+	// BlazePoseConfig,
 	drawPoseKeypoints,
 	loadJSON,
 	// loadFBX,
@@ -72,18 +73,39 @@ export default function GeometryFigure() {
 
 		_scene(documentWidth, documentHeight);
 
+		poseDetector.current = new Pose({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+			},
+		});
+		poseDetector.current.setOptions({
+			modelComplexity: 2,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+
+		poseDetector.current.onResults(onPoseCallback);
+
+		poseDetector.current.initialize().then(() => {
+			animate();
+		});
+
 		Promise.all([
-			poseDetection.createDetector(
-				poseDetection.SupportedModels.BlazePose,
-				BlazePoseConfig
-			),
+			// poseDetection.createDetector(
+			// 	poseDetection.SupportedModels.BlazePose,
+			// 	BlazePoseConfig
+			// ),
 			import("./wlm1500-1600.npy"),
 			// loadJSON(
 			// 	process.env.PUBLIC_URL + "/posejson/wlm1500-1600.npy.json"
 			// ),
 			// loadFBX(process.env.PUBLIC_URL + "/fbx/T_0.fbx"),
-		]).then(([detector, pose3d, model]) => {
-			poseDetector.current = detector;
+		]).then(([pose3d]) => {
+			// poseDetector.current = detector;
 
 			storedPose.current = pose3d.default;
 
@@ -111,7 +133,7 @@ export default function GeometryFigure() {
 			scene.current.add(body);
 		});
 
-		animate();
+		// animate();
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -132,52 +154,13 @@ export default function GeometryFigure() {
 			!playPoseRef.current &&
 			counter.current % 6 === 0
 		) {
-			(async () => {
-				const poses = await poseDetector.current.estimatePoses(
-					videoRef.current
-				);
+			// (async () => {
+			// 	const poses = await poseDetector.current.estimatePoses(
+			// 		videoRef.current
+			// 	);
+			// })();
 
-				if (
-					!poses ||
-					!poses[0] ||
-					!poses[0]["keypoints"] ||
-					!poses[0]["keypoints3D"]
-				) {
-					return;
-				}
-
-				{
-					const pose3D = cloneDeep(poses[0]["keypoints3D"]);
-
-					const width_ratio = 30;
-					const height_ratio = (width_ratio * 480) / 640;
-
-					// multiply x,y by differnt factor
-					for (let v of pose3D) {
-						v["x"] *= -width_ratio;
-						v["y"] *= -height_ratio;
-						v["z"] *= -width_ratio;
-					}
-
-					const g = drawPoseKeypoints(pose3D);
-
-					g.scale.set(8, 8, 8);
-
-					setcapturedPose(g);
-
-					figure.current.applyPose(pose3D);
-
-					const pose2D = cloneDeep(poses[0]["keypoints"]);
-
-					figure.current.applyPosition(
-						pose2D,
-						subsceneWidthRef.current,
-						subsceneHeightRef.current,
-						visibleWidth.current,
-						visibleHeight.current
-					);
-				}
-			})();
+			poseDetector.current.send({ image: videoRef.current });
 		}
 
 		if (
@@ -228,6 +211,45 @@ export default function GeometryFigure() {
 		renderer.current.render(scene.current, camera.current);
 
 		animationPointer.current = requestAnimationFrame(animate);
+	}
+
+	function onPoseCallback(result) {
+		if (!result || !result.poseLandmarks || !result.poseWorldLandmarks) {
+			return;
+		}
+		const pose3D = cloneDeep(result.poseWorldLandmarks);
+
+		if (!pose3D) {
+			return;
+		}
+
+		const width_ratio = 30;
+		const height_ratio = (width_ratio * 480) / 640;
+
+		// multiply x,y by differnt factor
+		for (let v of pose3D) {
+			v["x"] *= -width_ratio;
+			v["y"] *= -height_ratio;
+			v["z"] *= -width_ratio;
+		}
+
+		const g = drawPoseKeypoints(pose3D);
+
+		g.scale.set(8, 8, 8);
+
+		setcapturedPose(g);
+
+		figure.current.applyPose(pose3D);
+
+		// const pose2D = cloneDeep(poses[0]["keypoints"]);
+
+		// figure.current.applyPosition(
+		// 	pose2D,
+		// 	subsceneWidthRef.current,
+		// 	subsceneHeightRef.current,
+		// 	visibleWidth.current,
+		// 	visibleHeight.current
+		// );
 	}
 
 	function _scene(viewWidth, viewHeight) {
