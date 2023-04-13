@@ -75,7 +75,7 @@ export default function GeometryFigure() {
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
-				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+				return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
 				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
 			},
 		});

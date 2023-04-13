@@ -94,7 +94,7 @@ export default function PoseDiffScore() {
 
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
-				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
+				return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
 				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
 			},
 		});
@@ -145,8 +145,8 @@ export default function PoseDiffScore() {
 				["LeftLeg", 0, 0, 0],
 				["RightUpLeg", 0.11, 0, 3.07],
 				["RightLeg", 0, 0, 0],
-				['LeftFoot', 1.035,0,0],
-				['RightFoot', 1.035,0,0],
+				["LeftFoot", 1.035, 0, 0],
+				["RightFoot", 1.035, 0, 0],
 			]);
 
 			scene.current.add(model.current);
