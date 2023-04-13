@@ -263,13 +263,14 @@ export default function CloudVagabond() {
 			counter.current % 3 === 0 &&
 			poseDetector.current
 		) {
-			poseDetector.current.send({ image: videoRef.current });
+			// poseDetector.current.send({ image: videoRef.current });
 		}
 
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0
+			counter.current % 3 === 0 &&
+			poseDetector.current
 		) {
 
 			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
@@ -279,10 +280,16 @@ export default function CloudVagabond() {
 			// const imagedata = canvasVideoRefCtx.current.getImageData(0, 0, 379, 284);
 
 			canvasVideoRef.current.toBlob((blob) => {
-				blob.arrayBuffer().then((res) => {
-					console.log(res)
-				})
-			}, 'image/jpeg', 0.6)
+
+				poseDetector.current.send({ image: blob });
+
+				// blob.arrayBuffer().then((res) => {
+				// 	// console.log(res)
+				// 	poseDetector.current.send(res);
+
+				// 	// poseDetector.current.send({ image: videoRef.current });
+				// })
+			}, 'image/jpeg', 1)
 		
 
 			// handDetector.current.send({ image: videoRef.current });
