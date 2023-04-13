@@ -44,7 +44,7 @@ export default function CloudVagabond() {
 
 	const poseDetector = useRef(null);
 
-	const handDetector = useRef(null);
+	// const handDetector = useRef(null);
 	// apply pose to bones
 	const poseToRotation = useRef(null);
 
@@ -56,6 +56,9 @@ export default function CloudVagabond() {
 	// ========= captured pose logic
 
 	const videoRef = useRef(null);
+	const canvasVideoRef = useRef(null);
+	const canvasVideoRefCtx = useRef(null);
+	
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
 	const [subsceneWidth, setsubsceneWidth] = useState(334);
 	const [subsceneHeight, setsubsceneHeight] = useState(250);
@@ -84,6 +87,8 @@ export default function CloudVagabond() {
 		invokeCamera(videoRef.current, () => {
 			setloadingCamera(false);
 		});
+
+		canvasVideoRefCtx.current = canvasVideoRef.current.getContext("2d");
 
 		// setloadingCamera(false);
 
@@ -260,14 +265,27 @@ export default function CloudVagabond() {
 		) {
 			poseDetector.current.send({ image: videoRef.current });
 		}
-/*
+
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0 && counter.current % 2 === 1 &&
-			handDetector.current
+			counter.current % 3 === 0
 		) {
-			handDetector.current.send({ image: videoRef.current });
+
+			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
+
+			// this method seems consume more memory than blob
+			// need further investigation. probably because we can set quality in `toBlob`
+			// const imagedata = canvasVideoRefCtx.current.getImageData(0, 0, 379, 284);
+
+			canvasVideoRef.current.toBlob((blob) => {
+				blob.arrayBuffer().then((res) => {
+					console.log(res)
+				})
+			}, 'image/jpeg', 0.6)
+		
+
+			// handDetector.current.send({ image: videoRef.current });
 			// if (handDetector.current) {
 			// 	handDetector.current
 			// 		.setOptions({ runningMode: "IMAGE" })
@@ -280,7 +298,7 @@ export default function CloudVagabond() {
 			// 		});
 			// }
 		}
-*/
+
 		counter.current += 1;
 		// ========= captured pose logic
 
@@ -330,9 +348,9 @@ export default function CloudVagabond() {
 		// );
 	}
 
-	function onHandCallback(result) {
-		console.log(result);
-	}
+	// function onHandCallback(result) {
+	// 	console.log(result);
+	// }
 
 	return (
 		<div className="digital-trainer">
@@ -343,8 +361,22 @@ export default function CloudVagabond() {
 				height={subsceneHeight + "px"}
 				style={{
 					display: "none",
+					// position: "absolute",
+					// bottom: 0,
+					// right: 0,
 				}}
 			></video>
+			<canvas
+				ref={canvasVideoRef}
+				width={subsceneWidth + "px"}
+				height={subsceneHeight + "px"}
+				style={{
+					display: "none",
+					// position: "absolute",
+					// top: 0,
+					// right: 0,
+				}}
+			/>
 
 			<canvas ref={canvasRef} />
 			{/* // ========= captured pose logic */}

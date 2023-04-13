@@ -1,6 +1,7 @@
 import { Hands } from "@mediapipe/hands";
 
-let handDetector 
+let handDetector;
+let modelReady = false
 
 export function initModel() {
     handDetector = new Hands({
@@ -20,9 +21,14 @@ export function initModel() {
 
     handDetector.initialize().then(() => {
         console.log(2)
+        modelReady = true
     })
 }
 
-export function plotHands() {
+export function plotHands(data) {
+    if (!modelReady) {
+        return
+    }
+
 
 }
