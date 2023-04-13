@@ -87,28 +87,7 @@ export default function CloudVagabond() {
 
 		// setloadingCamera(false);
 
-		poseDetector.current = new Pose({
-			locateFile: (file) => {
-				return process.env.PUBLIC_URL + `/mediapipe/${file}`;
-				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-			},
-		});
-		poseDetector.current.setOptions({
-			modelComplexity: 2,
-			smoothLandmarks: true,
-			enableSegmentation: false,
-			smoothSegmentation: false,
-			minDetectionConfidence: 0.5,
-			minTrackingConfidence: 0.5,
-		});
-
-		poseDetector.current.onResults(onPoseCallback);
-
-		poseDetector.current.initialize().then(() => {
-			setloadingModel(false);
-			animate();
-
-			// // there was some issue if we do pose and hand async
+					// // there was some issue if we do pose and hand async
 			// FilesetResolver.forVisionTasks(
 			// 	process.env.PUBLIC_URL + "/mediapipe/vision"
 			// 	// "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
@@ -126,12 +105,28 @@ export default function CloudVagabond() {
 			// 		handDetector.current = handLandmarker;
 			// 	});
 			// });
-		});
+
+		// poseDetector.current = new Pose({
+		// 	locateFile: (file) => {
+		// 		return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
+		// 		// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+		// 	},
+		// });
+		// poseDetector.current.setOptions({
+		// 	modelComplexity: 2,
+		// 	smoothLandmarks: true,
+		// 	enableSegmentation: false,
+		// 	smoothSegmentation: false,
+		// 	minDetectionConfidence: 0.5,
+		// 	minTrackingConfidence: 0.5,
+		// });
+
+		// poseDetector.current.onResults(onPoseCallback);
 
 		handDetector.current = new Hands({
 			locateFile: (file) => {
-				// return process.env.PUBLIC_URL + "/mediapipe/hands/${file}";
-				return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+				return process.env.PUBLIC_URL + `/mediapipe/hands/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
 			},
 		});
 		handDetector.current.setOptions({
@@ -139,9 +134,25 @@ export default function CloudVagabond() {
 			modelComplexity: 1,
 			minDetectionConfidence: 0.5,
 			minTrackingConfidence: 0.5,
+			static_image_mode: false,
 		});
-		handDetector.current.onResults((result) => {
-			console.log(result);
+		handDetector.current.onResults(onHandCallback);
+
+		// poseDetector.current.initialize().then(() => {
+		// 	console.log(1)
+		// })
+
+		// handDetector.current.initialize().then(() => {
+		// 	console.log(2)
+		// })
+
+		Promise.all([
+			// poseDetector.current.initialize(),
+			handDetector.current.initialize()
+		]).then(() => {
+			console.log(1)
+			setloadingModel(false);
+			animate();
 		});
 
 		/*
@@ -249,7 +260,7 @@ export default function CloudVagabond() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0 &&
+			counter.current % 3 === 0 && counter.current % 2 === 0 &&
 			poseDetector.current
 		) {
 			poseDetector.current.send({ image: videoRef.current });
@@ -258,7 +269,7 @@ export default function CloudVagabond() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 10 === 0 &&
+			counter.current % 3 === 0 && counter.current % 2 === 1 &&
 			handDetector.current
 		) {
 			handDetector.current.send({ image: videoRef.current });
