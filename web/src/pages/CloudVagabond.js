@@ -5,7 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
-// import { Hands } from "@mediapipe/hands";
+import { Hands } from "@mediapipe/hands";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
 
@@ -44,7 +44,7 @@ export default function CloudVagabond() {
 
 	const poseDetector = useRef(null);
 
-	// const handDetector = useRef(null);
+	const handDetector = useRef(null);
 	// apply pose to bones
 	const poseToRotation = useRef(null);
 
@@ -58,7 +58,7 @@ export default function CloudVagabond() {
 	const videoRef = useRef(null);
 	const canvasVideoRef = useRef(null);
 	const canvasVideoRefCtx = useRef(null);
-	
+
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
 	const [subsceneWidth, setsubsceneWidth] = useState(334);
 	const [subsceneHeight, setsubsceneHeight] = useState(250);
@@ -92,25 +92,26 @@ export default function CloudVagabond() {
 
 		// setloadingCamera(false);
 
-					// // there was some issue if we do pose and hand async
-			// FilesetResolver.forVisionTasks(
-			// 	process.env.PUBLIC_URL + "/mediapipe/vision"
-			// 	// "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-			// ).then((vision) => {
-			// 	HandLandmarker.createFromOptions(vision, {
-			// 		baseOptions: {
-			// 			modelAssetPath:
-			// 				process.env.PUBLIC_URL +
-			// 				"/mediapipe/hand/hand_landmarker.task",
-			// 			// `https://storage.googleapis.com/mediapipe-assets/hand_landmarker.task`,
-			// 		},
-			// 		numHands: 2,
-			// 		runningMode: "IMAGE",
-			// 	}).then((handLandmarker) => {
-			// 		handDetector.current = handLandmarker;
-			// 	});
-			// });
+		// // there was some issue if we do pose and hand async
+		// FilesetResolver.forVisionTasks(
+		// 	process.env.PUBLIC_URL + "/mediapipe/vision"
+		// 	// "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+		// ).then((vision) => {
+		// 	HandLandmarker.createFromOptions(vision, {
+		// 		baseOptions: {
+		// 			modelAssetPath:
+		// 				process.env.PUBLIC_URL +
+		// 				"/mediapipe/hand/hand_landmarker.task",
+		// 			// `https://storage.googleapis.com/mediapipe-assets/hand_landmarker.task`,
+		// 		},
+		// 		numHands: 2,
+		// 		runningMode: "IMAGE",
+		// 	}).then((handLandmarker) => {
+		// 		handDetector.current = handLandmarker;
+		// 	});
+		// });
 
+		/*
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
 				return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
@@ -131,9 +132,9 @@ export default function CloudVagabond() {
 		poseDetector.current.initialize().then(() => {
 			setloadingModel(false);
 			animate();
-		})
+		});
+*/
 
-		/*
 		handDetector.current = new Hands({
 			locateFile: (file) => {
 				return process.env.PUBLIC_URL + `/mediapipe/hands/${file}`;
@@ -150,10 +151,9 @@ export default function CloudVagabond() {
 		handDetector.current.onResults(onHandCallback);
 
 		handDetector.current.initialize().then(() => {
-			console.log(2)
-		})
-		*/
-
+			setloadingModel(false);
+			animate();
+		});
 
 		/*
 		poseDetector.current = new Holistic({
@@ -270,9 +270,23 @@ export default function CloudVagabond() {
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
 			counter.current % 3 === 0 &&
-			poseDetector.current
+			handDetector.current
 		) {
+			const optins = {
+				resizeWidth: 210,
+				resizeHeight: 157,
+				resizeQuality: "pixelated",
+			};
 
+			createImageBitmap(videoRef.current, 0, 0, 420, 315, optins).then(
+				(bitmap) => {
+					// console.log(bitmap);
+					// poseDetector.current.send({ image: bitmap });
+					// handDetector.current.send({ image: bitmap });
+				}
+			);
+
+			/*
 			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
 
 			// this method seems consume more memory than blob
@@ -290,8 +304,7 @@ export default function CloudVagabond() {
 				// 	// poseDetector.current.send({ image: videoRef.current });
 				// })
 			}, 'image/jpeg', 1)
-		
-
+*/
 			// handDetector.current.send({ image: videoRef.current });
 			// if (handDetector.current) {
 			// 	handDetector.current
@@ -300,7 +313,6 @@ export default function CloudVagabond() {
 			// 			const handlandmarks = handDetector.current.detect(
 			// 				videoRef.current
 			// 			);
-
 			// 			console.log(handlandmarks);
 			// 		});
 			// }
@@ -355,9 +367,9 @@ export default function CloudVagabond() {
 		// );
 	}
 
-	// function onHandCallback(result) {
-	// 	console.log(result);
-	// }
+	function onHandCallback(result) {
+		console.log(result);
+	}
 
 	return (
 		<div className="digital-trainer">
