@@ -106,23 +106,29 @@ export default function CloudVagabond() {
 			// 	});
 			// });
 
-		// poseDetector.current = new Pose({
-		// 	locateFile: (file) => {
-		// 		return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
-		// 		// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-		// 	},
-		// });
-		// poseDetector.current.setOptions({
-		// 	modelComplexity: 2,
-		// 	smoothLandmarks: true,
-		// 	enableSegmentation: false,
-		// 	smoothSegmentation: false,
-		// 	minDetectionConfidence: 0.5,
-		// 	minTrackingConfidence: 0.5,
-		// });
+		poseDetector.current = new Pose({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+			},
+		});
+		poseDetector.current.setOptions({
+			modelComplexity: 2,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
 
-		// poseDetector.current.onResults(onPoseCallback);
+		poseDetector.current.onResults(onPoseCallback);
 
+		poseDetector.current.initialize().then(() => {
+			setloadingModel(false);
+			animate();
+		})
+
+		/*
 		handDetector.current = new Hands({
 			locateFile: (file) => {
 				return process.env.PUBLIC_URL + `/mediapipe/hands/${file}`;
@@ -138,22 +144,11 @@ export default function CloudVagabond() {
 		});
 		handDetector.current.onResults(onHandCallback);
 
-		// poseDetector.current.initialize().then(() => {
-		// 	console.log(1)
-		// })
+		handDetector.current.initialize().then(() => {
+			console.log(2)
+		})
+		*/
 
-		// handDetector.current.initialize().then(() => {
-		// 	console.log(2)
-		// })
-
-		Promise.all([
-			// poseDetector.current.initialize(),
-			handDetector.current.initialize()
-		]).then(() => {
-			console.log(1)
-			setloadingModel(false);
-			animate();
-		});
 
 		/*
 		poseDetector.current = new Holistic({
@@ -260,12 +255,12 @@ export default function CloudVagabond() {
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0 && counter.current % 2 === 0 &&
+			counter.current % 3 === 0 &&
 			poseDetector.current
 		) {
 			poseDetector.current.send({ image: videoRef.current });
 		}
-
+/*
 		if (
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
@@ -285,7 +280,7 @@ export default function CloudVagabond() {
 			// 		});
 			// }
 		}
-
+*/
 		counter.current += 1;
 		// ========= captured pose logic
 
