@@ -5,7 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
-import { Hands } from "@mediapipe/hands";
+// import { Hands } from "@mediapipe/hands";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
 
