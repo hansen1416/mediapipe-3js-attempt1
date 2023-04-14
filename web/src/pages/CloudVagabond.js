@@ -6,6 +6,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
 import { Hands } from "@mediapipe/hands";
+import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
 
@@ -27,6 +28,8 @@ import {
 } from "../components/ropes";
 
 import PoseToRotation from "../components/PoseToRotation";
+
+const createWorker = createWorkerFactory(() => import("./HandsWorker"));
 
 export default function CloudVagabond() {
 	const canvasRef = useRef(null);
@@ -72,6 +75,9 @@ export default function CloudVagabond() {
 	const [loadingModel, setloadingModel] = useState(true);
 	const [loadingSilhouette, setloadingSilhouette] = useState(true);
 
+	// worker for hands detection
+	const worker = useWorker(createWorker);
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -111,7 +117,6 @@ export default function CloudVagabond() {
 		// 	});
 		// });
 
-		/*
 		poseDetector.current = new Pose({
 			locateFile: (file) => {
 				return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
@@ -132,9 +137,13 @@ export default function CloudVagabond() {
 		poseDetector.current.initialize().then(() => {
 			setloadingModel(false);
 			animate();
-		});
-*/
 
+			worker.initModel().then((msg) => {
+				console.log(msg);
+			});
+		});
+
+		/*
 		handDetector.current = new Hands({
 			locateFile: (file) => {
 				return process.env.PUBLIC_URL + `/mediapipe/hands/${file}`;
@@ -154,6 +163,7 @@ export default function CloudVagabond() {
 			setloadingModel(false);
 			animate();
 		});
+*/
 
 		/*
 		poseDetector.current = new Holistic({
@@ -270,7 +280,7 @@ export default function CloudVagabond() {
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
 			counter.current % 3 === 0 &&
-			handDetector.current
+			poseDetector.current
 		) {
 			const optins = {
 				resizeWidth: 210,
@@ -281,8 +291,12 @@ export default function CloudVagabond() {
 			createImageBitmap(videoRef.current, 0, 0, 420, 315, optins).then(
 				(bitmap) => {
 					// console.log(bitmap);
-					// poseDetector.current.send({ image: bitmap });
+					poseDetector.current.send({ image: bitmap });
 					// handDetector.current.send({ image: bitmap });
+
+					worker.plotHands(bitmap).then((msg) => {
+						console.log(msg);
+					});
 				}
 			);
 
@@ -367,9 +381,9 @@ export default function CloudVagabond() {
 		// );
 	}
 
-	function onHandCallback(result) {
-		console.log(result);
-	}
+	// function onHandCallback(result) {
+	// 	console.log(result);
+	// }
 
 	return (
 		<div className="digital-trainer">
