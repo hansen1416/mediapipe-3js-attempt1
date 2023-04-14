@@ -5,7 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
-import { Hands } from "@mediapipe/hands";
+// import { Hands } from "@mediapipe/hands";
 import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
@@ -47,7 +47,7 @@ export default function CloudVagabond() {
 
 	const poseDetector = useRef(null);
 
-	const handDetector = useRef(null);
+	// const handDetector = useRef(null);
 	// apply pose to bones
 	const poseToRotation = useRef(null);
 
@@ -59,8 +59,8 @@ export default function CloudVagabond() {
 	// ========= captured pose logic
 
 	const videoRef = useRef(null);
-	const canvasVideoRef = useRef(null);
-	const canvasVideoRefCtx = useRef(null);
+	// const canvasVideoRef = useRef(null);
+	// const canvasVideoRefCtx = useRef(null);
 
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
 	const [subsceneWidth, setsubsceneWidth] = useState(334);
@@ -94,7 +94,7 @@ export default function CloudVagabond() {
 			setloadingCamera(false);
 		});
 
-		canvasVideoRefCtx.current = canvasVideoRef.current.getContext("2d");
+		// canvasVideoRefCtx.current = canvasVideoRef.current.getContext("2d");
 
 		// setloadingCamera(false);
 
@@ -283,8 +283,8 @@ export default function CloudVagabond() {
 			poseDetector.current
 		) {
 			const optins = {
-				resizeWidth: 210,
-				resizeHeight: 157,
+				resizeWidth: 420,
+				resizeHeight: 315,
 				resizeQuality: "pixelated",
 			};
 
@@ -343,7 +343,7 @@ export default function CloudVagabond() {
 	}
 
 	function onPoseCallback(result) {
-		if (!result) {
+		if (!result || !result.poseWorldLandmarks) {
 			return;
 		}
 		// console.log(result);
@@ -399,7 +399,7 @@ export default function CloudVagabond() {
 					// right: 0,
 				}}
 			></video>
-			<canvas
+			{/* <canvas
 				ref={canvasVideoRef}
 				width={subsceneWidth + "px"}
 				height={subsceneHeight + "px"}
@@ -409,7 +409,7 @@ export default function CloudVagabond() {
 					// top: 0,
 					// right: 0,
 				}}
-			/>
+			/> */}
 
 			<canvas ref={canvasRef} />
 			{/* // ========= captured pose logic */}
