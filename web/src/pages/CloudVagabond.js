@@ -7,9 +7,11 @@ import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
 // import { Hands } from "@mediapipe/hands";
 import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
+import Button from "react-bootstrap/Button";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
 
+import "../styles/css/CloudVagabond.css"
 import SubThreeJsScene from "../components/SubThreeJsScene";
 // import Silhouette3D from "../components/Silhouette3D";
 // import T from "../components/T";
@@ -77,6 +79,10 @@ export default function CloudVagabond() {
 
 	// worker for hands detection
 	const worker = useWorker(createWorker);
+
+	const [runAnimation, setrunAnimation] = useState(true)
+	const runAnimationRef = useRef(true)
+	const [showVideo, setshowVideo] = useState(false)
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -219,6 +225,10 @@ export default function CloudVagabond() {
 		// eslint-disable-next-line
 	}, []);
 
+	useEffect(() => {
+		runAnimationRef.current = runAnimation
+	}, [runAnimation]);
+
 	function creatMainScene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
 
@@ -267,13 +277,8 @@ export default function CloudVagabond() {
 
 	function animate() {
 		// ========= captured pose logic
-		if (
-			videoRef.current &&
-			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0 &&
-			poseDetector.current
-		) {
-			// poseDetector.current.send({ image: videoRef.current });
+		if (!runAnimationRef.current) {
+			return
 		}
 
 		if (
@@ -282,13 +287,12 @@ export default function CloudVagabond() {
 			counter.current % 3 === 0 &&
 			poseDetector.current
 		) {
-			const optins = {
+
+			createImageBitmap(videoRef.current, 0, 0, 420, 315, {
 				resizeWidth: 420,
 				resizeHeight: 315,
 				resizeQuality: "pixelated",
-			};
-
-			createImageBitmap(videoRef.current, 0, 0, 420, 315, optins).then(
+			}).then(
 				(bitmap) => {
 					// console.log(bitmap);
 					poseDetector.current.send({ image: bitmap });
@@ -386,14 +390,14 @@ export default function CloudVagabond() {
 	// }
 
 	return (
-		<div className="digital-trainer">
+		<div className="cloud-vagabond">
 			<video
 				ref={videoRef}
 				autoPlay={true}
 				width={subsceneWidth + "px"}
 				height={subsceneHeight + "px"}
 				style={{
-					display: "none",
+					display: showVideo ? "block" : "none",
 					// position: "absolute",
 					// bottom: 0,
 					// right: 0,
@@ -428,6 +432,22 @@ export default function CloudVagabond() {
 					objects={capturedPose}
 					cameraZ={200}
 				/>
+			</div>
+			<div
+				className="btns"
+			>
+				<Button
+					variant="primary"
+					onClick={() => {
+						setshowVideo(!showVideo)
+					}}
+				>{showVideo ? "hide video" : "show video"}</Button>
+				<Button
+					variant="primary"
+					onClick={() => {
+						setrunAnimation(!runAnimation)
+					}}
+				>{runAnimation ? "pause animation" : "run animation"}</Button>
 			</div>
 			{(loadingCamera || loadingModel || loadingSilhouette) && (
 				<div className="mask">
