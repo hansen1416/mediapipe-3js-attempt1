@@ -11,14 +11,14 @@ import Button from "react-bootstrap/Button";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
 
-import "../styles/css/CloudVagabond.css"
-import SubThreeJsScene from "../components/SubThreeJsScene";
+import "../styles/css/CloudVagabond.css";
+// import SubThreeJsScene from "../components/SubThreeJsScene";
 // import Silhouette3D from "../components/Silhouette3D";
 // import T from "../components/T";
 import {
 	// BlazePoseKeypoints,
 	// BlazePoseConfig,
-	drawPoseKeypointsMediaPipe,
+	// drawPoseKeypointsMediaPipe,
 	loadGLTF,
 	// invokeCamera,
 	traverseModel,
@@ -56,7 +56,7 @@ export default function CloudVagabond() {
 	// const fbxmodel = useRef(null);
 
 	// ========= captured pose logic
-	const [capturedPose, setcapturedPose] = useState();
+	// const [capturedPose, setcapturedPose] = useState();
 	const counter = useRef(0);
 	// ========= captured pose logic
 
@@ -80,9 +80,9 @@ export default function CloudVagabond() {
 	// worker for hands detection
 	const worker = useWorker(createWorker);
 
-	const [runAnimation, setrunAnimation] = useState(true)
-	const runAnimationRef = useRef(true)
-	const [showVideo, setshowVideo] = useState(false)
+	const [runAnimation, setrunAnimation] = useState(true);
+	const runAnimationRef = useRef(true);
+	const [showVideo, setshowVideo] = useState(false);
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -226,7 +226,7 @@ export default function CloudVagabond() {
 	}, []);
 
 	useEffect(() => {
-		runAnimationRef.current = runAnimation
+		runAnimationRef.current = runAnimation;
 	}, [runAnimation]);
 
 	function creatMainScene(viewWidth, viewHeight) {
@@ -277,32 +277,29 @@ export default function CloudVagabond() {
 
 	function animate() {
 		// ========= captured pose logic
-		if (!runAnimationRef.current) {
-			return
-		}
 
 		if (
+			runAnimationRef.current &&
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
 			counter.current % 3 === 0 &&
 			poseDetector.current
 		) {
+			poseDetector.current.send({ image: videoRef.current });
 
 			createImageBitmap(videoRef.current, 0, 0, 420, 315, {
 				resizeWidth: 420,
 				resizeHeight: 315,
 				resizeQuality: "pixelated",
-			}).then(
-				(bitmap) => {
-					// console.log(bitmap);
-					poseDetector.current.send({ image: bitmap });
-					// handDetector.current.send({ image: bitmap });
+			}).then((bitmap) => {
+				// console.log(bitmap);
 
-					worker.plotHands(bitmap).then((msg) => {
-						console.log(msg);
-					});
-				}
-			);
+				// handDetector.current.send({ image: bitmap });
+
+				worker.plotHands(bitmap).then((msg) => {
+					// console.log(msg);
+				});
+			});
 
 			/*
 			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
@@ -337,6 +334,11 @@ export default function CloudVagabond() {
 		}
 
 		counter.current += 1;
+
+		if (counter.current > 10000) {
+			counter.current = 0;
+		}
+
 		// ========= captured pose logic
 
 		controls.current.update();
@@ -364,11 +366,11 @@ export default function CloudVagabond() {
 			v["z"] *= -width_ratio;
 		}
 
-		const g = drawPoseKeypointsMediaPipe(pose3D);
+		// const g = drawPoseKeypointsMediaPipe(pose3D);
 
-		g.scale.set(8, 8, 8);
+		// g.scale.set(8, 8, 8);
 
-		setcapturedPose(g);
+		// setcapturedPose(g);
 
 		poseToRotation.current.applyPoseToBone(pose3D);
 
@@ -417,7 +419,7 @@ export default function CloudVagabond() {
 
 			<canvas ref={canvasRef} />
 			{/* // ========= captured pose logic */}
-			<div
+			{/* <div
 				style={{
 					width: subsceneWidth + "px",
 					height: subsceneHeight + "px",
@@ -432,22 +434,24 @@ export default function CloudVagabond() {
 					objects={capturedPose}
 					cameraZ={200}
 				/>
-			</div>
-			<div
-				className="btns"
-			>
+			</div> */}
+			<div className="btns">
 				<Button
 					variant="primary"
 					onClick={() => {
-						setshowVideo(!showVideo)
+						setshowVideo(!showVideo);
 					}}
-				>{showVideo ? "hide video" : "show video"}</Button>
+				>
+					{showVideo ? "hide video" : "show video"}
+				</Button>
 				<Button
 					variant="primary"
 					onClick={() => {
-						setrunAnimation(!runAnimation)
+						setrunAnimation(!runAnimation);
 					}}
-				>{runAnimation ? "pause animation" : "run animation"}</Button>
+				>
+					{runAnimation ? "pause animation" : "run animation"}
+				</Button>
 			</div>
 			{(loadingCamera || loadingModel || loadingSilhouette) && (
 				<div className="mask">

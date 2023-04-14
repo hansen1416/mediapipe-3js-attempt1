@@ -318,6 +318,17 @@ export default class PoseToRotation {
 		init_euler,
 		up_vector
 	) {
+		if (
+			(this.pose3D[BlazePoseKeypointsValues[start_joint_name]] &&
+				this.pose3D[BlazePoseKeypointsValues[start_joint_name]]
+					.visibility < 0.5) ||
+			(this.pose3D[BlazePoseKeypointsValues[end_joint_name]] &&
+				this.pose3D[BlazePoseKeypointsValues[end_joint_name]]
+					.visibility < 0.5)
+		) {
+			return;
+		}
+
 		const start_joint =
 			this.pose3D[BlazePoseKeypointsValues[start_joint_name]];
 		const end_joint = this.pose3D[BlazePoseKeypointsValues[end_joint_name]];

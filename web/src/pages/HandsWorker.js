@@ -4,7 +4,7 @@ let handDetector;
 let modelReady = false;
 
 function onHandCallback(result) {
-	console.log(result);
+	// console.log(result);
 }
 
 export function initModel() {
