@@ -91,8 +91,8 @@ export default function CloudVagabond() {
 		setsubsceneWidth(documentWidth * 0.25);
 		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
 
-		subsceneWidthRef.current = documentWidth * 0.25;
-		subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
+		// subsceneWidthRef.current = documentWidth * 0.25;
+		// subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
 
 		creatMainScene(documentWidth, documentHeight);
 
@@ -226,6 +226,14 @@ export default function CloudVagabond() {
 	}, []);
 
 	useEffect(() => {
+		subsceneWidthRef.current = subsceneWidth;
+	}, [subsceneWidth]);
+
+	useEffect(() => {
+		subsceneHeightRef.current = subsceneHeight;
+	}, [subsceneHeight]);
+
+	useEffect(() => {
 		runAnimationRef.current = runAnimation;
 	}, [runAnimation]);
 
@@ -286,21 +294,28 @@ export default function CloudVagabond() {
 			poseDetector.current
 		) {
 			poseDetector.current.send({ image: videoRef.current });
+			/*
+			createImageBitmap(
+				videoRef.current,
+				// 0,
+				// 0,
+				// subsceneWidthRef.current,
+				// subsceneHeightRef.current,
+				{
+					// resizeWidth: 420,
+					// resizeHeight: 315,
+					// resizeQuality: "pixelated",
+				}
+			).then((bitmap) => {
+				poseDetector.current.send({ image: bitmap });
 
-			// createImageBitmap(videoRef.current, 0, 0, 420, 315, {
-			// 	resizeWidth: 420,
-			// 	resizeHeight: 315,
-			// 	resizeQuality: "pixelated",
-			// }).then((bitmap) => {
-			// 	// console.log(bitmap);
+				// handDetector.current.send({ image: bitmap });
 
-			// 	// handDetector.current.send({ image: bitmap });
-
-			// 	worker.plotHands(bitmap).then((msg) => {
-			// 		// console.log(msg);
-			// 	});
-			// });
-
+				worker.plotHands(bitmap).then((msg) => {
+					// console.log(msg);
+				});
+			});
+*/
 			/*
 			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
 
