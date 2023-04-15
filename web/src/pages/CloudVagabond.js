@@ -144,9 +144,9 @@ export default function CloudVagabond() {
 			setloadingModel(false);
 			animate();
 
-			worker.initModel().then((msg) => {
-				console.log(msg);
-			});
+			// worker.initModel().then((msg) => {
+			// 	console.log(msg);
+			// });
 		});
 
 		/*
@@ -287,19 +287,19 @@ export default function CloudVagabond() {
 		) {
 			poseDetector.current.send({ image: videoRef.current });
 
-			createImageBitmap(videoRef.current, 0, 0, 420, 315, {
-				resizeWidth: 420,
-				resizeHeight: 315,
-				resizeQuality: "pixelated",
-			}).then((bitmap) => {
-				// console.log(bitmap);
+			// createImageBitmap(videoRef.current, 0, 0, 420, 315, {
+			// 	resizeWidth: 420,
+			// 	resizeHeight: 315,
+			// 	resizeQuality: "pixelated",
+			// }).then((bitmap) => {
+			// 	// console.log(bitmap);
 
-				// handDetector.current.send({ image: bitmap });
+			// 	// handDetector.current.send({ image: bitmap });
 
-				worker.plotHands(bitmap).then((msg) => {
-					// console.log(msg);
-				});
-			});
+			// 	worker.plotHands(bitmap).then((msg) => {
+			// 		// console.log(msg);
+			// 	});
+			// });
 
 			/*
 			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
@@ -356,12 +356,15 @@ export default function CloudVagabond() {
 		const pose3D = cloneDeep(result.poseWorldLandmarks);
 		// const pose3D = cloneDeep(result.poseLandmarks);
 
-		const width_ratio = 30;
-		const height_ratio = (width_ratio * 480) / 640;
+		// const width_ratio = 30;
+		// const height_ratio = (width_ratio * 480) / 640;
+
+		const width_ratio = 1;
+		const height_ratio = 1;
 
 		// multiply x,y by differnt factor
 		for (let v of pose3D) {
-			v["x"] *= -width_ratio;
+			v["x"] *= width_ratio;
 			v["y"] *= -height_ratio;
 			v["z"] *= -width_ratio;
 		}

@@ -203,11 +203,21 @@ export default class PoseToRotation {
 	applyPoseToBone(pose3D) {
 		this.pose3D = pose3D;
 
+		const swap_left_right = false;
+
 		const [abs_q, chest_q] = torsoRotation(
-			this.pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
-			this.pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
-			this.pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]],
-			this.pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+			swap_left_right
+				? this.pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
+				: this.pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+			swap_left_right
+				? this.pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
+				: this.pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+			swap_left_right
+				? this.pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+				: this.pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
+			swap_left_right
+				? this.pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
+				: this.pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
 		);
 
 		this.bones.Hips.rotation.setFromQuaternion(abs_q);
@@ -222,8 +232,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"LeftArm",
 			"LeftShoulder",
-			"RIGHT_SHOULDER",
-			"RIGHT_ELBOW",
+			swap_left_right ? "RIGHT_SHOULDER" : "LEFT_SHOULDER",
+			swap_left_right ? "RIGHT_ELBOW" : "LEFT_ELBOW",
 			new THREE.Euler(0, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		);
@@ -231,8 +241,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"LeftForeArm",
 			"LeftArm",
-			"RIGHT_ELBOW",
-			"RIGHT_WRIST",
+			swap_left_right ? "RIGHT_ELBOW" : "LEFT_ELBOW",
+			swap_left_right ? "RIGHT_WRIST" : "LEFT_WRIST",
 			new THREE.Euler(0, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		);
@@ -240,8 +250,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"RightArm",
 			"RightShoulder",
-			"LEFT_SHOULDER",
-			"LEFT_ELBOW",
+			swap_left_right ? "LEFT_SHOULDER" : "RIGHT_SHOULDER",
+			swap_left_right ? "LEFT_ELBOW" : "RIGHT_ELBOW",
 			new THREE.Euler(0, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		);
@@ -249,8 +259,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"RightForeArm",
 			"RightArm",
-			"LEFT_ELBOW",
-			"LEFT_WRIST",
+			swap_left_right ? "LEFT_ELBOW" : "RIGHT_ELBOW",
+			swap_left_right ? "LEFT_WRIST" : "RIGHT_WRIST",
 			new THREE.Euler(0, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		);
@@ -258,8 +268,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"LeftUpLeg",
 			"Hips",
-			"RIGHT_HIP",
-			"RIGHT_KNEE",
+			swap_left_right ? "RIGHT_HIP" : "LEFT_HIP",
+			swap_left_right ? "RIGHT_KNEE" : "LEFT_KNEE",
 			new THREE.Euler(0, 0, -3.14),
 			new THREE.Vector3(0, -1, 0)
 		);
@@ -267,8 +277,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"LeftLeg",
 			"LeftUpLeg",
-			"RIGHT_KNEE",
-			"RIGHT_ANKLE",
+			swap_left_right ? "RIGHT_KNEE" : "LEFT_HIP",
+			swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
 			new THREE.Euler(0, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		);
@@ -276,8 +286,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"LeftFoot",
 			"LeftLeg",
-			"RIGHT_ANKLE",
-			"RIGHT_FOOT_INDEX",
+			swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
+			swap_left_right ? "RIGHT_FOOT_INDEX" : "LEFT_FOOT_INDEX",
 			new THREE.Euler(1.035, 0, 0),
 			new THREE.Vector3(0, 0, 1)
 		);
@@ -285,8 +295,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"RightUpLeg",
 			"Hips",
-			"LEFT_HIP",
-			"LEFT_KNEE",
+			swap_left_right ? "LEFT_HIP" : "RIGHT_HIP",
+			swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
 			new THREE.Euler(0, 0, 3.14),
 			new THREE.Vector3(0, -1, 0)
 		);
@@ -294,8 +304,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"RightLeg",
 			"RightUpLeg",
-			"LEFT_KNEE",
-			"LEFT_ANKLE",
+			swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
+			swap_left_right ? "LEFT_ANKLE" : "RIGHT_ANKLE",
 			new THREE.Euler(0, 0, 0),
 			new THREE.Vector3(0, 1, 0)
 		);
@@ -303,8 +313,8 @@ export default class PoseToRotation {
 		this.rotateLimb(
 			"RightFoot",
 			"RightLeg",
-			"LEFT_ANKLE",
-			"LEFT_FOOT_INDEX",
+			swap_left_right ? "LEFT_ANKLE" : "RIGHT_ANKLE",
+			swap_left_right ? "LEFT_FOOT_INDEX" : "RIGHT_FOOT_INDEX",
 			new THREE.Euler(1.035, 0, 0),
 			new THREE.Vector3(0, 0, 1)
 		);
