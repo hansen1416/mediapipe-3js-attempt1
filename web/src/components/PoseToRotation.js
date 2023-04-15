@@ -244,7 +244,8 @@ export default class PoseToRotation {
 			swap_left_right ? "RIGHT_ELBOW" : "LEFT_ELBOW",
 			swap_left_right ? "RIGHT_WRIST" : "LEFT_WRIST",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0)
+			new THREE.Vector3(0, 1, 0),
+			new THREE.Euler(0, 3.14, 2.53) // flexion is 0-145 degrees 2.53073, extension is 0-180 degrees.
 		);
 
 		this.rotateLimb(
@@ -262,7 +263,8 @@ export default class PoseToRotation {
 			swap_left_right ? "LEFT_ELBOW" : "RIGHT_ELBOW",
 			swap_left_right ? "LEFT_WRIST" : "RIGHT_WRIST",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0)
+			new THREE.Vector3(0, 1, 0),
+			new THREE.Euler(0, 3.14, 2.53)
 		);
 
 		this.rotateLimb(
@@ -326,7 +328,8 @@ export default class PoseToRotation {
 		start_joint_name,
 		end_joint_name,
 		init_euler,
-		up_vector
+		up_vector,
+		angle_restrain
 	) {
 		if (
 			(this.pose3D[BlazePoseKeypointsValues[start_joint_name]] &&
@@ -372,11 +375,30 @@ export default class PoseToRotation {
 		performing a single rotation by the quaternion product `ba`. 
 		This is a key observation.
 		*/
-		const local_quaternion_bone =
-			new THREE.Quaternion().multiplyQuaternions(
-				local_quaternion_bio,
-				init_quaternion
+		let local_quaternion_bone = new THREE.Quaternion().multiplyQuaternions(
+			local_quaternion_bio,
+			init_quaternion
+		);
+
+		if (angle_restrain) {
+			const angles = new THREE.Euler().setFromQuaternion(
+				local_quaternion_bone
 			);
+
+			if (angles.x > angle_restrain.x) {
+				angles.x = angle_restrain.x;
+			}
+
+			if (angles.y > angle_restrain.y) {
+				angles.y = angle_restrain.y;
+			}
+
+			if (angles.z > angle_restrain.z) {
+				angles.z = angle_restrain.z;
+			}
+
+			local_quaternion_bone = new THREE.Quaternion().setFromEuler(angles);
+		}
 
 		this.bones[bone_name].rotation.setFromQuaternion(
 			local_quaternion_bone.normalize()

@@ -1,0 +1,14 @@
+.dodgeverse video {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 8;
+}
+.dodgeverse .btns {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.dodgeverse .btns button {
+  margin-right: 10px;
+}

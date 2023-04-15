@@ -1,0 +1,11 @@
+.cloud-vagabond video {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 8;
+}
+.cloud-vagabond .btns {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}

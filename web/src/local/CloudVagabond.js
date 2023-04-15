@@ -31,7 +31,7 @@ import {
 
 import PoseToRotation from "../components/PoseToRotation";
 
-const createWorker = createWorkerFactory(() => import("./HandsWorker"));
+const createWorker = createWorkerFactory(() => import("../pages/HandsWorker"));
 
 export default function CloudVagabond() {
 	const canvasRef = useRef(null);
@@ -371,11 +371,11 @@ export default function CloudVagabond() {
 		const pose3D = cloneDeep(result.poseWorldLandmarks);
 		// const pose3D = cloneDeep(result.poseLandmarks);
 
-		// const width_ratio = 30;
-		// const height_ratio = (width_ratio * 480) / 640;
+		const width_ratio = 30;
+		const height_ratio = (width_ratio * 480) / 640;
 
-		const width_ratio = 1;
-		const height_ratio = 1;
+		// const width_ratio = 1;
+		// const height_ratio = 1;
 
 		// multiply x,y by differnt factor
 		for (let v of pose3D) {
