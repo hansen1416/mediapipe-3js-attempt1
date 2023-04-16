@@ -139,12 +139,14 @@ export default function Dodgeverse() {
 		// boundingSphere.position.set(0, 0.1, 0);
 		figureParts.current.LeftHand.add(boundingSphere);
 
-		const box = new THREE.Box3().setFromObject(
+		lefthandWeapon.current = new THREE.Box3().setFromObject(
 			figureParts.current.LeftHand
 		);
-		const sphere = box.getBoundingSphere(new THREE.Sphere());
+		const sphere = lefthandWeapon.current.getBoundingSphere(
+			new THREE.Sphere()
+		);
 		boundingSphere.position.copy(sphere.center);
-		boundingSphere.scale.set(sphere.radius, sphere.radius, sphere.radius);
+		// boundingSphere.scale.set(sphere.radius, sphere.radius, sphere.radius);
 
 		// lefthandWeapon.current = new THREE.Sphere(
 		// 	new THREE.Vector3(0, 0, 0),
@@ -223,7 +225,7 @@ export default function Dodgeverse() {
 			// todo check if previous calculation is finished
 			poseDetector.current.send({ image: videoRef.current });
 		}
-
+		console.log(lefthandWeapon.current.min, lefthandWeapon.current.max);
 		counter.current += 1;
 
 		if (counter.current > 10000) {
