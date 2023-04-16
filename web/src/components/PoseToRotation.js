@@ -1,6 +1,11 @@
 import * as THREE from "three";
 
-import { clamp, BlazePoseKeypointsValues } from "./ropes";
+import {
+	clamp,
+	roundToTwo,
+	BlazePoseKeypointsValues,
+	quaternionToAxisAngle,
+} from "./ropes";
 
 function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 	/**
@@ -434,6 +439,19 @@ export default class PoseToRotation {
 				local_quaternion_bio,
 				init_quaternion
 			);
+
+		// const angle = local_quaternion_bone.angleTo(new THREE.Quaternion());
+
+		// const axis = new THREE.Vector3(
+		// 	local_quaternion_bone.x,
+		// 	local_quaternion_bone.y,
+		// 	local_quaternion_bone.z
+		// );
+
+		// const local_quaternion_round = new THREE.Quaternion().setFromAxisAngle(
+		// 	axis,
+		// 	parseFloat(angle.toFixed(2)) // this will cause the left arm unable to hang down
+		// );
 
 		this.bones[bone_name].rotation.setFromQuaternion(
 			local_quaternion_bone.normalize()

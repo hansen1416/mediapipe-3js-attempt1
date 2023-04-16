@@ -102,12 +102,6 @@ export default function Dodgeverse() {
 					figureParts.current
 				);
 
-				// set to T pose
-				// figureParts.current.LeftUpLeg.rotation.set(0, -1, -3.14);
-				// figureParts.current.RightUpLeg.rotation.set(0, 0, 3.14);
-				// figureParts.current.LeftLeg.rotation.set(0, 0, 0);
-				// figureParts.current.RightLeg.rotation.set(0, 0, 0);
-
 				// The X axis is red. The Y axis is green. The Z axis is blue.
 				// const axesHelper = new THREE.AxesHelper(1.5);
 
@@ -198,6 +192,7 @@ export default function Dodgeverse() {
 			counter.current % 3 === 0 &&
 			poseDetector.current
 		) {
+			// todo check if previous calculation is finished
 			poseDetector.current.send({ image: videoRef.current });
 		}
 

@@ -12,6 +12,17 @@ export function clamp(num, min, max) {
 	return num <= min ? min : num >= max ? max : num;
 }
 
+export function quaternionToAxisAngle(q) {
+	// calculate angle of rotation
+	var theta = 2 * Math.acos(q.w);
+
+	// calculate axis of rotation
+	var axis = new THREE.Vector3(q.x, q.y, q.z);
+
+	// return axis-angle representation
+	return [axis, theta];
+}
+
 const typeSizes = {
 	undefined: () => 0,
 	boolean: () => 4,
