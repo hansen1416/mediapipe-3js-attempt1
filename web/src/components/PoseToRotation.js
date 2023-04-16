@@ -457,4 +457,64 @@ export default class PoseToRotation {
 			local_quaternion_bone.normalize()
 		);
 	}
+
+	applyPosition(pose2D, visibleWidth, visibleHeight) {
+		if (!pose2D || !pose2D.length) {
+			return;
+		}
+
+		const left_shoulder =
+			pose2D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+		const right_shoulder =
+			pose2D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
+		const left_hip = pose2D[BlazePoseKeypointsValues["RIGHT_HIP"]];
+		const right_hip = pose2D[BlazePoseKeypointsValues["LEFT_HIP"]];
+
+		if (
+			left_shoulder.visibility < 0.5 ||
+			right_shoulder.visibility < 0.5 ||
+			left_hip.visibility < 0.5 ||
+			right_hip.visibility < 0.5
+		) {
+			return;
+		}
+
+		// use middle point of hips as model position
+		// because we placed abdominal at (0,0,0)
+		const pixel_pos = {
+			x: (left_hip.x + right_hip.x) / 2,
+			y: (left_hip.y + right_hip.y) / 2,
+		};
+
+		// // 1 - x because left/right are swaped
+		// let object_x =
+		// 	(1 - pixel_pos.x / videoWidth) * visibleWidth - visibleWidth / 2;
+		// // 1 - y because in threejs y axis is twowards top
+		// let object_y =
+		// 	(1 - pixel_pos.y / videoHeight) * visibleHeight - visibleHeight / 2;
+
+		let object_x = pixel_pos.x * visibleWidth - visibleWidth / 2;
+
+		if (object_x < -visibleWidth / 2) {
+			object_x = -visibleWidth / 2;
+		}
+
+		if (object_x > visibleWidth / 2) {
+			object_x = visibleWidth / 2;
+		}
+		/*
+		let object_y = pixel_pos.y * visibleHeight - visibleHeight / 2;
+
+		if (object_y < -visibleHeight / 2) {
+			object_y = -visibleHeight / 2;
+		}
+
+		if (object_y > visibleHeight / 2) {
+			object_y = visibleHeight / 2;
+		}
+*/
+		// this.body.position.set(object_x, object_y, 0);
+		// limit model in the center +- 0.3 range
+		this.bones["Hips"].position.x = object_x * 0.3;
+	}
 }

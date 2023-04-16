@@ -215,6 +215,7 @@ export default function Dodgeverse() {
 		if (!result || !result.poseWorldLandmarks) {
 			return;
 		}
+
 		// console.log(result);
 		const pose3D = cloneDeep(result.poseWorldLandmarks);
 		// const pose3D = cloneDeep(result.poseLandmarks);
@@ -231,17 +232,14 @@ export default function Dodgeverse() {
 
 		poseToRotation.current.applyPoseToBone(pose3D);
 
-		// figure.current.applyPose(pose3D);
+		// move the position of model
+		const pose2D = cloneDeep(result.poseLandmarks);
 
-		// const pose2D = cloneDeep(poses[0]["keypoints"]);
-
-		// figure.current.applyPosition(
-		// 	pose2D,
-		// 	subsceneWidthRef.current,
-		// 	subsceneHeightRef.current,
-		// 	visibleWidth.current,
-		// 	visibleHeight.current
-		// );
+		poseToRotation.current.applyPosition(
+			pose2D,
+			visibleWidth.current,
+			visibleHeight.current
+		);
 	}
 
 	return (
