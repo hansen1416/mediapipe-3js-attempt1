@@ -56,6 +56,9 @@ export default function Dodgeverse() {
 	const capturePoseRef = useRef(false);
 	const [showVideo, setshowVideo] = useState(false);
 
+	// waepons
+	const lefthandWeapon = useRef(null);
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -98,6 +101,8 @@ export default function Dodgeverse() {
 
 				traverseModel(figure.current, figureParts.current);
 
+				addHandWeapon();
+
 				poseToRotation.current = new PoseToRotation(
 					figureParts.current
 				);
@@ -123,6 +128,29 @@ export default function Dodgeverse() {
 
 		// eslint-disable-next-line
 	}, []);
+
+	function addHandWeapon() {
+		const sphereGeometry = new THREE.SphereGeometry(0.1, 6, 6);
+		const sphereMaterial = new THREE.MeshBasicMaterial({
+			color: 0xff0000,
+			wireframe: true,
+		});
+		const boundingSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+		// boundingSphere.position.set(0, 0.1, 0);
+		figureParts.current.LeftHand.add(boundingSphere);
+
+		const box = new THREE.Box3().setFromObject(
+			figureParts.current.LeftHand
+		);
+		const sphere = box.getBoundingSphere(new THREE.Sphere());
+		boundingSphere.position.copy(sphere.center);
+		boundingSphere.scale.set(sphere.radius, sphere.radius, sphere.radius);
+
+		// lefthandWeapon.current = new THREE.Sphere(
+		// 	new THREE.Vector3(0, 0, 0),
+		// 	0.3
+		// );
+	}
 
 	useEffect(() => {
 		subsceneWidthRef.current = subsceneWidth;
