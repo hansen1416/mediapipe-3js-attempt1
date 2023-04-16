@@ -8,6 +8,10 @@ import { Quaternion } from "three";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export function clamp(num, min, max) {
+	return num <= min ? min : num >= max ? max : num;
+}
+
 const typeSizes = {
 	undefined: () => 0,
 	boolean: () => 4,

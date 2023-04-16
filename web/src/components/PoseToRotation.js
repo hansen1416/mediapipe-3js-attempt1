@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import { BlazePoseKeypointsValues } from "./ropes";
+import { clamp, BlazePoseKeypointsValues } from "./ropes";
 
 function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 	/**
@@ -235,7 +235,12 @@ export default class PoseToRotation {
 			swap_left_right ? "RIGHT_SHOULDER" : "LEFT_SHOULDER",
 			swap_left_right ? "RIGHT_ELBOW" : "LEFT_ELBOW",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0)
+			new THREE.Vector3(0, 1, 0),
+			{
+				x: [-1.6, 1.5],
+				y: [-2, 1.5],
+				z: [-0.6, 2.2],
+			}
 		);
 
 		this.rotateLimb(
@@ -244,8 +249,14 @@ export default class PoseToRotation {
 			swap_left_right ? "RIGHT_ELBOW" : "LEFT_ELBOW",
 			swap_left_right ? "RIGHT_WRIST" : "LEFT_WRIST",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0),
-			new THREE.Euler(0, 3.14, 2.53) // flexion is 0-145 degrees 2.53073, extension is 0-180 degrees.
+			new THREE.Vector3(0, 1, 0)
+			// {
+			// 	x: [0, 0],
+			// 	y: [0, 3.14],
+			// 	z: [0, 2.53],
+			// } // flexion is 0-145 degrees 2.53073, extension is 0-180 degrees.
+			// not limit forearm for now, cause when big arm rotats,
+			// the limited axis/value is changing, very complicated
 		);
 
 		this.rotateLimb(
@@ -254,7 +265,12 @@ export default class PoseToRotation {
 			swap_left_right ? "LEFT_SHOULDER" : "RIGHT_SHOULDER",
 			swap_left_right ? "LEFT_ELBOW" : "RIGHT_ELBOW",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0)
+			new THREE.Vector3(0, 1, 0),
+			{
+				x: [-1.6, 1.5],
+				y: [-1.5, 2],
+				z: [-2.2, 0.6],
+			}
 		);
 
 		this.rotateLimb(
@@ -263,8 +279,12 @@ export default class PoseToRotation {
 			swap_left_right ? "LEFT_ELBOW" : "RIGHT_ELBOW",
 			swap_left_right ? "LEFT_WRIST" : "RIGHT_WRIST",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0),
-			new THREE.Euler(0, 3.14, 2.53)
+			new THREE.Vector3(0, 1, 0)
+			// {
+			// 	x: [0, 2.53],
+			// 	y: [0, 3.14],
+			// 	z: [-2.53, 0],
+			// }
 		);
 
 		this.rotateLimb(
@@ -282,7 +302,12 @@ export default class PoseToRotation {
 			swap_left_right ? "RIGHT_KNEE" : "LEFT_HIP",
 			swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
 			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0)
+			new THREE.Vector3(0, 1, 0),
+			{
+				x: [-1.8, 0.6],
+				y: [-1, 1],
+				z: [-3.14, 3.14],
+			}
 		);
 
 		this.rotateLimb(
@@ -300,7 +325,12 @@ export default class PoseToRotation {
 			swap_left_right ? "LEFT_HIP" : "RIGHT_HIP",
 			swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
 			new THREE.Euler(0, 0, 3.14),
-			new THREE.Vector3(0, -1, 0)
+			new THREE.Vector3(0, -1, 0),
+			{
+				x: [-1.8, 0.6],
+				y: [-1, 1],
+				z: [-3.14, 3.14],
+			}
 		);
 
 		this.rotateLimb(
@@ -365,40 +395,45 @@ export default class PoseToRotation {
 		// this is the real human body rotation,
 		// todo, limit this rotation by human body restrain
 		// todo, use matrix basis rotations to adjust the orientations
-		const local_quaternion_bio = new THREE.Quaternion().setFromUnitVectors(
+		let local_quaternion_bio = new THREE.Quaternion().setFromUnitVectors(
 			up_vector,
 			world_target_vector.normalize()
 		);
+
+		if (angle_restrain) {
+			const angles = new THREE.Euler().setFromQuaternion(
+				local_quaternion_bio
+			);
+
+			angles.x = clamp(
+				angles.x,
+				angle_restrain.x[0],
+				angle_restrain.x[1]
+			);
+			angles.y = clamp(
+				angles.y,
+				angle_restrain.y[0],
+				angle_restrain.y[1]
+			);
+			angles.z = clamp(
+				angles.z,
+				angle_restrain.z[0],
+				angle_restrain.z[1]
+			);
+
+			local_quaternion_bio = new THREE.Quaternion().setFromEuler(angles);
+		}
 
 		/*
 		Notice that rotating by `a` and then by `b` is equivalent to 
 		performing a single rotation by the quaternion product `ba`. 
 		This is a key observation.
 		*/
-		let local_quaternion_bone = new THREE.Quaternion().multiplyQuaternions(
-			local_quaternion_bio,
-			init_quaternion
-		);
-
-		if (angle_restrain) {
-			const angles = new THREE.Euler().setFromQuaternion(
-				local_quaternion_bone
+		const local_quaternion_bone =
+			new THREE.Quaternion().multiplyQuaternions(
+				local_quaternion_bio,
+				init_quaternion
 			);
-
-			if (angles.x > angle_restrain.x) {
-				angles.x = angle_restrain.x;
-			}
-
-			if (angles.y > angle_restrain.y) {
-				angles.y = angle_restrain.y;
-			}
-
-			if (angles.z > angle_restrain.z) {
-				angles.z = angle_restrain.z;
-			}
-
-			local_quaternion_bone = new THREE.Quaternion().setFromEuler(angles);
-		}
 
 		this.bones[bone_name].rotation.setFromQuaternion(
 			local_quaternion_bone.normalize()

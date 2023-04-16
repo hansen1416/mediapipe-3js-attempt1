@@ -52,8 +52,8 @@ export default function Dodgeverse() {
 	// worker for game scene generation
 	// const worker = useWorker(createWorker);
 
-	const [capturePose, setcapturePose] = useState(true);
-	const capturePoseRef = useRef(true);
+	const [capturePose, setcapturePose] = useState(false);
+	const capturePoseRef = useRef(false);
 	const [showVideo, setshowVideo] = useState(false);
 
 	useEffect(() => {
@@ -91,29 +91,37 @@ export default function Dodgeverse() {
 			animate();
 		});
 
-		Promise.all([
-			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
-		]).then(([glb]) => {
-			figure.current = glb.scene.children[0];
-			figure.current.position.set(0, -1, 0);
+		Promise.all([loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")]).then(
+			([glb]) => {
+				figure.current = glb.scene.children[0];
+				figure.current.position.set(0, -1, 0);
 
-			traverseModel(figure.current, figureParts.current);
+				traverseModel(figure.current, figureParts.current);
 
-			poseToRotation.current = new PoseToRotation(figureParts.current);
+				poseToRotation.current = new PoseToRotation(
+					figureParts.current
+				);
 
-			// The X axis is red. The Y axis is green. The Z axis is blue.
-			// const axesHelper = new THREE.AxesHelper(1.5);
+				// set to T pose
+				// figureParts.current.LeftUpLeg.rotation.set(0, -1, -3.14);
+				// figureParts.current.RightUpLeg.rotation.set(0, 0, 3.14);
+				// figureParts.current.LeftLeg.rotation.set(0, 0, 0);
+				// figureParts.current.RightLeg.rotation.set(0, 0, 0);
 
-			// figureParts.current.Hips.add(axesHelper);
+				// The X axis is red. The Y axis is green. The Z axis is blue.
+				// const axesHelper = new THREE.AxesHelper(1.5);
 
-			const axesHelper1 = new THREE.AxesHelper(1.5);
+				// figureParts.current.Hips.add(axesHelper);
 
-			figureParts.current.LeftForeArm.add(axesHelper1);
+				// const axesHelper1 = new THREE.AxesHelper(1.5);
 
-			scene.current.add(figure.current);
+				// figureParts.current.RightArm.add(axesHelper1);
 
-			setloadingCharacter(false);
-		});
+				scene.current.add(figure.current);
+
+				setloadingCharacter(false);
+			}
+		);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
