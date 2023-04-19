@@ -59,6 +59,8 @@ export default function Dodgeverse() {
 	// waepons
 	const lefthandWeapon = useRef(null);
 
+	const target1 = useRef(null);
+
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
 		const documentHeight = document.documentElement.clientHeight;
@@ -103,6 +105,8 @@ export default function Dodgeverse() {
 
 				addHandWeapon();
 
+				addTarget();
+
 				poseToRotation.current = new PoseToRotation(
 					figureParts.current
 				);
@@ -130,28 +134,29 @@ export default function Dodgeverse() {
 	}, []);
 
 	function addHandWeapon() {
-		const sphereGeometry = new THREE.SphereGeometry(0.1, 6, 6);
-		const sphereMaterial = new THREE.MeshBasicMaterial({
-			color: 0xff0000,
-			wireframe: true,
-		});
-		const boundingSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-		// boundingSphere.position.set(0, 0.1, 0);
-		figureParts.current.LeftHand.add(boundingSphere);
-
 		lefthandWeapon.current = new THREE.Box3().setFromObject(
 			figureParts.current.LeftHand
 		);
-		const sphere = lefthandWeapon.current.getBoundingSphere(
-			new THREE.Sphere()
-		);
-		boundingSphere.position.copy(sphere.center);
+
 		// boundingSphere.scale.set(sphere.radius, sphere.radius, sphere.radius);
 
 		// lefthandWeapon.current = new THREE.Sphere(
 		// 	new THREE.Vector3(0, 0, 0),
 		// 	0.3
 		// );
+	}
+
+	function addTarget() {
+		const sphereGeometry = new THREE.SphereGeometry(0.1, 6, 6);
+		const sphereMaterial = new THREE.MeshBasicMaterial({
+			color: 0xff0000,
+			wireframe: true,
+		});
+		const boundingSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+		boundingSphere.position.set(0.4, 0.8, 0);
+		scene.current.add(boundingSphere);
+
+		target1.current = new THREE.Box3().setFromObject(boundingSphere);
 	}
 
 	useEffect(() => {
@@ -225,7 +230,9 @@ export default function Dodgeverse() {
 			// todo check if previous calculation is finished
 			poseDetector.current.send({ image: videoRef.current });
 		}
-		console.log(lefthandWeapon.current.min, lefthandWeapon.current.max);
+
+		// console.log(lefthandWeapon.current.intersectsBox(target1.current));
+
 		counter.current += 1;
 
 		if (counter.current > 10000) {
