@@ -5,7 +5,7 @@ import TrainingExplore from "../pages/TrainingExplore";
 import TrainingBuilder from "../pages/TrainingBuilder";
 import TrainingReport from "../pages/TrainingReport";
 import DigitalTrainer from "../pages/DigitalTrainer";
-import Dodgeverse from "../pages/Dodgeverse";
+import CloudVagabond from "../pages/CloudVagabond";
 import Register from "../pages/Register";
 
 const routes = [
@@ -39,8 +39,8 @@ const routes = [
 				element: <DigitalTrainer />,
 			},
 			{
-				path: "/dodgeverse",
-				element: <Dodgeverse />,
+				path: "/vagabond",
+				element: <CloudVagabond />,
 			},
 		],
 	},

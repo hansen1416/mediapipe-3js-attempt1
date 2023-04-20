@@ -221,7 +221,7 @@ function App() {
 				<Nav.Link href="/training-explore">Explore</Nav.Link>
 				<Nav.Link href="/training-builder">Builder</Nav.Link>
 				<Nav.Link href="/digital-trainer">D-trainer</Nav.Link>
-				<Nav.Link href="/dodgeverse">Dodgeverse</Nav.Link>
+				<Nav.Link href="/vagabond">Vagabond</Nav.Link>
 				<div className="controls">
 					<div
 						onClick={() => {
