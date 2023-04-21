@@ -78,7 +78,7 @@ export default function CloudVagabond() {
 	const [loadingSilhouette, setloadingSilhouette] = useState(true);
 
 	// worker for hands detection
-	const worker = useWorker(createWorker);
+	// const worker = useWorker(createWorker);
 
 	const [runAnimation, setrunAnimation] = useState(true);
 	const runAnimationRef = useRef(true);
@@ -194,29 +194,31 @@ export default function CloudVagabond() {
 			animate();
 		});
 */
-		Promise.all([
-			loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb"),
-		]).then(([glb]) => {
-			figure.current = glb.scene.children[0];
-			figure.current.position.set(0, -1, 0);
+		Promise.all([loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb")]).then(
+			([glb]) => {
+				figure.current = glb.scene.children[0];
+				figure.current.position.set(0, -1, 0);
 
-			traverseModel(figure.current, figureParts.current);
+				traverseModel(figure.current, figureParts.current);
 
-			poseToRotation.current = new PoseToRotation(figureParts.current);
+				poseToRotation.current = new PoseToRotation(
+					figureParts.current
+				);
 
-			// The X axis is red. The Y axis is green. The Z axis is blue.
-			// const axesHelper = new THREE.AxesHelper(1.5);
+				// The X axis is red. The Y axis is green. The Z axis is blue.
+				// const axesHelper = new THREE.AxesHelper(1.5);
 
-			// figureParts.current.Hips.add(axesHelper);
+				// figureParts.current.Hips.add(axesHelper);
 
-			// const axesHelper1 = new THREE.AxesHelper(1.5);
+				// const axesHelper1 = new THREE.AxesHelper(1.5);
 
-			// figureParts.current.LeftShoulder.add(axesHelper1);
+				// figureParts.current.LeftShoulder.add(axesHelper1);
 
-			scene.current.add(figure.current);
+				scene.current.add(figure.current);
 
-			setloadingSilhouette(false);
-		});
+				setloadingSilhouette(false);
+			}
+		);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -392,17 +394,14 @@ export default function CloudVagabond() {
 
 		poseToRotation.current.applyPoseToBone(pose3D);
 
-		// figure.current.applyPose(pose3D);
+		// move the position of model
+		const pose2D = cloneDeep(result.poseLandmarks);
 
-		// const pose2D = cloneDeep(poses[0]["keypoints"]);
-
-		// figure.current.applyPosition(
-		// 	pose2D,
-		// 	subsceneWidthRef.current,
-		// 	subsceneHeightRef.current,
-		// 	visibleWidth.current,
-		// 	visibleHeight.current
-		// );
+		poseToRotation.current.applyPosition(
+			pose2D,
+			visibleWidth.current,
+			visibleHeight.current
+		);
 	}
 
 	// function onHandCallback(result) {

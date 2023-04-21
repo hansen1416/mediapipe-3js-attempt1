@@ -8,7 +8,7 @@ import GLBModel from "../local/GLBModel";
 import PoseDiffScore from "../local/PoseDiffScore";
 import PoseVectorDeviation from "../local/PoseVectorDeviation";
 import CloudVagabond1 from "../local/CloudVagabond1";
-import CloudVagabond from "../local/CloudVagabond";
+import Dodgeverse from "../local/Dodgeverse";
 
 const routes = [
 	{
@@ -49,8 +49,8 @@ const routes = [
 				element: <CloudVagabond1 />,
 			},
 			{
-				path: "/vagabond",
-				element: <CloudVagabond />,
+				path: "/dodgeverse",
+				element: <Dodgeverse />,
 			},
 		],
 	},
