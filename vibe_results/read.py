@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # print(output[1]['pose'][0])
 
     for frame in output[1]['pose']:
-        vec = get_limb_tracks(frame, 'left_elbow', np.array([1,0,0]))
+        vec = get_limb_tracks(frame, 'pelvis', np.array([1,0,0]))
 
         print(vec)
 
