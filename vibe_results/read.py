@@ -53,28 +53,28 @@ smpl_skeleton = {
 smpl_skeleton_idx = {value: key for key, value in smpl_skeleton.items()}
 
 rpm_smpl_mapping = {
-    'Hips': 'pelvis',
-    'LeftUpLeg': 'left_hip',
-    'RightUpLeg': 'right_hip',
-    'Spine': 'spine1',
-    'LeftLeg': 'left_knee',
-    'RightLeg': 'right_knee',
-    'Spine1': 'spine2',
-    'LeftFoot': 'left_ankle',
-    'RightFoot': 'right_ankle',
-    'Spine2': 'spine3',
-    'LeftToeBase': 'left_foot',
-    'RightToeBase': 'right_foot',
-    'Neck': 'neck',
-    'LeftShoulder': 'left_collar',
-    'RightShoulder': 'right_collar',
-    'Head': 'head',
+    # 'Hips': 'pelvis',
+    # 'LeftUpLeg': 'left_hip',
+    # 'RightUpLeg': 'right_hip',
+    # 'Spine': 'spine1',
+    # 'LeftLeg': 'left_knee',
+    # 'RightLeg': 'right_knee',
+    # 'Spine1': 'spine2',
+    # 'LeftFoot': 'left_ankle',
+    # 'RightFoot': 'right_ankle',
+    # 'Spine2': 'spine3',
+    # 'LeftToeBase': 'left_foot',
+    # 'RightToeBase': 'right_foot',
+    # 'Neck': 'neck',
+    # 'LeftShoulder': 'left_collar',
+    # 'RightShoulder': 'right_collar',
+    # 'Head': 'head',
     'RightArm': 'left_shoulder',
     'LeftArm': 'right_shoulder',
-    'LeftForeArm': 'left_elbow',
-    'RightForeArm': 'right_elbow',
-    'LeftHand': 'left_wrist',
-    'RightHand': 'right_wrist',
+    # 'LeftForeArm': 'right_elbow',
+    # 'RightForeArm': 'left_elbow',
+    # 'LeftHand': 'right_wrist',
+    # 'RightHand': 'left_wrist',
 }
 
 
@@ -116,6 +116,24 @@ def get_limb_tracks(pose_frame, limb_name, limb_upvector):
     target_vector = apply_quaternion_to_vector(limb_quaternion, limb_upvector)
 
     return target_vector / np.linalg.norm(target_vector)
+
+
+def quat_multiply(a, b):
+    """Multiply two quaternions."""
+    x1, y1, z1, w1 = a
+    x2, y2, z2, w2 = b
+    return np.array([-x2*x1 - y2*y1 - z2*z1 + w2*w1,
+                     x2*w1 + y2*z1 - z2*y1 + w2*x1,
+                    -x2*z1 + y2*w1 + z2*x1 + w2*y1,
+                     x2*y1 - y2*x1 + z2*w1 + w2*z1])
+
+
+def combine_quaternions(a, b):
+    """Combine two quaternions to represent their relative rotation."""
+    a = np.array(a) / np.linalg.norm(a)
+    b = np.array(b) / np.linalg.norm(b)
+    c = quat_multiply(b, a)
+    return c / np.linalg.norm(c)
 
 
 if __name__ == '__main__':
@@ -163,15 +181,60 @@ if __name__ == '__main__':
             if bone in rpm_smpl_mapping:
 
                 quaternion = quaternions[smpl_skeleton_idx[rpm_smpl_mapping[bone]]]
+
+                # if bone == 'LeftUpLeg':
+                #     quaternion = combine_quaternions(
+                #         np.array([0, 0, -1, 0]), quaternion)
+
+                # if bone == 'RightUpLeg':
+                #     quaternion = combine_quaternions(
+                #         np.array([0, 0, 1, 0]), quaternion)
+
+                # if bone == 'LeftFoot' or bone == 'RightFoot':
+
+                #     quaternion = combine_quaternions(
+                #         np.array([0.4947090394048656, 0, 0, 0.869058666794777]), quaternion)
+
                 # the order of quaternion must be x, y, z, w
                 for num in quaternion:
                     tracks[bone + '.quaternion']['values'].append(num)
             else:
 
-                tracks[bone + '.quaternion']['values'].append(0)
-                tracks[bone + '.quaternion']['values'].append(0)
-                tracks[bone + '.quaternion']['values'].append(0)
-                tracks[bone + '.quaternion']['values'].append(1)
+                if bone == 'LeftUpLeg':
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(-1)
+                    tracks[bone + '.quaternion']['values'].append(0)
+                elif bone == 'RightUpLeg':
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(1)
+                    tracks[bone + '.quaternion']['values'].append(0)
+                elif bone == 'LeftShoulder':
+
+                    tracks[bone +
+                           '.quaternion']['values'].append(0.4820417046943355)
+                    tracks[bone +
+                           '.quaternion']['values'].append(0.49247702873907506)
+                    tracks[bone +
+                           '.quaternion']['values'].append(-0.5878678835040492)
+                    tracks[bone +
+                           '.quaternion']['values'].append(0.4236903617551159)
+                elif bone == 'RightShoulder':
+
+                    tracks[bone +
+                           '.quaternion']['values'].append(0.4820417046943355)
+                    tracks[bone +
+                           '.quaternion']['values'].append(-0.49247702873907506)
+                    tracks[bone +
+                           '.quaternion']['values'].append(0.5878678835040492)
+                    tracks[bone +
+                           '.quaternion']['values'].append(0.4236903617551159)
+                else:
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(0)
+                    tracks[bone + '.quaternion']['values'].append(1)
 
         millisec += interval
 

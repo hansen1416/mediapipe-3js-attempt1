@@ -42,7 +42,9 @@ export default function MotionInterpreter() {
 	];
 	const [keyParts, setkeyParts] = useState(clone(allParts));
 
-	const [muscleGroups, setmuscleGroups] = useState(Object.keys(muscleGroupsColors).map(v => [v, 0]));
+	const [muscleGroups, setmuscleGroups] = useState(
+		Object.keys(muscleGroupsColors).map((v) => [v, 0])
+	);
 
 	const animation_data = useRef(null);
 
@@ -273,8 +275,8 @@ export default function MotionInterpreter() {
 
 					joints_position[name].push([v.x, v.y, v.z]);
 				}
-
-				await sleep(16);
+				// 30fps
+				await sleep(33.333);
 
 				// break;
 			}
@@ -284,7 +286,8 @@ export default function MotionInterpreter() {
 			animation_data.current["rotation"] = modelRotation;
 			animation_data.current["position"] = modelPosition;
 			animation_data.current["key_parts"] = keyParts;
-			animation_data.current["muscle_groups"] = Object.fromEntries(muscleGroups);
+			animation_data.current["muscle_groups"] =
+				Object.fromEntries(muscleGroups);
 			animation_data.current["joints_position"] = joints_position;
 
 			// todo, use API to save this animation to json file
@@ -489,9 +492,9 @@ export default function MotionInterpreter() {
 									value={item[1]}
 									onChange={(e) => {
 										let tmp = clone(muscleGroups);
-										
-										tmp[i][1] = ~~(e.target.value) // = tmp.filter((x) => x !== item);
-										
+
+										tmp[i][1] = ~~e.target.value; // = tmp.filter((x) => x !== item);
+
 										setmuscleGroups(tmp);
 									}}
 								/>
