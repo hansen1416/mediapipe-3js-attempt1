@@ -27,8 +27,8 @@ export default function SMPLModel() {
 
 	const [rotations, setrotations] = useState([]);
 
-	const mixer = useRef(null);
-	const clock = new THREE.Clock();
+	// const mixer = useRef(null);
+	// const clock = new THREE.Clock();
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -37,89 +37,85 @@ export default function SMPLModel() {
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
 
-		Promise.all([
-			// poseDetection.createDetector(
-			// 	poseDetection.SupportedModels.BlazePose,
-			// 	BlazePoseConfig
-			// ),
-			loadFBX(process.env.PUBLIC_URL + "/smpl.fbx"),
-		]).then(([fbx]) => {
-			// poseDetector.current = detector;
+		Promise.all([loadFBX(process.env.PUBLIC_URL + "/smpl.fbx")]).then(
+			([fbx]) => {
+				// poseDetector.current = detector;
 
-			// add 3d model to main scene
-			model.current = fbx;
-			model.current.position.set(0, 0, 0);
+				// add 3d model to main scene
+				model.current = fbx;
+				model.current.position.set(0, 0, 0);
 
-			// store all limbs to `model`
-			traverseModel(model.current, figureParts.current);
+				// store all limbs to `model`
+				traverseModel(model.current, figureParts.current);
 
-			// console.log(Object.keys(figureParts.current));
+				// console.log(Object.keys(figureParts.current));
 
-			setrotations([
-				["root", 0, 0, 0],
-				["pelvis", 0, 0, 0],
-				["spine1", 0, 0, 0],
-				["spine2", 0, 0, 0],
-				["spine3", 0, 0, 0],
-				["right_collar", 0, 0, 0],
-				["right_shoulder", 0, 0, 0],
-				["right_elbow", 0, 0, 0],
-				["right_wrist", 0, 0, 0],
-				// ["right_ring1", 0, 0, 0],
-				// ["right_ring2", 0, 0, 0],
-				// ["right_ring3", 0, 0, 0],
-				// ["right_pinky1", 0, 0, 0],
-				// ["right_pinky2", 0, 0, 0],
-				// ["right_pinky3", 0, 0, 0],
-				// ["right_index1", 0, 0, 0],
-				// ["right_index2", 0, 0, 0],
-				// ["right_index3", 0, 0, 0],
-				// ["right_middle1", 0, 0, 0],
-				// ["right_middle2", 0, 0, 0],
-				// ["right_middle3", 0, 0, 0],
-				// ["right_thumb1", 0, 0, 0],
-				// ["right_thumb2", 0, 0, 0],
-				// ["right_thumb3", 0, 0, 0],
-				["neck", 0, 0, 0],
-				["head", 0, 0, 0],
-				["jaw", 0, 0, 0],
-				["right_eye_smplhf", 0, 0, 0],
-				["left_eye_smplhf", 0, 0, 0],
-				["left_collar", 0, 0, 0],
-				["left_shoulder", 0, 0, 0],
-				["left_elbow", 0, 0, 0],
-				["left_wrist", 0, 0, 0],
-				// ["left_pinky1", 0, 0, 0],
-				// ["left_pinky2", 0, 0, 0],
-				// ["left_pinky3", 0, 0, 0],
-				// ["left_index1", 0, 0, 0],
-				// ["left_index2", 0, 0, 0],
-				// ["left_index3", 0, 0, 0],
-				// ["left_ring1", 0, 0, 0],
-				// ["left_ring2", 0, 0, 0],
-				// ["left_ring3", 0, 0, 0],
-				// ["left_thumb1", 0, 0, 0],
-				// ["left_thumb2", 0, 0, 0],
-				// ["left_thumb3", 0, 0, 0],
-				// ["left_middle1", 0, 0, 0],
-				// ["left_middle2", 0, 0, 0],
-				// ["left_middle3", 0, 0, 0],
-				["left_hip", 0, 0, 0],
-				["left_knee", 0, 0, 0],
-				["left_ankle", 0, 0, 0],
-				["left_foot", 0, 0, 0],
-				["right_hip", 0, 0, 0],
-				["right_knee", 0, 0, 0],
-				["right_ankle", 0, 0, 0],
-				["right_foot", 0, 0, 0],
-			]);
+				setrotations([
+					["root", 1.57, 0, 0],
+					["pelvis", 0, 0, 0],
+					["spine1", 0, 0, 0],
+					["spine2", 0, 0, 0],
+					["spine3", 0, 0, 0],
+					["right_collar", 0, 0, 0],
+					["right_shoulder", 0, 0, 0],
+					["right_elbow", 0, 0, 0],
+					["right_wrist", 0, 0, 0],
+					// ["right_ring1", 0, 0, 0],
+					// ["right_ring2", 0, 0, 0],
+					// ["right_ring3", 0, 0, 0],
+					// ["right_pinky1", 0, 0, 0],
+					// ["right_pinky2", 0, 0, 0],
+					// ["right_pinky3", 0, 0, 0],
+					// ["right_index1", 0, 0, 0],
+					// ["right_index2", 0, 0, 0],
+					// ["right_index3", 0, 0, 0],
+					// ["right_middle1", 0, 0, 0],
+					// ["right_middle2", 0, 0, 0],
+					// ["right_middle3", 0, 0, 0],
+					// ["right_thumb1", 0, 0, 0],
+					// ["right_thumb2", 0, 0, 0],
+					// ["right_thumb3", 0, 0, 0],
+					["neck", 0, 0, 0],
+					["head", 0, 0, 0],
+					["jaw", 0, 0, 0],
+					["right_eye_smplhf", 0, 0, 0],
+					["left_eye_smplhf", 0, 0, 0],
+					["left_collar", 0, 0, 0],
+					["left_shoulder", 0, 0, 0],
+					["left_elbow", 0, 0, 0],
+					["left_wrist", 0, 0, 0],
+					// ["left_pinky1", 0, 0, 0],
+					// ["left_pinky2", 0, 0, 0],
+					// ["left_pinky3", 0, 0, 0],
+					// ["left_index1", 0, 0, 0],
+					// ["left_index2", 0, 0, 0],
+					// ["left_index3", 0, 0, 0],
+					// ["left_ring1", 0, 0, 0],
+					// ["left_ring2", 0, 0, 0],
+					// ["left_ring3", 0, 0, 0],
+					// ["left_thumb1", 0, 0, 0],
+					// ["left_thumb2", 0, 0, 0],
+					// ["left_thumb3", 0, 0, 0],
+					// ["left_middle1", 0, 0, 0],
+					// ["left_middle2", 0, 0, 0],
+					// ["left_middle3", 0, 0, 0],
+					["left_hip", 0, 0, 0],
+					["left_knee", 0, 0, 0],
+					["left_ankle", 0, 0, 0],
+					["left_foot", 0, 0, 0],
+					["right_hip", 0, 0, 0],
+					["right_knee", 0, 0, 0],
+					["right_ankle", 0, 0, 0],
+					["right_foot", 0, 0, 0],
+				]);
 
-			scene.current.add(model.current);
+				scene.current.add(model.current);
 
-			mixer.current = new THREE.AnimationMixer(model.current);
+				// mixer.current = new THREE.AnimationMixer(model.current);
 
-			animate();
-		});
+				animate();
+			}
+		);
 
 		return () => {
 			cancelAnimationFrame(animationPointer.current);
@@ -273,21 +269,21 @@ export default function SMPLModel() {
 								).then((data) => {
 									interpretAnimation(data);
 
-									mixer.current.stopAllAction();
+									// mixer.current.stopAllAction();
 
-									const action = mixer.current.clipAction(
-										THREE.AnimationClip.parse(data)
-									);
+									// const action = mixer.current.clipAction(
+									// 	THREE.AnimationClip.parse(data)
+									// );
 
-									action.reset();
-									action.setLoop(THREE.LoopRepeat);
+									// action.reset();
+									// action.setLoop(THREE.LoopRepeat);
 
-									// keep model at the position where it stops
-									action.clampWhenFinished = true;
+									// // keep model at the position where it stops
+									// action.clampWhenFinished = true;
 
-									action.enable = true;
+									// action.enable = true;
 
-									action.play();
+									// action.play();
 								});
 							}}
 						/>
