@@ -3,6 +3,7 @@ import pickle
 import joblib
 import numpy as np
 import json
+import uuid
 
 rpm_bones = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head',
                      'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
@@ -109,19 +110,83 @@ def get_limb_tracks(pose_frame, limb_name, limb_upvector):
 
 if __name__ == '__main__':
 
-    with open('./output/air-squat.json', 'r') as f:
-        anim = json.load(f)
+    # with open('./output/air-squat.json', 'r') as f:
+    #     anim = json.load(f)
 
-        bones = []
+    #     bones = []
 
-        for item in anim['tracks']:
-            bones.append(item['name'].replace('.quaternion', ''))
+    #     for item in anim['tracks']:
+    #         bones.append(item['name'].replace('.quaternion', ''))
 
-        print(bones)
+    #     print(bones)
 
     output = joblib.load('./vibe_output.pkl')
 
-    print(output[1]['frame_ids'])
+    tracks = {}
+
+    for idx, name in smpl_skeleton.items():
+        # for left_hand, right_hand
+        # there is no matching bones in readyplayer.me
+        if not smpl_rpm_mapping[name]:
+            continue
+
+        tracks[smpl_rpm_mapping[name] + '.quaternion'] = {
+            "name": smpl_rpm_mapping[name] + '.quaternion',
+            "type": "quaternion",
+            "times": [],
+            "values": []
+        }
+
+    # print(tracks)
+
+    millisec = 0
+    interval = 1000 / 30
+
+    for pose_frame in output[1]['pose']:
+        # print(pose.shape)
+
+        axis_angles = pose_frame.reshape((24, 3))
+
+        quaternions = np.apply_along_axis(
+            axis_angle_to_quaternion, axis=1, arr=axis_angles)
+
+        for idx, name in smpl_skeleton.items():
+            # for left_hand, right_hand
+            # there is no matching bones in readyplayer.me
+            if not smpl_rpm_mapping[name]:
+                continue
+
+            tracks[smpl_rpm_mapping[name] +
+                   '.quaternion']['times'].append(millisec)
+
+            for num in quaternions[idx]:
+                tracks[smpl_rpm_mapping[name] +
+                       '.quaternion']['values'].append(num)
+
+        millisec += interval
+
+    # print(tracks)
+    # print(millisec)
+
+    animation_name = 'test1'
+
+    animation = {
+        "name": animation_name,
+        "duration": 10,
+        "tracks": list(tracks.values()),
+        "uuid": str(uuid.uuid4()),
+        "blendMode": 2500,
+    }
+
+    filename = animation_name + '.json'
+
+    with open(filename, 'w') as f:
+
+        json.dump(animation, f)
+
+        print('animation data saved to ' + filename)
+
+    # print(output[1]['pose'].shape)
     # print(output[1]['pose'].shape)
     # print(output[1]['pose'][0])
 
