@@ -231,11 +231,21 @@ export default function SMPLModel() {
 			}
 
 			// play the animation, observe the vectors of differnt parts
-			for (let i = 0; i < longestTrack; i++) {
+
+			let i = 0;
+
+			while (i < longestTrack) {
 				applyTransfer(figureParts.current, tracks, i);
 
 				// 30fps
 				await sleep(33.333);
+
+				i++;
+
+				// play indefinitely
+				if (i >= longestTrack) {
+					i = 0;
+				}
 
 				// break;
 			}
