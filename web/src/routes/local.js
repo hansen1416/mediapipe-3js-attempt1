@@ -9,6 +9,7 @@ import PoseDiffScore from "../local/PoseDiffScore";
 import PoseVectorDeviation from "../local/PoseVectorDeviation";
 import CloudVagabond1 from "../local/CloudVagabond1";
 import Dodgeverse from "../local/Dodgeverse";
+import SMPLModel from "../local/SMPLModel";
 
 const routes = [
 	{
@@ -51,6 +52,10 @@ const routes = [
 			{
 				path: "/dodgeverse",
 				element: <Dodgeverse />,
+			},
+			{
+				path: "/smpl",
+				element: <SMPLModel />,
 			},
 		],
 	},

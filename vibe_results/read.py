@@ -66,11 +66,11 @@ rpm_smpl_mapping = {
     # 'LeftToeBase': 'left_foot',
     # 'RightToeBase': 'right_foot',
     # 'Neck': 'neck',
-    # 'LeftShoulder': 'left_collar',
-    # 'RightShoulder': 'right_collar',
+    # 'LeftShoulder': 'right_collar',
+    # 'RightShoulder': 'left_collar',
     # 'Head': 'head',
-    'RightArm': 'left_shoulder',
-    'LeftArm': 'right_shoulder',
+    'RightArm': 'right_shoulder',
+    'LeftArm': 'left_shoulder',
     # 'LeftForeArm': 'right_elbow',
     # 'RightForeArm': 'left_elbow',
     # 'LeftHand': 'right_wrist',
@@ -194,6 +194,10 @@ if __name__ == '__main__':
 
                 #     quaternion = combine_quaternions(
                 #         np.array([0.4947090394048656, 0, 0, 0.869058666794777]), quaternion)
+
+                # if bone == 'LeftShoulder':
+                #     quaternion = combine_quaternions(
+                #         np.array([0.4820417046943355, 0.49247702873907506, -0.5878678835040492, 0.4236903617551159]), quaternion)
 
                 # the order of quaternion must be x, y, z, w
                 for num in quaternion:
