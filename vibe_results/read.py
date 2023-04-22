@@ -5,11 +5,23 @@ import numpy as np
 import json
 import uuid
 
-rpm_bones = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head',
-                     'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
-                     'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand',
-                     'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase',
-                     'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase']
+rpm_bones = [
+    "Hips", "Spine", "Spine1", "Spine2", "Neck", "Head",
+    "LeftShoulder", "LeftArm", "LeftForeArm", "LeftHand",
+    "LeftHandThumb1", "LeftHandThumb2", "LeftHandThumb3",
+    "LeftHandIndex1", "LeftHandIndex2", "LeftHandIndex3",
+    "LeftHandMiddle1", "LeftHandMiddle2", "LeftHandMiddle3",
+    "LeftHandRing1", "LeftHandRing2", "LeftHandRing3",
+    "LeftHandPinky1", "LeftHandPinky2", "LeftHandPinky3",
+    "RightShoulder", "RightArm", "RightForeArm", "RightHand",
+    "RightHandThumb1", "RightHandThumb2", "RightHandThumb3",
+    "RightHandIndex1", "RightHandIndex2", "RightHandIndex3",
+    "RightHandMiddle1", "RightHandMiddle2", "RightHandMiddle3",
+    "RightHandRing1", "RightHandRing2", "RightHandRing3",
+    "RightHandPinky1", "RightHandPinky2", "RightHandPinky3",
+    "LeftUpLeg", "LeftLeg", "LeftFoot", "LeftToeBase",
+    "RightUpLeg", "RightLeg", "RightFoot", "RightToeBase"
+]
 
 smpl_skeleton = {
     0: 'pelvis',
@@ -40,31 +52,29 @@ smpl_skeleton = {
 
 smpl_skeleton_idx = {value: key for key, value in smpl_skeleton.items()}
 
-smpl_rpm_mapping = {
-    'pelvis': 'Hips',
-    'left_hip': 'LeftUpLeg',
-    'right_hip': 'RightUpLeg',
-    'spine1': 'Spine',
-    'left_knee': 'LeftLeg',
-    'right_knee': 'RightLeg',
-    'spine2': 'Spine1',
-    'left_ankle': 'LeftFoot',
-    'right_ankle': 'RightFoot',
-    'spine3': 'Spine2',
-    'left_foot':  'LeftToeBase',
-    'right_foot': 'RightToeBase',
-    'neck': 'Neck',
-    'left_collar': 'LeftShoulder',
-    'right_collar': 'RightShoulder',
-    'head': 'Head',
-    'left_shoulder': 'RightArm',
-    'right_shoulder': 'LeftArm',
-    'left_elbow': 'LeftForeArm',
-    'right_elbow': 'RightForeArm',
-    'left_wrist': 'LeftHand',
-    'right_wrist': 'RightHand',
-    'left_hand': '',
-    'right_hand': ''
+rpm_smpl_mapping = {
+    'Hips': 'pelvis',
+    'LeftUpLeg': 'left_hip',
+    'RightUpLeg': 'right_hip',
+    'Spine': 'spine1',
+    'LeftLeg': 'left_knee',
+    'RightLeg': 'right_knee',
+    'Spine1': 'spine2',
+    'LeftFoot': 'left_ankle',
+    'RightFoot': 'right_ankle',
+    'Spine2': 'spine3',
+    'LeftToeBase': 'left_foot',
+    'RightToeBase': 'right_foot',
+    'Neck': 'neck',
+    'LeftShoulder': 'left_collar',
+    'RightShoulder': 'right_collar',
+    'Head': 'head',
+    'RightArm': 'left_shoulder',
+    'LeftArm': 'right_shoulder',
+    'LeftForeArm': 'left_elbow',
+    'RightForeArm': 'right_elbow',
+    'LeftHand': 'left_wrist',
+    'RightHand': 'right_wrist',
 }
 
 
@@ -79,7 +89,7 @@ def axis_angle_to_quaternion(axis_angle):
     w = np.cos(half_angle)
     x, y, z = axis * np.sin(half_angle)
 
-    return np.array([w, x, y, z])
+    return np.array([x, y, z, w])
 
 # axis_angle = np.array([1.0, 2.0, 3.0])
 # quaternion = axis_angle_to_quaternion(axis_angle)
@@ -124,14 +134,10 @@ if __name__ == '__main__':
 
     tracks = {}
 
-    for idx, name in smpl_skeleton.items():
-        # for left_hand, right_hand
-        # there is no matching bones in readyplayer.me
-        if not smpl_rpm_mapping[name]:
-            continue
+    for bone in rpm_bones:
 
-        tracks[smpl_rpm_mapping[name] + '.quaternion'] = {
-            "name": smpl_rpm_mapping[name] + '.quaternion',
+        tracks[bone + '.quaternion'] = {
+            "name": bone + '.quaternion',
             "type": "quaternion",
             "times": [],
             "values": []
@@ -150,18 +156,22 @@ if __name__ == '__main__':
         quaternions = np.apply_along_axis(
             axis_angle_to_quaternion, axis=1, arr=axis_angles)
 
-        for idx, name in smpl_skeleton.items():
-            # for left_hand, right_hand
-            # there is no matching bones in readyplayer.me
-            if not smpl_rpm_mapping[name]:
-                continue
+        for bone in rpm_bones:
 
-            tracks[smpl_rpm_mapping[name] +
-                   '.quaternion']['times'].append(millisec)
+            tracks[bone + '.quaternion']['times'].append(millisec)
 
-            for num in quaternions[idx]:
-                tracks[smpl_rpm_mapping[name] +
-                       '.quaternion']['values'].append(num)
+            if bone in rpm_smpl_mapping:
+
+                quaternion = quaternions[smpl_skeleton_idx[rpm_smpl_mapping[bone]]]
+                # the order of quaternion must be x, y, z, w
+                for num in quaternion:
+                    tracks[bone + '.quaternion']['values'].append(num)
+            else:
+
+                tracks[bone + '.quaternion']['values'].append(0)
+                tracks[bone + '.quaternion']['values'].append(0)
+                tracks[bone + '.quaternion']['values'].append(0)
+                tracks[bone + '.quaternion']['values'].append(1)
 
         millisec += interval
 
