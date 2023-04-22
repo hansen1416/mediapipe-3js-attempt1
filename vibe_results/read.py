@@ -136,19 +136,57 @@ def combine_quaternions(a, b):
     return c / np.linalg.norm(c)
 
 
-if __name__ == '__main__':
+def save_smpl_tracks(output_pkl):
+    """
+    save VIBE predicted pose to SMPL bones and quaternions
+    """
 
-    # with open('./output/air-squat.json', 'r') as f:
-    #     anim = json.load(f)
+    output = joblib.load(output_pkl)
 
-    #     bones = []
+    tracks = {}
 
-    #     for item in anim['tracks']:
-    #         bones.append(item['name'].replace('.quaternion', ''))
+    for bone in smpl_skeleton.values():
 
-    #     print(bones)
+        tracks[bone + '.quaternion'] = {
+            "name": bone + '.quaternion',
+            "type": "quaternion",
+            "times": [],
+            "values": []
+        }
 
-    output = joblib.load('./vibe_output.pkl')
+    # print(tracks)
+
+    millisec = 0
+    interval = 1000 / 30
+
+    for pose_frame in output[1]['pose']:
+        # print(pose.shape)
+
+        axis_angles = pose_frame.reshape((24, 3))
+
+        quaternions = np.apply_along_axis(
+            axis_angle_to_quaternion, axis=1, arr=axis_angles)
+
+        for idx, bone in smpl_skeleton.items():
+
+            tracks[bone + '.quaternion']['times'].append(millisec)
+
+            quaternion = quaternions[idx]
+
+            for num in quaternion:
+                tracks[bone + '.quaternion']['values'].append(num)
+
+        millisec += interval
+
+    return tracks
+
+
+def save_rpm_tracks(output_pkl):
+    """
+    save VIBE predicted pose to Rready Player Me bones and quaternions
+    """
+
+    output = joblib.load(output_pkl)
 
     tracks = {}
 
@@ -242,8 +280,24 @@ if __name__ == '__main__':
 
         millisec += interval
 
+    return tracks
+
+
+if __name__ == '__main__':
+
+    # with open('./output/air-squat.json', 'r') as f:
+    #     anim = json.load(f)
+
+    #     bones = []
+
+    #     for item in anim['tracks']:
+    #         bones.append(item['name'].replace('.quaternion', ''))
+
+    #     print(bones)
+
+    tracks = save_smpl_tracks('./vibe_output.pkl')
+
     # print(tracks)
-    # print(millisec)
 
     animation_name = 'test1'
 
@@ -262,33 +316,3 @@ if __name__ == '__main__':
         json.dump(animation, f)
 
         print('animation data saved to ' + filename)
-
-    # print(output[1]['pose'].shape)
-    # print(output[1]['pose'].shape)
-    # print(output[1]['pose'][0])
-
-    # for frame in output[1]['pose']:
-    #     vec = get_limb_tracks(frame, 'pelvis', np.array([1,0,0]))
-
-    #     print(vec)
-
-    # pose_axis_angle_frame_0 = output[1]['pose'][0]
-
-    # pose_axis_angle_frame_0 = pose_axis_angle_frame_0.reshape((24, 3))
-
-    # # pose_quaternion_frame_0 = np.apply_along_axis(axisangle_quaternion_vectorized, axis=1, arr=pose_axis_angle_frame_0)
-    # pose_quaternion_frame_0 = np.apply_along_axis(axis_angle_to_quaternion, axis=1, arr=pose_axis_angle_frame_0)
-
-    # left_shoulder_quaternion = pose_quaternion_frame_0[smpl_skeleton_idx['left_shoulder']]
-
-    # left_shoulder_upvector = np.array([1,0,0])
-
-    # # print(left_shoulder_quaternion)
-    # target_vector = apply_quaternion_to_vector(left_shoulder_quaternion, left_shoulder_upvector)
-
-    # print(target_vector / np.linalg.norm(target_vector))
-
-    # with open('./vibe_output.pkl', 'rb') as f:
-    #     output = pickle.load(f)
-
-    #     print(output)

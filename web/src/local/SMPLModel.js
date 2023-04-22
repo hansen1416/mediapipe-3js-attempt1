@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import Button from "react-bootstrap/Button";
+// import Button from "react-bootstrap/Button";
 import { cloneDeep } from "lodash";
 
-import { loadFBX, traverseModel } from "../components/ropes";
+import {
+	loadJSON,
+	loadFBX,
+	traverseModel,
+	applyTransfer,
+	sleep,
+} from "../components/ropes";
 
 export default function SMPLModel() {
 	const canvasRef = useRef(null);
@@ -14,12 +20,15 @@ export default function SMPLModel() {
 	const controls = useRef(null);
 	// an integer number, used for cancelAnimationFrame
 	const animationPointer = useRef(0);
-	const counter = useRef(0);
+	// const counter = useRef(0);
 
 	const model = useRef(null);
 	const figureParts = useRef({});
 
 	const [rotations, setrotations] = useState([]);
+
+	const mixer = useRef(null);
+	const clock = new THREE.Clock();
 
 	useEffect(() => {
 		const documentWidth = document.documentElement.clientWidth;
@@ -27,8 +36,6 @@ export default function SMPLModel() {
 
 		// scene take entire screen
 		creatMainScene(documentWidth, documentHeight);
-
-		animate();
 
 		Promise.all([
 			// poseDetection.createDetector(
@@ -108,6 +115,10 @@ export default function SMPLModel() {
 			]);
 
 			scene.current.add(model.current);
+
+			mixer.current = new THREE.AnimationMixer(model.current);
+
+			animate();
 		});
 
 		return () => {
@@ -126,8 +137,12 @@ export default function SMPLModel() {
 	function animate() {
 		/**
 		 */
+		/** play animation in example sub scene */
+		// const delta = clock.getDelta();
 
-		counter.current += 1;
+		// if (mixer.current) mixer.current.update(delta);
+
+		// counter.current += 1;
 
 		/** play animation in example sub scene */
 
@@ -187,6 +202,50 @@ export default function SMPLModel() {
 		setrotations(tmp);
 	}
 
+	function interpretAnimation(animation_json) {
+		(async () => {
+			let longestTrack = 0;
+			let tracks = {};
+
+			// calculate quaternions and vectors for animation tracks
+			for (let item of animation_json["tracks"]) {
+				if (item["type"] === "quaternion") {
+					const quaternions = [];
+					for (let i = 0; i < item["values"].length; i += 4) {
+						const q = new THREE.Quaternion(
+							item["values"][i],
+							item["values"][i + 1],
+							item["values"][i + 2],
+							item["values"][i + 3]
+						);
+
+						quaternions.push(q);
+					}
+
+					item["quaternions"] = quaternions;
+
+					if (quaternions.length > longestTrack) {
+						longestTrack = quaternions.length;
+					}
+				}
+
+				if (item["type"] === "quaternion") {
+					tracks[item["name"]] = item;
+				}
+			}
+
+			// play the animation, observe the vectors of differnt parts
+			for (let i = 0; i < longestTrack; i++) {
+				applyTransfer(figureParts.current, tracks, i);
+
+				// 30fps
+				await sleep(33.333);
+
+				// break;
+			}
+		})();
+	}
+
 	return (
 		<div>
 			<canvas ref={canvasRef} />
@@ -198,6 +257,43 @@ export default function SMPLModel() {
 					bottom: 0,
 				}}
 			>
+				<div>
+					<label>
+						file:
+						<input
+							type={"file"}
+							onChange={(e) => {
+								/**
+								 * read the animation data
+								 * add `states` for each body part
+								 * `states` is the orientation of a body part at a time
+								 */
+								loadJSON(
+									URL.createObjectURL(e.target.files[0])
+								).then((data) => {
+									interpretAnimation(data);
+
+									mixer.current.stopAllAction();
+
+									const action = mixer.current.clipAction(
+										THREE.AnimationClip.parse(data)
+									);
+
+									action.reset();
+									action.setLoop(THREE.LoopRepeat);
+
+									// keep model at the position where it stops
+									action.clampWhenFinished = true;
+
+									action.enable = true;
+
+									action.play();
+								});
+							}}
+						/>
+					</label>
+				</div>
+
 				{rotations.map((item, idx) => {
 					return (
 						<div key={idx}>
