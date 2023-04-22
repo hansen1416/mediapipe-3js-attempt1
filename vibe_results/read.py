@@ -2,18 +2,25 @@ import os
 import pickle
 import joblib
 import numpy as np
+import json
+
+rpm_bones = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head',
+                     'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
+                     'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand',
+                     'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase',
+                     'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase']
 
 smpl_skeleton = {
-     0: 'pelvis',
-     1: 'left_hip',
-     2: 'right_hip',
-     3: 'spine1',
-     4: 'left_knee',
-     5: 'right_knee',
-     6: 'spine2',
-     7: 'left_ankle',
-     8: 'right_ankle',
-     9: 'spine3',
+    0: 'pelvis',
+    1: 'left_hip',
+    2: 'right_hip',
+    3: 'spine1',
+    4: 'left_knee',
+    5: 'right_knee',
+    6: 'spine2',
+    7: 'left_ankle',
+    8: 'right_ankle',
+    9: 'spine3',
     10: 'left_foot',
     11: 'right_foot',
     12: 'neck',
@@ -32,6 +39,34 @@ smpl_skeleton = {
 
 smpl_skeleton_idx = {value: key for key, value in smpl_skeleton.items()}
 
+smpl_rpm_mapping = {
+    'pelvis': 'Hips',
+    'left_hip': 'LeftUpLeg',
+    'right_hip': 'RightUpLeg',
+    'spine1': 'Spine',
+    'left_knee': 'LeftLeg',
+    'right_knee': 'RightLeg',
+    'spine2': 'Spine1',
+    'left_ankle': 'LeftFoot',
+    'right_ankle': 'RightFoot',
+    'spine3': 'Spine2',
+    'left_foot':  'LeftToeBase',
+    'right_foot': 'RightToeBase',
+    'neck': 'Neck',
+    'left_collar': 'LeftShoulder',
+    'right_collar': 'RightShoulder',
+    'head': 'Head',
+    'left_shoulder': 'RightArm',
+    'right_shoulder': 'LeftArm',
+    'left_elbow': 'LeftForeArm',
+    'right_elbow': 'RightForeArm',
+    'left_wrist': 'LeftHand',
+    'right_wrist': 'RightHand',
+    'left_hand': '',
+    'right_hand': ''
+}
+
+
 def axis_angle_to_quaternion(axis_angle):
 
     # print(axis_angle)
@@ -49,17 +84,21 @@ def axis_angle_to_quaternion(axis_angle):
 # quaternion = axis_angle_to_quaternion(axis_angle)
 # print(quaternion)
 
+
 def apply_quaternion_to_vector(q, v):
     # Convert the quaternion to a rotation matrix
     r = np.array([[1-2*q[2]**2-2*q[3]**2, 2*q[1]*q[2]-2*q[3]*q[0], 2*q[1]*q[3]+2*q[2]*q[0]],
-                  [2*q[1]*q[2]+2*q[3]*q[0], 1-2*q[1]**2-2*q[3]**2, 2*q[2]*q[3]-2*q[1]*q[0]],
+                  [2*q[1]*q[2]+2*q[3]*q[0], 1-2*q[1]**2 -
+                      2*q[3]**2, 2*q[2]*q[3]-2*q[1]*q[0]],
                   [2*q[1]*q[3]-2*q[2]*q[0], 2*q[2]*q[3]+2*q[1]*q[0], 1-2*q[1]**2-2*q[2]**2]])
     # Apply the rotation matrix to the vector
     return np.dot(r, v)
 
+
 def get_limb_tracks(pose_frame, limb_name, limb_upvector):
     axis_angles = pose_frame.reshape((24, 3))
-    quaternions = np.apply_along_axis(axis_angle_to_quaternion, axis=1, arr=axis_angles)
+    quaternions = np.apply_along_axis(
+        axis_angle_to_quaternion, axis=1, arr=axis_angles)
 
     limb_quaternion = quaternions[smpl_skeleton_idx[limb_name]]
 
@@ -67,18 +106,29 @@ def get_limb_tracks(pose_frame, limb_name, limb_upvector):
 
     return target_vector / np.linalg.norm(target_vector)
 
+
 if __name__ == '__main__':
+
+    with open('./output/air-squat.json', 'r') as f:
+        anim = json.load(f)
+
+        bones = []
+
+        for item in anim['tracks']:
+            bones.append(item['name'].replace('.quaternion', ''))
+
+        print(bones)
 
     output = joblib.load('./vibe_output.pkl')
 
-    # print(output[1].keys())
+    print(output[1]['frame_ids'])
     # print(output[1]['pose'].shape)
     # print(output[1]['pose'][0])
 
-    for frame in output[1]['pose']:
-        vec = get_limb_tracks(frame, 'pelvis', np.array([1,0,0]))
+    # for frame in output[1]['pose']:
+    #     vec = get_limb_tracks(frame, 'pelvis', np.array([1,0,0]))
 
-        print(vec)
+    #     print(vec)
 
     # pose_axis_angle_frame_0 = output[1]['pose'][0]
 
