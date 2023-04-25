@@ -159,7 +159,7 @@ def save_smpl_tracks(output_pkl):
     millisec = 0
     interval = 1000 / 30
 
-    for pose_frame in output[1]['pose']:
+    for pose_frame in output[0]['pose']:
         # print(pose.shape)
 
         axis_angles = pose_frame.reshape((24, 3))
@@ -297,7 +297,6 @@ if __name__ == '__main__':
 
     tracks = save_smpl_tracks('./vibe_output.pkl')
 
-    # print(tracks)
 
     animation_name = 'test1'
 
