@@ -37,7 +37,8 @@ if __name__ == "__main__":
 
     MIN_NUM_FRAMES = 25
 
-    tracking_results = read_posetrack_keypoints('output_json')
+    # tracking_results = read_posetrack_keypoints('output_json')
+    tracking_results = read_posetrack_keypoints('output')
 
         # remove tracklets if num_frames is less than MIN_NUM_FRAMES
     for person_id in list(tracking_results.keys()):
@@ -49,7 +50,11 @@ if __name__ == "__main__":
     # joblib.dump(tracking_results, os.path.join('.', "tracking_results_openpose.pkl"))
     data = joblib.load("tracking_results_openpose.pkl")
 
-    print(data[-1]['joints2d'].shape)
+    np.save('joints2d.npy', data[0]['joints2d'])
+    np.save('frames.npy', data[0]['frames'])
+# 
+    print(data[0]['joints2d'].shape)
+    print(data[0]['frames'].shape)
 
 
     # data = joblib.load('./tracking_results.pkl')
