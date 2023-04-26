@@ -51,7 +51,7 @@ export default function SMPLModel() {
 				// console.log(Object.keys(figureParts.current));
 
 				setrotations([
-					["root", 1.57, 0, 0],
+					["root", -1.57, 0, 0],
 					["pelvis", 0, 0, 0],
 					["spine1", 0, 0, 0],
 					["spine2", 0, 0, 0],

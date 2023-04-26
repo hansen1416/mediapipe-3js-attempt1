@@ -180,6 +180,9 @@ def save_smpl_tracks(output_pkl):
 
             quaternion = quaternions[idx]
 
+            if bone == 'root':
+                print(bone)
+
             for num in quaternion:
                 tracks[bone + '.quaternion']['values'].append(num)
 
@@ -317,7 +320,7 @@ if __name__ == '__main__':
         "blendMode": 2500,
     }
 
-    filename = animation_name + '.json'
+    filename = os.path.join('tracks_json', animation_name + '.json')
 
     with open(filename, 'w') as f:
 
