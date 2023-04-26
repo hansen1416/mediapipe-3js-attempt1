@@ -2,3 +2,5 @@ sample_video.mp4
 *.pkl
 output/
 output_json
+pickles
+tracks_json

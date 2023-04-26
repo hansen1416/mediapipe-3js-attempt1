@@ -1,5 +1,5 @@
 import os
-import pickle
+import sys
 import joblib
 import numpy as np
 import json
@@ -140,8 +140,15 @@ def save_smpl_tracks(output_pkl):
     """
     save VIBE predicted pose to SMPL bones and quaternions
     """
-
+    MIN_NUM_FRAMES = 20
     output = joblib.load(output_pkl)
+
+    # remove tracklets if num_frames is less than MIN_NUM_FRAMES
+    for person_id in list(output.keys()):
+        if output[person_id]['frame_ids'].shape[0] < MIN_NUM_FRAMES:
+            del output[person_id]
+    # read the first captured person
+    output = output[list(output.keys())[0]]
 
     tracks = {}
 
@@ -159,7 +166,7 @@ def save_smpl_tracks(output_pkl):
     millisec = 0
     interval = 1000 / 30
 
-    for pose_frame in output[0]['pose']:
+    for pose_frame in output['pose']:
         # print(pose.shape)
 
         axis_angles = pose_frame.reshape((24, 3))
@@ -295,10 +302,12 @@ if __name__ == '__main__':
 
     #     print(bones)
 
-    tracks = save_smpl_tracks('./vibe_output.pkl')
+    tracks = save_smpl_tracks(sys.argv[1])
 
+    # print(tracks)
+    # exit()
 
-    animation_name = 'test1'
+    animation_name = os.path.basename(sys.argv[1]).replace('_vibe.pkl', '')
 
     animation = {
         "name": animation_name,
