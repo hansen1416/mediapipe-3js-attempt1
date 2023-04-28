@@ -53,7 +53,7 @@ def load_keypoints(file):
 def plot_joints(x, y, labels, plot_name):
 
     # Create a scatter plot
-    fig, ax = plt.subplots(figsize=(20,16))
+    fig, ax = plt.subplots(figsize=(16,12))
     ax.scatter(x, y)
 
     for i, txt in enumerate(labels):
