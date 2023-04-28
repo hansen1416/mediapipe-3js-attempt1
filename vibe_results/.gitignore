@@ -4,3 +4,5 @@ output/
 output_json
 pickles
 tracks_json
+tracking_results
+plots
