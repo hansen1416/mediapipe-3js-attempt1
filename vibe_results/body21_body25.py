@@ -1,6 +1,7 @@
 import json
 import os
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 body25_names = [
@@ -32,8 +33,9 @@ body25_names = [
     # "Background"
 ]
 
+
 def load_keypoints(file):
-    
+
     with open(file) as f:
         data = json.load(f)
 
@@ -50,10 +52,11 @@ def load_keypoints(file):
 
     return x, y
 
+
 def plot_joints(x, y, labels, plot_name):
 
     # Create a scatter plot
-    fig, ax = plt.subplots(figsize=(16,12))
+    fig, ax = plt.subplots(figsize=(16, 12))
     ax.scatter(x, y)
 
     for i, txt in enumerate(labels):
@@ -64,18 +67,18 @@ def plot_joints(x, y, labels, plot_name):
     plt.savefig(os.path.join('plots', plot_name + '.png'))
     plt.clf()
 
+
 if __name__ == '__main__':
 
     frame = '02'
 
-    body21a = os.path.join('tracking_results', '2_29-40_29-44.mp4', f'2_29-40_29-44_0000000000{frame}_keypoints.json')
-    body25b = os.path.join('tracking_results', '2_29-40_29-44.mp4.scale4', f'2_29-40_29-44_0000000000{frame}_keypoints.json')
+    body21a = os.path.join('tracking_results', '2_29-40_29-44.mp4',
+                           f'2_29-40_29-44_0000000000{frame}_keypoints.json')
+    body25b = os.path.join('tracking_results', '2_29-40_29-44.mp4.scale4',
+                           f'2_29-40_29-44_0000000000{frame}_keypoints.json')
 
     body21a_x, body21a_y = load_keypoints(body21a)
     body25b_x, body25b_y = load_keypoints(body25b)
 
     plot_joints(body21a_x, body21a_y, list(range(21)), 'body21a')
     plot_joints(body25b_x, body25b_y, body25_names, 'body25b')
-
-
-
