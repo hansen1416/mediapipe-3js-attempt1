@@ -129,6 +129,25 @@ def body_25b_to_21a(body25b_keypoints):
     return res
 
 
+def compare_21a_25b(video_name, frame):
+
+    body21a = load_keypoints(os.path.join('tracking_results', video_name + ".mp4",
+                                          f'{video_name}_0000000000{frame}_keypoints.json'))
+    body25b = load_keypoints(os.path.join('tracking_results_body25b_416', video_name + ".mp4",
+                                          f'{video_name}_0000000000{frame}_keypoints.json'))
+
+    body25b21a = body_25b_to_21a(body25b)
+
+    # body21_labels = list(range(21))
+    body21_labels = body21a_names
+
+    # body25_labels = list(range(25))
+    body25_labels = body25_names
+
+    plot_joints(body21a, body21_labels, 'body21a')
+    plot_joints(body25b21a, body21_labels, 'body25b')
+
+
 def plot_joints(keypoints, labels, plot_name):
 
     x, y, _ = decompose_keypoints(keypoints)
@@ -150,21 +169,4 @@ def plot_joints(keypoints, labels, plot_name):
 
 if __name__ == '__main__':
 
-    video_name = "2_28-00_28-04"
-    frame = '10'
-
-    body21a = load_keypoints(os.path.join('tracking_results', video_name + ".mp4",
-                                          f'{video_name}_0000000000{frame}_keypoints.json'))
-    body25b = load_keypoints(os.path.join('tracking_results_body25b_416', video_name + ".mp4",
-                                          f'{video_name}_0000000000{frame}_keypoints.json'))
-
-    body25b21a = body_25b_to_21a(body25b)
-
-    # body21_labels = list(range(21))
-    body21_labels = body21a_names
-
-    # body25_labels = list(range(25))
-    body25_labels = body25_names
-
-    plot_joints(body21a, body21_labels, 'body21a')
-    plot_joints(body25b21a, body21_labels, 'body25b')
+    compare_21a_25b("2_28-00_28-04", '20')
