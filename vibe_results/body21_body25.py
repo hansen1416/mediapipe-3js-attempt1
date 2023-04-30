@@ -169,4 +169,4 @@ def plot_joints(keypoints, labels, plot_name):
 
 if __name__ == '__main__':
 
-    compare_21a_25b("2_28-00_28-04", '20')
+    compare_21a_25b("2_28-00_28-04", '60')
