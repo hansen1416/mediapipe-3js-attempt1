@@ -5,32 +5,55 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 body25_names = [
-    "Nose",
-    "Neck",
-    "RShoulder",
-    "RElbow",
-    "RWrist",
-    "LShoulder",
-    "LElbow",
-    "LWrist",
-    "MidHip",
-    "RHip",
-    "RKnee",
-    "RAnkle",
-    "LHip",
-    "LKnee",
-    "LAnkle",
-    "REye",
-    "LEye",
-    "REar",
-    "LEar",
-    "LBigToe",
-    "LSmallToe",
-    "LHeel",
-    "RBigToe",
-    "RSmallToe",
-    "RHeel",
-    # "Background"
+    "NOSE",
+    "LEYE",
+    "REYE",
+    "LEAR",
+    "REAR",
+    "LSHOULDER",
+    "RSHOULDER",
+    "LELBOW",
+    "RELBOW",
+    "LWRIST",
+    "RWRIST",
+    "LHIP",
+    "RHIP",
+    "LKNEE",
+    "RKNEE",
+    "LANKLE",
+    "RANKLE",
+    "UPPERNECK",
+    "HEADTOP",
+    "LBIGTOE",
+    "LSMALLTOE",
+    "LHEEL",
+    "RBIGTOE",
+    "RSMALLTOE",
+    "RHEEL",
+]
+
+body21a_names = [
+    "NOSE",
+    "NECK",
+    "RSHOULDER",
+    "RELBOW",
+    "RWRIST",
+    "LSHOULDER",
+    "LELBOW",
+    "LWRIST",
+    "LOWERABS",
+    "RHIP",
+    "RKNEE",
+    "RANKLE",
+    "LHIP",
+    "LKNEE",
+    "LANKLE",
+    "REYE",
+    "LEYE",
+    "REAR",
+    "LEAR",
+    "REALNECK",
+    "TOP",
 ]
 
 
@@ -39,18 +62,21 @@ def load_keypoints(file):
     with open(file) as f:
         data = json.load(f)
 
+    pose_keypoints_2d = data['people'][0]['pose_keypoints_2d']
+
+    # return np.array(data['people'][0]['pose_keypoints_2d'])
     # print(data['people'][0]['pose_keypoints_2d'])
 
     x = []
     y = []
 
-    for i in range(0, len(data['people'][0]['pose_keypoints_2d'])):
+    for i in range(0, len(pose_keypoints_2d)):
         if i % 3 == 0:
-            x.append(data['people'][0]['pose_keypoints_2d'][i])
+            x.append(pose_keypoints_2d[i])
         if i % 3 == 1:
-            y.append(data['people'][0]['pose_keypoints_2d'][i])
+            y.append(pose_keypoints_2d[i])
 
-    return x, y
+    return np.array(x), np.array(y)
 
 
 def plot_joints(x, y, labels, plot_name):
@@ -58,6 +84,8 @@ def plot_joints(x, y, labels, plot_name):
     # Create a scatter plot
     fig, ax = plt.subplots(figsize=(16, 12))
     ax.scatter(x, y)
+
+    # print(x.shape, y.shape)
 
     for i, txt in enumerate(labels):
         ax.annotate(txt, (x[i], y[i]))
@@ -70,15 +98,22 @@ def plot_joints(x, y, labels, plot_name):
 
 if __name__ == '__main__':
 
-    frame = '02'
+    video_name = "2_28-37_28-42"
+    frame = '10'
 
-    body21a = os.path.join('tracking_results', '2_29-40_29-44.mp4',
-                           f'2_29-40_29-44_0000000000{frame}_keypoints.json')
-    body25b = os.path.join('tracking_results', '2_29-40_29-44.mp4.scale4',
-                           f'2_29-40_29-44_0000000000{frame}_keypoints.json')
+    body21a = os.path.join('tracking_results', video_name + ".mp4",
+                           f'{video_name}_0000000000{frame}_keypoints.json')
+    body25b = os.path.join('tracking_results_body25b_368', video_name + ".mp4",
+                           f'{video_name}_0000000000{frame}_keypoints.json')
 
     body21a_x, body21a_y = load_keypoints(body21a)
     body25b_x, body25b_y = load_keypoints(body25b)
 
-    plot_joints(body21a_x, body21a_y, list(range(21)), 'body21a')
-    plot_joints(body25b_x, body25b_y, body25_names, 'body25b')
+    # body21_labels = list(range(21))
+    body21_labels = body21a_names
+
+    # body25_labels = list(range(25))
+    body25_labels = body25_names
+
+    plot_joints(body21a_x, body21a_y, body21_labels, 'body21a')
+    plot_joints(body25b_x, body25b_y, body25_labels, 'body25b')
