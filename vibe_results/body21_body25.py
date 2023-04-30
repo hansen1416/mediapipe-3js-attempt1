@@ -131,8 +131,12 @@ def body_25b_to_21a(body25b_keypoints):
 
 def compare_21a_25b(video_name, frame):
 
-    body21a = load_keypoints(os.path.join('tracking_results', video_name + ".mp4",
+    # body21a = load_keypoints(os.path.join('tracking_results', video_name + ".mp4",
+    #                                       f'{video_name}_0000000000{frame}_keypoints.json'))
+
+    body21a = load_keypoints(os.path.join('tracking_results_body25b_416_21a', video_name + ".mp4",
                                           f'{video_name}_0000000000{frame}_keypoints.json'))
+
     body25b = load_keypoints(os.path.join('tracking_results_body25b_416', video_name + ".mp4",
                                           f'{video_name}_0000000000{frame}_keypoints.json'))
 
@@ -142,7 +146,7 @@ def compare_21a_25b(video_name, frame):
     body21_labels = body21a_names
 
     # body25_labels = list(range(25))
-    body25_labels = body25_names
+    # body25_labels = body25_names
 
     plot_joints(body21a, body21_labels, 'body21a')
     plot_joints(body25b21a, body21_labels, 'body25b')
@@ -167,6 +171,37 @@ def plot_joints(keypoints, labels, plot_name):
     plt.clf()
 
 
+def body25b_results_to_21a():
+    body_25b_416_dir = os.path.join('.', 'tracking_results_body25b_416')
+
+    # Get all files and directories in the current directory
+    for item in os.listdir(body_25b_416_dir):
+        for frame in os.listdir(os.path.join(body_25b_416_dir, item)):
+            # print(frame)
+
+            with open(os.path.join(body_25b_416_dir, item, frame)) as f:
+                data = json.load(f)
+
+            # pose_keypoints_2d = data['people'][0]['pose_keypoints_2d']
+
+            # print(pose_keypoints_2d)
+
+            # pose_keypoints_2d = body_25b_to_21a(pose_keypoints_2d)
+
+            # print(pose_keypoints_2d)
+
+            data['people'][0]['pose_keypoints_2d'] = body_25b_to_21a(
+                data['people'][0]['pose_keypoints_2d'])
+
+            # Use os.makedirs() to create the folder and any parent folders if they don't exist
+            os.makedirs(os.path.join(
+                'tracking_results_body25b_416_21a', item), exist_ok=True)
+
+            with open(os.path.join('tracking_results_body25b_416_21a', item, frame), 'w') as f:
+
+                json.dump(data, f)
+
+
 if __name__ == '__main__':
 
-    compare_21a_25b("2_28-00_28-04", '90')
+    compare_21a_25b("2_9-25_9-35", '60')
