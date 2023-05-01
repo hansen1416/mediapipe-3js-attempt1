@@ -18,9 +18,13 @@ export default function SMPLModel() {
 	const camera = useRef(null);
 	const renderer = useRef(null);
 	const controls = useRef(null);
+
+	const fileInput = useRef(null);
+
 	// an integer number, used for cancelAnimationFrame
 	const animationPointer = useRef(0);
 	// const counter = useRef(0);
+	const clearAnimation = useRef(false);
 
 	const model = useRef(null);
 	const figureParts = useRef({});
@@ -247,6 +251,10 @@ export default function SMPLModel() {
 					i = 0;
 				}
 
+				if (clearAnimation.current) {
+					break;
+				}
+
 				// break;
 			}
 		})();
@@ -268,7 +276,9 @@ export default function SMPLModel() {
 						file:
 						<input
 							type={"file"}
+							ref={fileInput}
 							onChange={(e) => {
+								clearAnimation.current = false;
 								/**
 								 * read the animation data
 								 * add `states` for each body part
@@ -298,6 +308,24 @@ export default function SMPLModel() {
 							}}
 						/>
 					</label>
+				</div>
+				<div>
+					<button
+						onClick={() => {
+							fileInput.current.value = "";
+
+							try {
+								fileInput.current.type = "text"; // Change the input type to text
+								fileInput.current.type = "file"; // Change the input type back to file
+							} catch (e) {
+								// Do nothing if changing the input type throws an error
+							}
+
+							clearAnimation.current = true;
+						}}
+					>
+						refresh
+					</button>
 				</div>
 
 				{rotations.map((item, idx) => {
