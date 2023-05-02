@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { loadGLTF, traverseModel } from "../components/ropes";
+import {
+	sleep,
+	loadJSON,
+	loadGLTF,
+	traverseModel,
+	applyTransfer,
+} from "../components/ropes";
 
 export default function GLBModel() {
 	const canvasRef = useRef(null);
@@ -13,7 +19,13 @@ export default function GLBModel() {
 	const model = useRef(null);
 	const figureParts = useRef({});
 
+	const fileInput = useRef(null);
+
+	// an integer number, used for cancelAnimationFrame
 	const animationPointer = useRef(0);
+	// const counter = useRef(0);
+	const clearAnimation = useRef(false);
+
 	const mixer = useRef(null);
 	const clock = new THREE.Clock();
 
@@ -132,9 +144,132 @@ export default function GLBModel() {
 		renderer.current.setSize(viewWidth, viewHeight);
 	}
 
+	function interpretAnimation(animation_json) {
+		(async () => {
+			let longestTrack = 0;
+			let tracks = {};
+
+			// calculate quaternions and vectors for animation tracks
+			for (let item of animation_json["tracks"]) {
+				if (item["type"] === "quaternion") {
+					const quaternions = [];
+					for (let i = 0; i < item["values"].length; i += 4) {
+						const q = new THREE.Quaternion(
+							item["values"][i],
+							item["values"][i + 1],
+							item["values"][i + 2],
+							item["values"][i + 3]
+						);
+
+						quaternions.push(q);
+					}
+
+					item["quaternions"] = quaternions;
+
+					if (quaternions.length > longestTrack) {
+						longestTrack = quaternions.length;
+					}
+				}
+
+				if (item["type"] === "quaternion") {
+					tracks[item["name"]] = item;
+				}
+			}
+
+			// play the animation, observe the vectors of differnt parts
+
+			let i = 0;
+
+			while (i < longestTrack) {
+				applyTransfer(figureParts.current, tracks, i);
+
+				// 30fps
+				await sleep(33.333);
+
+				i++;
+
+				// play indefinitely
+				if (i >= longestTrack) {
+					i = 0;
+				}
+
+				if (clearAnimation.current) {
+					break;
+				}
+
+				// break;
+			}
+		})();
+	}
+
 	return (
 		<div className="glb-model">
 			<canvas ref={canvasRef} />
+
+			<div
+				style={{
+					position: "absolute",
+					right: 0,
+					bottom: 0,
+				}}
+			>
+				<div>
+					<label>
+						file:
+						<input
+							type={"file"}
+							ref={fileInput}
+							onChange={(e) => {
+								clearAnimation.current = false;
+								/**
+								 * read the animation data
+								 * add `states` for each body part
+								 * `states` is the orientation of a body part at a time
+								 */
+								loadJSON(
+									URL.createObjectURL(e.target.files[0])
+								).then((data) => {
+									interpretAnimation(data);
+
+									// mixer.current.stopAllAction();
+
+									// const action = mixer.current.clipAction(
+									// 	THREE.AnimationClip.parse(data)
+									// );
+
+									// action.reset();
+									// action.setLoop(THREE.LoopRepeat);
+
+									// // keep model at the position where it stops
+									// action.clampWhenFinished = true;
+
+									// action.enable = true;
+
+									// action.play();
+								});
+							}}
+						/>
+					</label>
+				</div>
+				<div>
+					<button
+						onClick={() => {
+							fileInput.current.value = "";
+
+							try {
+								fileInput.current.type = "text"; // Change the input type to text
+								fileInput.current.type = "file"; // Change the input type back to file
+							} catch (e) {
+								// Do nothing if changing the input type throws an error
+							}
+
+							clearAnimation.current = true;
+						}}
+					>
+						refresh
+					</button>
+				</div>
+			</div>
 		</div>
 	);
 }

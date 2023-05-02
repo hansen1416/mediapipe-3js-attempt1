@@ -52,7 +52,7 @@ export default function SMPLModel() {
 				// store all limbs to `model`
 				traverseModel(model.current, figureParts.current);
 
-				// console.log(Object.keys(figureParts.current));
+				console.log(figureParts.current);
 
 				setrotations([
 					["root", -1.57, 0, 0],
