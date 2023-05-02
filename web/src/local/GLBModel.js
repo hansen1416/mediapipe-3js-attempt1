@@ -41,11 +41,10 @@ export default function GLBModel() {
 				// add 3d model to main scene
 				model.current = glb.scene.children[0];
 				model.current.position.set(0, -1, 0);
+				// model.current.rotation.set(-3.14, 0, 0);
 
 				// store all limbs to `model`
 				traverseModel(model.current, figureParts.current);
-
-				console.log(Object.keys(figureParts.current));
 
 				scene.current.add(model.current);
 
@@ -70,6 +69,59 @@ export default function GLBModel() {
 					action.play();
 					// prepare the example exercise action
 				}
+
+				// understand SMPL rotations
+				Promise.all([
+					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42.json"),
+					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42_smpl.json"),
+					loadJSON(process.env.PUBLIC_URL + "/2_29-40_29-44.json"),
+					loadJSON(
+						process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
+					),
+					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54.json"),
+					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
+				]).then(([animation_rpm, animation_smpl]) => {
+					(async () => {
+						let i = 0;
+
+						while (
+							i < animation_rpm.tracks[1]["quaternions"].length
+						) {
+							const q1 =
+								animation_rpm.tracks[1]["quaternions"][i];
+
+							const q = new THREE.Quaternion(
+								q1[0],
+								q1[1],
+								q1[2],
+								q1[3]
+							);
+
+							// const v0 = new THREE.Vector3(0, 1, 0);
+
+							figureParts.current.Spine.setRotationFromQuaternion(
+								q
+							);
+
+							// v0.applyQuaternion(q);
+
+							i++;
+
+							await sleep(33.33);
+
+							if (
+								i >=
+								animation_rpm.tracks[1]["quaternions"].length
+							) {
+								i = 0;
+							}
+						}
+
+						// console.log(figureParts.current.Spine.rotation);
+
+						// interpretAnimation(animation_rpm);
+					})();
+				});
 			}
 		);
 
@@ -172,6 +224,8 @@ export default function GLBModel() {
 				}
 
 				if (item["type"] === "quaternion") {
+					console.log(item);
+
 					tracks[item["name"]] = item;
 				}
 			}
