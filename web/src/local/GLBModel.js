@@ -92,23 +92,11 @@ export default function GLBModel() {
 						animation_rpm.tracks[1]["quaternions"].length;
 
 					(async () => {
-						let q0 = animation_rpm.tracks[0]["quaternions"][1];
-
-						q0 = new THREE.Quaternion(q0[0], q0[1], q0[2], q0[3]);
-
-						// const e0 = new THREE.Euler().setFromQuaternion(q0);
-
-						// e0.x -= 1.57;
-
-						// q0 = new THREE.Quaternion().setFromEuler(e0);
-
-						// console.log(e0, q0);
-
-						figureParts.current.Hips.setRotationFromQuaternion(q0);
-
 						let i = 0;
 
 						while (i < longest_track) {
+							const q0 =
+								animation_rpm.tracks[0]["quaternions"][i];
 							const q1 =
 								animation_rpm.tracks[1]["quaternions"][i];
 							const q2 =
@@ -116,7 +104,9 @@ export default function GLBModel() {
 							const q3 =
 								animation_rpm.tracks[3]["quaternions"][i];
 
-							// const v0 = new THREE.Vector3(0, 1, 0);
+							figureParts.current.Hips.setRotationFromQuaternion(
+								new THREE.Quaternion(q0[0], q0[1], q0[2], q0[3])
+							);
 
 							figureParts.current.Spine.setRotationFromQuaternion(
 								new THREE.Quaternion(q1[0], q1[1], q1[2], q1[3])
