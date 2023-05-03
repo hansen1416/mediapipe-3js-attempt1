@@ -153,11 +153,21 @@ export default function GLBModel() {
 							);
 
 							figureParts.current.LeftUpLeg.setRotationFromQuaternion(
-								q4
+								new THREE.Quaternion(
+									q4_1[0],
+									q4_1[1],
+									q4_1[2],
+									q4_1[3]
+								)
 							);
 
 							figureParts.current.RightUpLeg.setRotationFromQuaternion(
-								q5
+								new THREE.Quaternion(
+									q5_1[0],
+									q5_1[1],
+									q5_1[2],
+									q5_1[3]
+								)
 							);
 
 							i++;

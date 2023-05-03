@@ -48,6 +48,7 @@ export default function SMPLModel() {
 				// add 3d model to main scene
 				model.current = fbx;
 				model.current.position.set(0, 0, 0);
+				model.current.rotation.set(3.14, 0, 0);
 
 				// store all limbs to `model`
 				traverseModel(model.current, figureParts.current);
@@ -118,6 +119,85 @@ export default function SMPLModel() {
 				// mixer.current = new THREE.AnimationMixer(model.current);
 
 				animate();
+
+				// understand SMPL rotations
+				Promise.all([
+					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42_smpl.json"),
+					loadJSON(
+						process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
+					),
+					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
+				]).then(([animation_smpl]) => {
+					const axesHelper = new THREE.AxesHelper(5);
+					figureParts.current.pelvis.add(axesHelper);
+
+					console.log(figureParts.current);
+
+					let longestTrack = 0;
+					let tracks = {};
+
+					// calculate quaternions and vectors for animation tracks
+					for (let item of animation_smpl["tracks"]) {
+						if (item["type"] === "quaternion") {
+							const quaternions = [];
+							for (let i = 0; i < item["values"].length; i += 4) {
+								const q = new THREE.Quaternion(
+									item["values"][i],
+									item["values"][i + 1],
+									item["values"][i + 2],
+									item["values"][i + 3]
+								);
+
+								quaternions.push(q);
+							}
+
+							item["quaternions"] = quaternions;
+
+							if (quaternions.length > longestTrack) {
+								longestTrack = quaternions.length;
+							}
+						}
+
+						if (item["type"] === "quaternion") {
+							tracks[item["name"].replace(".quaternion", "")] =
+								item;
+						}
+					}
+					// console.log(tracks);
+					// play the animation, observe the vectors of differnt parts
+					(async () => {
+						let i = 0;
+
+						const movie_bones = ["pelvis", "left_hip", "right_hip"];
+
+						while (i < longestTrack) {
+							for (let name in tracks) {
+								const q = tracks[name].quaternions[i];
+
+								if (
+									movie_bones.indexOf(name) === -1 ||
+									!figureParts.current[name]
+								) {
+									continue;
+								}
+
+								figureParts.current[
+									name
+								].setRotationFromQuaternion(q);
+							}
+
+							// 30fps
+							await sleep(33.333);
+
+							i++;
+
+							// play indefinitely
+							if (i >= longestTrack) {
+								i = 0;
+							}
+						}
+					})();
+				});
 			}
 		);
 
