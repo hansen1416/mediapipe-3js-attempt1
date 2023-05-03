@@ -85,24 +85,56 @@ export default function GLBModel() {
 					const axesHelper = new THREE.AxesHelper(5);
 					figureParts.current.Hips.add(axesHelper);
 
-					console.log(animation_rpm);
 					console.log(figureParts.current);
 
-					const longest_track =
-						animation_rpm.tracks[1]["quaternions"].length;
+					const tracks = {};
+
+					for (let tk of animation_rpm.tracks) {
+						tracks[tk.name.replace(".quaternion", "")] = tk;
+					}
+
+					console.log(tracks);
+
+					const longest_track = tracks.Hips.quaternions.length;
 
 					(async () => {
 						let i = 0;
 
 						while (i < longest_track) {
-							const q0 =
-								animation_rpm.tracks[0]["quaternions"][i];
-							const q1 =
-								animation_rpm.tracks[1]["quaternions"][i];
-							const q2 =
-								animation_rpm.tracks[2]["quaternions"][i];
-							const q3 =
-								animation_rpm.tracks[3]["quaternions"][i];
+							// todo we need one more bone to be static,
+							// and apply SMPL rotation to Hips, Spine, Spine1, Spine2
+							const q0 = tracks.Hips.quaternions[i];
+							const q1 = tracks.Spine.quaternions[i];
+							const q2 = tracks.Spine1.quaternions[i];
+							const q3 = tracks.Spine2.quaternions[i];
+
+							const q4_1 = tracks.LeftUpLeg.quaternions[i];
+							const q5_1 = tracks.RightUpLeg.quaternions[i];
+
+							// console.log(q4_1, q5_1);
+
+							const q4 =
+								new THREE.Quaternion().multiplyQuaternions(
+									new THREE.Quaternion(0, 0, -1, 0),
+									// new THREE.Quaternion(0, 0, 0, 1),
+									new THREE.Quaternion(
+										q4_1[0],
+										q4_1[1],
+										q4_1[2],
+										q4_1[3]
+									)
+								);
+
+							const q5 =
+								new THREE.Quaternion().multiplyQuaternions(
+									new THREE.Quaternion(0, 0, 1, 0),
+									new THREE.Quaternion(
+										q5_1[0],
+										q5_1[1],
+										q5_1[2],
+										q5_1[3]
+									)
+								);
 
 							figureParts.current.Hips.setRotationFromQuaternion(
 								new THREE.Quaternion(q0[0], q0[1], q0[2], q0[3])
@@ -120,7 +152,13 @@ export default function GLBModel() {
 								new THREE.Quaternion(q3[0], q3[1], q3[2], q3[3])
 							);
 
-							// v0.applyQuaternion(q);
+							figureParts.current.LeftUpLeg.setRotationFromQuaternion(
+								q4
+							);
+
+							figureParts.current.RightUpLeg.setRotationFromQuaternion(
+								q5
+							);
 
 							i++;
 
