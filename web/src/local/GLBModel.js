@@ -40,8 +40,9 @@ export default function GLBModel() {
 			([glb]) => {
 				// add 3d model to main scene
 				model.current = glb.scene.children[0];
-				model.current.position.set(0, -1, 0);
-				// model.current.rotation.set(-3.14, 0, 0);
+				model.current.position.set(0, 1, 0);
+				// apply the rotation of SMPL `root`
+				model.current.rotation.set(3.14, 0, 0);
 
 				// store all limbs to `model`
 				traverseModel(model.current, figureParts.current);
@@ -81,26 +82,52 @@ export default function GLBModel() {
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54.json"),
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
 				]).then(([animation_rpm, animation_smpl]) => {
+					const axesHelper = new THREE.AxesHelper(5);
+					figureParts.current.Hips.add(axesHelper);
+
+					console.log(animation_rpm);
+					console.log(figureParts.current);
+
+					const longest_track =
+						animation_rpm.tracks[1]["quaternions"].length;
+
 					(async () => {
+						let q0 = animation_rpm.tracks[0]["quaternions"][1];
+
+						q0 = new THREE.Quaternion(q0[0], q0[1], q0[2], q0[3]);
+
+						// const e0 = new THREE.Euler().setFromQuaternion(q0);
+
+						// e0.x -= 1.57;
+
+						// q0 = new THREE.Quaternion().setFromEuler(e0);
+
+						// console.log(e0, q0);
+
+						figureParts.current.Hips.setRotationFromQuaternion(q0);
+
 						let i = 0;
 
-						while (
-							i < animation_rpm.tracks[1]["quaternions"].length
-						) {
+						while (i < longest_track) {
 							const q1 =
 								animation_rpm.tracks[1]["quaternions"][i];
-
-							const q = new THREE.Quaternion(
-								q1[0],
-								q1[1],
-								q1[2],
-								q1[3]
-							);
+							const q2 =
+								animation_rpm.tracks[2]["quaternions"][i];
+							const q3 =
+								animation_rpm.tracks[3]["quaternions"][i];
 
 							// const v0 = new THREE.Vector3(0, 1, 0);
 
 							figureParts.current.Spine.setRotationFromQuaternion(
-								q
+								new THREE.Quaternion(q1[0], q1[1], q1[2], q1[3])
+							);
+
+							figureParts.current.Spine1.setRotationFromQuaternion(
+								new THREE.Quaternion(q2[0], q2[1], q2[2], q2[3])
+							);
+
+							figureParts.current.Spine2.setRotationFromQuaternion(
+								new THREE.Quaternion(q3[0], q3[1], q3[2], q3[3])
 							);
 
 							// v0.applyQuaternion(q);
@@ -109,10 +136,7 @@ export default function GLBModel() {
 
 							await sleep(33.33);
 
-							if (
-								i >=
-								animation_rpm.tracks[1]["quaternions"].length
-							) {
+							if (i >= longest_track) {
 								i = 0;
 							}
 						}
