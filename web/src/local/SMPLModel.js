@@ -132,6 +132,7 @@ export default function SMPLModel() {
 					figureParts.current.left_elbow.add(axesHelper);
 
 					console.log(figureParts.current);
+					return
 
 					let longestTrack = 0;
 					let tracks = {};

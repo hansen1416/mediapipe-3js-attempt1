@@ -119,22 +119,39 @@ export default function GLBModel() {
 					(async () => {
 						let i = 0;
 
+						// const up = new THREE.Vector3(0, 1, 0);
 
-						const up = new THREE.Vector3(0,1,0);
+						// const ql = tracks.LeftArm.quaternions[80];
+						// const q = new THREE.Quaternion(
+						// 	ql[0],
+						// 	ql[1],
+						// 	ql[2],
+						// 	ql[3]
+						// );
 
-						const ql = tracks.LeftArm.quaternions[80];
-						const q = new THREE.Quaternion(ql[0], ql[1], ql[2], ql[3]);
+						// up.applyQuaternion(q);
 
-						up.applyQuaternion(q)
+						// console.log(up);
 
-						console.log(up)
+						const m1 = new THREE.Matrix4().makeBasis(
+							new THREE.Vector3(0, 0, 1),
+							
+							new THREE.Vector3(1, 0, 0),
+							new THREE.Vector3(0, 1, 0),
+						);
+
+						const q1 = new THREE.Quaternion().setFromRotationMatrix(m1)
+
+						console.log(q1)
 
 						while (i < longest_track) {
 							for (let name of bones2rotate) {
 								const q = tracks[name].quaternions[i];
 
 								if (
-									["LeftForeArm", "RightForeArm"].indexOf(name) === -1
+									["LeftForeArm", "RightForeArm"].indexOf(
+										name
+									) === -1
 								) {
 									figureParts.current[
 										name
@@ -150,11 +167,14 @@ export default function GLBModel() {
 									figureParts.current[
 										name
 									].setRotationFromQuaternion(
-										new THREE.Quaternion(
-											q[0],
-											q[1],
-											-q[2],
-											q[3]
+										new THREE.Quaternion().multiplyQuaternions(
+											new THREE.Quaternion(
+												q[0],
+												-q[1],
+												q[2],
+												q[3]
+											),
+											new THREE.Quaternion(0.5,0.5,0.5,-0.5),
 										)
 									);
 
