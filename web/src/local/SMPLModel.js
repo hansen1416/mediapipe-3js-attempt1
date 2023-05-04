@@ -129,7 +129,7 @@ export default function SMPLModel() {
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
 				]).then(([animation_smpl]) => {
 					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.pelvis.add(axesHelper);
+					figureParts.current.left_elbow.add(axesHelper);
 
 					console.log(figureParts.current);
 

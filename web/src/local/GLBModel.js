@@ -87,7 +87,7 @@ export default function GLBModel() {
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
 				]).then(([animation_rpm1, animation_rpm]) => {
 					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.LeftArm.add(axesHelper);
+					figureParts.current.LeftForeArm.add(axesHelper);
 
 					const tracks = {};
 
@@ -112,19 +112,29 @@ export default function GLBModel() {
 						"RightShoulder",
 						"RightArm",
 						"LeftArm",
-						// "LeftForeArm",
-						// "RightForeArm",
+						"LeftForeArm",
+						"RightForeArm",
 					];
 
 					(async () => {
 						let i = 0;
+
+
+						const up = new THREE.Vector3(0,1,0);
+
+						const ql = tracks.LeftArm.quaternions[80];
+						const q = new THREE.Quaternion(ql[0], ql[1], ql[2], ql[3]);
+
+						up.applyQuaternion(q)
+
+						console.log(up)
 
 						while (i < longest_track) {
 							for (let name of bones2rotate) {
 								const q = tracks[name].quaternions[i];
 
 								if (
-									["LeftArm", "RightArm"].indexOf(name) === -1
+									["LeftForeArm", "RightForeArm"].indexOf(name) === -1
 								) {
 									figureParts.current[
 										name
@@ -141,8 +151,8 @@ export default function GLBModel() {
 										name
 									].setRotationFromQuaternion(
 										new THREE.Quaternion(
-											-q[0],
-											-q[1],
+											q[0],
+											q[1],
 											-q[2],
 											q[3]
 										)
