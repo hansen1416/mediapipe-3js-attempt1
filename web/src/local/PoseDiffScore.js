@@ -132,6 +132,9 @@ export default function PoseDiffScore() {
 
 			// console.log(figureParts.current.LeftFoot.rotation);
 
+			const axesHelper = new THREE.AxesHelper(5);
+			figureParts.current.RightForeArm.add(axesHelper);
+
 			setrotations([
 				["Hips", 0, 0, 0],
 				["Spine", 0, 0, 0],

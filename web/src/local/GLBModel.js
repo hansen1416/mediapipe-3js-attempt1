@@ -40,8 +40,8 @@ export default function GLBModel() {
 			([glb]) => {
 				// add 3d model to main scene
 				model.current = glb.scene.children[0];
-				model.current.position.set(0, 1, 0);
 				// apply the rotation of SMPL `root`
+				model.current.position.set(0, 1, 0);
 				model.current.rotation.set(3.14, 0, 0);
 
 				// store all limbs to `model`
@@ -74,10 +74,12 @@ export default function GLBModel() {
 				// understand SMPL rotations
 				Promise.all([
 					loadJSON(
-						process.env.PUBLIC_URL + "/animations/2_28-37_28-42_rpm.json"
+						process.env.PUBLIC_URL +
+							"/animations/2_28-37_28-42_rpm.json"
 					),
 					loadJSON(
-						process.env.PUBLIC_URL + "/animations/2_29-40_29-44_rpm.json"
+						process.env.PUBLIC_URL +
+							"/animations/2_29-40_29-44_rpm.json"
 					),
 					// loadJSON(process.env.PUBLIC_URL + "/animations/2_30-50_30-54_rpm.json"),
 				]).then(([animation_rpm1, animation_rpm]) => {
@@ -113,10 +115,10 @@ export default function GLBModel() {
 
 					(async () => {
 						let i = 0;
-
+						// return
 						// const up = new THREE.Vector3(0, 1, 0);
 
-						// const ql = tracks.LeftArm.quaternions[80];
+						// const ql = tracks.LeftForeArm.quaternions[60];
 						// const q = new THREE.Quaternion(
 						// 	ql[0],
 						// 	ql[1],
@@ -130,14 +132,15 @@ export default function GLBModel() {
 
 						const m1 = new THREE.Matrix4().makeBasis(
 							new THREE.Vector3(0, 0, 1),
-							
-							new THREE.Vector3(1, 0, 0),
-							new THREE.Vector3(0, 1, 0),
+							new THREE.Vector3(-1, 0, 0),
+							new THREE.Vector3(0, -1, 0)
 						);
 
-						const q1 = new THREE.Quaternion().setFromRotationMatrix(m1)
+						const q1 = new THREE.Quaternion().setFromRotationMatrix(
+							m1
+						);
 
-						console.log(q1)
+						console.log(q1);
 
 						while (i < longest_track) {
 							for (let name of bones2rotate) {
@@ -159,6 +162,23 @@ export default function GLBModel() {
 										)
 									);
 								} else {
+									let init_q;
+									if (name === "LeftForeArm") {
+										init_q = new THREE.Quaternion(
+											-0.5,
+											-0.5,
+											0.5,
+											-0.5
+										);
+									} else if (name === "RightForeArm") {
+										init_q = new THREE.Quaternion(
+											0.5,
+											-0.5,
+											0.5,
+											0.5
+										);
+									}
+
 									figureParts.current[
 										name
 									].setRotationFromQuaternion(
@@ -169,8 +189,8 @@ export default function GLBModel() {
 												q[2],
 												q[3]
 											),
-											// new THREE.Quaternion(0.5,0.5,0.5,-0.5),
-											new THREE.Quaternion(0,0,0,1),
+											init_q
+											// new THREE.Quaternion(0,0,0,1),
 										)
 									);
 
