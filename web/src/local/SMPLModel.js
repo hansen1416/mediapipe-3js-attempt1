@@ -122,11 +122,11 @@ export default function SMPLModel() {
 
 				// understand SMPL rotations
 				Promise.all([
-					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42_smpl.json"),
+					// loadJSON(process.env.PUBLIC_URL + "/animations/2_28-37_28-42_smpl.json"),
 					loadJSON(
-						process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
+						process.env.PUBLIC_URL + "/animations/2_29-40_29-44_smpl.json"
 					),
-					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
+					// loadJSON(process.env.PUBLIC_URL + "/animations/2_30-50_30-54_smpl.json"),
 				]).then(([animation_smpl]) => {
 					const axesHelper = new THREE.AxesHelper(5);
 					figureParts.current.left_elbow.add(axesHelper);

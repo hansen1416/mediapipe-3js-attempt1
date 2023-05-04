@@ -74,17 +74,12 @@ export default function GLBModel() {
 				// understand SMPL rotations
 				Promise.all([
 					loadJSON(
-						process.env.PUBLIC_URL + "/2_28-37_28-42_rpm.json"
+						process.env.PUBLIC_URL + "/animations/2_28-37_28-42_rpm.json"
 					),
-					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42_smpl.json"),
 					loadJSON(
-						process.env.PUBLIC_URL + "/2_29-40_29-44_rpm.json"
+						process.env.PUBLIC_URL + "/animations/2_29-40_29-44_rpm.json"
 					),
-					// loadJSON(
-					// 	process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
-					// ),
-					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54.json"),
-					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
+					// loadJSON(process.env.PUBLIC_URL + "/animations/2_30-50_30-54_rpm.json"),
 				]).then(([animation_rpm1, animation_rpm]) => {
 					const axesHelper = new THREE.AxesHelper(5);
 					figureParts.current.LeftForeArm.add(axesHelper);
@@ -170,11 +165,12 @@ export default function GLBModel() {
 										new THREE.Quaternion().multiplyQuaternions(
 											new THREE.Quaternion(
 												q[0],
-												-q[1],
+												q[1],
 												q[2],
 												q[3]
 											),
-											new THREE.Quaternion(0.5,0.5,0.5,-0.5),
+											// new THREE.Quaternion(0.5,0.5,0.5,-0.5),
+											new THREE.Quaternion(0,0,0,1),
 										)
 									);
 
