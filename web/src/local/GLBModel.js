@@ -73,19 +73,21 @@ export default function GLBModel() {
 
 				// understand SMPL rotations
 				Promise.all([
-					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42.json"),
+					loadJSON(
+						process.env.PUBLIC_URL + "/2_28-37_28-42_rpm.json"
+					),
 					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42_smpl.json"),
 					loadJSON(
 						process.env.PUBLIC_URL + "/2_29-40_29-44_rpm.json"
 					),
-					loadJSON(
-						process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
-					),
+					// loadJSON(
+					// 	process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
+					// ),
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54.json"),
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
-				]).then(([animation_rpm, animation_smpl]) => {
+				]).then(([animation_rpm, animation_rpm1]) => {
 					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.LeftUpLeg.add(axesHelper);
+					figureParts.current.LeftLeg.add(axesHelper);
 
 					const tracks = {};
 
@@ -97,77 +99,43 @@ export default function GLBModel() {
 
 					const longest_track = tracks.Hips.quaternions.length;
 
+					const bones2rotate = [
+						"Hips",
+						"Spine",
+						"Spine1",
+						"Spine2",
+						"LeftUpLeg",
+						"RightUpLeg",
+						"LeftLeg",
+						"RightLeg",
+					];
+
 					(async () => {
 						let i = 0;
 
 						while (i < longest_track) {
-							// and apply SMPL rotation to Hips, Spine, Spine1, Spine2
-							const q0 = tracks.Hips.quaternions[i];
-							const q1 = tracks.Spine.quaternions[i];
-							const q2 = tracks.Spine1.quaternions[i];
-							const q3 = tracks.Spine2.quaternions[i];
+							for (let name of bones2rotate) {
+								const q = tracks[name].quaternions[i];
 
-							figureParts.current.Hips.setRotationFromQuaternion(
-								new THREE.Quaternion(q0[0], q0[1], q0[2], q0[3])
-							);
-
-							figureParts.current.Spine.setRotationFromQuaternion(
-								new THREE.Quaternion(q1[0], q1[1], q1[2], q1[3])
-							);
-
-							figureParts.current.Spine1.setRotationFromQuaternion(
-								new THREE.Quaternion(q2[0], q2[1], q2[2], q2[3])
-							);
-
-							figureParts.current.Spine2.setRotationFromQuaternion(
-								new THREE.Quaternion(q3[0], q3[1], q3[2], q3[3])
-							);
-
-							// apply rotations to upleg, calf
-							const q4 = tracks.LeftUpLeg.quaternions[i];
-							const q5 = tracks.RightUpLeg.quaternions[i];
-
-							figureParts.current.LeftUpLeg.setRotationFromQuaternion(
-								new THREE.Quaternion(q4[0], q4[1], q4[2], q4[3])
-							);
-
-							figureParts.current.RightUpLeg.setRotationFromQuaternion(
-								new THREE.Quaternion(q5[0], q5[1], q5[2], q5[3])
-							);
-
-							// figureParts.current.LeftUpLeg.setRotationFromQuaternion(
-							// 	new THREE.Quaternion().multiplyQuaternions(
-							// 		new THREE.Quaternion(
-							// 			q4[0],
-							// 			q4[1],
-							// 			q4[2],
-							// 			q4[3]
-							// 		),
-							// 		new THREE.Quaternion(0, 0, -1, 0)
-							// 	)
-							// );
-							// figureParts.current.RightUpLeg.setRotationFromQuaternion(
-							// 	new THREE.Quaternion().multiplyQuaternions(
-							// 		new THREE.Quaternion(
-							// 			q5[0],
-							// 			q5[1],
-							// 			q5[2],
-							// 			q5[3]
-							// 		),
-							// 		new THREE.Quaternion(0, 0, 1, 0)
-							// 	)
-							// );
-
-							const q6 = tracks.LeftLeg.quaternions[i];
-							const q7 = tracks.RightLeg.quaternions[i];
-
-							figureParts.current.LeftLeg.setRotationFromQuaternion(
-								new THREE.Quaternion(q6[0], q6[1], q6[2], q6[3])
-							);
-
-							figureParts.current.RightLeg.setRotationFromQuaternion(
-								new THREE.Quaternion(q7[0], q7[1], q7[2], q7[3])
-							);
+								if ([""].indexOf(name) === -1) {
+									figureParts.current[
+										name
+									].setRotationFromQuaternion(
+										new THREE.Quaternion(
+											q[0],
+											q[1],
+											q[2],
+											q[3]
+										)
+									);
+								} else {
+									figureParts.current[
+										name
+									].setRotationFromQuaternion(
+										new THREE.Quaternion(0, 0, 0, 1)
+									);
+								}
+							}
 
 							i++;
 
