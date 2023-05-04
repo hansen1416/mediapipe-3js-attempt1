@@ -83,9 +83,9 @@ export default function GLBModel() {
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
 				]).then(([animation_rpm, animation_smpl]) => {
 					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.Hips.add(axesHelper);
+					figureParts.current.LeftUpLeg.add(axesHelper);
 
-					console.log(figureParts.current);
+					// console.log(figureParts.current);
 
 					const tracks = {};
 
@@ -93,61 +93,19 @@ export default function GLBModel() {
 						tracks[tk.name.replace(".quaternion", "")] = tk;
 					}
 
-					console.log(tracks);
+					// console.log(tracks);
 
 					const longest_track = tracks.Hips.quaternions.length;
 
 					(async () => {
 						let i = 0;
 
-						const leg_basis = new THREE.Matrix4().makeBasis(
-							new THREE.Vector3(-1, 0, 0),
-							new THREE.Vector3(0, -1, 0),
-							new THREE.Vector3(0, 0, 1)
-						);
-
-						leg_basis.invert();
-
 						while (i < longest_track) {
-							// todo we need one more bone to be static,
 							// and apply SMPL rotation to Hips, Spine, Spine1, Spine2
 							const q0 = tracks.Hips.quaternions[i];
 							const q1 = tracks.Spine.quaternions[i];
 							const q2 = tracks.Spine1.quaternions[i];
 							const q3 = tracks.Spine2.quaternions[i];
-
-							const q4_1 = tracks.LeftUpLeg.quaternions[i];
-							const q5_1 = tracks.RightUpLeg.quaternions[i];
-
-							const q4_11 = new THREE.Quaternion()
-								.setFromRotationMatrix(leg_basis)
-								.multiply(
-									new THREE.Quaternion(
-										q4_1[0],
-										q4_1[1],
-										q4_1[2],
-										q4_1[3]
-									)
-								);
-
-							// console.log(q4_1, q5_1);
-
-							// const q4 =
-							// 	new THREE.Quaternion().multiplyQuaternions(
-							// 		new THREE.Quaternion(0, 0, -1, 0),
-							// 		q4_11
-							// 	);
-
-							const q5 =
-								new THREE.Quaternion().multiplyQuaternions(
-									new THREE.Quaternion(0, 0, 1, 0),
-									new THREE.Quaternion(
-										q5_1[0],
-										q5_1[1],
-										q5_1[2],
-										q5_1[3]
-									)
-								);
 
 							figureParts.current.Hips.setRotationFromQuaternion(
 								new THREE.Quaternion(q0[0], q0[1], q0[2], q0[3])
@@ -165,12 +123,31 @@ export default function GLBModel() {
 								new THREE.Quaternion(q3[0], q3[1], q3[2], q3[3])
 							);
 
-							figureParts.current.LeftUpLeg.setRotationFromQuaternion(
-								q4_11
-							);
+							// apply rotations to upleg, calf
+							const q4 = tracks.LeftUpLeg.quaternions[i];
+							const q5 = tracks.RightUpLeg.quaternions[i];
 
+							figureParts.current.LeftUpLeg.setRotationFromQuaternion(
+								new THREE.Quaternion().multiplyQuaternions(
+									new THREE.Quaternion(
+										q4[0],
+										q4[1],
+										q4[2],
+										q4[3]
+									),
+									new THREE.Quaternion(0, 0, -1, 0)
+								)
+							);
 							figureParts.current.RightUpLeg.setRotationFromQuaternion(
-								q5
+								new THREE.Quaternion().multiplyQuaternions(
+									new THREE.Quaternion(
+										q5[0],
+										q5[1],
+										q5[2],
+										q5[3]
+									),
+									new THREE.Quaternion(0, 0, 1, 0)
+								)
 							);
 
 							i++;
