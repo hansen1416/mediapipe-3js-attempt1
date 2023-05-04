@@ -56,7 +56,7 @@ export default function SMPLModel() {
 				console.log(figureParts.current);
 
 				setrotations([
-					["root", -1.57, 0, 0],
+					["root", 1.57, 0, 0],
 					["pelvis", 0, 0, 0],
 					["spine1", 0, 0, 0],
 					["spine2", 0, 0, 0],
@@ -168,7 +168,24 @@ export default function SMPLModel() {
 					(async () => {
 						let i = 0;
 
-						const movie_bones = ["pelvis", "left_hip", "right_hip"];
+						const movie_bones = [
+							"pelvis",
+							"spine1",
+							"spine2",
+							"spine3",
+							"left_hip",
+							"right_hip",
+							"left_collar",
+							"right_collar",
+							"left_shoulder",
+							"right_shoulder",
+							"left_elbow",
+							"right_elbow",
+							"left_hip",
+							"right_hip",
+							"left_knee",
+							"right_knee",
+						];
 
 						while (i < longestTrack) {
 							for (let name in tracks) {

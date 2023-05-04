@@ -85,9 +85,9 @@ export default function GLBModel() {
 					// ),
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54.json"),
 					// loadJSON(process.env.PUBLIC_URL + "/2_30-50_30-54_smpl.json"),
-				]).then(([animation_rpm, animation_rpm1]) => {
+				]).then(([animation_rpm1, animation_rpm]) => {
 					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.LeftLeg.add(axesHelper);
+					figureParts.current.LeftArm.add(axesHelper);
 
 					const tracks = {};
 
@@ -108,6 +108,12 @@ export default function GLBModel() {
 						"RightUpLeg",
 						"LeftLeg",
 						"RightLeg",
+						"LeftShoulder",
+						"RightShoulder",
+						"RightArm",
+						"LeftArm",
+						// "LeftForeArm",
+						// "RightForeArm",
 					];
 
 					(async () => {
@@ -117,7 +123,9 @@ export default function GLBModel() {
 							for (let name of bones2rotate) {
 								const q = tracks[name].quaternions[i];
 
-								if ([""].indexOf(name) === -1) {
+								if (
+									["LeftArm", "RightArm"].indexOf(name) === -1
+								) {
 									figureParts.current[
 										name
 									].setRotationFromQuaternion(
@@ -132,8 +140,44 @@ export default function GLBModel() {
 									figureParts.current[
 										name
 									].setRotationFromQuaternion(
-										new THREE.Quaternion(0, 0, 0, 1)
+										new THREE.Quaternion(
+											-q[0],
+											-q[1],
+											-q[2],
+											q[3]
+										)
 									);
+
+									// let init_q;
+									// if (name === "LeftShoulder") {
+									// 	init_q = new THREE.Quaternion(
+									// 		0.4820417046943355,
+									// 		0.49247702873907506,
+									// 		-0.5878678835040492,
+									// 		0.4236903617551159
+									// 	);
+									// } else if (name === "RightShoulder") {
+									// 	init_q = new THREE.Quaternion(
+									// 		0.4820417046943355,
+									// 		-0.49247702873907506,
+									// 		0.5878678835040492,
+									// 		0.4236903617551159
+									// 	);
+									// }
+
+									// figureParts.current[
+									// 	name
+									// ].setRotationFromQuaternion(
+									// 	new THREE.Quaternion().multiplyQuaternions(
+									// 		new THREE.Quaternion(
+									// 			q[0],
+									// 			q[1],
+									// 			q[2],
+									// 			q[3]
+									// 		),
+									// 		init_q
+									// 	)
+									// );
 								}
 							}
 
