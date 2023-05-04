@@ -75,7 +75,9 @@ export default function GLBModel() {
 				Promise.all([
 					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42.json"),
 					// loadJSON(process.env.PUBLIC_URL + "/2_28-37_28-42_smpl.json"),
-					loadJSON(process.env.PUBLIC_URL + "/2_29-40_29-44.json"),
+					loadJSON(
+						process.env.PUBLIC_URL + "/2_29-40_29-44_rpm.json"
+					),
 					loadJSON(
 						process.env.PUBLIC_URL + "/2_29-40_29-44_smpl.json"
 					),
@@ -85,15 +87,13 @@ export default function GLBModel() {
 					const axesHelper = new THREE.AxesHelper(5);
 					figureParts.current.LeftUpLeg.add(axesHelper);
 
-					// console.log(figureParts.current);
-
 					const tracks = {};
 
 					for (let tk of animation_rpm.tracks) {
 						tracks[tk.name.replace(".quaternion", "")] = tk;
 					}
 
-					// console.log(tracks);
+					console.log(figureParts.current, tracks);
 
 					const longest_track = tracks.Hips.quaternions.length;
 
@@ -128,26 +128,45 @@ export default function GLBModel() {
 							const q5 = tracks.RightUpLeg.quaternions[i];
 
 							figureParts.current.LeftUpLeg.setRotationFromQuaternion(
-								new THREE.Quaternion().multiplyQuaternions(
-									new THREE.Quaternion(
-										q4[0],
-										q4[1],
-										q4[2],
-										q4[3]
-									),
-									new THREE.Quaternion(0, 0, -1, 0)
-								)
+								new THREE.Quaternion(q4[0], q4[1], q4[2], q4[3])
 							);
+
 							figureParts.current.RightUpLeg.setRotationFromQuaternion(
-								new THREE.Quaternion().multiplyQuaternions(
-									new THREE.Quaternion(
-										q5[0],
-										q5[1],
-										q5[2],
-										q5[3]
-									),
-									new THREE.Quaternion(0, 0, 1, 0)
-								)
+								new THREE.Quaternion(q5[0], q5[1], q5[2], q5[3])
+							);
+
+							// figureParts.current.LeftUpLeg.setRotationFromQuaternion(
+							// 	new THREE.Quaternion().multiplyQuaternions(
+							// 		new THREE.Quaternion(
+							// 			q4[0],
+							// 			q4[1],
+							// 			q4[2],
+							// 			q4[3]
+							// 		),
+							// 		new THREE.Quaternion(0, 0, -1, 0)
+							// 	)
+							// );
+							// figureParts.current.RightUpLeg.setRotationFromQuaternion(
+							// 	new THREE.Quaternion().multiplyQuaternions(
+							// 		new THREE.Quaternion(
+							// 			q5[0],
+							// 			q5[1],
+							// 			q5[2],
+							// 			q5[3]
+							// 		),
+							// 		new THREE.Quaternion(0, 0, 1, 0)
+							// 	)
+							// );
+
+							const q6 = tracks.LeftLeg.quaternions[i];
+							const q7 = tracks.RightLeg.quaternions[i];
+
+							figureParts.current.LeftLeg.setRotationFromQuaternion(
+								new THREE.Quaternion(q6[0], q6[1], q6[2], q6[3])
+							);
+
+							figureParts.current.RightLeg.setRotationFromQuaternion(
+								new THREE.Quaternion(q7[0], q7[1], q7[2], q7[3])
 							);
 
 							i++;
