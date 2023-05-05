@@ -34,7 +34,7 @@ const routes = [
 				element: <MotionInterpreterFbx />,
 			},
 			{
-				path: "/glb-model",
+				path: "/glb",
 				element: <GLBModel />,
 			},
 			{

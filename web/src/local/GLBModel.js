@@ -376,7 +376,7 @@ export default function GLBModel() {
 	}
 
 	return (
-		<div className="glb-model">
+		<div>
 			<canvas ref={canvasRef} />
 
 			<div

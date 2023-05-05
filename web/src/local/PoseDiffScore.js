@@ -330,7 +330,7 @@ export default function PoseDiffScore() {
 	}
 
 	return (
-		<div className="glb-model">
+		<div>
 			<video
 				ref={videoRef}
 				autoPlay={true}
