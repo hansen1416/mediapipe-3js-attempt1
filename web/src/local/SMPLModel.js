@@ -56,7 +56,7 @@ export default function SMPLModel() {
 				console.log(figureParts.current);
 
 				setrotations([
-					["root", 1.57, 0, 0],
+					["root", -1.57, 0, 0],
 					["pelvis", 0, 0, 0],
 					["spine1", 0, 0, 0],
 					["spine2", 0, 0, 0],
@@ -129,7 +129,7 @@ export default function SMPLModel() {
 					// loadJSON(process.env.PUBLIC_URL + "/animations/2_30-50_30-54_smpl.json"),
 				]).then(([animation_smpl]) => {
 					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.left_elbow.add(axesHelper);
+					figureParts.current.left_shoulder.add(axesHelper);
 
 					console.log(figureParts.current);
 					return
@@ -365,8 +365,11 @@ export default function SMPLModel() {
 			<div
 				style={{
 					position: "absolute",
-					right: 0,
+					left: 0,
 					bottom: 0,
+					width: '100vw',
+					display: 'flex',
+					flexWrap: 'wrap',
 				}}
 			>
 				<div>
@@ -406,8 +409,7 @@ export default function SMPLModel() {
 							}}
 						/>
 					</label>
-				</div>
-				<div>
+
 					<button
 						onClick={() => {
 							fileInput.current.value = "";
@@ -430,57 +432,48 @@ export default function SMPLModel() {
 					return (
 						<div key={idx}>
 							<span>{item[0]}</span>
-							<label>
-								x:
-								<input
-									style={{
-										width: 50,
-										height: 20,
-									}}
-									value={item[1]}
-									onChange={(e) => {
-										onChangeRotation(
-											idx,
-											1,
-											e.target.value
-										);
-									}}
-								/>
-							</label>
-							<label>
-								y:
-								<input
-									style={{
-										width: 50,
-										height: 20,
-									}}
-									value={item[2]}
-									onChange={(e) => {
-										onChangeRotation(
-											idx,
-											2,
-											e.target.value
-										);
-									}}
-								/>
-							</label>
-							<label>
-								z:
-								<input
-									style={{
-										width: 50,
-										height: 20,
-									}}
-									value={item[3]}
-									onChange={(e) => {
-										onChangeRotation(
-											idx,
-											3,
-											e.target.value
-										);
-									}}
-								/>
-							</label>
+							<input
+								style={{
+									width: 40,
+									height: 20,
+								}}
+								value={item[1]}
+								onChange={(e) => {
+									onChangeRotation(
+										idx,
+										1,
+										e.target.value
+									);
+								}}
+							/>
+							<input
+								style={{
+									width: 40,
+									height: 20,
+								}}
+								value={item[2]}
+								onChange={(e) => {
+									onChangeRotation(
+										idx,
+										2,
+										e.target.value
+									);
+								}}
+							/>
+							<input
+								style={{
+									width: 40,
+									height: 20,
+								}}
+								value={item[3]}
+								onChange={(e) => {
+									onChangeRotation(
+										idx,
+										3,
+										e.target.value
+									);
+								}}
+							/>
 						</div>
 					);
 				})}
