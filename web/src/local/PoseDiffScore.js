@@ -41,6 +41,18 @@ export default function PoseDiffScore() {
 
 	const [rotations, setrotations] = useState([]);
 
+	const initRotation = {
+		// after init rotation, the new basis of leftshoulder is x: (0,0,-1), y: (1,0,0), z:(0,-1,0)
+		LeftShoulder: new THREE.Euler(Math.PI/2, 0, -Math.PI / 2),
+		// after init rotation, the new basis of RightShoulder is x: (0,0,1), y: (-1,0,0), z:(0,-1,0)
+		RightShoulder: new THREE.Euler(Math.PI/2, 0, Math.PI / 2),
+		// after init rotation, the new basis of LeftUpLeg/RightUpLeg is x: (-1,0,0), y: (-1,0,0), z:(0,0,1)
+		LeftUpLeg: new THREE.Euler(0, 0, -Math.PI),
+		RightUpLeg: new THREE.Euler(0, 0, Math.PI),
+		LeftFoot: new THREE.Euler(0.9, 0, 0),
+		RightFoot: new THREE.Euler(0.9, 0, 0),
+	};
+
 	// subscen size
 	const [subsceneWidth, setsubsceneWidth] = useState(0);
 	const [subsceneHeight, setsubsceneHeight] = useState(0);
@@ -133,25 +145,35 @@ export default function PoseDiffScore() {
 			// console.log(figureParts.current.LeftFoot.rotation);
 
 			const axesHelper = new THREE.AxesHelper(5);
-			figureParts.current.LeftArm.add(axesHelper);
+			figureParts.current.LeftShoulder.add(axesHelper);
+
+			/** =====  playground */
+
+			const e = new THREE.Euler(1.57, 0, -1.57);
+
+			const q = new THREE.Quaternion().setFromEuler(e);
+
+			console.log(q);
+
+			/** =====  playground */
 
 			setrotations([
 				["Hips", 0, 0, 0],
 				["Spine", 0, 0, 0],
 				["Spine1", 0, 0, 0],
 				["Spine2", 0, 0, 0],
-				["LeftShoulder", 1.52, -0.15, -1.75],
-				["RightShoulder", 1.52, 0.15, 1.75],
+				["LeftShoulder", 0, 0, 0],
+				["RightShoulder", 0, 0, 0],
 				["LeftArm", 0, 0, 0],
 				["LeftForeArm", 0, 0, 0],
 				["RightArm", 0, 0, 0],
 				["RightForeArm", 0, 0, 0],
-				["LeftUpLeg", 0.11, 0, -3.07],
+				["LeftUpLeg", 0, 0, 0],
+				["RightUpLeg", 0, 0, 0],
 				["LeftLeg", 0, 0, 0],
-				["RightUpLeg", 0.11, 0, 3.07],
 				["RightLeg", 0, 0, 0],
-				["LeftFoot", 1.035, 0, 0],
-				["RightFoot", 1.035, 0, 0],
+				["LeftFoot", 0, 0, 0],
+				["RightFoot", 0, 0, 0],
 			]);
 
 			scene.current.add(model.current);
@@ -186,7 +208,17 @@ export default function PoseDiffScore() {
 
 	useEffect(() => {
 		for (let v of rotations) {
-			figureParts.current[v[0]].rotation.set(v[1], v[2], v[3]);
+			if (initRotation[v[0]]) {
+				const q0 = new THREE.Quaternion().setFromEuler(initRotation[v[0]])
+				const q1 = new THREE.Quaternion().setFromEuler(new THREE.Euler(v[1], v[2], v[3]))
+
+				const q = new THREE.Quaternion().multiplyQuaternions(q1, q0);
+
+				figureParts.current[v[0]].setRotationFromQuaternion(q)
+
+			} else {
+				figureParts.current[v[0]].rotation.set(v[1], v[2], v[3]);
+			}
 		}
 	}, [rotations]);
 
@@ -392,57 +424,36 @@ export default function PoseDiffScore() {
 					return (
 						<div key={idx}>
 							<span>{item[0]}</span>
-							<label>
-								x:
-								<input
-									style={{
-										width: 50,
-										height: 20,
-									}}
-									value={item[1]}
-									onChange={(e) => {
-										onChangeRotation(
-											idx,
-											1,
-											e.target.value
-										);
-									}}
-								/>
-							</label>
-							<label>
-								y:
-								<input
-									style={{
-										width: 50,
-										height: 20,
-									}}
-									value={item[2]}
-									onChange={(e) => {
-										onChangeRotation(
-											idx,
-											2,
-											e.target.value
-										);
-									}}
-								/>
-							</label>
-							<label>
-								z:
-								<input
-									style={{
-										width: 50,
-										height: 20,
-									}}
-									value={item[3]}
-									onChange={(e) => {
-										onChangeRotation(
-											idx,
-											3,
-											e.target.value
-										);
-									}}
-								/>
-							</label>
+							<input
+								style={{
+									width: 40,
+									height: 20,
+								}}
+								value={item[1]}
+								onChange={(e) => {
+									onChangeRotation(idx, 1, e.target.value);
+								}}
+							/>
+							<input
+								style={{
+									width: 40,
+									height: 20,
+								}}
+								value={item[2]}
+								onChange={(e) => {
+									onChangeRotation(idx, 2, e.target.value);
+								}}
+							/>
+							<input
+								style={{
+									width: 40,
+									height: 20,
+								}}
+								value={item[3]}
+								onChange={(e) => {
+									onChangeRotation(idx, 3, e.target.value);
+								}}
+							/>
 						</div>
 					);
 				})}
