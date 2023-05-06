@@ -145,15 +145,24 @@ export default function PoseDiffScore() {
 			// console.log(figureParts.current.LeftFoot.rotation);
 
 			const axesHelper = new THREE.AxesHelper(5);
-			figureParts.current.LeftShoulder.add(axesHelper);
+			// figureParts.current.LeftShoulder.add(axesHelper);
+			scene.current.add(axesHelper);
 
 			/** =====  playground */
 
-			const e = new THREE.Euler(1.57, 0, -1.57);
+			// const m1 = new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,-1), new THREE.Vector3(1,0,0),new THREE.Vector3(0,-1,0))
 
-			const q = new THREE.Quaternion().setFromEuler(e);
+			// m1.invert()
 
-			console.log(q);
+			// const q = new THREE.Quaternion().setFromRotationMatrix(m1)
+
+			// console.log(q);
+
+			// const e1 = new THREE.Euler(Math.PI/2, 0, -Math.PI / 2)
+
+			// const q2 = new THREE.Quaternion().setFromEuler(e1)
+
+			// console.log(q2)
 
 			/** =====  playground */
 
@@ -209,12 +218,12 @@ export default function PoseDiffScore() {
 	useEffect(() => {
 		for (let v of rotations) {
 			if (initRotation[v[0]]) {
-				const q0 = new THREE.Quaternion().setFromEuler(initRotation[v[0]])
-				const q1 = new THREE.Quaternion().setFromEuler(new THREE.Euler(v[1], v[2], v[3]))
+				const q_init = new THREE.Quaternion().setFromEuler(initRotation[v[0]])
+				const q1_world = new THREE.Quaternion().setFromEuler(new THREE.Euler(v[1], v[2], v[3]))
 
-				const q = new THREE.Quaternion().multiplyQuaternions(q1, q0);
+				const q_local = new THREE.Quaternion().multiplyQuaternions(q1_world, q_init)
 
-				figureParts.current[v[0]].setRotationFromQuaternion(q)
+				figureParts.current[v[0]].setRotationFromQuaternion(q_local)
 
 			} else {
 				figureParts.current[v[0]].rotation.set(v[1], v[2], v[3]);
