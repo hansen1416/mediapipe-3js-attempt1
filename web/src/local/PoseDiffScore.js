@@ -222,11 +222,11 @@ export default function PoseDiffScore() {
 
 			// console.log(q);
 
-			// const e1 = new THREE.Euler(Math.PI/2, 0, -Math.PI / 2)
+			const e1 = new THREE.Euler(1, 2, 3)
 
-			// const q2 = new THREE.Quaternion().setFromEuler(e1)
+			const q2 = new THREE.Quaternion().setFromEuler(e1)
 
-			// console.log(q2)
+			console.log(q2)
 
 			/** =====  playground */
 
