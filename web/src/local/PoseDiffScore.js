@@ -64,7 +64,16 @@ export default function PoseDiffScore() {
 	 * global +y is local -z
 	 * global +z is local +x
 	 * 
-	 *
+	 * for left thigh, calf
+	 * global +x is local -x
+	 * global +y is local -y
+	 * global +z is local +z
+	 * 
+	 * for right thigh, calf
+	 * global +x is local -x
+	 * global +y is local -y
+	 * global +z is local +z
+	 * 
 	 */
 	const axesMapping = {
 		LeftArm: (x, y, z) => {
@@ -85,6 +94,26 @@ export default function PoseDiffScore() {
 		RightForeArm: (x, y, z) => {
 			return new THREE.Quaternion().setFromEuler(
 				new THREE.Euler(z, -x, -y, "YZX")
+			);
+		},
+		LeftUpLeg: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(-x, -y, z, "XYZ")
+			);
+		},
+		RightUpLeg: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(-x, -y, z, "XYZ")
+			);
+		},
+		LeftLeg: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(-x, -y, z, "XYZ")
+			);
+		},
+		RightLeg: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(-x, -y, z, "XYZ")
 			);
 		},
 	};
@@ -180,8 +209,8 @@ export default function PoseDiffScore() {
 
 			// console.log(figureParts.current.LeftFoot.rotation);
 
-			const axesHelper = new THREE.AxesHelper(5);
-			figureParts.current.LeftForeArm.add(axesHelper);
+			// figureParts.current.RightLeg.add(new THREE.AxesHelper(5));
+			scene.current.add(new THREE.AxesHelper(5));
 
 			/** =====  playground */
 
