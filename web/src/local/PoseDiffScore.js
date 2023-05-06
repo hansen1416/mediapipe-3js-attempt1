@@ -43,14 +43,50 @@ export default function PoseDiffScore() {
 
 	const initRotation = {
 		// after init rotation, the new basis of leftshoulder is x: (0,0,-1), y: (1,0,0), z:(0,-1,0)
-		LeftShoulder: new THREE.Euler(Math.PI/2, 0, -Math.PI / 2),
+		LeftShoulder: new THREE.Euler(Math.PI / 2, 0, -Math.PI / 2),
 		// after init rotation, the new basis of RightShoulder is x: (0,0,1), y: (-1,0,0), z:(0,-1,0)
-		RightShoulder: new THREE.Euler(Math.PI/2, 0, Math.PI / 2),
+		RightShoulder: new THREE.Euler(Math.PI / 2, 0, Math.PI / 2),
 		// after init rotation, the new basis of LeftUpLeg/RightUpLeg is x: (-1,0,0), y: (-1,0,0), z:(0,0,1)
 		LeftUpLeg: new THREE.Euler(0, 0, -Math.PI),
 		RightUpLeg: new THREE.Euler(0, 0, Math.PI),
 		LeftFoot: new THREE.Euler(0.9, 0, 0),
 		RightFoot: new THREE.Euler(0.9, 0, 0),
+	};
+
+	/**
+	 * for left arm, left forearm
+	 * global +x is local +y
+	 * global +y is local -z
+	 * global +z is local -x
+	 *
+	 * for right arm, right forearm
+	 * global +x is local -y
+	 * global +y is local -z
+	 * global +z is local +x
+	 * 
+	 *
+	 */
+	const axesMapping = {
+		LeftArm: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(-z, x, -y, "YZX")
+			);
+		},
+		RightArm: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(z, -x, -y, "YZX")
+			);
+		},
+		LeftForeArm: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(-z, x, -y, "YZX")
+			);
+		},
+		RightForeArm: (x, y, z) => {
+			return new THREE.Quaternion().setFromEuler(
+				new THREE.Euler(z, -x, -y, "YZX")
+			);
+		},
 	};
 
 	// subscen size
@@ -145,8 +181,7 @@ export default function PoseDiffScore() {
 			// console.log(figureParts.current.LeftFoot.rotation);
 
 			const axesHelper = new THREE.AxesHelper(5);
-			// figureParts.current.LeftShoulder.add(axesHelper);
-			scene.current.add(axesHelper);
+			figureParts.current.LeftForeArm.add(axesHelper);
 
 			/** =====  playground */
 
@@ -218,13 +253,21 @@ export default function PoseDiffScore() {
 	useEffect(() => {
 		for (let v of rotations) {
 			if (initRotation[v[0]]) {
-				const q_init = new THREE.Quaternion().setFromEuler(initRotation[v[0]])
-				const q1_world = new THREE.Quaternion().setFromEuler(new THREE.Euler(v[1], v[2], v[3]))
+				const q_init = new THREE.Quaternion().setFromEuler(
+					initRotation[v[0]]
+				);
+				const q1_world = new THREE.Quaternion().setFromEuler(
+					new THREE.Euler(v[1], v[2], v[3])
+				);
 
-				const q_local = new THREE.Quaternion().multiplyQuaternions(q1_world, q_init)
+				const q_local = new THREE.Quaternion().multiplyQuaternions(
+					q1_world,
+					q_init
+				);
 
-				figureParts.current[v[0]].setRotationFromQuaternion(q_local)
-
+				figureParts.current[v[0]].setRotationFromQuaternion(q_local);
+			} else if (axesMapping[v[0]]) {
+				figureParts.current[v[0]].setRotationFromQuaternion(axesMapping[v[0]](v[1], v[2], v[3]));
 			} else {
 				figureParts.current[v[0]].rotation.set(v[1], v[2], v[3]);
 			}
@@ -329,7 +372,7 @@ export default function PoseDiffScore() {
 			1000
 		);
 
-		camera.current.position.set(0, 0, 4);
+		camera.current.position.set(0, 0, 2);
 
 		{
 			// mimic the sun light
