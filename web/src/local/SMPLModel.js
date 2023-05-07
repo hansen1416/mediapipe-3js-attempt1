@@ -56,7 +56,7 @@ export default function SMPLModel() {
 				console.log(figureParts.current);
 
 				setrotations([
-					["root", -1.57, 0, 0],
+					["root", 1.57, 0, 0],
 					["pelvis", 0, 0, 0],
 					["spine1", 0, 0, 0],
 					["spine2", 0, 0, 0],
@@ -124,15 +124,13 @@ export default function SMPLModel() {
 				Promise.all([
 					// loadJSON(process.env.PUBLIC_URL + "/animations/2_28-37_28-42_smpl.json"),
 					loadJSON(
-						process.env.PUBLIC_URL + "/animations/2_29-40_29-44_smpl.json"
+						process.env.PUBLIC_URL +
+							"/animations/2_29-40_29-44_smpl.json"
 					),
 					// loadJSON(process.env.PUBLIC_URL + "/animations/2_30-50_30-54_smpl.json"),
 				]).then(([animation_smpl]) => {
-					const axesHelper = new THREE.AxesHelper(5);
-					figureParts.current.left_shoulder.add(axesHelper);
-
-					console.log(figureParts.current);
-					return
+					// figureParts.current.left_shoulder.add(new THREE.AxesHelper(5));
+					scene.current.add(new THREE.AxesHelper(50));
 
 					let longestTrack = 0;
 					let tracks = {};
@@ -367,9 +365,9 @@ export default function SMPLModel() {
 					position: "absolute",
 					left: 0,
 					bottom: 0,
-					width: '100vw',
-					display: 'flex',
-					flexWrap: 'wrap',
+					width: "100vw",
+					display: "flex",
+					flexWrap: "wrap",
 				}}
 			>
 				<div>
@@ -439,11 +437,7 @@ export default function SMPLModel() {
 								}}
 								value={item[1]}
 								onChange={(e) => {
-									onChangeRotation(
-										idx,
-										1,
-										e.target.value
-									);
+									onChangeRotation(idx, 1, e.target.value);
 								}}
 							/>
 							<input
@@ -453,11 +447,7 @@ export default function SMPLModel() {
 								}}
 								value={item[2]}
 								onChange={(e) => {
-									onChangeRotation(
-										idx,
-										2,
-										e.target.value
-									);
+									onChangeRotation(idx, 2, e.target.value);
 								}}
 							/>
 							<input
@@ -467,11 +457,7 @@ export default function SMPLModel() {
 								}}
 								value={item[3]}
 								onChange={(e) => {
-									onChangeRotation(
-										idx,
-										3,
-										e.target.value
-									);
+									onChangeRotation(idx, 3, e.target.value);
 								}}
 							/>
 						</div>
