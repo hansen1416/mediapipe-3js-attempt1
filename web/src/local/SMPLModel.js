@@ -138,22 +138,8 @@ export default function SMPLModel() {
 					// calculate quaternions and vectors for animation tracks
 					for (let item of animation_smpl["tracks"]) {
 						if (item["type"] === "quaternion") {
-							const quaternions = [];
-							for (let i = 0; i < item["values"].length; i += 4) {
-								const q = new THREE.Quaternion(
-									item["values"][i],
-									item["values"][i + 1],
-									item["values"][i + 2],
-									item["values"][i + 3]
-								);
-
-								quaternions.push(q);
-							}
-
-							item["quaternions"] = quaternions;
-
-							if (quaternions.length > longestTrack) {
-								longestTrack = quaternions.length;
+							if (item.quaternions.length > longestTrack) {
+								longestTrack = item.quaternions.length;
 							}
 						}
 
@@ -199,7 +185,9 @@ export default function SMPLModel() {
 
 								figureParts.current[
 									name
-								].setRotationFromQuaternion(q);
+								].setRotationFromQuaternion(
+									new THREE.Quaternion(q[0], q[1], q[2], q[3])
+								);
 							}
 
 							// 30fps

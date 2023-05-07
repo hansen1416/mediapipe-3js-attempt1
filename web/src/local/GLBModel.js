@@ -116,24 +116,24 @@ export default function GLBModel() {
 					(async () => {
 						let i = 0;
 
-/*** =================== playground */
+						/*** =================== playground */
 						// return
 						// const up = new THREE.Vector3(0, 1, 0);
 
-						const get_e = (joint_name) => {
-							const ql = tracks[joint_name].quaternions[60];
-							const q = new THREE.Quaternion(
-								ql[0],
-								ql[1],
-								ql[2],
-								ql[3]
-							);
-	
-							const e = new THREE.Euler().setFromQuaternion(q)
-							console.log(e.x, e.y, e.z)
-						}
+						// const get_e = (joint_name) => {
+						// 	const ql = tracks[joint_name].quaternions[60];
+						// 	const q = new THREE.Quaternion(
+						// 		ql[0],
+						// 		ql[1],
+						// 		ql[2],
+						// 		ql[3]
+						// 	);
 
-						get_e('RightArm')
+						// 	const e = new THREE.Euler().setFromQuaternion(q)
+						// 	console.log(e.x, e.y, e.z)
+						// }
+
+						// get_e('RightArm')
 
 						// up.applyQuaternion(q);
 
@@ -150,10 +150,17 @@ export default function GLBModel() {
 						// );
 
 						// console.log(q1);
-/*** =================== playground */
+						/*** =================== playground */
 
 						while (i < longest_track) {
 							for (let name of bones2rotate) {
+								if (
+									!tracks[name].quaternions ||
+									tracks[name].quaternions.length === 0
+								) {
+									continue;
+								}
+
 								const q = tracks[name].quaternions[i];
 
 								if (
