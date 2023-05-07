@@ -92,7 +92,7 @@ export default function GLBModel() {
 						tracks[tk.name.replace(".quaternion", "")] = tk;
 					}
 
-					console.log(figureParts.current, tracks);
+					// console.log(figureParts.current, tracks);
 
 					const longest_track = tracks.Hips.quaternions.length;
 
@@ -116,42 +116,6 @@ export default function GLBModel() {
 					(async () => {
 						let i = 0;
 
-						/*** =================== playground */
-						// return
-						// const up = new THREE.Vector3(0, 1, 0);
-
-						// const get_e = (joint_name) => {
-						// 	const ql = tracks[joint_name].quaternions[60];
-						// 	const q = new THREE.Quaternion(
-						// 		ql[0],
-						// 		ql[1],
-						// 		ql[2],
-						// 		ql[3]
-						// 	);
-
-						// 	const e = new THREE.Euler().setFromQuaternion(q)
-						// 	console.log(e.x, e.y, e.z)
-						// }
-
-						// get_e('RightArm')
-
-						// up.applyQuaternion(q);
-
-						// console.log(up);
-
-						// const m1 = new THREE.Matrix4().makeBasis(
-						// 	new THREE.Vector3(0, 0, 1),
-						// 	new THREE.Vector3(-1, 0, 0),
-						// 	new THREE.Vector3(0, -1, 0)
-						// );
-
-						// const q1 = new THREE.Quaternion().setFromRotationMatrix(
-						// 	m1
-						// );
-
-						// console.log(q1);
-						/*** =================== playground */
-
 						while (i < longest_track) {
 							for (let name of bones2rotate) {
 								if (
@@ -163,85 +127,11 @@ export default function GLBModel() {
 
 								const q = tracks[name].quaternions[i];
 
-								if (
-									["LeftForeArm", "RightForeArm"].indexOf(
-										name
-									) === -1
-								) {
-									figureParts.current[
-										name
-									].setRotationFromQuaternion(
-										new THREE.Quaternion(
-											q[0],
-											q[1],
-											q[2],
-											q[3]
-										)
-									);
-								} else {
-									let init_q;
-									if (name === "LeftForeArm") {
-										init_q = new THREE.Quaternion(
-											-0.5,
-											-0.5,
-											0.5,
-											-0.5
-										);
-									} else if (name === "RightForeArm") {
-										init_q = new THREE.Quaternion(
-											0.5,
-											-0.5,
-											0.5,
-											0.5
-										);
-									}
-
-									figureParts.current[
-										name
-									].setRotationFromQuaternion(
-										new THREE.Quaternion().multiplyQuaternions(
-											new THREE.Quaternion(
-												q[0],
-												q[1],
-												q[2],
-												q[3]
-											),
-											init_q
-											// new THREE.Quaternion(0,0,0,1),
-										)
-									);
-
-									// let init_q;
-									// if (name === "LeftShoulder") {
-									// 	init_q = new THREE.Quaternion(
-									// 		0.4820417046943355,
-									// 		0.49247702873907506,
-									// 		-0.5878678835040492,
-									// 		0.4236903617551159
-									// 	);
-									// } else if (name === "RightShoulder") {
-									// 	init_q = new THREE.Quaternion(
-									// 		0.4820417046943355,
-									// 		-0.49247702873907506,
-									// 		0.5878678835040492,
-									// 		0.4236903617551159
-									// 	);
-									// }
-
-									// figureParts.current[
-									// 	name
-									// ].setRotationFromQuaternion(
-									// 	new THREE.Quaternion().multiplyQuaternions(
-									// 		new THREE.Quaternion(
-									// 			q[0],
-									// 			q[1],
-									// 			q[2],
-									// 			q[3]
-									// 		),
-									// 		init_q
-									// 	)
-									// );
-								}
+								figureParts.current[
+									name
+								].setRotationFromQuaternion(
+									new THREE.Quaternion(q[0], q[1], q[2], q[3])
+								);
 							}
 
 							i++;
