@@ -69,9 +69,9 @@ if __name__ == "__main__":
     parser.add_argument(
         'filename', type=str, help="Path of a video file")
     parser.add_argument("-s", "--start", default="1", type=str, metavar="start time",
-                        help="Start time in seconds")
+                        help="Start time in seconds or in a format like 01:59")
     parser.add_argument("-e", "--end", default="-1", type=str, metavar="end time",
-                        help="End time in seconds")
+                        help="End time in seconds or in a format like 01:59")
 
     args = parser.parse_args()
 
