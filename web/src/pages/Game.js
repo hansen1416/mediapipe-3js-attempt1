@@ -6,7 +6,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
 // import { Hands } from "@mediapipe/hands";
-import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
+import { createWorkerFactory } from "@shopify/react-web-worker";
 import Button from "react-bootstrap/Button";
 // import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 // import { Holistic } from "@mediapipe/holistic";
@@ -176,19 +176,27 @@ export default function Game() {
 		});
 */
 		Promise.all([
+			loadGLTF(process.env.PUBLIC_URL + "/glb/daneel.glb"),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/low_poly_monster.glb"),
-		]).then(([dors, monster_glb]) => {
+		]).then(([daneel_glb, dors, monster_glb]) => {
 			figure.current = dors.scene.children[0];
 			figure.current.scale.set(30, 30, 30);
 			figure.current.position.set(100, -30, 0);
-			figure.current.rotation.set(0, -Math.PI/2, 0);
+			figure.current.rotation.set(0, -Math.PI / 2, 0);
 
 			traverseModel(figure.current, figureParts.current);
 
 			poseToRotation.current = new PoseToRotation(figureParts.current);
 
 			scene.current.add(figure.current);
+
+			const daneel = daneel_glb.scene.children[0];
+			daneel.scale.set(30, 30, 30);
+			daneel.position.set(-100, -30, 0);
+			daneel.rotation.set(0, Math.PI / 2, 0);
+
+			scene.current.add(daneel);
 
 			const monster = monster_glb.scene.children[0];
 			monster.scale.set(0.15, 0.15, 0.15);
@@ -197,7 +205,7 @@ export default function Game() {
 
 			scene.current.add(monster);
 
-			const monsterbones = {}
+			const monsterbones = {};
 
 			traverseModel(monster, monsterbones);
 
@@ -205,7 +213,7 @@ export default function Game() {
 
 			monsterbones.hips_02.rotation.set(0, 1.2, 0);
 
-			monsterbones.hips_02.add(new THREE.AxesHelper(5))
+			monsterbones.hips_02.add(new THREE.AxesHelper(5));
 
 			setloadingSilhouette(false);
 		});
@@ -245,8 +253,8 @@ export default function Game() {
 		// 	1000
 		// );
 
-		const width = window.innerWidth/3;
-		const height = window.innerHeight/3;
+		const width = window.innerWidth / 3;
+		const height = window.innerHeight / 3;
 
 		camera.current = new THREE.OrthographicCamera(
 			width / -2, // left
@@ -255,7 +263,7 @@ export default function Game() {
 			height / -2, // bottom
 			0.1, // near
 			1000 // far
-		  );
+		);
 
 		camera.current.position.set(0, 0, 100);
 

@@ -70,125 +70,6 @@ export default function GLBModel() {
 					action.play();
 					// prepare the example exercise action
 				}
-
-				const video_list = [
-					"2_1-07_1-10",
-					"2_1-46_1-50",
-					"2_10-19_10-31",
-					"2_11-05_11-09",
-					"2_12-09_12-15",
-					"2_13-12_13-16",
-					"2_14-18_14-22",
-					"2_15-29_15-34",
-					"2_16-26_16-34",
-					"2_17-28_17-36",
-					"2_18-18_18-25",
-					"2_19-24_19-30",
-					"2_2-50_2-54",
-					"2_20-46_20-50",
-					"2_21-24_21-28",
-					"2_22-30_22-34",
-					"2_23-47_23-51",
-					"2_24-34_24-39",
-					"2_25-41_25-48",
-					"2_26-34_26-40",
-					"2_28-00_28-04",
-					"2_28-37_28-42",
-					"2_29-40_29-44",
-					"2_30-50_30-54",
-					"2_4-04_4-08",
-					"2_5-00_5-04",
-					"2_6-15_6-19",
-					"2_7-02_7-12",
-					"2_8-00_8-04",
-					"2_9-25_9-35",
-				];
-
-				const tasks = [];
-
-				for (let vn of video_list) {
-					tasks.push(
-						loadJSON(
-							process.env.PUBLIC_URL +
-								"/animations/" +
-								vn +
-								"_rpm.json"
-						)
-					);
-				}
-
-				// understand SMPL rotations
-				Promise.all(tasks).then((results) => {
-					(async () => {
-						for (const animation_rpm of results) {
-							const tracks = {};
-
-							for (let tk of animation_rpm.tracks) {
-								tracks[tk.name.replace(".quaternion", "")] = tk;
-							}
-
-							// console.log(figureParts.current, tracks);
-
-							const longest_track =
-								tracks.Hips.quaternions.length;
-
-							const bones2rotate = [
-								"Hips",
-								"Spine",
-								"Spine1",
-								"Spine2",
-								"LeftUpLeg",
-								"RightUpLeg",
-								"LeftLeg",
-								"RightLeg",
-								"LeftShoulder",
-								"RightShoulder",
-								"RightArm",
-								"LeftArm",
-								"LeftForeArm",
-								"RightForeArm",
-							];
-
-							let i = 0;
-
-							while (i < longest_track) {
-								for (let name of bones2rotate) {
-									if (
-										!tracks[name].quaternions ||
-										tracks[name].quaternions.length === 0
-									) {
-										continue;
-									}
-
-									const q = tracks[name].quaternions[i];
-
-									figureParts.current[
-										name
-									].setRotationFromQuaternion(
-										new THREE.Quaternion(
-											q[0],
-											q[1],
-											q[2],
-											q[3]
-										)
-									);
-								}
-
-								i++;
-
-								await sleep(33.33);
-
-								// if (i >= longest_track) {
-								// 	i = 0;
-								// }
-							}
-
-							// console.log(figureParts.current.Spine.rotation);
-
-							// interpretAnimation(animation_rpm);
-						}
-					})();
-				});
 			}
 		);
 
@@ -327,6 +208,20 @@ export default function GLBModel() {
 		<div>
 			<canvas ref={canvasRef} />
 
+			{/* <video
+				src={process.env.PUBLIC_URL + "/video/dancing.mp4"}
+				autoPlay={true}
+				controls={true}
+				width={"640px"}
+				height={"360px"}
+				style={{
+					display: "block",
+					position: "absolute",
+					left: 0,
+					top: 0,
+				}}
+			></video> */}
+
 			<div
 				style={{
 					position: "absolute",
@@ -334,7 +229,7 @@ export default function GLBModel() {
 					bottom: 0,
 				}}
 			>
-				<div>
+				{/* <div>
 					<label>
 						file:
 						<input
@@ -342,11 +237,11 @@ export default function GLBModel() {
 							ref={fileInput}
 							onChange={(e) => {
 								clearAnimation.current = false;
-								/**
-								 * read the animation data
-								 * add `states` for each body part
-								 * `states` is the orientation of a body part at a time
-								 */
+
+								//   read the animation data
+								//   add `states` for each body part
+								//   `states` is the orientation of a body part at a time
+
 								loadJSON(
 									URL.createObjectURL(e.target.files[0])
 								).then((data) => {
@@ -371,8 +266,8 @@ export default function GLBModel() {
 							}}
 						/>
 					</label>
-				</div>
-				<div>
+				</div> */}
+				{/* <div>
 					<button
 						onClick={() => {
 							fileInput.current.value = "";
@@ -388,6 +283,140 @@ export default function GLBModel() {
 						}}
 					>
 						refresh
+					</button>
+				</div> */}
+				<div>
+					<button
+						onClick={() => {
+							// "2_12-09_12-15",
+							// "2_13-12_13-16",
+							// "2_14-18_14-22",
+							// "2_15-29_15-34",
+							// "2_18-18_18-25",
+							// "2_19-24_19-30",
+							// "2_20-46_20-50",
+							// "2_22-30_22-34",
+							// "2_23-47_23-51",
+							// "2_24-34_24-39",
+							// "2_26-34_26-40",
+							// "2_28-00_28-04",
+							// "2_30-50_30-54",
+							// "2_8-00_8-04",
+							// "2_9-25_9-35",
+
+							const video_list = [
+								"2_1-07_1-10",
+								"2_1-46_1-50",
+								"2_10-19_10-31",
+								"2_11-05_11-09",
+								"2_16-26_16-34",
+								"2_17-28_17-36",
+								"2_2-50_2-54",
+								"2_21-24_21-28",
+								"2_25-41_25-48",
+								"2_28-37_28-42",
+								"2_29-40_29-44",
+								"2_4-04_4-08",
+								"2_5-00_5-04",
+								"2_6-15_6-19",
+								"2_7-02_7-12",
+							];
+
+							const tasks = [];
+
+							for (let vn of video_list) {
+								tasks.push(
+									loadJSON(
+										process.env.PUBLIC_URL +
+											"/animations/" +
+											vn +
+											"_rpm.json"
+									)
+								);
+							}
+
+							// understand SMPL rotations
+							Promise.all(tasks).then((results) => {
+								(async () => {
+									for (const animation_rpm of results) {
+										const tracks = {};
+
+										for (let tk of animation_rpm.tracks) {
+											tracks[
+												tk.name.replace(
+													".quaternion",
+													""
+												)
+											] = tk;
+										}
+
+										// console.log(figureParts.current, tracks);
+
+										const longest_track =
+											tracks.Hips.quaternions.length;
+
+										const bones2rotate = [
+											"Hips",
+											"Spine",
+											"Spine1",
+											"Spine2",
+											"LeftUpLeg",
+											"RightUpLeg",
+											"LeftLeg",
+											"RightLeg",
+											"LeftShoulder",
+											"RightShoulder",
+											"RightArm",
+											"LeftArm",
+											"LeftForeArm",
+											"RightForeArm",
+										];
+
+										let i = 0;
+
+										while (i < longest_track) {
+											for (let name of bones2rotate) {
+												if (
+													!tracks[name].quaternions ||
+													tracks[name].quaternions
+														.length === 0
+												) {
+													continue;
+												}
+
+												const q =
+													tracks[name].quaternions[i];
+
+												figureParts.current[
+													name
+												].setRotationFromQuaternion(
+													new THREE.Quaternion(
+														q[0],
+														q[1],
+														q[2],
+														q[3]
+													)
+												);
+											}
+
+											i++;
+
+											await sleep(33.33);
+
+											// if (i >= longest_track) {
+											// 	i = 0;
+											// }
+										}
+
+										// console.log(figureParts.current.Spine.rotation);
+
+										// interpretAnimation(animation_rpm);
+									}
+								})();
+							});
+						}}
+					>
+						Go
 					</button>
 				</div>
 			</div>
