@@ -10,6 +10,7 @@ import PoseVectorDeviation from "../local/PoseVectorDeviation";
 import CloudVagabond1 from "../local/CloudVagabond1";
 import Dodgeverse from "../local/Dodgeverse";
 import SMPLModel from "../local/SMPLModel";
+import CloudVagabond from "../local/CloudVagabond";
 
 const routes = [
 	{
@@ -48,6 +49,10 @@ const routes = [
 			{
 				path: "/vagabond1",
 				element: <CloudVagabond1 />,
+			},
+			{
+				path: "/vagabond",
+				element: <CloudVagabond />,
 			},
 			{
 				path: "/dodgeverse",
