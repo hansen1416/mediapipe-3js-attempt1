@@ -304,58 +304,6 @@ export default function Game() {
 			poseDetector.current
 		) {
 			poseDetector.current.send({ image: videoRef.current });
-			/*
-			createImageBitmap(
-				videoRef.current,
-				// 0,
-				// 0,
-				// subsceneWidthRef.current,
-				// subsceneHeightRef.current,
-				{
-					// resizeWidth: 420,
-					// resizeHeight: 315,
-					// resizeQuality: "pixelated",
-				}
-			).then((bitmap) => {
-				poseDetector.current.send({ image: bitmap });
-
-				// handDetector.current.send({ image: bitmap });
-
-				worker.plotHands(bitmap).then((msg) => {
-					// console.log(msg);
-				});
-			});
-*/
-			/*
-			canvasVideoRefCtx.current.drawImage(videoRef.current, 0, 0, 379, 284);
-
-			// this method seems consume more memory than blob
-			// need further investigation. probably because we can set quality in `toBlob`
-			// const imagedata = canvasVideoRefCtx.current.getImageData(0, 0, 379, 284);
-
-			canvasVideoRef.current.toBlob((blob) => {
-
-				poseDetector.current.send({ image: blob });
-
-				// blob.arrayBuffer().then((res) => {
-				// 	// console.log(res)
-				// 	poseDetector.current.send(res);
-
-				// 	// poseDetector.current.send({ image: videoRef.current });
-				// })
-			}, 'image/jpeg', 1)
-*/
-			// handDetector.current.send({ image: videoRef.current });
-			// if (handDetector.current) {
-			// 	handDetector.current
-			// 		.setOptions({ runningMode: "IMAGE" })
-			// 		.then(() => {
-			// 			const handlandmarks = handDetector.current.detect(
-			// 				videoRef.current
-			// 			);
-			// 			console.log(handlandmarks);
-			// 		});
-			// }
 		}
 
 		counter.current += 1;
@@ -425,41 +373,11 @@ export default function Game() {
 				height={subsceneHeight + "px"}
 				style={{
 					display: showVideo ? "block" : "none",
-					// position: "absolute",
-					// bottom: 0,
-					// right: 0,
 				}}
 			></video>
-			{/* <canvas
-				ref={canvasVideoRef}
-				width={subsceneWidth + "px"}
-				height={subsceneHeight + "px"}
-				style={{
-					display: "none",
-					// position: "absolute",
-					// top: 0,
-					// right: 0,
-				}}
-			/> */}
 
 			<canvas ref={canvasRef} />
 			{/* // ========= captured pose logic */}
-			{/* <div
-				style={{
-					width: subsceneWidth + "px",
-					height: subsceneHeight + "px",
-					position: "absolute",
-					top: 0,
-					left: 0,
-				}}
-			>
-				<SubThreeJsScene
-					width={subsceneWidth}
-					height={subsceneHeight}
-					objects={capturedPose}
-					cameraZ={200}
-				/>
-			</div> */}
 			<div className="btns">
 				<Button
 					variant="primary"
