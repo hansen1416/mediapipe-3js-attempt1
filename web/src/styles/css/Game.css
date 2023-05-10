@@ -1,0 +1,17 @@
+body {
+  overflow: hidden;
+}
+.game {
+  overflow: hidden;
+}
+.game video {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 8;
+}
+.game .btns {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}

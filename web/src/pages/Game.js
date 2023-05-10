@@ -1,33 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-// import Button from "react-bootstrap/Button";
-// import * as poseDetection from "@tensorflow-models/pose-detection";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
-// import { Hands } from "@mediapipe/hands";
 import { createWorkerFactory } from "@shopify/react-web-worker";
 import Button from "react-bootstrap/Button";
-// import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
-// import { Holistic } from "@mediapipe/holistic";
 
 import "../styles/css/Game.css";
-// import SubThreeJsScene from "../components/SubThreeJsScene";
-// import Silhouette3D from "../components/Silhouette3D";
-// import T from "../components/T";
-import {
-	// BlazePoseKeypoints,
-	// BlazePoseConfig,
-	// drawPoseKeypointsMediaPipe,
-	loadGLTF,
-	// invokeCamera,
-	traverseModel,
-	// loadJSON,
-	// loadFBX,
-	invokeCamera,
-	// getMeshSize,
-	// jsonToBufferGeometry,
-} from "../components/ropes";
+
+import { loadGLTF, traverseModel, invokeCamera } from "../components/ropes";
 
 import PoseToRotation from "../components/PoseToRotation";
 
@@ -42,59 +23,53 @@ export default function Game() {
 
 	const animationPointer = useRef(0);
 
-	// 3d model
-	const figure = useRef([]);
-	// bones of 3d model
-	const figureParts = useRef({});
-
 	const poseDetector = useRef(null);
-
-	// const handDetector = useRef(null);
 	// apply pose to bones
 	const poseToRotation = useRef(null);
 
-	// const fbxmodel = useRef(null);
-
 	// ========= captured pose logic
-	// const [capturedPose, setcapturedPose] = useState();
 	const counter = useRef(0);
 	// ========= captured pose logic
 
 	const videoRef = useRef(null);
-	// const canvasVideoRef = useRef(null);
-	// const canvasVideoRefCtx = useRef(null);
 
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
+	const sceneWidth = document.documentElement.clientWidth;
+	const sceneHeight = document.documentElement.clientHeight;
+
 	const [subsceneWidth, setsubsceneWidth] = useState(334);
 	const [subsceneHeight, setsubsceneHeight] = useState(250);
 	const subsceneWidthRef = useRef(0);
 	const subsceneHeightRef = useRef(0);
 	// the width and height in the 3.js world
-	const visibleWidth = useRef(0);
-	const visibleHeight = useRef(0);
 
 	const [loadingCamera, setloadingCamera] = useState(true);
 	const [loadingModel, setloadingModel] = useState(true);
 	const [loadingSilhouette, setloadingSilhouette] = useState(true);
 
-	// worker for hands detection
-	// const worker = useWorker(createWorker);
-
+	// controls
 	const [runAnimation, setrunAnimation] = useState(true);
 	const runAnimationRef = useRef(true);
 	const [showVideo, setshowVideo] = useState(false);
 
+	// player1 model
+	const player1 = useRef({});
+	// bones of player1 model
+	const player1Bones = useRef({});
+	// player2 model
+	const player2 = useRef({});
+	// bones of player2 model
+	const player2Bones = useRef({});
+	// monster model
+	const monster = useRef({});
+	// bones of monster model
+	const monsterBones = useRef({});
+
 	useEffect(() => {
-		const documentWidth = document.documentElement.clientWidth;
-		const documentHeight = document.documentElement.clientHeight;
+		setsubsceneWidth(sceneWidth * 0.25);
+		setsubsceneHeight((sceneHeight * 0.25 * 480) / 640);
 
-		setsubsceneWidth(documentWidth * 0.25);
-		setsubsceneHeight((documentWidth * 0.25 * 480) / 640);
-
-		// subsceneWidthRef.current = documentWidth * 0.25;
-		// subsceneHeightRef.current = (documentWidth * 0.25 * 480) / 640;
-
-		creatMainScene(documentWidth, documentHeight);
+		creatMainScene(sceneWidth, sceneHeight);
 
 		if (true) {
 			setloadingCamera(false);
@@ -130,91 +105,45 @@ export default function Game() {
 			});
 		}
 
-		/*
-		handDetector.current = new Hands({
-			locateFile: (file) => {
-				return process.env.PUBLIC_URL + `/mediapipe/hands/${file}`;
-				// return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-			},
-		});
-		handDetector.current.setOptions({
-			maxNumHands: 2,
-			modelComplexity: 1,
-			minDetectionConfidence: 0.5,
-			minTrackingConfidence: 0.5,
-			static_image_mode: false,
-		});
-		handDetector.current.onResults(onHandCallback);
-
-		handDetector.current.initialize().then(() => {
-			setloadingModel(false);
-			animate();
-		});
-*/
-
-		/*
-		poseDetector.current = new Holistic({
-			locateFile: (file) => {
-				return process.env.PUBLIC_URL + `/mediapipe/holistic/${file}`;
-				// return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
-			},
-		});
-		poseDetector.current.setOptions({
-			modelComplexity: 1,
-			smoothLandmarks: true,
-			enableSegmentation: false,
-			smoothSegmentation: false,
-			refineFaceLandmarks: false,
-			minDetectionConfidence: 0.5,
-			minTrackingConfidence: 0.5,
-		});
-		poseDetector.current.onResults(onPoseCallback);
-
-		poseDetector.current.initialize().then(() => {
-			setloadingModel(false);
-			animate();
-		});
-*/
 		Promise.all([
 			loadGLTF(process.env.PUBLIC_URL + "/glb/daneel.glb"),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-			loadGLTF(process.env.PUBLIC_URL + "/glb/low_poly_monster.glb"),
-		]).then(([daneel_glb, dors, monster_glb]) => {
-			figure.current = dors.scene.children[0];
-			figure.current.scale.set(30, 30, 30);
-			figure.current.position.set(100, -30, 0);
-			figure.current.rotation.set(0, -Math.PI / 2, 0);
+			loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
+		]).then(([daneel, dors, monster]) => {
+			// player1
+			const scale = 100
 
-			traverseModel(figure.current, figureParts.current);
+			player1.current = dors.scene.children[0];
+			player1.current.scale.set(scale, scale, scale);
+			player1.current.position.set(sceneWidth/2*0.8, -60, 0);
+			player1.current.rotation.set(0, -Math.PI / 2, 0);
 
-			poseToRotation.current = new PoseToRotation(figureParts.current);
+			traverseModel(player1.current, player1Bones.current);
 
-			scene.current.add(figure.current);
+			poseToRotation.current = new PoseToRotation(player1Bones.current);
 
-			const daneel = daneel_glb.scene.children[0];
-			daneel.scale.set(30, 30, 30);
-			daneel.position.set(-100, -30, 0);
-			daneel.rotation.set(0, Math.PI / 2, 0);
+			scene.current.add(player1.current);
 
-			scene.current.add(daneel);
+			// player2
+			player2.current = daneel.scene.children[0];
+			player2.current.scale.set(scale, scale, scale);
+			player2.current.position.set(-sceneWidth/2*0.8, -60, 0);
+			player2.current.rotation.set(0, Math.PI / 2, 0);
 
-			const monster = monster_glb.scene.children[0];
-			monster.scale.set(0.15, 0.15, 0.15);
-			monster.position.set(0, -30, 0);
-			// monster.rotation.set(0, 0, 0);
+			traverseModel(player2.current, player2Bones.current);
 
-			scene.current.add(monster);
+			scene.current.add(player2.current);
 
-			const monsterbones = {};
+			// monster
+			monster.current = monster.scene.children[0];
+			monster.current.scale.set(0.6, 0.6, 0.6);
+			monster.current.position.set(0, -60, 0);
 
-			traverseModel(monster, monsterbones);
+			traverseModel(monster.current, monsterBones.current);
 
-			console.log(monsterbones);
+			scene.current.add(monster.current);
 
-			monsterbones.hips_02.rotation.set(0, 1.2, 0);
-
-			monsterbones.hips_02.add(new THREE.AxesHelper(5));
-
+			// all models ready
 			setloadingSilhouette(false);
 		});
 
@@ -246,38 +175,16 @@ export default function Game() {
 	function creatMainScene(viewWidth, viewHeight) {
 		scene.current = new THREE.Scene();
 
-		// camera.current = new THREE.PerspectiveCamera(
-		// 	90,
-		// 	viewWidth / viewHeight,
-		// 	0.1,
-		// 	1000
-		// );
-
-		const width = window.innerWidth / 3;
-		const height = window.innerHeight / 3;
-
 		camera.current = new THREE.OrthographicCamera(
-			width / -2, // left
-			width / 2, // right
-			height / 2, // top
-			height / -2, // bottom
+			sceneWidth / -2, // left
+			sceneWidth / 2, // right
+			sceneHeight / 2, // top
+			sceneHeight / -2, // bottom
 			0.1, // near
-			1000 // far
+			3000 // far
 		);
 
-		camera.current.position.set(0, 0, 100);
-
-		/**
-		 * visible_height = 2 * tan(camera_fov / 2) * camera_z
-		 * visible_width = visible_height * camera_aspect
-		 */
-
-		const vFOV = THREE.MathUtils.degToRad(camera.current.fov); // convert vertical fov to radians
-
-		visibleHeight.current =
-			2 * Math.tan(vFOV / 2) * camera.current.position.z; // visible height
-
-		visibleWidth.current = visibleHeight.current * camera.current.aspect; // visible width
+		camera.current.position.set(sceneHeight/2, sceneWidth/2, sceneWidth/2);
 
 		{
 			// mimic the sun light
@@ -340,21 +247,12 @@ export default function Game() {
 		const width_ratio = 30;
 		const height_ratio = (width_ratio * 480) / 640;
 
-		// const width_ratio = 1;
-		// const height_ratio = 1;
-
 		// multiply x,y by differnt factor
 		for (let v of pose3D) {
 			v["x"] *= width_ratio;
 			v["y"] *= -height_ratio;
 			v["z"] *= -width_ratio;
 		}
-
-		// const g = drawPoseKeypointsMediaPipe(pose3D);
-
-		// g.scale.set(8, 8, 8);
-
-		// setcapturedPose(g);
 
 		poseToRotation.current.applyPoseToBone(pose3D);
 
@@ -363,8 +261,8 @@ export default function Game() {
 
 		poseToRotation.current.applyPosition(
 			pose2D,
-			visibleWidth.current,
-			visibleHeight.current
+			sceneWidth,
+			sceneHeight
 		);
 	}
 
