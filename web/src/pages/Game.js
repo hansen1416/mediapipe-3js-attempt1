@@ -248,7 +248,7 @@ export default function Game() {
 
 			const to_pos = poseToRotation.current.applyPosition(
 				pose2D,
-				sceneWidth
+				sceneWidth * 0.6
 			);
 
 			if (to_pos) {

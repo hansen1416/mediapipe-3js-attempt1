@@ -461,7 +461,21 @@ export default class PoseToRotation {
 		);
 	}
 
-	applyPosition(pose2D, visibleWidth) {
+	/**
+	 * pose2D are [{x:0.5, y:0.5, z:-1}, ...]
+	 *
+	 * x in [0,1], 1 means reaching the right end of the video view port,
+	 * to the left end in threejs world
+	 *
+	 * y in [0,1]. indicate the height of the model
+	 *
+	 * z not to be trusted
+	 *
+	 * @param {object} pose2D
+	 * @param {number} movableWidth
+	 * @returns
+	 */
+	applyPosition(pose2D, movableWidth) {
 		if (!pose2D || !pose2D.length) {
 			return;
 		}
@@ -491,19 +505,19 @@ export default class PoseToRotation {
 
 		// // 1 - x because left/right are swaped
 		// let object_x =
-		// 	(1 - pixel_pos.x / videoWidth) * visibleWidth - visibleWidth / 2;
+		// 	(1 - pixel_pos.x / videoWidth) * movableWidth - movableWidth / 2;
 		// // 1 - y because in threejs y axis is twowards top
 		// let object_y =
 		// 	(1 - pixel_pos.y / videoHeight) * visibleHeight - visibleHeight / 2;
 
-		let object_x = pixel_pos.x * visibleWidth - visibleWidth / 2;
+		let object_x = pixel_pos.x * movableWidth - movableWidth / 2;
 
-		if (object_x < -visibleWidth / 2) {
-			object_x = -visibleWidth / 2;
+		if (object_x < -movableWidth / 2) {
+			object_x = -movableWidth / 2;
 		}
 
-		if (object_x > visibleWidth / 2) {
-			object_x = visibleWidth / 2;
+		if (object_x > movableWidth / 2) {
+			object_x = movableWidth / 2;
 		}
 		/*
 		let object_y = pixel_pos.y * visibleHeight - visibleHeight / 2;
