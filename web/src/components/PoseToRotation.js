@@ -53,9 +53,9 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	);
 
 	// origin basis of chest
-	const xaxis0 = new THREE.Vector3(1, 0, 0);
+	const xaxis0 = new THREE.Vector3(-1, 0, 0);
 	const yaxis0 = new THREE.Vector3(0, -1, 0);
-	const zaxis0 = new THREE.Vector3(0, 0, 1);
+	const zaxis0 = new THREE.Vector3(0, 0, -1);
 
 	// new basis of chest from pose data
 	const xaxis1 = new THREE.Vector3(
@@ -84,9 +84,9 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	);
 
 	// origin basis of abdominal
-	const xaxis2 = new THREE.Vector3(1, 0, 0);
+	const xaxis2 = new THREE.Vector3(-1, 0, 0);
 	const yaxis2 = new THREE.Vector3(0, 1, 0);
-	const zaxis2 = new THREE.Vector3(0, 0, 1);
+	const zaxis2 = new THREE.Vector3(0, 0, -1);
 
 	// new basis of abdominal from pose data
 	const xaxis3 = new THREE.Vector3(
@@ -452,6 +452,9 @@ export default class PoseToRotation {
 		// 	axis,
 		// 	parseFloat(angle.toFixed(2)) // this will cause the left arm unable to hang down
 		// );
+
+		// todo, store 4 arms vectors, and decide whether it's defence or attack.
+		// attack include left/right arm attack
 
 		this.bones[bone_name].rotation.setFromQuaternion(
 			local_quaternion_bone.normalize()

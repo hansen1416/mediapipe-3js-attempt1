@@ -3,16 +3,14 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
-import { createWorkerFactory } from "@shopify/react-web-worker";
+// import { createWorkerFactory } from "@shopify/react-web-worker";
 import Button from "react-bootstrap/Button";
-
 import "../styles/css/Game.css";
 
 import { loadGLTF, traverseModel, invokeCamera } from "../components/ropes";
-
 import PoseToRotation from "../components/PoseToRotation";
 
-const createWorker = createWorkerFactory(() => import("../pages/HandsWorker"));
+// const createWorker = createWorkerFactory(() => import("../pages/HandsWorker"));
 
 export default function Game() {
 	const canvasRef = useRef(null);
@@ -24,12 +22,9 @@ export default function Game() {
 	const animationPointer = useRef(0);
 
 	const poseDetector = useRef(null);
+	const poseDetectorAvailable = useRef(false);
 	// apply pose to bones
 	const poseToRotation = useRef(null);
-
-	// ========= captured pose logic
-	const counter = useRef(0);
-	// ========= captured pose logic
 
 	const videoRef = useRef(null);
 
@@ -65,13 +60,15 @@ export default function Game() {
 	// bones of monster model
 	const monsterBones = useRef({});
 
+	const groundLevel = -100;
+
 	useEffect(() => {
 		setsubsceneWidth(sceneWidth * 0.25);
 		setsubsceneHeight((sceneHeight * 0.25 * 480) / 640);
 
 		creatMainScene(sceneWidth, sceneHeight);
 
-		if (true) {
+		if (false) {
 			setloadingCamera(false);
 			setloadingModel(false);
 		} else {
@@ -99,24 +96,22 @@ export default function Game() {
 			poseDetector.current.initialize().then(() => {
 				setloadingModel(false);
 
-				// worker.initModel().then((msg) => {
-				// 	console.log(msg);
-				// });
+				poseDetectorAvailable.current = true;
 			});
 		}
 
 		Promise.all([
 			loadGLTF(process.env.PUBLIC_URL + "/glb/daneel.glb"),
 			loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb"),
-			loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
-		]).then(([daneel, dors, monster]) => {
+			// loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
+		]).then(([daneel, dors]) => {
 			// player1
-			const scale = 100
+			const scale = 100;
 
 			player1.current = dors.scene.children[0];
 			player1.current.scale.set(scale, scale, scale);
-			player1.current.position.set(sceneWidth/2*0.8, -60, 0);
-			player1.current.rotation.set(0, -Math.PI / 2, 0);
+			player1.current.position.set(0, groundLevel, sceneWidth / 2);
+			player1.current.rotation.set(0, -Math.PI, 0);
 
 			traverseModel(player1.current, player1Bones.current);
 
@@ -127,21 +122,21 @@ export default function Game() {
 			// player2
 			player2.current = daneel.scene.children[0];
 			player2.current.scale.set(scale, scale, scale);
-			player2.current.position.set(-sceneWidth/2*0.8, -60, 0);
-			player2.current.rotation.set(0, Math.PI / 2, 0);
+			player2.current.position.set(0, -60, -sceneWidth / 2);
+			player2.current.rotation.set(0, 0, 0);
 
 			traverseModel(player2.current, player2Bones.current);
 
 			scene.current.add(player2.current);
 
 			// monster
-			monster.current = monster.scene.children[0];
-			monster.current.scale.set(0.6, 0.6, 0.6);
-			monster.current.position.set(0, -60, 0);
+			// monster.current = monster_glb.scene.children[0];
+			// monster.current.scale.set(0.6, 0.6, 0.6);
+			// monster.current.position.set(0, groundLevel, -sceneWidth / 2);
 
-			traverseModel(monster.current, monsterBones.current);
+			// traverseModel(monster.current, monsterBones.current);
 
-			scene.current.add(monster.current);
+			// scene.current.add(monster.current);
 
 			// all models ready
 			setloadingSilhouette(false);
@@ -181,10 +176,10 @@ export default function Game() {
 			sceneHeight / 2, // top
 			sceneHeight / -2, // bottom
 			0.1, // near
-			3000 // far
+			sceneWidth * 2 // far
 		);
 
-		camera.current.position.set(sceneHeight/2, sceneWidth/2, sceneWidth/2);
+		camera.current.position.set(0, 200, sceneWidth);
 
 		{
 			// mimic the sun light
@@ -215,16 +210,11 @@ export default function Game() {
 			runAnimationRef.current &&
 			videoRef.current &&
 			videoRef.current.readyState >= 2 &&
-			counter.current % 3 === 0 &&
+			poseDetectorAvailable.current &&
 			poseDetector.current
 		) {
+			poseDetectorAvailable.current = false;
 			poseDetector.current.send({ image: videoRef.current });
-		}
-
-		counter.current += 1;
-
-		if (counter.current > 10000) {
-			counter.current = 0;
 		}
 
 		// ========= captured pose logic
@@ -257,13 +247,15 @@ export default function Game() {
 		poseToRotation.current.applyPoseToBone(pose3D);
 
 		// move the position of model
-		const pose2D = cloneDeep(result.poseLandmarks);
+		// const pose2D = cloneDeep(result.poseLandmarks);
 
-		poseToRotation.current.applyPosition(
-			pose2D,
-			sceneWidth,
-			sceneHeight
-		);
+		// poseToRotation.current.applyPosition(
+		// 	pose2D,
+		// 	sceneWidth,
+		// 	sceneHeight
+		// );
+
+		poseDetectorAvailable.current = true;
 	}
 
 	// function onHandCallback(result) {
