@@ -53,9 +53,9 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	);
 
 	// origin basis of chest
-	const xaxis0 = new THREE.Vector3(-1, 0, 0);
+	const xaxis0 = new THREE.Vector3(1, 0, 0);
 	const yaxis0 = new THREE.Vector3(0, -1, 0);
-	const zaxis0 = new THREE.Vector3(0, 0, -1);
+	const zaxis0 = new THREE.Vector3(0, 0, 1);
 
 	// new basis of chest from pose data
 	const xaxis1 = new THREE.Vector3(
@@ -84,9 +84,9 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 	);
 
 	// origin basis of abdominal
-	const xaxis2 = new THREE.Vector3(-1, 0, 0);
+	const xaxis2 = new THREE.Vector3(1, 0, 0);
 	const yaxis2 = new THREE.Vector3(0, 1, 0);
-	const zaxis2 = new THREE.Vector3(0, 0, -1);
+	const zaxis2 = new THREE.Vector3(0, 0, 1);
 
 	// new basis of abdominal from pose data
 	const xaxis3 = new THREE.Vector3(
@@ -461,7 +461,7 @@ export default class PoseToRotation {
 		);
 	}
 
-	applyPosition(pose2D, visibleWidth, visibleHeight) {
+	applyPosition(pose2D, visibleWidth) {
 		if (!pose2D || !pose2D.length) {
 			return;
 		}
@@ -486,7 +486,7 @@ export default class PoseToRotation {
 		// because we placed abdominal at (0,0,0)
 		const pixel_pos = {
 			x: (left_hip.x + right_hip.x) / 2,
-			y: (left_hip.y + right_hip.y) / 2,
+			// y: (left_hip.y + right_hip.y) / 2,
 		};
 
 		// // 1 - x because left/right are swaped
@@ -518,6 +518,9 @@ export default class PoseToRotation {
 */
 		// this.body.position.set(object_x, object_y, 0);
 		// limit model in the center +- 0.3 range
-		this.bones["Hips"].position.x = object_x * 0.3;
+		// this.bones["Hips"].position.x = object_x * 0.3;
+		return {
+			x: object_x,
+		};
 	}
 }

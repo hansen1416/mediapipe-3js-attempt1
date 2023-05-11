@@ -55,10 +55,10 @@ export default function Game() {
 	const player2 = useRef({});
 	// bones of player2 model
 	const player2Bones = useRef({});
-	// monster model
-	const monster = useRef({});
-	// bones of monster model
-	const monsterBones = useRef({});
+	// // monster model
+	// const monster = useRef({});
+	// // bones of monster model
+	// const monsterBones = useRef({});
 
 	const groundLevel = -100;
 
@@ -110,8 +110,7 @@ export default function Game() {
 
 			player1.current = dors.scene.children[0];
 			player1.current.scale.set(scale, scale, scale);
-			player1.current.position.set(0, groundLevel, sceneWidth / 2);
-			player1.current.rotation.set(0, -Math.PI, 0);
+			player1.current.position.set(0, groundLevel, -sceneWidth / 2);
 
 			traverseModel(player1.current, player1Bones.current);
 
@@ -122,8 +121,8 @@ export default function Game() {
 			// player2
 			player2.current = daneel.scene.children[0];
 			player2.current.scale.set(scale, scale, scale);
-			player2.current.position.set(0, -60, -sceneWidth / 2);
-			player2.current.rotation.set(0, 0, 0);
+			player2.current.position.set(0, -60, sceneWidth / 2);
+			player2.current.rotation.set(0, -Math.PI, 0);
 
 			traverseModel(player2.current, player2Bones.current);
 
@@ -179,7 +178,7 @@ export default function Game() {
 			sceneWidth * 2 // far
 		);
 
-		camera.current.position.set(0, 200, sceneWidth);
+		camera.current.position.set(0, 200, -sceneWidth);
 
 		{
 			// mimic the sun light
@@ -227,33 +226,39 @@ export default function Game() {
 	}
 
 	function onPoseCallback(result) {
-		if (!result || !result.poseWorldLandmarks) {
-			return;
+		if (result && result.poseWorldLandmarks) {
+			// console.log(result);
+			const pose3D = cloneDeep(result.poseWorldLandmarks);
+			// const pose3D = cloneDeep(result.poseLandmarks);
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of pose3D) {
+				v["x"] *= width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+
+			poseToRotation.current.applyPoseToBone(pose3D);
+
+			// move the position of model
+			const pose2D = cloneDeep(result.poseLandmarks);
+
+			const to_pos = poseToRotation.current.applyPosition(
+				pose2D,
+				sceneWidth
+			);
+
+			if (to_pos) {
+				player1.current.position.set(
+					to_pos.x,
+					groundLevel,
+					-sceneWidth / 2
+				);
+			}
 		}
-		// console.log(result);
-		const pose3D = cloneDeep(result.poseWorldLandmarks);
-		// const pose3D = cloneDeep(result.poseLandmarks);
-
-		const width_ratio = 30;
-		const height_ratio = (width_ratio * 480) / 640;
-
-		// multiply x,y by differnt factor
-		for (let v of pose3D) {
-			v["x"] *= width_ratio;
-			v["y"] *= -height_ratio;
-			v["z"] *= -width_ratio;
-		}
-
-		poseToRotation.current.applyPoseToBone(pose3D);
-
-		// move the position of model
-		// const pose2D = cloneDeep(result.poseLandmarks);
-
-		// poseToRotation.current.applyPosition(
-		// 	pose2D,
-		// 	sceneWidth,
-		// 	sceneHeight
-		// );
 
 		poseDetectorAvailable.current = true;
 	}
