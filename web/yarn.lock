@@ -9338,6 +9338,11 @@
   dependencies:
     "tslib" "^1.8.1"
 
+"tween.js@^16.6.0":
+  "integrity" "sha512-IIhm0VsiBxNJO+WsXUvjcq+u3sKfOwSu67Yh9T5xSpXb2eHHi9+uZDDGBc7uMXjfud0bYiLkYCEb7JXIGXi5KA=="
+  "resolved" "https://registry.npmmirror.com/tween.js/-/tween.js-16.6.0.tgz"
+  "version" "16.6.0"
+
 "type-check@^0.4.0", "type-check@~0.4.0":
   "integrity" "sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew=="
   "resolved" "https://registry.npmjs.org/type-check/-/type-check-0.4.0.tgz"
