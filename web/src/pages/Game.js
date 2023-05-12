@@ -258,6 +258,9 @@ export default function Game() {
 					-sceneWidth / 2
 				);
 			}
+
+			// todo, store 4 arms vectors, and decide whether it's defence or attack.
+			// attack include left/right arm attack
 		}
 
 		poseDetectorAvailable.current = true;

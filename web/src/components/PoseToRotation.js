@@ -1,11 +1,5 @@
 import * as THREE from "three";
-
-import {
-	clamp,
-	roundToTwo,
-	BlazePoseKeypointsValues,
-	quaternionToAxisAngle,
-} from "./ropes";
+import { clamp, BlazePoseKeypointsValues } from "./ropes";
 
 function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 	/**
@@ -178,27 +172,10 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 //     ]
 //      */
 
-// 	/**
-//      * `getQuaternions` return keys
-//      *  [
-//         "abdominal",
-//         "chest",
-//         "leftArm",
-//         "rightArm",
-//         "leftForeArm",
-//         "rightForeArm",
-//         "leftThigh",
-//         "rightThigh",
-//         "leftCalf",
-//         "rightCalf",
-//         "leftFoot",
-//         "rightFoot"
-//     ]
-//     */
-
 export default class PoseToRotation {
 	constructor(bones) {
 		this.bones = bones;
+		// this.local_vectors = {};
 	}
 
 	// updatePose(pose3D) {
@@ -391,7 +368,12 @@ export default class PoseToRotation {
 
 		this.bones[parent_bone_name].getWorldQuaternion(world_quaternion);
 
+		// after apply the parent quaternion,
+		// `world_target_vector` actually became the local target vector
 		world_target_vector.applyQuaternion(world_quaternion.conjugate());
+
+		// store the local vectors for all bones, used for gesture classification
+		// this.local_vectors[bone_name] = world_target_vector.clone();
 
 		// all the bones rest pose in the model is (0,1,0)
 		// first place the limb to the human body nature position
@@ -402,7 +384,7 @@ export default class PoseToRotation {
 		// todo, use matrix basis rotations to adjust the orientations
 		let local_quaternion_bio = new THREE.Quaternion().setFromUnitVectors(
 			up_vector,
-			world_target_vector.normalize()
+			world_target_vector
 		);
 
 		if (angle_restrain) {
@@ -452,9 +434,6 @@ export default class PoseToRotation {
 		// 	axis,
 		// 	parseFloat(angle.toFixed(2)) // this will cause the left arm unable to hang down
 		// );
-
-		// todo, store 4 arms vectors, and decide whether it's defence or attack.
-		// attack include left/right arm attack
 
 		this.bones[bone_name].rotation.setFromQuaternion(
 			local_quaternion_bone.normalize()
