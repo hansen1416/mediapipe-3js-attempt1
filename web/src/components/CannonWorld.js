@@ -19,7 +19,7 @@ export default class CannonWorld {
 		groundBody.position.set(0, ground_level, 0);
 
 		// Create a Three.js ground plane mesh
-		const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
+		const groundGeometry = new THREE.PlaneGeometry(2000, 2000);
 		const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x363795 });
 		const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
 
@@ -48,9 +48,9 @@ export default class CannonWorld {
 			mass: 5, // kg
 			shape: new CANNON.Sphere(radius),
 		});
-		sphereBody.position.set(0, 100, 0); // m
+		sphereBody.position.set(0, 100, -1000); // m
 
-		sphereBody.velocity.set(0, 200, 200);
+		sphereBody.velocity.set(0, 0, 900);
 
 		/**
 		The value of linearDamping can be set to any non-negative number, 
@@ -58,7 +58,7 @@ export default class CannonWorld {
 		A value of 0 means there is no damping effect, 
 		and the body will continue moving at a constant velocity forever.
 		 */
-		sphereBody.linearDamping = 0.3;
+		sphereBody.linearDamping = 0.4;
 
 		this.world.addBody(sphereBody);
 

@@ -2,19 +2,19 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export default class ThreeScene {
-	constructor(canvas, scene_width, scene_height) {
+	constructor(canvas, width, height) {
 		this.scene = new THREE.Scene();
 
 		this.camera = new THREE.OrthographicCamera(
-			scene_width / -2, // left
-			scene_width / 2, // right
-			scene_height / 2, // top
-			scene_height / -2, // bottom
+			width / -2, // left
+			width / 2, // right
+			height / 2, // top
+			height / -2, // bottom
 			0.1, // near
-			scene_width * 2 // far
+			width * 2 // far
 		);
 
-		this.camera.position.set(0, 200, -scene_width);
+		this.camera.position.set(0, 200, -width);
 
 		{
 			// mimic the sun light
@@ -35,7 +35,7 @@ export default class ThreeScene {
 
 		this.controls = new OrbitControls(this.camera, canvas);
 
-		this.renderer.setSize(scene_width, scene_height);
+		this.renderer.setSize(width, height);
 	}
 
 	onFrameUpdate() {
