@@ -1,28 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
-// import Nebula, { SpriteRenderer } from "three-nebula";
 // import { createWorkerFactory } from "@shopify/react-web-worker";
 import Button from "react-bootstrap/Button";
 import "../styles/css/Game.css";
 
 import { loadGLTF, traverseModel, invokeCamera } from "../components/ropes";
 import PoseToRotation from "../components/PoseToRotation";
+import CannonWorld from "../components/CannonWorld";
+import ThreeScene from "../components/ThreeScene";
 
 // const createWorker = createWorkerFactory(() => import("../pages/HandsWorker"));
 
-// https://threejs.org/examples/#webgl_postprocessing_unreal_bloom_selective
-
 export default function Game() {
 	const canvasRef = useRef(null);
-	const scene = useRef(null);
-	const camera = useRef(null);
-	const renderer = useRef(null);
-	const controls = useRef(null);
-
-	// const nebula = useRef(null);
 
 	const animationPointer = useRef(0);
 
@@ -34,9 +25,6 @@ export default function Game() {
 	const videoRef = useRef(null);
 
 	// NOTE: we must give a width/height ratio not close to 1, otherwise there will be wired behaviors
-	const sceneWidth = document.documentElement.clientWidth;
-	const sceneHeight = document.documentElement.clientHeight;
-
 	const [subsceneWidth, setsubsceneWidth] = useState(334);
 	const [subsceneHeight, setsubsceneHeight] = useState(250);
 	const subsceneWidthRef = useRef(0);
@@ -60,18 +48,32 @@ export default function Game() {
 	const player2 = useRef({});
 	// bones of player2 model
 	const player2Bones = useRef({});
-	// // monster model
-	// const monster = useRef({});
-	// // bones of monster model
-	// const monsterBones = useRef({});
+
+	const sceneWidth = document.documentElement.clientWidth;
+	const sceneHeight = document.documentElement.clientHeight;
 
 	const groundLevel = -100;
+
+	const threeScene = useRef(null);
+
+	const cannonWorld = useRef(null);
 
 	useEffect(() => {
 		setsubsceneWidth(sceneWidth * 0.25);
 		setsubsceneHeight((sceneHeight * 0.25 * 480) / 640);
 
-		creatMainScene(sceneWidth, sceneHeight);
+		threeScene.current = new ThreeScene(
+			canvasRef.current,
+			sceneWidth,
+			sceneHeight
+		);
+
+		cannonWorld.current = new CannonWorld(
+			threeScene.current.scene,
+			groundLevel
+		);
+
+		cannonWorld.current.addBall();
 
 		if (true) {
 			setloadingCamera(false);
@@ -121,26 +123,17 @@ export default function Game() {
 
 			poseToRotation.current = new PoseToRotation(player1Bones.current);
 
-			scene.current.add(player1.current);
+			threeScene.current.scene.add(player1.current);
 
 			// player2
 			player2.current = daneel.scene.children[0];
 			player2.current.scale.set(scale, scale, scale);
-			player2.current.position.set(0, -60, sceneWidth / 2);
+			player2.current.position.set(0, groundLevel, sceneWidth / 2);
 			player2.current.rotation.set(0, -Math.PI, 0);
 
 			traverseModel(player2.current, player2Bones.current);
 
-			scene.current.add(player2.current);
-
-			// monster
-			// monster.current = monster_glb.scene.children[0];
-			// monster.current.scale.set(0.6, 0.6, 0.6);
-			// monster.current.position.set(0, groundLevel, -sceneWidth / 2);
-
-			// traverseModel(monster.current, monsterBones.current);
-
-			// scene.current.add(monster.current);
+			threeScene.current.scene.add(player2.current);
 
 			// all models ready
 			setloadingSilhouette(false);
@@ -155,15 +148,9 @@ export default function Game() {
 
 	useEffect(() => {
 		if (loadingCamera && loadingModel && loadingSilhouette) {
-			// Nebula.fromJSONAsync(proton_json, THREE).then((loaded) => {
-			// 	// const app = {scene: scene.current, camera : camera.current, renderer: renderer.current};
-			// 	const nebulaRenderer = new SpriteRenderer(scene.current, THREE);
-			// 	nebula.current = loaded.addRenderer(nebulaRenderer);
-
-			// 	animate();
-			// });
 			animate();
 		}
+		// eslint-disable-next-line
 	}, [loadingCamera, loadingModel, loadingSilhouette]);
 
 	useEffect(() => {
@@ -177,42 +164,6 @@ export default function Game() {
 	useEffect(() => {
 		runAnimationRef.current = runAnimation;
 	}, [runAnimation]);
-
-	function creatMainScene(viewWidth, viewHeight) {
-		scene.current = new THREE.Scene();
-
-		camera.current = new THREE.OrthographicCamera(
-			sceneWidth / -2, // left
-			sceneWidth / 2, // right
-			sceneHeight / 2, // top
-			sceneHeight / -2, // bottom
-			0.1, // near
-			sceneWidth * 2 // far
-		);
-
-		camera.current.position.set(0, 200, -sceneWidth);
-
-		{
-			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.4);
-			dlight.position.set(0, 10, 10);
-			scene.current.add(dlight);
-			// env light
-			scene.current.add(new THREE.AmbientLight(0xffffff, 0.6));
-		}
-
-		renderer.current = new THREE.WebGLRenderer({
-			canvas: canvasRef.current,
-			alpha: true,
-			antialias: true,
-		});
-
-		renderer.current.toneMappingExposure = 0.5;
-
-		controls.current = new OrbitControls(camera.current, canvasRef.current);
-
-		renderer.current.setSize(viewWidth, viewHeight);
-	}
 
 	function animate() {
 		// ========= captured pose logic
@@ -230,10 +181,9 @@ export default function Game() {
 
 		// ========= captured pose logic
 
-		controls.current.update();
-		// nebula.current.update();
+		threeScene.current.onFrameUpdate();
 
-		renderer.current.render(scene.current, camera.current);
+		cannonWorld.current.onFrameUpdate();
 
 		animationPointer.current = requestAnimationFrame(animate);
 	}
@@ -278,10 +228,6 @@ export default function Game() {
 
 		poseDetectorAvailable.current = true;
 	}
-
-	// function onHandCallback(result) {
-	// 	console.log(result);
-	// }
 
 	return (
 		<div className="game">
