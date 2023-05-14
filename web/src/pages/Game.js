@@ -66,6 +66,10 @@ export default function Game() {
 
 	const toss = new Toss();
 
+	const handsAvailable = useRef(true);
+	const handsWaiting = useRef(true);
+	const handsEmptyCounter = useRef(0);
+
 	useEffect(() => {
 		setsubsceneWidth(sceneWidth * 0.25);
 		setsubsceneHeight((sceneHeight * 0.25 * 480) / 640);
@@ -81,39 +85,37 @@ export default function Game() {
 			groundLevel
 		);
 
-		cannonWorld.current.addBall();
-
-		if (false) {
+		// if (false) {
+		// 	setloadingCamera(false);
+		// 	setloadingModel(false);
+		// } else {
+		invokeCamera(videoRef.current, () => {
 			setloadingCamera(false);
+		});
+
+		poseDetector.current = new Pose({
+			locateFile: (file) => {
+				return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
+				// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+			},
+		});
+		poseDetector.current.setOptions({
+			modelComplexity: 2,
+			smoothLandmarks: true,
+			enableSegmentation: false,
+			smoothSegmentation: false,
+			minDetectionConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+		});
+
+		poseDetector.current.onResults(onPoseCallback);
+
+		poseDetector.current.initialize().then(() => {
 			setloadingModel(false);
-		} else {
-			invokeCamera(videoRef.current, () => {
-				setloadingCamera(false);
-			});
 
-			poseDetector.current = new Pose({
-				locateFile: (file) => {
-					return process.env.PUBLIC_URL + `/mediapipe/pose/${file}`;
-					// return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-				},
-			});
-			poseDetector.current.setOptions({
-				modelComplexity: 2,
-				smoothLandmarks: true,
-				enableSegmentation: false,
-				smoothSegmentation: false,
-				minDetectionConfidence: 0.5,
-				minTrackingConfidence: 0.5,
-			});
-
-			poseDetector.current.onResults(onPoseCallback);
-
-			poseDetector.current.initialize().then(() => {
-				setloadingModel(false);
-
-				poseDetectorAvailable.current = true;
-			});
-		}
+			poseDetectorAvailable.current = true;
+		});
+		// }
 
 		Promise.all([
 			loadGLTF(process.env.PUBLIC_URL + "/glb/daneel.glb"),
@@ -193,6 +195,24 @@ export default function Game() {
 
 		cannonWorld.current.onFrameUpdate();
 
+		if (handsWaiting.current) {
+			if (handsEmptyCounter.current < 60) {
+				handsEmptyCounter.current += 1;
+			} else {
+				handsAvailable.current = true;
+				handsEmptyCounter.current = 0;
+			}
+		}
+
+		if (handsAvailable.current) {
+			// todo add ball to hand
+
+			console.log("add ball");
+
+			handsAvailable.current = false;
+			handsWaiting.current = false;
+		}
+
 		animationPointer.current = requestAnimationFrame(animate);
 	}
 
@@ -216,10 +236,15 @@ export default function Game() {
 
 			toss.getHandsPos(player1Bones.current);
 
-			const right_has_ball = true;
+			if (handsWaiting.current === false) {
+				const velocity = toss.calculateAngularVelocity(true);
 
-			if (right_has_ball) {
-				toss.calculateAngularVelocity(true);
+				if (velocity) {
+					// making ball move
+					handsWaiting.current = true;
+
+					console.log("velocity", velocity);
+				}
 			}
 
 			// we need to calculate a direction and velocity

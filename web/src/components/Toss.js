@@ -47,30 +47,7 @@ export default class Toss {
 
 	calculateAngularVelocity(left = false) {
 		/**
-         * To calculate the angular velocity of an object in 3D space, given its position in a interval of time, you can follow these steps:
 
-1.First, determine the object's initial and final positions during the time interval.
-
-2.Calculate the displacement vector of the object by subtracting the initial position vector from the final position vector.
-
-3.Calculate the magnitude of the displacement vector by taking its length.
-
-4.Determine the time interval over which the object moved.
-
-5.Calculate the angular displacement of the object by dividing the magnitude of the displacement vector by the radius of the circular path it traveled.
-
-6.Divide the angular displacement by the time interval to get the angular velocity.
-
-7.The formula for calculating angular velocity is:
-
-ω = Δθ/Δt
-
-Where:
-ω = angular velocity
-Δθ = angular displacement
-Δt = time interval
-
-Note that the units of angular velocity are radians per second (rad/s).
          */
 
 		const que = this.getTrack(left);
@@ -79,15 +56,13 @@ Note that the units of angular velocity are radians per second (rad/s).
 			return que;
 		}
 
-		const start = que.peekFront().clone();
-		const end = que.peekBack().clone();
+		const velocity = que.peekBack().clone().sub(que.peekFront());
+		const direction = velocity.clone().normalize();
 
-		end.sub(start);
-
-		const direction = end.clone().normalize();
 		// todo, decide what really is a toss
-		if (direction.z > 0.6) {
-			// console.log(direction);
+		if (velocity.length() > 50 && direction.z > 0.6 && direction.y > 0) {
+			console.log("direction", direction);
+			return velocity;
 		}
 	}
 }
