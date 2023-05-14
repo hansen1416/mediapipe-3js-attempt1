@@ -47,7 +47,8 @@ export default class Toss {
 
 	calculateAngularVelocity(left = false) {
 		/**
-
+			if the velocity is in the right direction and has enough spped
+			return velocity and let the ball fly
          */
 
 		const que = this.getTrack(left);
@@ -60,9 +61,11 @@ export default class Toss {
 		const direction = velocity.clone().normalize();
 
 		// todo, decide what really is a toss
-		if (velocity.length() > 50 && direction.z > 0.6 && direction.y > 0) {
-			console.log("direction", direction);
+		if (velocity.length() > 50 && direction.z > 0.6 && direction.y > -0.3) {
+			// console.log("direction", direction);
 			return velocity;
 		}
+
+		return false;
 	}
 }

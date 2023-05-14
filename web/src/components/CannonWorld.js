@@ -43,14 +43,24 @@ export default class CannonWorld {
 		}
 	}
 
-	addBall(radius = 10) {
+	addBall(mesh, velocity) {
 		const sphereBody = new CANNON.Body({
 			mass: 5, // kg
-			shape: new CANNON.Sphere(radius),
+			shape: new CANNON.Sphere(mesh.geometry.parameters.radius),
 		});
-		sphereBody.position.set(0, 100, -1000); // m
+		sphereBody.position.set(
+			mesh.position.x,
+			mesh.position.y,
+			mesh.position.z
+		); // m
 
-		sphereBody.velocity.set(0, 0, 900);
+		const speedScale = 11;
+
+		sphereBody.velocity.set(
+			velocity.x * speedScale,
+			velocity.y * speedScale,
+			velocity.z * speedScale
+		);
 
 		/**
 		The value of linearDamping can be set to any non-negative number, 
@@ -62,15 +72,8 @@ export default class CannonWorld {
 
 		this.world.addBody(sphereBody);
 
-		const sphereMesh = new THREE.Mesh(
-			new THREE.SphereGeometry(radius),
-			new THREE.MeshNormalMaterial()
-		);
-		sphereMesh.castShadow = true;
-		this.scene.add(sphereMesh);
-
 		this.rigid.push(sphereBody);
-		this.mesh.push(sphereMesh);
+		this.mesh.push(mesh);
 
 		return sphereBody;
 	}

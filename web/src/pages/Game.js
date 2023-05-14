@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { cloneDeep } from "lodash";
 import { Pose } from "@mediapipe/pose";
 // import { createWorkerFactory } from "@shopify/react-web-worker";
@@ -17,6 +18,16 @@ import ThreeScene from "../components/ThreeScene";
 import Toss from "../components/Toss";
 
 // const createWorker = createWorkerFactory(() => import("../pages/HandsWorker"));
+
+function ballMesh() {
+	const mesh = new THREE.Mesh(
+		new THREE.SphereGeometry(10),
+		new THREE.MeshNormalMaterial()
+	);
+	mesh.castShadow = true;
+
+	return mesh;
+}
 
 export default function Game() {
 	const canvasRef = useRef(null);
@@ -66,9 +77,10 @@ export default function Game() {
 
 	const toss = new Toss();
 
-	const handsAvailable = useRef(true);
-	const handsWaiting = useRef(true);
+	const handsAvailable = useRef(false);
+	const handsWaiting = useRef(false);
 	const handsEmptyCounter = useRef(0);
+	const handBallMesh = useRef(null);
 
 	useEffect(() => {
 		setsubsceneWidth(sceneWidth * 0.25);
@@ -147,6 +159,9 @@ export default function Game() {
 
 			// all models ready
 			setloadingSilhouette(false);
+			// hand is ready for ball mesh
+			handsWaiting.current = true;
+			handsAvailable.current = true;
 		});
 
 		return () => {
@@ -207,7 +222,17 @@ export default function Game() {
 		if (handsAvailable.current) {
 			// todo add ball to hand
 
-			console.log("add ball");
+			handBallMesh.current = ballMesh();
+
+			// console.log("add ball", handBallMesh.current, player1Bones.current);
+
+			const tmpvec = new THREE.Vector3();
+
+			player1Bones.current.RightHand.getWorldPosition(tmpvec);
+
+			handBallMesh.current.position.copy(tmpvec);
+
+			threeScene.current.scene.add(handBallMesh.current);
 
 			handsAvailable.current = false;
 			handsWaiting.current = false;
@@ -237,13 +262,24 @@ export default function Game() {
 			toss.getHandsPos(player1Bones.current);
 
 			if (handsWaiting.current === false) {
-				const velocity = toss.calculateAngularVelocity(true);
+				const velocity = toss.calculateAngularVelocity(false);
 
 				if (velocity) {
 					// making ball move
-					handsWaiting.current = true;
+					// console.log("velocity", velocity);
 
-					console.log("velocity", velocity);
+					cannonWorld.current.addBall(handBallMesh.current, velocity);
+
+					handsWaiting.current = true;
+					handBallMesh.current = null;
+				} else {
+					// let the ball move with hand
+
+					const tmpvec = new THREE.Vector3();
+
+					player1Bones.current.RightHand.getWorldPosition(tmpvec);
+
+					handBallMesh.current.position.copy(tmpvec);
 				}
 			}
 
