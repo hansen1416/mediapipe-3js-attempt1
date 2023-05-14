@@ -5,10 +5,16 @@ import { Pose } from "@mediapipe/pose";
 import Button from "react-bootstrap/Button";
 import "../styles/css/Game.css";
 
-import { loadGLTF, traverseModel, invokeCamera } from "../components/ropes";
+import {
+	loadGLTF,
+	traverseModel,
+	invokeCamera,
+	sleep,
+} from "../components/ropes";
 import PoseToRotation from "../components/PoseToRotation";
 import CannonWorld from "../components/CannonWorld";
 import ThreeScene from "../components/ThreeScene";
+import Toss from "../components/Toss";
 
 // const createWorker = createWorkerFactory(() => import("../pages/HandsWorker"));
 
@@ -58,6 +64,8 @@ export default function Game() {
 
 	const cannonWorld = useRef(null);
 
+	const toss = new Toss();
+
 	useEffect(() => {
 		setsubsceneWidth(sceneWidth * 0.25);
 		setsubsceneHeight((sceneHeight * 0.25 * 480) / 640);
@@ -75,7 +83,7 @@ export default function Game() {
 
 		cannonWorld.current.addBall();
 
-		if (true) {
+		if (false) {
 			setloadingCamera(false);
 			setloadingModel(false);
 		} else {
@@ -206,6 +214,16 @@ export default function Game() {
 
 			poseToRotation.current.applyPoseToBone(pose3D);
 
+			toss.getHandsPos(player1Bones.current);
+
+			const right_has_ball = true;
+
+			if (right_has_ball) {
+				toss.calculateAngularVelocity(true);
+			}
+
+			// we need to calculate a direction and velocity
+
 			// move the position of model
 			const pose2D = cloneDeep(result.poseLandmarks);
 
@@ -221,9 +239,8 @@ export default function Game() {
 					-sceneWidth / 2
 				);
 			}
-
-			// todo, store 4 arms vectors, and decide whether it's defence or attack.
-			// attack include left/right arm attack
+			// let it rest a bit, wait for calculating next model
+			// sleep(16);
 		}
 
 		poseDetectorAvailable.current = true;

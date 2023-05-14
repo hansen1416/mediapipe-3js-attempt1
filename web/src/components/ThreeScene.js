@@ -5,6 +5,8 @@ export default class ThreeScene {
 	constructor(canvas, width, height) {
 		this.scene = new THREE.Scene();
 
+		this.scene.add(new THREE.AxesHelper(100));
+
 		this.camera = new THREE.OrthographicCamera(
 			width / -2, // left
 			width / 2, // right
