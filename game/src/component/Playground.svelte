@@ -16,13 +16,19 @@
 		player1Bones = {},
 		player2Bones = {};
 
-	let cameraReady, mannequinReady, modelReady;
+	let cameraReady = false,
+		mannequinReady = false,
+		modelReady = false;
 
 	let poseDetector, poseDetectorAvailable;
 
 	let runAnimationRef = true,
 		animationPointer;
-	let handsWaiting, handsEmptyCounter, handsAvailable, handBallMesh;
+	let handsWaiting = false,
+		handsEmptyCounter = 0,
+		handsAvailable = false;
+
+	let handBallMesh;
 
 	let poseToRotation;
 
@@ -98,9 +104,9 @@
 			cameraReady = true;
 			mannequinReady = true;
 			modelReady = true;
-			// // hand is ready for ball mesh
-			// handsWaiting = true;
-			// handsAvailable = true;
+			// hand is ready for ball mesh
+			handsWaiting = true;
+			handsAvailable = true;
 		});
 	});
 
@@ -193,10 +199,9 @@
 
 			if (handsWaiting === false) {
 				const velocity = toss.calculateAngularVelocity(false);
-
+				// console.log("velocity", velocity);
 				if (velocity) {
 					// making ball move
-					// console.log("velocity", velocity);
 
 					cannonWorld.addBall(handBallMesh, velocity);
 
@@ -242,7 +247,7 @@
 
 <style>
 	.bg {
-		background-color: #654ea3;
+		background-color: #0f2027;
 	}
 
 	video {
