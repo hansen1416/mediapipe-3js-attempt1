@@ -22,7 +22,7 @@
 
 	let poseDetector, poseDetectorAvailable;
 
-	let runAnimationRef = true,
+	let runAnimation = true,
 		animationPointer;
 	let handsWaiting = false,
 		handsEmptyCounter = 0,
@@ -128,7 +128,7 @@
 		// ========= captured pose logic
 
 		if (
-			runAnimationRef &&
+			runAnimation &&
 			video &&
 			video.readyState >= 2 &&
 			poseDetectorAvailable &&
@@ -243,6 +243,14 @@
 	<video bind:this={video} autoPlay={true} />
 
 	<canvas bind:this={canvas} />
+
+	<div class="controls">
+		<button
+			on:click={() => {
+				runAnimation = !runAnimation;
+			}}>toggle animation</button
+		>
+	</div>
 </div>
 
 <style>
@@ -252,5 +260,17 @@
 
 	video {
 		display: none;
+	}
+
+	.controls {
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+	}
+
+	.controls button {
+		padding: 10px;
+		font-size: 20px;
+		text-transform: capitalize;
 	}
 </style>
