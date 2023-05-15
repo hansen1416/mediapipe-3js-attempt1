@@ -1,6 +1,8 @@
 <script>
 	import { onMount } from "svelte";
 	import * as THREE from "three";
+	import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import { loadGLTF, traverseModel, invokeCamera } from "../lib/ropes";
@@ -21,6 +23,24 @@
 
 	const groundLevel = -100;
 
+	const createPoseLandmarker = async () => {
+		const vision = await FilesetResolver.forVisionTasks(
+			"/tasks-vision/wasm"
+		);
+		return await PoseLandmarker.createFromOptions(vision, {
+			baseOptions: {
+				modelAssetPath: `/tasks-vision/pose_landmarker_lite.task`,
+				delegate: "GPU",
+			},
+			runningMode: "VIDEO",
+			numPoses: 1,
+			minPoseDetectionConfidence: 0.5,
+			minPosePresenceConfidence: 0.5,
+			minTrackingConfidence: 0.5,
+			outputSegmentationMasks: false,
+		});
+	};
+
 	onMount(() => {
 		threeScene = new ThreeScene(canvas, sceneWidth, sceneHeight);
 
@@ -28,6 +48,10 @@
 
 		invokeCamera(video, () => {
 			cameraReady = true;
+		});
+
+		createPoseLandmarker().then((pose) => {
+			console.log(pose);
 		});
 
 		Promise.all([
@@ -135,10 +159,7 @@
 </script>
 
 <div class="bg">
-	<video
-		bind:this={video}
-		autoPlay={true}
-	/>
+	<video bind:this={video} autoPlay={true} />
 
 	<canvas bind:this={canvas} />
 </div>
