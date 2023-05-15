@@ -1,11 +1,14 @@
 <script>
 	import { onMount } from "svelte";
 	import * as THREE from "three";
+	import { cloneDeep } from "lodash";
 	import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
+	import { loadGLTF, traverseModel, invokeCamera } from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
-	import { loadGLTF, traverseModel, invokeCamera } from "../lib/ropes";
+	import PoseToRotation from "../lib/PoseToRotation";
+	import Toss from "../lib/Toss";
 
 	let threeScene, cannonWorld, video, canvas;
 	let player1,
@@ -17,8 +20,13 @@
 
 	let poseDetector, poseDetectorAvailable;
 
-	let runAnimationRef = true, animationPointer;
+	let runAnimationRef = true,
+		animationPointer;
 	let handsWaiting, handsEmptyCounter, handsAvailable, handBallMesh;
+
+	let poseToRotation;
+
+	let toss = new Toss();
 
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
@@ -72,7 +80,7 @@
 
 			traverseModel(player1, player1Bones);
 
-			// poseToRotation = new PoseToRotation(player1Bones);
+			poseToRotation = new PoseToRotation(player1Bones);
 
 			threeScene.scene.add(player1);
 
@@ -106,6 +114,10 @@
 		return mesh;
 	}
 
+	$: if (cameraReady && mannequinReady && modelReady) {
+		animate();
+	}
+
 	function animate() {
 		// ========= captured pose logic
 
@@ -117,11 +129,11 @@
 			poseDetector
 		) {
 			poseDetectorAvailable = false;
-			poseDetector.detectForVideo(video, performance.now(), (result) => {
-				console.log(result)
-
-				poseDetectorAvailable = true;
-			});
+			poseDetector.detectForVideo(
+				video,
+				performance.now(),
+				onPoseCallback
+			);
 		}
 
 		// ========= captured pose logic
@@ -161,8 +173,66 @@
 		animationPointer = requestAnimationFrame(animate);
 	}
 
-	$: if (cameraReady && mannequinReady && modelReady) {
-		animate();
+	function onPoseCallback(result) {
+		if (result && result.poseWorldLandmarks) {
+			// console.log(result);
+			const pose3D = cloneDeep(result.poseWorldLandmarks);
+			// const pose3D = cloneDeep(result.poseLandmarks);
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of pose3D) {
+				v["x"] *= width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+
+			poseToRotation.applyPoseToBone(pose3D);
+
+			toss.getHandsPos(player1Bones);
+
+			if (handsWaiting === false) {
+				const velocity = toss.calculateAngularVelocity(false);
+
+				if (velocity) {
+					// making ball move
+					// console.log("velocity", velocity);
+
+					cannonWorld.addBall(handBallMesh, velocity);
+
+					handsWaiting = true;
+					handBallMesh = null;
+				} else {
+					// let the ball move with hand
+
+					const tmpvec = new THREE.Vector3();
+
+					player1Bones.RightHand.getWorldPosition(tmpvec);
+
+					handBallMesh.position.copy(tmpvec);
+				}
+			}
+
+			// we need to calculate a direction and velocity
+
+			// move the position of model
+			const pose2D = cloneDeep(result.poseLandmarks);
+
+			const to_pos = poseToRotation.applyPosition(
+				pose2D,
+				sceneWidth * 0.6
+			);
+
+			if (to_pos) {
+				player1.position.set(to_pos.x, groundLevel, -sceneWidth / 2);
+			}
+			// let it rest a bit, wait for calculating next model
+			// sleep(16);
+		}
+
+		poseDetectorAvailable = true;
 	}
 </script>
 
