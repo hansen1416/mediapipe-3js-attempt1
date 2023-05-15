@@ -174,10 +174,8 @@
 	}
 
 	function onPoseCallback(result) {
-		if (result && result.poseWorldLandmarks) {
-			// console.log(result);
-			const pose3D = cloneDeep(result.poseWorldLandmarks);
-			// const pose3D = cloneDeep(result.poseLandmarks);
+		if (result && result.worldLandmarks) {
+			const pose3D = cloneDeep(result.worldLandmarks[0]);
 
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
@@ -218,7 +216,7 @@
 			// we need to calculate a direction and velocity
 
 			// move the position of model
-			const pose2D = cloneDeep(result.poseLandmarks);
+			const pose2D = cloneDeep(result.landmarks[0]);
 
 			const to_pos = poseToRotation.applyPosition(
 				pose2D,

@@ -21,14 +21,14 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 		B = A2 * inverse of A1
 	 */
 
-	if (
-		(left_shoulder2.visibility && left_shoulder2.visibility < 0.5) ||
-		(right_shoulder2.visibility && right_shoulder2.visibility < 0.5) ||
-		(left_hip2.visibility && left_hip2.visibility < 0.5) ||
-		(right_hip2.visibility && right_hip2.visibility < 0.5)
-	) {
-		return [new THREE.Quaternion(), new THREE.Quaternion()];
-	}
+	// if (
+	// 	(left_shoulder2.visibility && left_shoulder2.visibility < 0.5) ||
+	// 	(right_shoulder2.visibility && right_shoulder2.visibility < 0.5) ||
+	// 	(left_hip2.visibility && left_hip2.visibility < 0.5) ||
+	// 	(right_hip2.visibility && right_hip2.visibility < 0.5)
+	// ) {
+	// 	return [new THREE.Quaternion(), new THREE.Quaternion()];
+	// }
 
 	const left_oblique = new THREE.Vector3(
 		(left_shoulder2.x + left_hip2.x) / 2,
@@ -343,16 +343,16 @@ export default class PoseToRotation {
 		up_vector,
 		angle_restrain
 	) {
-		if (
-			(this.pose3D[BlazePoseKeypointsValues[start_joint_name]] &&
-				this.pose3D[BlazePoseKeypointsValues[start_joint_name]]
-					.visibility < 0.5) ||
-			(this.pose3D[BlazePoseKeypointsValues[end_joint_name]] &&
-				this.pose3D[BlazePoseKeypointsValues[end_joint_name]]
-					.visibility < 0.5)
-		) {
-			return;
-		}
+		// if (
+		// 	(this.pose3D[BlazePoseKeypointsValues[start_joint_name]] &&
+		// 		this.pose3D[BlazePoseKeypointsValues[start_joint_name]]
+		// 			.visibility < 0.5) ||
+		// 	(this.pose3D[BlazePoseKeypointsValues[end_joint_name]] &&
+		// 		this.pose3D[BlazePoseKeypointsValues[end_joint_name]]
+		// 			.visibility < 0.5)
+		// ) {
+		// 	return;
+		// }
 
 		const start_joint =
 			this.pose3D[BlazePoseKeypointsValues[start_joint_name]];
@@ -466,14 +466,14 @@ export default class PoseToRotation {
 		const left_hip = pose2D[BlazePoseKeypointsValues["RIGHT_HIP"]];
 		const right_hip = pose2D[BlazePoseKeypointsValues["LEFT_HIP"]];
 
-		if (
-			left_shoulder.visibility < 0.5 ||
-			right_shoulder.visibility < 0.5 ||
-			left_hip.visibility < 0.5 ||
-			right_hip.visibility < 0.5
-		) {
-			return;
-		}
+		// if (
+		// 	left_shoulder.visibility < 0.5 ||
+		// 	right_shoulder.visibility < 0.5 ||
+		// 	left_hip.visibility < 0.5 ||
+		// 	right_hip.visibility < 0.5
+		// ) {
+		// 	return;
+		// }
 
 		// use middle point of hips as model position
 		// because we placed abdominal at (0,0,0)
