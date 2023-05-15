@@ -15,7 +15,9 @@
 
 	let cameraReady, mannequinReady, modelReady;
 
-	let runAnimationRef, animationPointer, poseDetectorAvailable, poseDetector;
+	let poseDetector, poseDetectorAvailable;
+
+	let runAnimationRef = true, animationPointer;
 	let handsWaiting, handsEmptyCounter, handsAvailable, handBallMesh;
 
 	const sceneWidth = document.documentElement.clientWidth;
@@ -51,7 +53,9 @@
 		});
 
 		createPoseLandmarker().then((pose) => {
-			console.log(pose);
+			poseDetector = pose;
+
+			poseDetectorAvailable = true;
 		});
 
 		Promise.all([
@@ -113,7 +117,11 @@
 			poseDetector
 		) {
 			poseDetectorAvailable = false;
-			poseDetector.send({ image: video });
+			poseDetector.detectForVideo(video, performance.now(), (result) => {
+				console.log(result)
+
+				poseDetectorAvailable = true;
+			});
 		}
 
 		// ========= captured pose logic
