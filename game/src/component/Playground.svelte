@@ -2,13 +2,19 @@
 	import { onMount } from "svelte";
 	import * as THREE from "three";
 	import ThreeScene from "../lib/ThreeScene";
+	import CannonWorld from "../lib/CannonWorld";
 	import { loadGLTF, traverseModel, invokeCamera } from "../lib/ropes";
 
-	let threeScene, canvas;
+	let threeScene, cannonWorld, video, canvas;
 	let player1,
 		player2,
 		player1Bones = {},
 		player2Bones = {};
+
+	let cameraReady, mannequinReady, modelReady;
+
+	let runAnimationRef, animationPointer, poseDetectorAvailable, poseDetector;
+	let handsWaiting, handsEmptyCounter, handsAvailable, handBallMesh;
 
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
@@ -17,6 +23,12 @@
 
 	onMount(() => {
 		threeScene = new ThreeScene(canvas, sceneWidth, sceneHeight);
+
+		cannonWorld = new CannonWorld(threeScene.scene, groundLevel);
+
+		invokeCamera(video, () => {
+			cameraReady = true;
+		});
 
 		Promise.all([
 			loadGLTF("/glb/daneel.glb"),
@@ -47,28 +59,96 @@
 			threeScene.scene.add(player2);
 
 			// // all models ready
-			// setloadingSilhouette(false);
+			cameraReady = true;
+			mannequinReady = true;
+			modelReady = true;
 			// // hand is ready for ball mesh
 			// handsWaiting = true;
 			// handsAvailable = true;
 		});
-
-		const animate = function () {
-			threeScene.onFrameUpdate();
-
-			requestAnimationFrame(animate);
-		};
-
-		animate();
 	});
+
+	function ballMesh() {
+		const mesh = new THREE.Mesh(
+			new THREE.SphereGeometry(10),
+			new THREE.MeshBasicMaterial()
+		);
+		mesh.castShadow = true;
+
+		return mesh;
+	}
+
+	function animate() {
+		// ========= captured pose logic
+
+		if (
+			runAnimationRef &&
+			video &&
+			video.readyState >= 2 &&
+			poseDetectorAvailable &&
+			poseDetector
+		) {
+			poseDetectorAvailable = false;
+			poseDetector.send({ image: video });
+		}
+
+		// ========= captured pose logic
+
+		threeScene.onFrameUpdate();
+
+		cannonWorld.onFrameUpdate();
+
+		if (handsWaiting) {
+			if (handsEmptyCounter < 60) {
+				handsEmptyCounter += 1;
+			} else {
+				handsAvailable = true;
+				handsEmptyCounter = 0;
+			}
+		}
+
+		if (handsAvailable) {
+			// todo add ball to hand
+
+			handBallMesh = ballMesh();
+
+			// console.log("add ball", handBallMesh, player1Bones);
+
+			const tmpvec = new THREE.Vector3();
+
+			player1Bones.RightHand.getWorldPosition(tmpvec);
+
+			handBallMesh.position.copy(tmpvec);
+
+			threeScene.scene.add(handBallMesh);
+
+			handsAvailable = false;
+			handsWaiting = false;
+		}
+
+		animationPointer = requestAnimationFrame(animate);
+	}
+
+	$: if (cameraReady && mannequinReady && modelReady) {
+		animate();
+	}
 </script>
 
 <div class="bg">
+	<video
+		bind:this={video}
+		autoPlay={true}
+	/>
+
 	<canvas bind:this={canvas} />
 </div>
 
 <style>
 	.bg {
 		background-color: #654ea3;
+	}
+
+	video {
+		display: none;
 	}
 </style>
