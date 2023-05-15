@@ -24,8 +24,9 @@
 
 	let runAnimation = true,
 		animationPointer;
-	let handsWaiting = false,
-		handsEmptyCounter = 0,
+
+	let handsEmptyCounter = 0,
+		handsWaiting = false,
 		handsAvailable = false;
 
 	let handBallMesh;
@@ -197,7 +198,7 @@
 
 			toss.getHandsPos(player1Bones);
 
-			if (handsWaiting === false) {
+			if (handsWaiting === false && handBallMesh) {
 				const velocity = toss.calculateAngularVelocity(false);
 				// console.log("velocity", velocity);
 				if (velocity) {
