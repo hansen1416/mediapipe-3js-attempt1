@@ -43,7 +43,7 @@ export default class CannonWorld {
 		}
 	}
 
-	addBall(mesh, velocity) {
+	project(mesh, velocity) {
 		const sphereBody = new CANNON.Body({
 			mass: 5, // kg
 			shape: new CANNON.Sphere(mesh.geometry.parameters.radius),
@@ -68,7 +68,7 @@ export default class CannonWorld {
 		A value of 0 means there is no damping effect, 
 		and the body will continue moving at a constant velocity forever.
 		 */
-		sphereBody.linearDamping = 0.4;
+		sphereBody.linearDamping = 0.3;
 
 		this.world.addBody(sphereBody);
 

@@ -202,7 +202,7 @@
 				if (velocity) {
 					// making ball move
 
-					cannonWorld.addBall(handBallMesh, velocity);
+					cannonWorld.project(handBallMesh, velocity);
 
 					handsWaiting = true;
 					handBallMesh = null;
@@ -248,6 +248,18 @@
 	<canvas bind:this={canvas} />
 
 	<div class="controls">
+		<button
+			on:click={() => {
+				const mesh = ballMesh();
+				// @ts-ignore
+				mesh.position.set(0, groundLevel, -10);
+
+				threeScene.scene.add(mesh);
+
+				cannonWorld.project(mesh, new THREE.Vector3(0, 6, 30));
+			}}>throw</button
+		>
+
 		{#if runAnimation}
 			<button
 				on:click={() => {
