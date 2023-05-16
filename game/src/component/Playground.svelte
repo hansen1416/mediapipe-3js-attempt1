@@ -257,7 +257,10 @@
 
 				threeScene.scene.add(mesh);
 
-				cannonWorld.project(mesh, new THREE.Vector3(0, 0, 46), 0.1);
+				const direction = new THREE.Vector3(0, 0.1, 2).normalize();
+				const speed = 36;
+
+				cannonWorld.project(mesh, direction.multiplyScalar(speed), 0.1);
 			}}>throw</button
 		>
 
