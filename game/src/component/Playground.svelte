@@ -118,6 +118,7 @@
 		return mesh;
 	}
 
+	// when mannequin, model and camera are erady, start animation loop
 	$: if (cameraReady && mannequinReady && modelReady) {
 		animate();
 	}
@@ -252,11 +253,11 @@
 			on:click={() => {
 				const mesh = ballMesh();
 				// @ts-ignore
-				mesh.position.set(0, groundLevel, -10);
+				mesh.position.set(0, groundLevel+2, -10);
 
 				threeScene.scene.add(mesh);
 
-				cannonWorld.project(mesh, new THREE.Vector3(0, 6, 30));
+				cannonWorld.project(mesh, new THREE.Vector3(0, 0, 46), 0.1);
 			}}>throw</button
 		>
 

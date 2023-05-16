@@ -9,14 +9,35 @@ export default class CannonWorld {
 			gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
 		});
 
+		// add floor
+		// const planeMaterial = new CANNON.Material();
+
+		// planeMaterial.friction = 1;
+
+		// const planeContactMaterial = new CANNON.ContactMaterial(
+		// 	planeMaterial,
+		// 	new CANNON.Material(),
+		// 	{
+		// 		friction: 1,
+		// 		restitution: 1,
+		// 		contactEquationStiffness: 1e6,
+		// 	}
+		// );
+
+		// this.world.addContactMaterial(planeContactMaterial);
+
 		const groundBody = new CANNON.Body({ mass: 0 });
-		groundBody.addShape(new CANNON.Plane());
+		// @ts-ignore
+		// groundBody.material = planeContactMaterial;
+		groundBody.position.set(0, ground_level, 0);
 		groundBody.quaternion.setFromAxisAngle(
 			new CANNON.Vec3(1, 0, 0),
 			-Math.PI / 2
 		);
 
-		groundBody.position.set(0, ground_level, 0);
+		groundBody.addShape(new CANNON.Plane());
+
+		this.world.addBody(groundBody);
 
 		// Create a Three.js ground plane mesh
 		const groundGeometry = new THREE.PlaneGeometry(24, 24);
@@ -26,9 +47,10 @@ export default class CannonWorld {
 		groundMesh.position.set(0, ground_level, 0);
 		groundMesh.rotation.set(-Math.PI / 2, 0, 0);
 		groundMesh.receiveShadow = true;
+
 		this.scene.add(groundMesh);
 
-		this.world.addBody(groundBody);
+		// add floor
 
 		this.rigid = [];
 		this.mesh = [];
@@ -43,10 +65,21 @@ export default class CannonWorld {
 		}
 	}
 
-	project(mesh, velocity) {
+	/**
+	 * 	The value of linearDamping can be set to any non-negative number, 
+		with higher values resulting in faster loss of velocity. 
+		A value of 0 means there is no damping effect, 
+		and the body will continue moving at a constant velocity forever.
+
+	 * @param {object} mesh 
+	 * @param {CANNON.Vec3} velocity control both direction and speed,
+	 * @param {number} dimping control how quickly the object loose its speed
+	 * @returns 
+	 */
+	project(mesh, velocity, size = 0.1, dimping = 0.3) {
 		const sphereBody = new CANNON.Body({
 			mass: 5, // kg
-			shape: new CANNON.Sphere(mesh.geometry.parameters.radius),
+			shape: new CANNON.Box(new CANNON.Vec3(size, size, size)),
 		});
 		sphereBody.position.set(
 			mesh.position.x,
@@ -54,21 +87,9 @@ export default class CannonWorld {
 			mesh.position.z
 		); // m
 
-		const speedScale = 1;
+		sphereBody.velocity.set(velocity.x, velocity.y, velocity.z);
 
-		sphereBody.velocity.set(
-			velocity.x * speedScale,
-			velocity.y * speedScale,
-			velocity.z * speedScale
-		);
-
-		/**
-		The value of linearDamping can be set to any non-negative number, 
-		with higher values resulting in faster loss of velocity. 
-		A value of 0 means there is no damping effect, 
-		and the body will continue moving at a constant velocity forever.
-		 */
-		sphereBody.linearDamping = 0.3;
+		sphereBody.linearDamping = dimping;
 
 		this.world.addBody(sphereBody);
 
