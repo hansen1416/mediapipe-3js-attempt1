@@ -5,7 +5,7 @@ export default class ThreeScene {
 	constructor(canvas, width, height) {
 		this.scene = new THREE.Scene();
 
-		this.scene.add(new THREE.AxesHelper(100));
+		this.scene.add(new THREE.AxesHelper(1));
 
 		this.camera = new THREE.OrthographicCamera(
 			width / -2, // left
@@ -16,7 +16,9 @@ export default class ThreeScene {
 			width * 2 // far
 		);
 
-		this.camera.position.set(0, 200, -width);
+		this.camera.position.set(0, 100, -width);
+		this.camera.zoom = 160; // zoom in by 50%
+		this.camera.updateProjectionMatrix(); // update the camera's projection matrix
 
 		{
 			// mimic the sun light

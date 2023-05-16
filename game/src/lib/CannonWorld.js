@@ -6,7 +6,7 @@ export default class CannonWorld {
 		this.scene = scene;
 
 		this.world = new CANNON.World({
-			gravity: new CANNON.Vec3(0, -98.2, 0), // m/s²
+			gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
 		});
 
 		const groundBody = new CANNON.Body({ mass: 0 });
@@ -19,7 +19,7 @@ export default class CannonWorld {
 		groundBody.position.set(0, ground_level, 0);
 
 		// Create a Three.js ground plane mesh
-		const groundGeometry = new THREE.PlaneGeometry(2000, 2000);
+		const groundGeometry = new THREE.PlaneGeometry(24, 24);
 		const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x363795 });
 		const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
 

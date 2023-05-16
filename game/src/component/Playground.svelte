@@ -22,7 +22,7 @@
 
 	let poseDetector, poseDetectorAvailable;
 
-	let runAnimation = true,
+	let runAnimation = false,
 		animationPointer;
 
 	let handsEmptyCounter = 0,
@@ -38,7 +38,7 @@
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
 
-	const groundLevel = -100;
+	const groundLevel = -1;
 
 	const createPoseLandmarker = async () => {
 		const vision = await FilesetResolver.forVisionTasks(
@@ -78,12 +78,10 @@
 			loadGLTF("/glb/dors.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
 		]).then(([daneel, dors]) => {
-			// player1
-			const scale = 100;
 
+			// player1
 			player1 = dors.scene.children[0];
-			player1.scale.set(scale, scale, scale);
-			player1.position.set(0, groundLevel, -sceneWidth / 2);
+			player1.position.set(0, groundLevel, -10);
 
 			traverseModel(player1, player1Bones);
 
@@ -93,8 +91,7 @@
 
 			// player2
 			player2 = daneel.scene.children[0];
-			player2.scale.set(scale, scale, scale);
-			player2.position.set(0, groundLevel, sceneWidth / 2);
+			player2.position.set(0, groundLevel, 10);
 			player2.rotation.set(0, -Math.PI, 0);
 
 			traverseModel(player2, player2Bones);
@@ -113,8 +110,8 @@
 
 	function ballMesh() {
 		const mesh = new THREE.Mesh(
-			new THREE.SphereGeometry(10),
-			new THREE.MeshBasicMaterial()
+			new THREE.SphereGeometry(0.1),
+			new THREE.MeshNormalMaterial()
 		);
 		mesh.castShadow = true;
 
@@ -241,7 +238,9 @@
 </script>
 
 <div class="bg">
-	<video bind:this={video} autoPlay={true} />
+	<video bind:this={video} autoPlay={true}>
+		<track label="English" kind="captions" default>
+	</video>
 
 	<canvas bind:this={canvas} />
 
