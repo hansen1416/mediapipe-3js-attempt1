@@ -54,7 +54,7 @@ export default class CannonWorld {
 			mesh.position.z
 		); // m
 
-		const speedScale = 11;
+		const speedScale = 1;
 
 		sphereBody.velocity.set(
 			velocity.x * speedScale,

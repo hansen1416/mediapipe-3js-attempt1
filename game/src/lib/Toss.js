@@ -134,7 +134,7 @@ After collecting the data, you will need to manually label the toss events, dire
 		const direction = velocity.clone().normalize();
 
 		// todo, decide what really is a toss
-		if (velocity.length() > 30 && direction.z > 0.6 && direction.y > -0.3) {
+		if (velocity.length() > 30 && direction.z > 0.6) {
 			// console.log("direction", direction);
 			return velocity;
 		}

@@ -217,8 +217,6 @@
 				}
 			}
 
-			// we need to calculate a direction and velocity
-
 			// move the position of model
 			const pose2D = cloneDeep(result.landmarks[0]);
 
@@ -230,8 +228,6 @@
 			if (to_pos) {
 				player1.position.set(to_pos.x, groundLevel, -sceneWidth / 2);
 			}
-			// let it rest a bit, wait for calculating next model
-			// sleep(16);
 		}
 
 		poseDetectorAvailable = true;
