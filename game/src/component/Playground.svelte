@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from "svelte";
-	import * as THREE from "three";
+	import * as THREE from "three"; // @ts-ignore
 	import { cloneDeep } from "lodash";
 	import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
@@ -23,6 +23,7 @@
 	let poseDetector, poseDetectorAvailable;
 
 	let runAnimation = false,
+		showVideo = false,
 		animationPointer;
 
 	let handsEmptyCounter = 0,
@@ -78,7 +79,6 @@
 			loadGLTF("/glb/dors.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
 		]).then(([daneel, dors]) => {
-
 			// player1
 			player1 = dors.scene.children[0];
 			player1.position.set(0, groundLevel, -10);
@@ -110,7 +110,7 @@
 
 	function ballMesh() {
 		const mesh = new THREE.Mesh(
-			new THREE.SphereGeometry(0.1),
+			new THREE.SphereGeometry(0.1), // @ts-ignore
 			new THREE.MeshNormalMaterial()
 		);
 		mesh.castShadow = true;
@@ -166,6 +166,7 @@
 
 			player1Bones.RightHand.getWorldPosition(tmpvec);
 
+			// @ts-ignore
 			handBallMesh.position.copy(tmpvec);
 
 			threeScene.scene.add(handBallMesh);
@@ -238,28 +239,52 @@
 </script>
 
 <div class="bg">
-	<video bind:this={video} autoPlay={true}>
-		<track label="English" kind="captions" default>
+	<video
+		bind:this={video}
+		autoPlay={true}
+		width="480"
+		height="360"
+		style="display: {showVideo ? 'block' : 'none'}"
+	>
+		<track label="English" kind="captions" default />
 	</video>
 
 	<canvas bind:this={canvas} />
 
 	<div class="controls">
-		<button
-			on:click={() => {
-				runAnimation = !runAnimation;
-			}}>toggle animation</button
-		>
+		{#if runAnimation}
+			<button
+				on:click={() => {
+					runAnimation = !runAnimation;
+				}}>stop animation</button
+			>
+		{:else}
+			<button
+				on:click={() => {
+					runAnimation = !runAnimation;
+				}}>run animation</button
+			>
+		{/if}
+
+		{#if showVideo}
+			<button
+				on:click={() => {
+					showVideo = !showVideo;
+				}}>hide video</button
+			>
+		{:else}
+			<button
+				on:click={() => {
+					showVideo = !showVideo;
+				}}>show video</button
+			>
+		{/if}
 	</div>
 </div>
 
 <style>
 	.bg {
 		background-color: #0f2027;
-	}
-
-	video {
-		display: none;
 	}
 
 	.controls {
