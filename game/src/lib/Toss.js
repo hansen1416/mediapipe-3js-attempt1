@@ -6,7 +6,7 @@ export default class Toss {
 		this.left_hand_track = new Deque();
 		this.right_hand_track = new Deque();
 
-		this.max_deque_length = 10;
+		this.max_deque_length = 30;
 	}
 
 	getHandsPos(bones) {
@@ -14,35 +14,43 @@ export default class Toss {
 
 		bones.LeftHand.getWorldPosition(left_hand);
 		// Adds values to the end of a collection.
-		this.left_hand_track.addBack([left_hand.x, left_hand.y, left_hand.z, performance.now()]);
+		this.left_hand_track.addFront({
+			x: left_hand.x,
+			y: left_hand.y,
+			z: left_hand.z,
+			t: performance.now(),
+		});
 
 		if (this.left_hand_track.size() > this.max_deque_length) {
 			// Removes a value from the beginning of a collection, and returns that value.
-			this.left_hand_track.removeFront();
+			this.left_hand_track.removeBack();
 		}
 
 		const right_hand = new THREE.Vector3();
 
 		bones.RightHand.getWorldPosition(right_hand);
 
-		this.right_hand_track.addBack([right_hand.x, right_hand.y, right_hand.z, performance.now()]);
+		this.right_hand_track.addFront({
+			x: right_hand.x,
+			y: right_hand.y,
+			z: right_hand.z,
+			t: performance.now(),
+		});
 
 		if (this.right_hand_track.size() > this.max_deque_length) {
 			// Removes a value from the beginning of a collection, and returns that value.
-			this.right_hand_track.removeFront();
+			this.right_hand_track.removeBack();
 		}
 	}
 
 	getTrack(left = false) {
 		if (left) {
-			return this.left_hand_track.size() >= this.max_deque_length
+			return this.left_hand_track.size() > 1
 				? this.left_hand_track
 				: false;
 		}
 
-		return this.right_hand_track.size() >= this.max_deque_length
-			? this.right_hand_track
-			: false;
+		return this.right_hand_track.size() > 1 ? this.right_hand_track : false;
 	}
 
 	/**
@@ -124,21 +132,81 @@ After collecting the data, you will need to manually label the toss events, dire
 			return velocity and let the ball fly
          */
 
-		const que = this.getTrack(left);
+		let que = this.getTrack(left);
 
 		if (!que) {
 			return que;
 		}
 
-		const velocity = que.peekBack().clone().sub(que.peekFront());
+		const points = que.toArray();
+
+		const end_idx = this.maxCollinearIndx(points);
+
+		const start_point = points[end_idx];
+		const end_point = points[0];
+
+		const velocity = new THREE.Vector3(
+			end_point.x - start_point.x,
+			end_point.y - start_point.y,
+			end_point.z - start_point.z
+		);
+
 		const direction = velocity.clone().normalize();
+		const speed =
+			(velocity.length() * 1000) / (end_point.t - start_point.t);
 
 		// todo, decide what really is a toss
-		if (velocity.length() > 30 && direction.z > 0.6) {
-			// console.log("direction", direction);
-			return velocity;
+		if (speed > 4 && direction.z > 0.5) {
+			// console.log("direction", direction, speed);
+
+			this.clearTrack(left)
+
+			return direction.multiplyScalar(speed * 5);
 		}
 
 		return false;
 	}
+
+	clearTrack(left = false) {
+		if (left) {
+			this.left_hand_track = new Deque();
+		} else {
+			this.right_hand_track = new Deque();
+		}
+	}
+
+	maxCollinearIndx(points, epsilon = 0.001) {
+		if (points.length < 3) {
+			return points.length - 1;
+		}
+
+		const v0 = new THREE.Vector3(
+			points[1].x - points[0].x,
+			points[1].y - points[0].y,
+			points[1].z - points[0].z
+		);
+
+		for (let i = 2; i < points.length; i++) {
+			const vi = new THREE.Vector3(
+				points[i].x - points[0].x,
+				points[i].y - points[0].y,
+				points[i].z - points[0].z
+			);
+			const diff = vi.angleTo(v0);
+
+			if (diff > epsilon) {
+				return i;
+			}
+		}
+
+		return points.length - 1;
+	}
+
+	//   const points = [
+	// 	{ x: 1, y: 1, z: 1 },
+	// 	{ x: 2, y: 2, z: 2 },
+	// 	{ x: 3, y: 3, z: 3 },
+	//   ];
+
+	//   console.log(isCollinear(points)); // Output: true
 }

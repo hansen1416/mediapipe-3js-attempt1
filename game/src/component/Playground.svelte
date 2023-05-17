@@ -23,7 +23,7 @@
 
 	let poseDetector, poseDetectorAvailable;
 
-	let runAnimation = false,
+	let runAnimation = true,
 		showVideo = false,
 		animationPointer;
 
@@ -155,7 +155,7 @@
 		cannonWorld.onFrameUpdate();
 
 		if (handsWaiting) {
-			if (handsEmptyCounter < 60) {
+			if (handsEmptyCounter < 2) {
 				handsEmptyCounter += 1;
 			} else {
 				handsAvailable = true;
@@ -187,7 +187,7 @@
 	}
 
 	function onPoseCallback(result) {
-		if (result && result.worldLandmarks) {
+		if (result && result.worldLandmarks && result.worldLandmarks[0]) {
 			const pose3D = cloneDeep(result.worldLandmarks[0]);
 
 			const width_ratio = 30;
@@ -225,17 +225,17 @@
 				}
 			}
 
-			// move the position of model
-			const pose2D = cloneDeep(result.landmarks[0]);
+			// // move the position of model
+			// const pose2D = cloneDeep(result.landmarks[0]);
 
-			const to_pos = poseToRotation.applyPosition(
-				pose2D,
-				sceneWidth * 0.6
-			);
+			// const to_pos = poseToRotation.applyPosition(
+			// 	pose2D,
+			// 	sceneWidth * 0.6
+			// );
 
-			if (to_pos) {
-				player1.position.set(to_pos.x, groundLevel, -sceneWidth / 2);
-			}
+			// if (to_pos) {
+			// 	player1.position.set(to_pos.x, groundLevel, -sceneWidth / 2);
+			// }
 		}
 
 		poseDetectorAvailable = true;

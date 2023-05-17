@@ -59,6 +59,14 @@ export default class Deque {
 		return this.items[this.backIndex];
 	}
 
+	peekIndex(idx) {
+		if (this.isEmpty()) {
+			return undefined;
+		}
+
+		return this.items[idx];
+	}
+
 	// Returns true if the deque is empty, false otherwise
 	isEmpty() {
 		return this.frontIndex > this.backIndex;
@@ -67,6 +75,16 @@ export default class Deque {
 	// Returns the number of items in the deque
 	size() {
 		return this.backIndex - this.frontIndex + 1;
+	}
+
+	toArray() {
+		const res = [];
+
+		while (!this.isEmpty()) {
+			res.push(this.removeFront());
+		}
+
+		return res;
 	}
 }
 
@@ -82,14 +100,23 @@ export default class Deque {
 // deque.addBack(8);
 
 // console.log(deque);
+// console.log(deque.toArray());
 
-// // console.log(deque.peekFront()); // 2
-// // console.log(deque.peekBack()); // 4
+// // // console.log(deque.peekFront()); // 2
+// // // console.log(deque.peekBack()); // 4
 
 // deque.removeFront();
-// deque.removeBack();
+// deque.removeFront();
+// deque.removeFront();
+// deque.removeFront();
+// deque.removeFront();
+// deque.removeFront();
+// deque.removeFront();
+// deque.removeFront();
+// deque.removeFront();
 
 // console.log(deque);
+// console.log(deque.toArray());
 
-// console.log(deque.peekFront()); // 1
-// console.log(deque.peekBack()); // 3
+// // console.log(deque.peekFront()); // 1
+// // console.log(deque.peekBack()); // 3
