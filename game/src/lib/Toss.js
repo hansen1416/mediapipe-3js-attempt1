@@ -14,7 +14,7 @@ export default class Toss {
 
 		bones.LeftHand.getWorldPosition(left_hand);
 		// Adds values to the end of a collection.
-		this.left_hand_track.addBack(left_hand);
+		this.left_hand_track.addBack([left_hand.x, left_hand.y, left_hand.z, performance.now()]);
 
 		if (this.left_hand_track.size() > this.max_deque_length) {
 			// Removes a value from the beginning of a collection, and returns that value.
@@ -25,7 +25,7 @@ export default class Toss {
 
 		bones.RightHand.getWorldPosition(right_hand);
 
-		this.right_hand_track.addBack(right_hand);
+		this.right_hand_track.addBack([right_hand.x, right_hand.y, right_hand.z, performance.now()]);
 
 		if (this.right_hand_track.size() > this.max_deque_length) {
 			// Removes a value from the beginning of a collection, and returns that value.

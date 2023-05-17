@@ -4,6 +4,7 @@ import * as THREE from "three";
 export default class CannonWorld {
 	constructor(scene, ground_level) {
 		this.scene = scene;
+		this.ground_level = ground_level;
 
 		this.world = new CANNON.World({
 			gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
@@ -54,6 +55,30 @@ export default class CannonWorld {
 
 		this.rigid = [];
 		this.mesh = [];
+	}
+
+	target() {
+
+		const size = new CANNON.Vec3(1, 3, 1)
+		const pos = new THREE.Vector3(0, this.ground_level+1.5, 10)
+
+		const body = new CANNON.Body({
+			mass: 0, // kg
+			shape: new CANNON.Box(size),
+		});
+
+		body.position.set(pos.x, pos.y, pos.z);
+
+		this.world.addBody(body);
+
+		const geometry = new THREE.BoxGeometry(size.x, size.y, size.z);
+		const material = new THREE.MeshBasicMaterial({ color: 0xf12711 });
+		const mesh = new THREE.Mesh(geometry, material);
+
+		mesh.position.set(pos.x, pos.y, pos.z);
+		mesh.receiveShadow = true;
+
+		this.scene.add(mesh);
 	}
 
 	onFrameUpdate() {

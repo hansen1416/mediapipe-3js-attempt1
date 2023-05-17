@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import * as THREE from "three"; // @ts-ignore
 	import { cloneDeep } from "lodash";
 	import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
@@ -12,9 +12,10 @@
 
 	let threeScene, cannonWorld, video, canvas;
 	let player1,
-		player2,
-		player1Bones = {},
-		player2Bones = {};
+		player1Bones = {};
+
+	// let player2,
+	// 	player2Bones = {};
 
 	let cameraReady = false,
 		mannequinReady = false,
@@ -74,11 +75,13 @@
 			poseDetectorAvailable = true;
 		});
 
+		cannonWorld.target();
+
 		Promise.all([
-			loadGLTF("/glb/daneel.glb"),
+			// loadGLTF("/glb/daneel.glb"),
 			loadGLTF("/glb/dors.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
-		]).then(([daneel, dors]) => {
+		]).then(([dors]) => {
 			// player1
 			player1 = dors.scene.children[0];
 			player1.position.set(0, groundLevel, -10);
@@ -89,14 +92,14 @@
 
 			threeScene.scene.add(player1);
 
-			// player2
-			player2 = daneel.scene.children[0];
-			player2.position.set(0, groundLevel, 10);
-			player2.rotation.set(0, -Math.PI, 0);
+			// // player2
+			// player2 = daneel.scene.children[0];
+			// player2.position.set(0, groundLevel, 10);
+			// player2.rotation.set(0, -Math.PI, 0);
 
-			traverseModel(player2, player2Bones);
+			// traverseModel(player2, player2Bones);
 
-			threeScene.scene.add(player2);
+			// threeScene.scene.add(player2);
 
 			// // all models ready
 			cameraReady = true;
@@ -106,6 +109,10 @@
 			handsWaiting = true;
 			handsAvailable = true;
 		});
+	});
+
+	onDestroy(() => {
+		cancelAnimationFrame(animationPointer);
 	});
 
 	function ballMesh() {
@@ -253,7 +260,7 @@
 			on:click={() => {
 				const mesh = ballMesh();
 				// @ts-ignore
-				mesh.position.set(0, groundLevel+2, -10);
+				mesh.position.set(0, groundLevel + 2, -10);
 
 				threeScene.scene.add(mesh);
 
