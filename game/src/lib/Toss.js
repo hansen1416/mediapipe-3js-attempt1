@@ -156,7 +156,7 @@ After collecting the data, you will need to manually label the toss events, dire
 			(velocity.length() * 1000) / (end_point.t - start_point.t);
 
 		// todo, decide what really is a toss
-		if (speed > 4 && direction.z > 0.5) {
+		if (speed > 5 && direction.z > 0.5) {
 			// console.log("direction", direction, speed);
 
 			this.clearTrack(left)
