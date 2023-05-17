@@ -80,8 +80,8 @@ export default class Deque {
 	toArray() {
 		const res = [];
 
-		while (!this.isEmpty()) {
-			res.push(this.removeFront());
+		for (let i = this.frontIndex; i < this.backIndex; i++) {
+			res.push(this.peekIndex(i));
 		}
 
 		return res;
@@ -106,17 +106,9 @@ export default class Deque {
 // // // console.log(deque.peekBack()); // 4
 
 // deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
-// deque.removeFront();
 
 // console.log(deque);
 // console.log(deque.toArray());
 
-// // console.log(deque.peekFront()); // 1
-// // console.log(deque.peekBack()); // 3
+// // // console.log(deque.peekFront()); // 1
+// // // console.log(deque.peekBack()); // 3

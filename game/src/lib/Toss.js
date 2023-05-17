@@ -153,6 +153,8 @@ After collecting the data, you will need to manually label the toss events, dire
 		// console.log(
 		// 	"maxlinear length",
 		// 	end_idx,
+		// 	"total legnth",
+		// 	points.length,
 		// 	"milliseconds diff",
 		// 	points[end_idx].t - points[0].t
 		// );

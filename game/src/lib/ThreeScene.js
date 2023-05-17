@@ -17,11 +17,11 @@ export default class ThreeScene {
 		);
 
 		this.camera.position.set(0, 100, -width);
-		// this.camera.zoom = 160; // zoom in by 50%
-		
+		this.camera.zoom = 160; // zoom in by 50%
+
 		// for throw testing
-		this.camera.zoom = 30; // zoom in by 50%
-		this.camera.position.set(600, 600, -width);
+		// this.camera.zoom = 30; // zoom in by 50%
+		// this.camera.position.set(600, 600, -width);
 		// for throw testing
 
 		this.camera.updateProjectionMatrix(); // update the camera's projection matrix
