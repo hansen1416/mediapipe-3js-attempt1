@@ -257,7 +257,9 @@
 		autoPlay={true}
 		width="480"
 		height="360"
-		style="display: {showVideo ? 'block' : 'none'}"
+		style="position: absolute; top:0; left: 0; display: {showVideo
+			? 'block'
+			: 'none'}"
 	>
 		<track label="English" kind="captions" default />
 	</video>
