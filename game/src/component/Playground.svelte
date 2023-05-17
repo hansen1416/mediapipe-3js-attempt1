@@ -37,6 +37,10 @@
 
 	let toss = new Toss();
 
+	let speed_threshold = 5,
+		collinear_threshold = 0.1,
+		z_threshold = 0.5;
+
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
 
@@ -205,7 +209,12 @@
 			toss.getHandsPos(player1Bones);
 
 			if (handsWaiting === false && handBallMesh) {
-				const velocity = toss.calculateAngularVelocity(false);
+				const velocity = toss.calculateAngularVelocity(
+					false,
+					speed_threshold,
+					z_threshold,
+					collinear_threshold
+				);
 				// console.log("velocity", velocity);
 				if (velocity) {
 					// making ball move
@@ -256,48 +265,75 @@
 	<canvas bind:this={canvas} />
 
 	<div class="controls">
-		<button
-			on:click={() => {
-				const mesh = ballMesh();
-				// @ts-ignore
-				mesh.position.set(0, groundLevel + 2, -10);
-
-				threeScene.scene.add(mesh);
-
-				const direction = new THREE.Vector3(0, 0.1, 2).normalize();
-				const speed = 36;
-
-				cannonWorld.project(mesh, direction.multiplyScalar(speed), 0.1);
-			}}>throw</button
-		>
-
-		{#if runAnimation}
+		<div>
+			<div class="threshold"><span>Threshold</span></div>
+			<label
+				>Speed: <input
+					bind:value={speed_threshold}
+					placeholder=""
+				/></label
+			>
+			<label
+				>Collinear: <input
+					bind:value={collinear_threshold}
+					placeholder=""
+				/></label
+			>
+			<label
+				>Z weight: <input
+					bind:value={z_threshold}
+					placeholder=""
+				/></label
+			>
+		</div>
+		<div>
 			<button
 				on:click={() => {
-					runAnimation = !runAnimation;
-				}}>stop animation</button
-			>
-		{:else}
-			<button
-				on:click={() => {
-					runAnimation = !runAnimation;
-				}}>run animation</button
-			>
-		{/if}
+					const mesh = ballMesh();
+					// @ts-ignore
+					mesh.position.set(0, groundLevel + 2, -10);
 
-		{#if showVideo}
-			<button
-				on:click={() => {
-					showVideo = !showVideo;
-				}}>hide video</button
+					threeScene.scene.add(mesh);
+
+					const direction = new THREE.Vector3(0, 0.1, 2).normalize();
+					const speed = 36;
+
+					cannonWorld.project(
+						mesh,
+						direction.multiplyScalar(speed),
+						0.1
+					);
+				}}>throw</button
 			>
-		{:else}
-			<button
-				on:click={() => {
-					showVideo = !showVideo;
-				}}>show video</button
-			>
-		{/if}
+
+			{#if runAnimation}
+				<button
+					on:click={() => {
+						runAnimation = !runAnimation;
+					}}>stop animation</button
+				>
+			{:else}
+				<button
+					on:click={() => {
+						runAnimation = !runAnimation;
+					}}>run animation</button
+				>
+			{/if}
+
+			{#if showVideo}
+				<button
+					on:click={() => {
+						showVideo = !showVideo;
+					}}>hide video</button
+				>
+			{:else}
+				<button
+					on:click={() => {
+						showVideo = !showVideo;
+					}}>show video</button
+				>
+			{/if}
+		</div>
 	</div>
 </div>
 
@@ -310,6 +346,16 @@
 		position: absolute;
 		bottom: 10px;
 		right: 10px;
+	}
+
+	.controls .threshold,
+	.controls label {
+		color: #fff;
+	}
+
+	.controls input {
+		width: 30px;
+		height: 20px;
 	}
 
 	.controls button {

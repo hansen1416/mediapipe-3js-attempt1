@@ -6,7 +6,7 @@ export default class Toss {
 		this.left_hand_track = new Deque();
 		this.right_hand_track = new Deque();
 
-		this.max_deque_length = 30;
+		this.max_deque_length = 50;
 	}
 
 	getHandsPos(bones) {
@@ -126,7 +126,12 @@ After collecting the data, you will need to manually label the toss events, dire
 	 * @returns 
 	 */
 
-	calculateAngularVelocity(left = false) {
+	calculateAngularVelocity(
+		left = false,
+		speed_threshold = 5,
+		z_threshold = 0.5,
+		collinear_threshold = 0.1
+	) {
 		/**
 			if the velocity is in the right direction and has enough spped
 			return velocity and let the ball fly
@@ -140,10 +145,17 @@ After collecting the data, you will need to manually label the toss events, dire
 
 		const points = que.toArray();
 
-		const end_idx = this.maxCollinearIndx(points);
+		const end_idx = this.maxCollinearIndx(points, collinear_threshold);
 
 		const start_point = points[end_idx];
 		const end_point = points[0];
+
+		// console.log(
+		// 	"maxlinear length",
+		// 	end_idx,
+		// 	"milliseconds diff",
+		// 	points[end_idx].t - points[0].t
+		// );
 
 		const velocity = new THREE.Vector3(
 			end_point.x - start_point.x,
@@ -156,10 +168,10 @@ After collecting the data, you will need to manually label the toss events, dire
 			(velocity.length() * 1000) / (end_point.t - start_point.t);
 
 		// todo, decide what really is a toss
-		if (speed > 5 && direction.z > 0.5) {
-			// console.log("direction", direction, speed);
+		if (speed > speed_threshold && direction.z > z_threshold) {
+			console.log("direction", direction, speed);
 
-			this.clearTrack(left)
+			this.clearTrack(left);
 
 			return direction.multiplyScalar(speed * 5);
 		}
