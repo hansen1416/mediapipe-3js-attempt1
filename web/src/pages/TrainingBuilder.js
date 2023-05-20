@@ -113,15 +113,13 @@ export default function TrainingBuilder() {
 				});
 			});
 
-		loadGLTF(process.env.PUBLIC_URL + "/glb/dors-weighted.glb").then(
-			(glb) => {
-				subsceneModel.current = glb.scene.children[0];
+		loadGLTF(process.env.PUBLIC_URL + "/glb/dors.glb").then((glb) => {
+			subsceneModel.current = glb.scene.children[0];
 
-				scene.current.add(subsceneModel.current);
+			scene.current.add(subsceneModel.current);
 
-				mixer.current = new THREE.AnimationMixer(subsceneModel.current);
-			}
-		);
+			mixer.current = new THREE.AnimationMixer(subsceneModel.current);
+		});
 
 		return () => {
 			if (resizeObserver) {
