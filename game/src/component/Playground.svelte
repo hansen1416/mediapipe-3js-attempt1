@@ -69,7 +69,7 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene, groundLevel);
 
-		if (false) {
+		if (true) {
 			invokeCamera(video, () => {
 				cameraReady = true;
 			});
@@ -222,7 +222,8 @@
 					false,
 					speed_threshold,
 					z_threshold,
-					collinear_threshold
+					collinear_threshold,
+					player1Bones
 				);
 				// console.log("velocity", velocity);
 				if (velocity) {
