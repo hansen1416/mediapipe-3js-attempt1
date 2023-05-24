@@ -4,7 +4,7 @@
 	import { cloneDeep } from "lodash";
 	import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
-	import { loadGLTF, traverseModel, invokeCamera } from "../lib/ropes";
+	import { loadGLTF, invokeCamera } from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
@@ -69,16 +69,19 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene, groundLevel);
 
-		invokeCamera(video, () => {
-			cameraReady = true;
-		});
+		if (false) {
+			invokeCamera(video, () => {
+				cameraReady = true;
+			});
 
-		createPoseLandmarker().then((pose) => {
-			poseDetector = pose;
+			createPoseLandmarker().then((pose) => {
+				poseDetector = pose;
 
-			poseDetectorAvailable = true;
-		});
+				poseDetectorAvailable = true;
+			});
+		}
 
+		// add an rectangle target for practice
 		cannonWorld.target();
 
 		Promise.all([
@@ -90,7 +93,15 @@
 			player1 = dors.scene.children[0];
 			player1.position.set(0, groundLevel, -10);
 
-			traverseModel(player1, player1Bones);
+			player1.traverse(function (node) {
+				if (node.isMesh) {
+					node.castShadow = true;
+				}
+
+				if (node.isBone) {
+					player1Bones[node.name] = node;
+				}
+			});
 
 			poseToRotation = new PoseToRotation(player1Bones);
 
@@ -100,8 +111,6 @@
 			// player2 = daneel.scene.children[0];
 			// player2.position.set(0, groundLevel, 10);
 			// player2.rotation.set(0, -Math.PI, 0);
-
-			// traverseModel(player2, player2Bones);
 
 			// threeScene.scene.add(player2);
 

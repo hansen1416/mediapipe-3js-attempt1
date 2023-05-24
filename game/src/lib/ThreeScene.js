@@ -16,23 +16,24 @@ export default class ThreeScene {
 			width * 2 // far
 		);
 
-		this.camera.position.set(0, 100, -width);
+		this.camera.position.set(0, 10, -width);
 		this.camera.zoom = 160; // zoom in by 50%
 
 		// for throw testing
-		// this.camera.zoom = 30; // zoom in by 50%
-		// this.camera.position.set(600, 600, -width);
+		this.camera.zoom = 30; // zoom in by 50%
+		this.camera.position.set(600, 600, -width);
 		// for throw testing
 
 		this.camera.updateProjectionMatrix(); // update the camera's projection matrix
 
 		{
 			// mimic the sun light
-			const dlight = new THREE.PointLight(0xffffff, 0.4);
-			dlight.position.set(0, 10, 10);
+			const dlight = new THREE.SpotLight(0xffffff, 0.7);
+			dlight.position.set(0, 30, 0);
+			dlight.castShadow = true;
 			this.scene.add(dlight);
 			// env light
-			this.scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+			this.scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 		}
 
 		this.renderer = new THREE.WebGLRenderer({
@@ -41,6 +42,8 @@ export default class ThreeScene {
 			antialias: true,
 		});
 
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = THREE.BasicShadowMap; //THREE.PCFSoftShadowMap;
 		this.renderer.toneMappingExposure = 0.5;
 
 		this.controls = new OrbitControls(this.camera, canvas);

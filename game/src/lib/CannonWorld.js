@@ -41,11 +41,12 @@ export default class CannonWorld {
 		this.world.addBody(groundBody);
 
 		// Create a Three.js ground plane mesh
-		const groundGeometry = new THREE.PlaneGeometry(24, 24);
-		const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x363795 });
-		const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+		const groundMesh = new THREE.Mesh(
+			new THREE.BoxGeometry(24, 24, 0.1),
+			new THREE.MeshStandardMaterial({ color: 0x363795 })
+		);
 
-		groundMesh.position.set(0, ground_level, 0);
+		groundMesh.position.set(0, ground_level - 0.05, 0);
 		groundMesh.rotation.set(-Math.PI / 2, 0, 0);
 		groundMesh.receiveShadow = true;
 
@@ -58,9 +59,8 @@ export default class CannonWorld {
 	}
 
 	target() {
-
-		const size = new CANNON.Vec3(1, 3, 1)
-		const pos = new THREE.Vector3(0, this.ground_level+1.5, 10)
+		const size = new CANNON.Vec3(1, 3, 1);
+		const pos = new THREE.Vector3(0, this.ground_level + 1.5, 10);
 
 		const body = new CANNON.Body({
 			mass: 0, // kg
@@ -71,11 +71,13 @@ export default class CannonWorld {
 
 		this.world.addBody(body);
 
-		const geometry = new THREE.BoxGeometry(size.x, size.y, size.z);
-		const material = new THREE.MeshBasicMaterial({ color: 0xf12711 });
-		const mesh = new THREE.Mesh(geometry, material);
+		const mesh = new THREE.Mesh(
+			new THREE.BoxGeometry(size.x, size.y, size.z),
+			new THREE.MeshStandardMaterial({ color: 0xf12711 })
+		);
 
 		mesh.position.set(pos.x, pos.y, pos.z);
+		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 
 		this.scene.add(mesh);
