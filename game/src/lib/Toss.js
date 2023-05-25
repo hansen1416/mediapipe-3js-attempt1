@@ -131,7 +131,7 @@ After collecting the data, you will need to manually label the toss events, dire
 		speed_threshold = 5,
 		z_threshold = 0.5,
 		collinear_threshold = 0.1,
-		bones,
+		bones
 	) {
 		/**
 			if the velocity is in the right direction and has enough spped
@@ -144,8 +144,7 @@ After collecting the data, you will need to manually label the toss events, dire
 			return que;
 		}
 
-
-		const arm_length = 0.5262200723241929
+		const arm_length = 0.5262200723241929;
 		/**
 		 * 			player1Bones.LeftArm.rotation.set(0,0,0)
 			player1Bones.LeftForeArm.rotation.set(0,0,0)
@@ -166,26 +165,30 @@ After collecting the data, you will need to manually label the toss events, dire
 		const start_point = points[end_idx];
 		const end_point = points[0];
 
+		let direction = null;
+
 		if (left) {
 			const arm_up = bones.LeftArm.up.clone();
-			arm_up.applyQuaternion(bones.LeftArm.quaternion)
+			arm_up.applyQuaternion(bones.LeftArm.quaternion);
 
-			console.log(arm_up)
+			console.log(arm_up);
 		} else {
-			const handpos = new THREE.Vector3()
-			bones.LeftHand.getWorldPosition(handpos)
+			const handpos = new THREE.Vector3();
+			bones.LeftHand.getWorldPosition(handpos);
 
-			const shoulderpos = new THREE.Vector3()
-			bones.LeftArm.getWorldPosition(shoulderpos)
+			const shoulderpos = new THREE.Vector3();
+			bones.LeftArm.getWorldPosition(shoulderpos);
 
-			const dirv = new THREE.Vector3().subVectors(handpos, shoulderpos).normalize()
+			const dirv = new THREE.Vector3()
+				.subVectors(handpos, shoulderpos)
+				.normalize();
 
-			// if arm vector within 10degree from 0,0,1, we have a direction 
-			if (dirv.angleTo(new THREE.Vector3(0,0,1)) < 0.1745) {
-				console.log('dirv', dirv.angleTo(new THREE.Vector3(0,0,1)))
+			// if arm vector within 10degree from 0,0,1, we have a direction
+			// and the arm is straight enough, more than 80 percent total length
+			if (dirv.angleTo(new THREE.Vector3(0, 0, 1)) < THREE.MathUtils.degToRad(15) && handpos.distanceTo(shoulderpos) >= arm_length * 0.7) {
+				direction = dirv;
 			}
 		}
-
 
 		const velocity = new THREE.Vector3(
 			end_point.x - start_point.x,
@@ -193,13 +196,18 @@ After collecting the data, you will need to manually label the toss events, dire
 			end_point.z - start_point.z
 		);
 
-		const direction = velocity.clone().normalize();
 		const speed =
 			(velocity.length() * 1000) / (end_point.t - start_point.t);
 
 		// todo, decide what really is a toss
-		if (speed > speed_threshold && direction.z > z_threshold) {
-			console.log("direction", direction, speed);
+		if (speed > speed_threshold && direction) {
+			console.log(
+				"direction",
+				direction,
+				speed,
+				"angle difference",
+				direction.angleTo(new THREE.Vector3(0, 0, 1))
+			);
 
 			this.clearTrack(left);
 

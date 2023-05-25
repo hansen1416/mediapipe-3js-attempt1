@@ -29,7 +29,8 @@
 
 	let handsEmptyCounter = 0,
 		handsWaiting = false,
-		handsAvailable = false;
+		handsAvailable = false,
+		handsWaitingThreshold = 1*60; // wait 1 second to reload weapon
 
 	let handBallMesh;
 
@@ -168,7 +169,7 @@
 		cannonWorld.onFrameUpdate();
 
 		if (handsWaiting) {
-			if (handsEmptyCounter < 2) {
+			if (handsEmptyCounter < handsWaitingThreshold) {
 				handsEmptyCounter += 1;
 			} else {
 				handsAvailable = true;
