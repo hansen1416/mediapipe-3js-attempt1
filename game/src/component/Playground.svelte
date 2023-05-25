@@ -38,9 +38,7 @@
 
 	let toss = new Toss();
 
-	let speed_threshold = 5,
-		collinear_threshold = 0.1,
-		z_threshold = 0.5;
+	let speed_threshold = 5;
 
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
@@ -220,11 +218,9 @@
 
 			if (handsWaiting === false && handBallMesh) {
 				const velocity = toss.calculateAngularVelocity(
+					player1Bones,
 					false,
 					speed_threshold,
-					z_threshold,
-					collinear_threshold,
-					player1Bones
 				);
 				// console.log("velocity", velocity);
 				if (velocity) {
@@ -283,18 +279,6 @@
 			<label
 				>Speed: <input
 					bind:value={speed_threshold}
-					placeholder=""
-				/></label
-			>
-			<label
-				>Collinear: <input
-					bind:value={collinear_threshold}
-					placeholder=""
-				/></label
-			>
-			<label
-				>Z weight: <input
-					bind:value={z_threshold}
 					placeholder=""
 				/></label
 			>
