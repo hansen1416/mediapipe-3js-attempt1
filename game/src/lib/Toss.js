@@ -84,9 +84,10 @@ export default class Toss {
 
 		// if arm vector within 10degree from 0,0,1, we have a direction
 		// and the arm is straight enough, more than 80 percent total length
+
 		if (
-			direction.angleTo(new THREE.Vector3(0, 0, 1)) <
-				THREE.MathUtils.degToRad(15) &&
+			Math.abs(direction.x) < 0.6 &&
+			Math.abs(direction.y) < 0.3 &&
 			handpos.distanceTo(shoulderpos) >= arm_length * 0.8
 		) {
 			return direction;
@@ -102,7 +103,7 @@ export default class Toss {
 	 * @param {number} speed_threshold
 	 * @returns
 	 */
-	calculateAngularVelocity(bones, left = false, speed_threshold = 5) {
+	calculateAngularVelocity(bones, left = false, speed_threshold = 2) {
 		/**
 			if the velocity is in the right direction and has enough spped
 			return velocity and let the ball fly
@@ -148,7 +149,7 @@ export default class Toss {
 
 			this.clearTrack(left);
 
-			return direction.multiplyScalar(speed * 5);
+			return direction.multiplyScalar(speed * 20);
 		}
 
 		return false;

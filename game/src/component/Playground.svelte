@@ -30,7 +30,7 @@
 	let handsEmptyCounter = 0,
 		handsWaiting = false,
 		handsAvailable = false,
-		handsWaitingThreshold = 1*60; // wait 1 second to reload weapon
+		handsWaitingThreshold = 1 * 60; // wait 1 second to reload weapon
 
 	let handBallMesh;
 
@@ -38,7 +38,7 @@
 
 	let toss = new Toss();
 
-	let speed_threshold = 5;
+	let speed_threshold = 2;
 
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
@@ -220,7 +220,7 @@
 				const velocity = toss.calculateAngularVelocity(
 					player1Bones,
 					false,
-					speed_threshold,
+					speed_threshold
 				);
 				// console.log("velocity", velocity);
 				if (velocity) {
