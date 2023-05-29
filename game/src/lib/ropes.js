@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { Quaternion } from "three";
+import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -1381,6 +1382,32 @@ export function jsonToBufferGeometry(data) {
 
 	return geometry;
 }
+
+export function ballMesh() {
+	const mesh = new THREE.Mesh(
+		new THREE.SphereGeometry(0.1), // @ts-ignore
+		new THREE.MeshNormalMaterial()
+	);
+	mesh.castShadow = true;
+
+	return mesh;
+}
+
+export async function createPoseLandmarker() {
+	const vision = await FilesetResolver.forVisionTasks("/tasks-vision/wasm");
+	return await PoseLandmarker.createFromOptions(vision, {
+		baseOptions: {
+			modelAssetPath: `/tasks-vision/pose_landmarker_lite.task`,
+			delegate: "GPU",
+		},
+		runningMode: "VIDEO",
+		numPoses: 1,
+		minPoseDetectionConfidence: 0.5,
+		minPosePresenceConfidence: 0.5,
+		minTrackingConfidence: 0.5,
+		outputSegmentationMasks: false,
+	});
+};
 
 /**
  * calf_l

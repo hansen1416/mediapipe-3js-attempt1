@@ -2,9 +2,8 @@
 	import { onDestroy, onMount } from "svelte";
 	import * as THREE from "three"; // @ts-ignore
 	import { cloneDeep } from "lodash";
-	import { PoseLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
-	import { loadGLTF, invokeCamera } from "../lib/ropes";
+	import { ballMesh, createPoseLandmarker, loadGLTF, invokeCamera } from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
@@ -33,12 +32,11 @@
 	let handsEmptyCounterLeft = 0,
 		handsWaitingLeft = false,
 		handsAvailableLeft = false,
-		handsEmptyCounterRight = 0,
+		handBallMeshLeft;
+	let handsEmptyCounterRight = 0,
 		handsWaitingRight = false,
-		handsAvailableRight = false;
-
-	let handBallMeshLeft;
-	let handBallMeshRight;
+		handsAvailableRight = false,
+		handBallMeshRight;
 
 	let poseToRotation;
 
@@ -48,24 +46,6 @@
 	const sceneHeight = document.documentElement.clientHeight;
 
 	const groundLevel = -1;
-
-	const createPoseLandmarker = async () => {
-		const vision = await FilesetResolver.forVisionTasks(
-			"/tasks-vision/wasm"
-		);
-		return await PoseLandmarker.createFromOptions(vision, {
-			baseOptions: {
-				modelAssetPath: `/tasks-vision/pose_landmarker_lite.task`,
-				delegate: "GPU",
-			},
-			runningMode: "VIDEO",
-			numPoses: 1,
-			minPoseDetectionConfidence: 0.5,
-			minPosePresenceConfidence: 0.5,
-			minTrackingConfidence: 0.5,
-			outputSegmentationMasks: false,
-		});
-	};
 
 	onMount(() => {
 		threeScene = new ThreeScene(canvas, sceneWidth, sceneHeight);
@@ -132,16 +112,6 @@
 	onDestroy(() => {
 		cancelAnimationFrame(animationPointer);
 	});
-
-	function ballMesh() {
-		const mesh = new THREE.Mesh(
-			new THREE.SphereGeometry(0.1), // @ts-ignore
-			new THREE.MeshNormalMaterial()
-		);
-		mesh.castShadow = true;
-
-		return mesh;
-	}
 
 	// when mannequin, model and camera are erady, start animation loop
 	$: if (cameraReady && mannequinReady && modelReady) {
