@@ -55,7 +55,7 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
-		if (true) {
+		if (false) {
 			invokeCamera(video, () => {
 				cameraReady = true;
 			});
@@ -108,7 +108,7 @@
 
 			threeScene.scene.add(player2);
 
-			cannonWorld.daneelBody()
+			cannonWorld.daneelBody(player2)
 
 			// all models ready
 			cameraReady = true;

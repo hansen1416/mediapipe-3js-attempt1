@@ -61,32 +61,67 @@ export default class CannonWorld {
 		this.debuggerInstance = new CannonDebugger(this.scene, this.world);
 	}
 
-	daneelBody() {
-		const size = 0.5;
-		const pos = new THREE.Vector3(0, GROUND_LEVEL + 3, 2);
+	daneelBody(mesh) {
+		const meshes = {};
 
-		const body = new CANNON.Body({
-			mass: 5, // kg
-			shape: new CANNON.Sphere(size),
+		mesh.traverse(function (node) {
+			if (node.isMesh) {
+				meshes[node.name] = node;
+			}
 		});
 
-		body.position.set(pos.x, pos.y, pos.z);
+		console.log(meshes)
 
-		this.world.addBody(body);
+		const meshKey = "Wolf3D_Body"
 
-		const mesh = new THREE.Mesh(
-			new THREE.SphereGeometry(size),
-			new THREE.MeshStandardMaterial({ color: 0xf12711 })
-		);
+		const positions =
+			meshes[meshKey].geometry.attributes.position.data.array;
+		const indices = meshes[meshKey].geometry.index.array;
+		const normals =
+			meshes[meshKey].geometry.attributes.normal.data.array;
 
-		mesh.position.set(pos.x, pos.y, pos.z);
-		mesh.castShadow = true;
-		mesh.receiveShadow = true;
+		const cannonPoints = [];
 
-		this.scene.add(mesh);
+		for (let i = 0; i < positions.length; i += 3) {
+			cannonPoints.push(
+				new CANNON.Vec3(
+					positions[i],
+					positions[i + 1],
+					positions[i + 2]
+				)
+			);
+		}
+
+		const cannonFaces = [];
+
+		for (let i = 0; i < indices.length; i += 3) {
+			cannonFaces.push([indices[i], indices[i + 1], indices[i + 2]]);
+		}
+
+		const cannonNormals = [];
+
+		for (let i = 0; i < normals.length; i += 3) {
+			cannonNormals.push(
+				new CANNON.Vec3(normals[i], normals[i + 1], normals[i + 2])
+			);
+		}
+		// console.log(meshes["Wolf3D_Body"].geometry);
+
+		const shape = new CANNON.ConvexPolyhedron({
+			vertices: cannonPoints,
+			faces: cannonFaces,
+			normals: cannonNormals,
+		});
+
+		const body = new CANNON.Body({
+			mass: 10, // kg
+			shape: shape,
+		});
+
+		this.world.addBody(body)
 
 		this.rigid.push(body);
-		this.mesh.push(mesh);
+		this.mesh.push(meshes[meshKey]);
 	}
 
 	onFrameUpdate() {
