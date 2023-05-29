@@ -2,6 +2,49 @@ import * as CANNON from "cannon-es";
 import * as THREE from "three";
 import { GROUND_LEVEL, FLOOR_WIDTH, FLOOR_HEIGHT } from "./constants";
 import CannonDebugger from "cannon-es-debugger";
+import { Vector3 } from "three";
+
+function isIndexed(mesh) {
+	return mesh.geometry.index != null;
+}
+
+function getFaces(mesh) {
+	const faces = [];
+	const position = mesh.geometry.getAttribute("position");
+
+	if (isIndexed(mesh)) {
+		const index = mesh.geometry.getIndex();
+
+		for (let i = 0; i < index.count; i += 3) {
+			const face = [index.getX(i), index.getX(i + 1), index.getX(i + 2)];
+			faces.push(face);
+		}
+	} else {
+		for (let i = 0; i < position.count; i += 3) {
+			const face = [i, i + 1, i + 2];
+			faces.push(face);
+		}
+	}
+
+	return faces;
+}
+
+function getVertices(mesh) {
+	const position = mesh.geometry.getAttribute("position");
+	const vertices = [];
+
+	for (let i = 0; i < position.count / position.itemSize; i++) {
+		const vertex = new CANNON.Vec3(
+			position.getX(i),
+			position.getY(i),
+			position.getZ(i)
+		);
+
+		vertices.push(vertex);
+	}
+
+	return vertices;
+}
 
 export default class CannonWorld {
 	constructor(scene) {
@@ -70,47 +113,36 @@ export default class CannonWorld {
 			}
 		});
 
-		console.log(meshes)
+		console.log(meshes);
 
-		const meshKey = "Wolf3D_Body"
+		const meshKey = "Wolf3D_Outfit_Top";
 
 		const positions =
 			meshes[meshKey].geometry.attributes.position.data.array;
-		const indices = meshes[meshKey].geometry.index.array;
-		const normals =
-			meshes[meshKey].geometry.attributes.normal.data.array;
+		// const indices = meshes[meshKey].geometry.index.array;
 
-		const cannonPoints = [];
+		const indices =
+			meshes[meshKey].geometry.attributes.skinIndex.data.array;
 
-		for (let i = 0; i < positions.length; i += 3) {
-			cannonPoints.push(
-				new CANNON.Vec3(
-					positions[i],
-					positions[i + 1],
-					positions[i + 2]
-				)
-			);
-		}
+		const normals = meshes[meshKey].geometry.attributes.normal.data.array;
 
-		const cannonFaces = [];
+		const buffergeo = meshes[meshKey].geometry.clone();
 
-		for (let i = 0; i < indices.length; i += 3) {
-			cannonFaces.push([indices[i], indices[i + 1], indices[i + 2]]);
-		}
+		console.log(buffergeo);
 
-		const cannonNormals = [];
+		const meshtmp = new THREE.Mesh(
+			buffergeo,
+			new THREE.MeshBasicMaterial({ color: 0xff0000 })
+		);
 
-		for (let i = 0; i < normals.length; i += 3) {
-			cannonNormals.push(
-				new CANNON.Vec3(normals[i], normals[i + 1], normals[i + 2])
-			);
-		}
-		// console.log(meshes["Wolf3D_Body"].geometry);
+		const vertices = getVertices(meshtmp);
+		const faces = getFaces(meshtmp);
+
+		console.log(vertices, faces);
 
 		const shape = new CANNON.ConvexPolyhedron({
-			vertices: cannonPoints,
-			faces: cannonFaces,
-			normals: cannonNormals,
+			vertices: vertices,
+			faces: faces,
 		});
 
 		const body = new CANNON.Body({
@@ -118,10 +150,85 @@ export default class CannonWorld {
 			shape: shape,
 		});
 
-		this.world.addBody(body)
+		this.world.addBody(body);
 
 		this.rigid.push(body);
+
 		this.mesh.push(meshes[meshKey]);
+
+		// const vtmp = new THREE.Vector3();
+
+		// meshes[meshKey].getWorldPosition(vtmp);
+
+		// // meshtmp.position.set(vtmp.x, vtmp.y, vtmp.z);
+
+		// this.scene.add(meshtmp);
+
+		// const bbox = meshes[meshKey].geometry.boundingBox;
+		// // console.log(meshes[meshKey].geometry.boundingBox);
+
+		// const vtmp = new THREE.Vector3();
+
+		// meshes[meshKey].getWorldPosition(vtmp);
+
+		// console.log(meshes[meshKey], vtmp);
+
+		// const meshtmp = new THREE.Mesh(
+		// 	new THREE.BoxGeometry(
+		// 		(bbox.max.x - bbox.min.x) / 2,
+		// 		(bbox.max.y - bbox.min.y) / 2,
+		// 		(bbox.max.z - bbox.min.z) / 2
+		// 	),
+		// 	new THREE.MeshBasicMaterial({ color: 0xff0000 })
+		// );
+
+		// meshtmp.position.set(vtmp.x, vtmp.y, vtmp.z);
+
+		// this.scene.add(meshtmp);
+
+		// const cannonPoints = [];
+
+		// for (let i = 0; i < positions.length; i += 3) {
+		// 	cannonPoints.push(
+		// 		new CANNON.Vec3(
+		// 			positions[i],
+		// 			positions[i + 1],
+		// 			positions[i + 2]
+		// 		)
+		// 	);
+		// }
+
+		// const cannonFaces = [];
+
+		// for (let i = 0; i < indices.length; i += 3) {
+		// 	cannonFaces.push([indices[i], indices[i + 1], indices[i + 2]]);
+		// }
+
+		// const cannonNormals = [];
+
+		// for (let i = 0; i < normals.length; i += 3) {
+		// 	cannonNormals.push(
+		// 		new CANNON.Vec3(normals[i], normals[i + 1], normals[i + 2])
+		// 	);
+		// }
+
+		//
+
+		// const shape = new CANNON.ConvexPolyhedron({
+		// 	vertices: cannonPoints,
+		// 	faces: cannonFaces,
+		// 	normals: cannonNormals,
+		// });
+
+		// const body = new CANNON.Body({
+		// 	mass: 10, // kg
+		// 	shape: shape,
+		// });
+
+		// this.world.addBody(body);
+
+		// this.rigid.push(body);
+		// this.mesh.push(meshes[meshKey]);
 	}
 
 	onFrameUpdate() {
