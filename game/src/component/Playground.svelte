@@ -27,18 +27,22 @@
 		showVideo = false,
 		animationPointer;
 
-	let handsEmptyCounter = 0,
-		handsWaiting = false,
-		handsAvailable = false,
-		handsWaitingThreshold = 1 * 60; // wait 1 second to reload weapon
+	let handsWaitingThreshold = 1 * 60, // wait 1 second to reload weapon
+		speed_threshold = 2;
 
-	let handBallMesh;
+	let handsEmptyCounterLeft = 0,
+		handsWaitingLeft = false,
+		handsAvailableLeft = false,
+		handsEmptyCounterRight = 0,
+		handsWaitingRight = false,
+		handsAvailableRight = false;
+
+	let handBallMeshLeft;
+	let handBallMeshRight;
 
 	let poseToRotation;
 
 	let toss = new Toss();
-
-	let speed_threshold = 2;
 
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
@@ -118,8 +122,10 @@
 			mannequinReady = true;
 			modelReady = true;
 			// hand is ready for ball mesh
-			handsWaiting = true;
-			handsAvailable = true;
+			handsWaitingLeft = true;
+			handsAvailableLeft = true;
+			handsWaitingRight = true;
+			handsAvailableRight = true;
 		});
 	});
 
@@ -166,33 +172,60 @@
 
 		cannonWorld.onFrameUpdate();
 
-		if (handsWaiting) {
-			if (handsEmptyCounter < handsWaitingThreshold) {
-				handsEmptyCounter += 1;
+		if (handsWaitingLeft) {
+			if (handsEmptyCounterLeft < handsWaitingThreshold) {
+				handsEmptyCounterLeft += 1;
 			} else {
-				handsAvailable = true;
-				handsEmptyCounter = 0;
+				handsAvailableLeft = true;
+				handsEmptyCounterLeft = 0;
 			}
 		}
 
-		if (handsAvailable) {
+		if (handsWaitingRight) {
+			if (handsEmptyCounterRight < handsWaitingThreshold) {
+				handsEmptyCounterRight += 1;
+			} else {
+				handsAvailableRight = true;
+				handsEmptyCounterRight = 0;
+			}
+		}
+
+		if (handsAvailableLeft) {
 			// todo add ball to hand
 
-			handBallMesh = ballMesh();
+			handBallMeshLeft = ballMesh();
 
-			// console.log("add ball", handBallMesh, player1Bones);
+			// console.log("add ball", handBallMeshLeft, player1Bones);
+
+			const tmpvec = new THREE.Vector3();
+
+			player1Bones.LeftHand.getWorldPosition(tmpvec);
+
+			// @ts-ignore
+			handBallMeshLeft.position.copy(tmpvec);
+
+			threeScene.scene.add(handBallMeshLeft);
+
+			handsAvailableLeft = false;
+			handsWaitingLeft = false;
+		}
+
+		if (handsAvailableRight) {
+			// todo add ball to hand
+
+			handBallMeshRight = ballMesh();
 
 			const tmpvec = new THREE.Vector3();
 
 			player1Bones.RightHand.getWorldPosition(tmpvec);
 
 			// @ts-ignore
-			handBallMesh.position.copy(tmpvec);
+			handBallMeshRight.position.copy(tmpvec);
 
-			threeScene.scene.add(handBallMesh);
+			threeScene.scene.add(handBallMeshRight);
 
-			handsAvailable = false;
-			handsWaiting = false;
+			handsAvailableRight = false;
+			handsWaitingRight = false;
 		}
 
 		animationPointer = requestAnimationFrame(animate);
@@ -216,7 +249,7 @@
 
 			toss.getHandsPos(player1Bones);
 
-			if (handsWaiting === false && handBallMesh) {
+			if (handsWaitingLeft === false && handBallMeshLeft) {
 				const velocity = toss.calculateAngularVelocity(
 					player1Bones,
 					false,
@@ -226,10 +259,35 @@
 				if (velocity) {
 					// making ball move
 
-					cannonWorld.project(handBallMesh, velocity);
+					cannonWorld.project(handBallMeshLeft, velocity);
 
-					handsWaiting = true;
-					handBallMesh = null;
+					handsWaitingLeft = true;
+					handBallMeshLeft = null;
+				} else {
+					// let the ball move with hand
+
+					const tmpvec = new THREE.Vector3();
+
+					player1Bones.LeftHand.getWorldPosition(tmpvec);
+
+					handBallMeshLeft.position.copy(tmpvec);
+				}
+			}
+
+			if (handsWaitingRight === false && handBallMeshRight) {
+				const velocity = toss.calculateAngularVelocity(
+					player1Bones,
+					false,
+					speed_threshold
+				);
+				// console.log("velocity", velocity);
+				if (velocity) {
+					// making ball move
+
+					cannonWorld.project(handBallMeshRight, velocity);
+
+					handsWaitingRight = true;
+					handBallMeshRight = null;
 				} else {
 					// let the ball move with hand
 
@@ -237,7 +295,7 @@
 
 					player1Bones.RightHand.getWorldPosition(tmpvec);
 
-					handBallMesh.position.copy(tmpvec);
+					handBallMeshRight.position.copy(tmpvec);
 				}
 			}
 
