@@ -18,8 +18,8 @@
 	let player1,
 		player1Bones = {};
 
-	// let player2,
-	// 	player2Bones = {};
+	let player2,
+		player2Bones = {};
 
 	let cameraReady = false,
 		mannequinReady = false,
@@ -71,10 +71,10 @@
 		cannonWorld.target();
 
 		Promise.all([
-			// loadGLTF("/glb/daneel.glb"),
 			loadGLTF("/glb/dors.glb"),
+			loadGLTF("/glb/daneel.glb"),
 			// loadGLTF(process.env.PUBLIC_URL + "/glb/monster.glb"),
-		]).then(([dors]) => {
+		]).then(([dors, daneel]) => {
 			// player1
 			player1 = dors.scene.children[0];
 			player1.position.set(0, GROUND_LEVEL, PLAYER_Z);
@@ -93,14 +93,24 @@
 
 			threeScene.scene.add(player1);
 
-			// // player2
-			// player2 = daneel.scene.children[0];
-			// player2.position.set(0, GROUND_LEVEL, 10);
-			// player2.rotation.set(0, -Math.PI, 0);
+			// player2
+			player2 = daneel.scene.children[0];
+			player2.position.set(0, GROUND_LEVEL, -PLAYER_Z);
+			player2.rotation.set(0, -Math.PI, 0);
 
-			// threeScene.scene.add(player2);
+			player2.traverse(function (node) {
+				if (node.isMesh) {
+					node.castShadow = true;
+				}
 
-			// // all models ready
+				if (node.isBone) {
+					player2Bones[node.name] = node;
+				}
+			});
+
+			threeScene.scene.add(player2);
+
+			// all models ready
 			cameraReady = true;
 			mannequinReady = true;
 			modelReady = true;
