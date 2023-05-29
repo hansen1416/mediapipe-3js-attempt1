@@ -11,7 +11,7 @@ export default class CannonWorld {
 			gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
 		});
 
-		// add floor
+		// add floor Material
 		// const planeMaterial = new CANNON.Material();
 
 		// planeMaterial.friction = 1;
@@ -62,12 +62,12 @@ export default class CannonWorld {
 	}
 
 	daneelBody() {
-		const size = new CANNON.Vec3(0.5, 0.5, 0.5);
+		const size = 0.5;
 		const pos = new THREE.Vector3(0, GROUND_LEVEL + 3, 2);
 
 		const body = new CANNON.Body({
-			mass: 10, // kg
-			shape: new CANNON.Box(size),
+			mass: 5, // kg
+			shape: new CANNON.Sphere(size),
 		});
 
 		body.position.set(pos.x, pos.y, pos.z);
@@ -75,7 +75,7 @@ export default class CannonWorld {
 		this.world.addBody(body);
 
 		const mesh = new THREE.Mesh(
-			new THREE.BoxGeometry(size.x * 2, size.y * 2, size.z * 2),
+			new THREE.SphereGeometry(size),
 			new THREE.MeshStandardMaterial({ color: 0xf12711 })
 		);
 
