@@ -1,6 +1,7 @@
 import * as CANNON from "cannon-es";
 import * as THREE from "three";
 import { GROUND_LEVEL, FLOOR_WIDTH, FLOOR_HEIGHT } from "./constants";
+import CannonDebugger from "cannon-es-debugger";
 
 export default class CannonWorld {
 	constructor(scene) {
@@ -27,6 +28,7 @@ export default class CannonWorld {
 
 		// this.world.addContactMaterial(planeContactMaterial);
 
+		// add floor
 		const groundBody = new CANNON.Body({ mass: 0 });
 		// @ts-ignore
 		// groundBody.material = planeContactMaterial;
@@ -40,30 +42,31 @@ export default class CannonWorld {
 
 		this.world.addBody(groundBody);
 
+		const flootDepth = 0.2;
 		// Create a Three.js ground plane mesh
 		const groundMesh = new THREE.Mesh(
-			new THREE.BoxGeometry(24, FLOOR_HEIGHT, 0.1),
+			new THREE.BoxGeometry(FLOOR_WIDTH, FLOOR_HEIGHT, flootDepth),
 			new THREE.MeshStandardMaterial({ color: 0x363795 })
 		);
 
-		groundMesh.position.set(0, GROUND_LEVEL - 0.05, 0);
+		groundMesh.position.set(0, GROUND_LEVEL - flootDepth / 2, 0);
 		groundMesh.rotation.set(-Math.PI / 2, 0, 0);
 		groundMesh.receiveShadow = true;
 
 		this.scene.add(groundMesh);
 
-		// add floor
-
 		this.rigid = [];
 		this.mesh = [];
+		// @ts-ignore
+		this.debuggerInstance = new CannonDebugger(this.scene, this.world);
 	}
 
-	target() {
-		const size = new CANNON.Vec3(1, 3, 1);
-		const pos = new THREE.Vector3(FLOOR_WIDTH, GROUND_LEVEL + 1.5, 10);
+	daneelBody() {
+		const size = new CANNON.Vec3(0.5, 0.5, 0.5);
+		const pos = new THREE.Vector3(0, GROUND_LEVEL + 3, 2);
 
 		const body = new CANNON.Body({
-			mass: 0, // kg
+			mass: 10, // kg
 			shape: new CANNON.Box(size),
 		});
 
@@ -72,7 +75,7 @@ export default class CannonWorld {
 		this.world.addBody(body);
 
 		const mesh = new THREE.Mesh(
-			new THREE.BoxGeometry(size.x, size.y, size.z),
+			new THREE.BoxGeometry(size.x * 2, size.y * 2, size.z * 2),
 			new THREE.MeshStandardMaterial({ color: 0xf12711 })
 		);
 
@@ -81,10 +84,15 @@ export default class CannonWorld {
 		mesh.receiveShadow = true;
 
 		this.scene.add(mesh);
+
+		this.rigid.push(body);
+		this.mesh.push(mesh);
 	}
 
 	onFrameUpdate() {
 		this.world.fixedStep();
+
+		this.debuggerInstance.update();
 
 		for (let i in this.rigid) {
 			this.mesh[i].position.copy(this.rigid[i].position);

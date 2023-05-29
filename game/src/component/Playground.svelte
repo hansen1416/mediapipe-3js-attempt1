@@ -67,8 +67,6 @@
 			});
 		}
 
-		// add an rectangle target for practice
-		cannonWorld.target();
 
 		Promise.all([
 			loadGLTF("/glb/dors.glb"),
@@ -109,6 +107,8 @@
 			});
 
 			threeScene.scene.add(player2);
+
+			cannonWorld.daneelBody()
 
 			// all models ready
 			cameraReady = true;
