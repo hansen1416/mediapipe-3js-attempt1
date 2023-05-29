@@ -1,10 +1,10 @@
 import * as CANNON from "cannon-es";
 import * as THREE from "three";
+import { GROUND_LEVEL, FLOOR_WIDTH, FLOOR_HEIGHT } from "./constants";
 
 export default class CannonWorld {
-	constructor(scene, ground_level) {
+	constructor(scene) {
 		this.scene = scene;
-		this.ground_level = ground_level;
 
 		this.world = new CANNON.World({
 			gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
@@ -30,7 +30,7 @@ export default class CannonWorld {
 		const groundBody = new CANNON.Body({ mass: 0 });
 		// @ts-ignore
 		// groundBody.material = planeContactMaterial;
-		groundBody.position.set(0, ground_level, 0);
+		groundBody.position.set(0, GROUND_LEVEL, 0);
 		groundBody.quaternion.setFromAxisAngle(
 			new CANNON.Vec3(1, 0, 0),
 			-Math.PI / 2
@@ -42,11 +42,11 @@ export default class CannonWorld {
 
 		// Create a Three.js ground plane mesh
 		const groundMesh = new THREE.Mesh(
-			new THREE.BoxGeometry(24, 24, 0.1),
+			new THREE.BoxGeometry(24, FLOOR_HEIGHT, 0.1),
 			new THREE.MeshStandardMaterial({ color: 0x363795 })
 		);
 
-		groundMesh.position.set(0, ground_level - 0.05, 0);
+		groundMesh.position.set(0, GROUND_LEVEL - 0.05, 0);
 		groundMesh.rotation.set(-Math.PI / 2, 0, 0);
 		groundMesh.receiveShadow = true;
 
@@ -60,7 +60,7 @@ export default class CannonWorld {
 
 	target() {
 		const size = new CANNON.Vec3(1, 3, 1);
-		const pos = new THREE.Vector3(0, this.ground_level + 1.5, 10);
+		const pos = new THREE.Vector3(FLOOR_WIDTH, GROUND_LEVEL + 1.5, 10);
 
 		const body = new CANNON.Body({
 			mass: 0, // kg

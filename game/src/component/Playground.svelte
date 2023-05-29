@@ -2,8 +2,13 @@
 	import { onDestroy, onMount } from "svelte";
 	import * as THREE from "three"; // @ts-ignore
 	import { cloneDeep } from "lodash";
-
-	import { ballMesh, createPoseLandmarker, loadGLTF, invokeCamera } from "../lib/ropes";
+	import { GROUND_LEVEL, FLOOR_WIDTH, PLAYER_Z } from "../lib/constants";
+	import {
+		ballMesh,
+		createPoseLandmarker,
+		loadGLTF,
+		invokeCamera,
+	} from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
@@ -45,12 +50,10 @@
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
 
-	const groundLevel = -1;
-
 	onMount(() => {
 		threeScene = new ThreeScene(canvas, sceneWidth, sceneHeight);
 
-		cannonWorld = new CannonWorld(threeScene.scene, groundLevel);
+		cannonWorld = new CannonWorld(threeScene.scene);
 
 		if (true) {
 			invokeCamera(video, () => {
@@ -74,7 +77,7 @@
 		]).then(([dors]) => {
 			// player1
 			player1 = dors.scene.children[0];
-			player1.position.set(0, groundLevel, -10);
+			player1.position.set(0, GROUND_LEVEL, PLAYER_Z);
 
 			player1.traverse(function (node) {
 				if (node.isMesh) {
@@ -92,7 +95,7 @@
 
 			// // player2
 			// player2 = daneel.scene.children[0];
-			// player2.position.set(0, groundLevel, 10);
+			// player2.position.set(0, GROUND_LEVEL, 10);
 			// player2.rotation.set(0, -Math.PI, 0);
 
 			// threeScene.scene.add(player2);
@@ -217,6 +220,15 @@
 
 			poseToRotation.applyPoseToBone(pose3D);
 
+			// move the position of model
+			const pose2D = cloneDeep(result.landmarks[0]);
+
+			const to_pos = poseToRotation.applyPosition(pose2D, FLOOR_WIDTH);
+
+			if (to_pos) {
+				player1.position.set(to_pos.x, GROUND_LEVEL, PLAYER_Z);
+			}
+
 			toss.getHandsPos(player1Bones);
 
 			if (handsWaitingLeft === false && handBallMeshLeft) {
@@ -268,18 +280,6 @@
 					handBallMeshRight.position.copy(tmpvec);
 				}
 			}
-
-			// // move the position of model
-			// const pose2D = cloneDeep(result.landmarks[0]);
-
-			// const to_pos = poseToRotation.applyPosition(
-			// 	pose2D,
-			// 	sceneWidth * 0.6
-			// );
-
-			// if (to_pos) {
-			// 	player1.position.set(to_pos.x, groundLevel, -sceneWidth / 2);
-			// }
 		}
 
 		poseDetectorAvailable = true;
@@ -316,7 +316,7 @@
 				on:click={() => {
 					const mesh = ballMesh();
 					// @ts-ignore
-					mesh.position.set(0, groundLevel + 2, -10);
+					mesh.position.set(0, GROUND_LEVEL + 2, PLAYER_Z);
 
 					threeScene.scene.add(mesh);
 

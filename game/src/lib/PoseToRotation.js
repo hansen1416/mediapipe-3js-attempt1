@@ -459,10 +459,10 @@ export default class PoseToRotation {
 			return;
 		}
 
-		const left_shoulder =
-			pose2D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
-		const right_shoulder =
-			pose2D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
+		// const left_shoulder =
+		// 	pose2D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+		// const right_shoulder =
+		// 	pose2D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
 		const left_hip = pose2D[BlazePoseKeypointsValues["RIGHT_HIP"]];
 		const right_hip = pose2D[BlazePoseKeypointsValues["LEFT_HIP"]];
 
