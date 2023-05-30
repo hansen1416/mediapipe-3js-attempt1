@@ -83,7 +83,7 @@ export default class CannonWorld {
 		const world_pos = new THREE.Vector3();
 
 		glb.getWorldPosition(world_pos);
-		
+
 		body.position.set(world_pos.x, world_pos.y + 0.9, world_pos.z);
 		body.quaternion.set(
 			glb.quaternion.x,
@@ -123,7 +123,7 @@ export default class CannonWorld {
 	project(mesh, velocity, size = 0.1, dimping = 0.3) {
 		const sphereBody = new CANNON.Body({
 			mass: 5, // kg
-			shape: new CANNON.Box(new CANNON.Vec3(size, size, size)),
+			shape: new CANNON.Sphere(mesh.geometry.parameters.radius),
 		});
 		sphereBody.position.set(
 			mesh.position.x,

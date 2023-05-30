@@ -67,7 +67,6 @@
 			});
 		}
 
-
 		Promise.all([
 			loadGLTF("/glb/dors.glb"),
 			loadGLTF("/glb/daneel.glb"),
@@ -108,7 +107,7 @@
 
 			threeScene.scene.add(player2);
 
-			cannonWorld.daneelBody(player2)
+			cannonWorld.daneelBody(player2);
 
 			// all models ready
 			cameraReady = true;
@@ -244,7 +243,7 @@
 			if (handsWaitingLeft === false && handBallMeshLeft) {
 				const velocity = toss.calculateAngularVelocity(
 					player1Bones,
-					false,
+					true,
 					speed_threshold
 				);
 				// console.log("velocity", velocity);

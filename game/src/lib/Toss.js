@@ -76,7 +76,7 @@ export default class Toss {
 		bones[side + "Hand"].getWorldPosition(handpos);
 
 		const shoulderpos = new THREE.Vector3();
-		bones[side + "Arm"].getWorldPosition(shoulderpos);
+		bones[side + "ForeArm"].getWorldPosition(shoulderpos);
 
 		const direction = new THREE.Vector3()
 			.subVectors(handpos, shoulderpos)
@@ -87,10 +87,13 @@ export default class Toss {
 
 		if (
 			Math.abs(direction.x) < 0.6 &&
-			Math.abs(direction.y) < 0.3 &&
-			handpos.distanceTo(shoulderpos) >= arm_length * 0.8
+			Math.abs(direction.y) < 0.3
+			// handpos.distanceTo(shoulderpos) >= arm_length * 0.7
 		) {
-			return direction;
+			// direction.y = 0;
+			// direction.normalize();
+
+			return new THREE.Vector3(0, 0, 1);
 		}
 
 		return false;

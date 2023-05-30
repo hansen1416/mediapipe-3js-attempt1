@@ -1385,7 +1385,7 @@ export function jsonToBufferGeometry(data) {
 
 export function ballMesh() {
 	const mesh = new THREE.Mesh(
-		new THREE.SphereGeometry(0.1), // @ts-ignore
+		new THREE.SphereGeometry(0.2), // @ts-ignore
 		new THREE.MeshNormalMaterial()
 	);
 	mesh.castShadow = true;
@@ -1407,7 +1407,7 @@ export async function createPoseLandmarker() {
 		minTrackingConfidence: 0.5,
 		outputSegmentationMasks: false,
 	});
-};
+}
 
 /**
  * calf_l
