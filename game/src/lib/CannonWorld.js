@@ -76,7 +76,7 @@ export default class CannonWorld {
 		const shape = new CANNON.Box(new CANNON.Vec3(0.3, 0.9, 0.2));
 
 		const body = new CANNON.Body({
-			mass: 10, // kg
+			mass: 0, // kg
 			shape: shape,
 		});
 
