@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
 import { GROUND_LEVEL, FLOOR_WIDTH, FLOOR_HEIGHT } from "./constants";
 import CannonDebugger from "cannon-es-debugger";
+import ThreeScene from "./ThreeScene";
 
 export default class CannonWorld {
 	constructor(scene) {
@@ -73,8 +74,24 @@ export default class CannonWorld {
 
 		// const meshKey = "Wolf3D_Body";
 
-		const shape = new CANNON.Box(new CANNON.Vec3(0.3, 0.9, 0.2));
+		const w = 0.6,
+			h = 0.9,
+			d = 0.2;
 
+		const shape = new CANNON.Box(new CANNON.Vec3(w, h, d));
+
+		// if you have another dynamic body with a non-zero mass and it collides with the static body,
+		// it may still pass through due to numerical errors in the physics simulation.
+
+		// // Set up contact material for collisions
+		// var groundMaterial = new CANNON.Material();
+		// var contactMaterial = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
+		//     friction: 0.3,
+		//     restitution: 0.5,
+		//     contactEquationStiffness: 1e9, // Increase stiffness to reduce penetration
+		//     contactEquationRelaxation: 4 // Increase relaxation for better stability
+		// });
+		// world.addContactMaterial(contactMaterial);
 		const body = new CANNON.Body({
 			mass: 0, // kg
 			shape: shape,
@@ -85,17 +102,20 @@ export default class CannonWorld {
 		glb.getWorldPosition(world_pos);
 
 		body.position.set(world_pos.x, world_pos.y + 0.9, world_pos.z);
-		body.quaternion.set(
-			glb.quaternion.x,
-			glb.quaternion.y,
-			glb.quaternion.z,
-			glb.quaternion.w
-		);
 
 		this.world.addBody(body);
 
+		const mesh = new THREE.Mesh(
+			new THREE.BoxGeometry(w * 2, h * 2, d * 2),
+			new THREE.MeshBasicMaterial({ color: 0xff0000 })
+		);
+
+		mesh.position.set(world_pos.x, world_pos.y + 0.9, world_pos.z);
+
+		this.scene.add(mesh);
+
 		this.rigid.push(body);
-		this.mesh.push(glb);
+		this.mesh.push(mesh);
 	}
 
 	onFrameUpdate() {
@@ -120,7 +140,7 @@ export default class CannonWorld {
 	 * @param {number} dimping control how quickly the object loose its speed
 	 * @returns 
 	 */
-	project(mesh, velocity, size = 0.1, dimping = 0.3) {
+	project(mesh, velocity, dimping = 0.3) {
 		const sphereBody = new CANNON.Body({
 			mass: 5, // kg
 			shape: new CANNON.Sphere(mesh.geometry.parameters.radius),

@@ -234,7 +234,7 @@
 
 			const to_pos = poseToRotation.applyPosition(pose2D, FLOOR_WIDTH);
 
-			if (to_pos) {
+			if (to_pos && false) {
 				player1.position.set(to_pos.x, GROUND_LEVEL, PLAYER_Z);
 			}
 
@@ -332,11 +332,7 @@
 					const direction = new THREE.Vector3(0, 0.1, 2).normalize();
 					const speed = 36;
 
-					cannonWorld.project(
-						mesh,
-						direction.multiplyScalar(speed),
-						0.1
-					);
+					cannonWorld.project(mesh, direction.multiplyScalar(speed));
 				}}>throw</button
 			>
 
