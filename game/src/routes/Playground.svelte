@@ -86,7 +86,7 @@
 				}
 			});
 
-			poseToRotation = new PoseToRotation(player1Bones);
+			poseToRotation = new PoseToRotation(player1Bones, 'mediapipe');
 
 			threeScene.scene.add(player1);
 

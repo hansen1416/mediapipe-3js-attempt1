@@ -37,11 +37,35 @@
 
 				const shape_arr = [];
 
-				for (let i = 0; i < arr.length; i += 3) {
-					shape_arr.push({ x: arr[i], y: arr[i + 1], z: arr[i + 2] });
+				for (let i = 0; i < arr.length; i += 66) {
+					const tmp = [];
+
+					for (let j = 0; j < 66; j += 1) {
+						tmp.push(arr[i + j]);
+					}
+
+					const tmp2 = [];
+
+					for (let j = 0; j < 66; j += 3) {
+						tmp2.push({ x: tmp[j], y: tmp[j + 1], z: tmp[j + 2] });
+					}
+
+					// console.log(tmp);
+					shape_arr.push(tmp2)
+
+
+					// for (let j = 0; j < 66; j += 3) {
+					// 	shape_arr.push({
+					// 		x: tmp[i],
+					// 		y: tmp[i + 1],
+					// 		z: tmp[i + 2],
+					// 	});
+					// }
 				}
 
-				motionData = [shape_arr];
+				console.log(shape_arr);
+
+				motionData = shape_arr;
 			})
 			.catch((error) => console.error(error));
 
@@ -63,7 +87,7 @@
 				}
 			});
 
-			poseToRotation = new PoseToRotation(player1Bones, 'mdm');
+			poseToRotation = new PoseToRotation(player1Bones, "mdm");
 
 			threeScene.scene.add(player1);
 
@@ -110,11 +134,13 @@
 
 	<div class="controls">
 		<div>
-			<button on:click={() => {
-				for (let i = 0; i < motionData.length; i++) {
-					poseToRotation.applyPoseToBone(motionData[i])
-				}
-			}}>walk</button>
+			<button
+				on:click={() => {
+					for (let i = 0; i < motionData.length; i++) {
+						poseToRotation.applyPoseToBone(motionData[i]);
+					}
+				}}>walk</button
+			>
 
 			{#if runAnimation}
 				<button
