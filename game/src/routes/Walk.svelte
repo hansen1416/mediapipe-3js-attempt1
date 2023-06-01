@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy, onMount } from "svelte";
 	import { GROUND_LEVEL } from "../lib/constants";
-	import { loadGLTF } from "../lib/ropes";
+	import { loadGLTF, sleep } from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
@@ -30,7 +30,7 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
-		fetch("/motion1.bin")
+		fetch("/motion1-0.bin")
 			.then((response) => response.arrayBuffer())
 			.then((buffer) => {
 				const arr = new Float32Array(buffer);
@@ -51,8 +51,7 @@
 					}
 
 					// console.log(tmp);
-					shape_arr.push(tmp2)
-
+					shape_arr.push(tmp2);
 
 					// for (let j = 0; j < 66; j += 3) {
 					// 	shape_arr.push({
@@ -136,9 +135,13 @@
 		<div>
 			<button
 				on:click={() => {
-					for (let i = 0; i < motionData.length; i++) {
-						poseToRotation.applyPoseToBone(motionData[i]);
-					}
+					(async () => {
+						for (let i = 0; i < motionData.length; i++) {
+							poseToRotation.applyPoseToBone(motionData[i]);
+
+							await sleep(30);
+						}
+					})();
 				}}>walk</button
 			>
 
