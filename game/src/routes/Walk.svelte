@@ -30,7 +30,7 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
-		fetch("/motion1-0.bin")
+		fetch("/motion1-2.bin")
 			.then((response) => response.arrayBuffer())
 			.then((buffer) => {
 				const arr = new Float32Array(buffer);
