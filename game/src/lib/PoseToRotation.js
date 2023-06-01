@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { clamp, BlazePoseKeypointsValues } from "./ropes";
+import { clamp, BlazePoseKeypointsValues, MDMJoints } from "./ropes";
 
 function quaternionFromBasis(xaxis0, yaxis0, zaxis0, xaxis1, yaxis1, zaxis1) {
 	/**
@@ -173,9 +173,15 @@ function torsoRotation(left_shoulder2, right_shoulder2, left_hip2, right_hip2) {
 //      */
 
 export default class PoseToRotation {
-	constructor(bones) {
+	constructor(bones, capture_type) {
 		this.bones = bones;
 		// this.local_vectors = {};
+
+		if (capture_type === "mediapipe") {
+			this.joints_map = BlazePoseKeypointsValues;
+		} else if (capture_type === "mdm") {
+			this.joints_map = MDMJoints;
+		}
 	}
 
 	// updatePose(pose3D) {
@@ -189,17 +195,17 @@ export default class PoseToRotation {
 
 		const [abs_q, chest_q] = torsoRotation(
 			swap_left_right
-				? this.pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]]
-				: this.pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]],
+				? this.pose3D[this.joints_map["RIGHT_SHOULDER"]]
+				: this.pose3D[this.joints_map["LEFT_SHOULDER"]],
 			swap_left_right
-				? this.pose3D[BlazePoseKeypointsValues["LEFT_SHOULDER"]]
-				: this.pose3D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]],
+				? this.pose3D[this.joints_map["LEFT_SHOULDER"]]
+				: this.pose3D[this.joints_map["RIGHT_SHOULDER"]],
 			swap_left_right
-				? this.pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
-				: this.pose3D[BlazePoseKeypointsValues["LEFT_HIP"]],
+				? this.pose3D[this.joints_map["RIGHT_HIP"]]
+				: this.pose3D[this.joints_map["LEFT_HIP"]],
 			swap_left_right
-				? this.pose3D[BlazePoseKeypointsValues["LEFT_HIP"]]
-				: this.pose3D[BlazePoseKeypointsValues["RIGHT_HIP"]]
+				? this.pose3D[this.joints_map["LEFT_HIP"]]
+				: this.pose3D[this.joints_map["RIGHT_HIP"]]
 		);
 
 		this.bones.Hips.rotation.setFromQuaternion(abs_q);
@@ -344,19 +350,18 @@ export default class PoseToRotation {
 		angle_restrain
 	) {
 		// if (
-		// 	(this.pose3D[BlazePoseKeypointsValues[start_joint_name]] &&
-		// 		this.pose3D[BlazePoseKeypointsValues[start_joint_name]]
+		// 	(this.pose3D[this.joints_map[start_joint_name]] &&
+		// 		this.pose3D[this.joints_map[start_joint_name]]
 		// 			.visibility < 0.5) ||
-		// 	(this.pose3D[BlazePoseKeypointsValues[end_joint_name]] &&
-		// 		this.pose3D[BlazePoseKeypointsValues[end_joint_name]]
+		// 	(this.pose3D[this.joints_map[end_joint_name]] &&
+		// 		this.pose3D[this.joints_map[end_joint_name]]
 		// 			.visibility < 0.5)
 		// ) {
 		// 	return;
 		// }
 
-		const start_joint =
-			this.pose3D[BlazePoseKeypointsValues[start_joint_name]];
-		const end_joint = this.pose3D[BlazePoseKeypointsValues[end_joint_name]];
+		const start_joint = this.pose3D[this.joints_map[start_joint_name]];
+		const end_joint = this.pose3D[this.joints_map[end_joint_name]];
 
 		const world_target_vector = new THREE.Vector3(
 			end_joint.x - start_joint.x,
@@ -460,11 +465,11 @@ export default class PoseToRotation {
 		}
 
 		// const left_shoulder =
-		// 	pose2D[BlazePoseKeypointsValues["RIGHT_SHOULDER"]];
+		// 	pose2D[this.joints_map["RIGHT_SHOULDER"]];
 		// const right_shoulder =
-		// 	pose2D[BlazePoseKeypointsValues["LEFT_SHOULDER"]];
-		const left_hip = pose2D[BlazePoseKeypointsValues["RIGHT_HIP"]];
-		const right_hip = pose2D[BlazePoseKeypointsValues["LEFT_HIP"]];
+		// 	pose2D[this.joints_map["LEFT_SHOULDER"]];
+		const left_hip = pose2D[this.joints_map["RIGHT_HIP"]];
+		const right_hip = pose2D[this.joints_map["LEFT_HIP"]];
 
 		// if (
 		// 	left_shoulder.visibility < 0.5 ||

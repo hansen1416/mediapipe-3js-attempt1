@@ -1195,6 +1195,31 @@ export const BlazePoseKeypointsValues = {
 	RIGHT_FOOT_INDEX: 32,
 };
 
+export const MDMJoints = {
+	MID_HIP: 0,
+	LEFT_HIP: 1,
+	LEFT_KNEE: 4,
+	LEFT_ANKLE: 7,
+	LEFT_FOOT_INDEX: 10,
+	RIGHT_HIP: 2,
+	RIGHT_KNEE: 5,
+	RIGHT_ANKLE: 8,
+	RIGHT_FOOT_INDEX: 11,
+	LEFT_SHOULDER: 16,
+	LEFT_ELBOW: 18,
+	LEFT_WRIST: 20,
+	RIGHT_SHOULDER: 17,
+	RIGHT_ELBOW: 19,
+	RIGHT_WRIST: 21,
+	SPINE1: 3,
+	SPINE2: 6,
+	SPINE3: 9,
+	NECK: 12,
+	HEAD: 15,
+	LEFT_COLLAR: 13,
+	RIGHT_COLLAR: 14,
+};
+
 export const MoveNetKeypoints = {
 	nose: 0,
 	left_eye: 1,
