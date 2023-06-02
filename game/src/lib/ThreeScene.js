@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ParametricGeometry } from "three/addons/geometries/ParametricGeometry.js";
 
 function rampFunction(u, v, pos) {
-	var alpha = 2 * Math.PI * u,
+	const alpha = 2 * Math.PI * u,
 		r = v < 0.5 ? 2 : 3;
 
 	if (v < 0.1 || v > 0.9) pos.y = 0;
@@ -78,12 +78,13 @@ export default class ThreeScene {
 	}
 
 	generateTerrain() {
-		var N = 100;
-		
-		var geometry = new ParametricGeometry(rampFunction, N, 5);
+		// control how smooth is the geometry
+		const N = 100;
+
+		const geometry = new ParametricGeometry(rampFunction, N, 5);
 		geometry.computeVertexNormals();
 
-		var ramp = new THREE.Mesh(
+		const ramp = new THREE.Mesh(
 			geometry,
 			new THREE.MeshLambertMaterial({
 				color: "Aquamarine",
