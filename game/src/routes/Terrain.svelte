@@ -25,6 +25,8 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
+		threeScene.generateTerrain()
+
 		sceneReady = true
 	});
 
