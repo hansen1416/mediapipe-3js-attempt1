@@ -20,53 +20,78 @@
 
 	let poseToRotation;
 
-	let motionData;
+	let motionData = {};
 
 	const sceneWidth = document.documentElement.clientWidth;
 	const sceneHeight = document.documentElement.clientHeight;
+
+	const motion_data = [
+		"1-0",
+		"1-1",
+		"1-2",
+		"2-0",
+		"2-1",
+		"2-2",
+		"3-0",
+		"3-1",
+		"3-2",
+		"4-0",
+		"4-1",
+		"4-2",
+	];
+
+	function readBuffer(buffer) {
+		const arr = new Float32Array(buffer);
+
+		const shape_arr = [];
+
+		for (let i = 0; i < arr.length; i += 66) {
+			const tmp = [];
+
+			for (let j = 0; j < 66; j += 1) {
+				tmp.push(arr[i + j]);
+			}
+
+			const tmp2 = [];
+
+			for (let j = 0; j < 66; j += 3) {
+				tmp2.push({ x: tmp[j], y: tmp[j + 1], z: tmp[j + 2] });
+			}
+
+			// console.log(tmp);
+			shape_arr.push(tmp2);
+
+			// for (let j = 0; j < 66; j += 3) {
+			// 	shape_arr.push({
+			// 		x: tmp[i],
+			// 		y: tmp[i + 1],
+			// 		z: tmp[i + 2],
+			// 	});
+			// }
+		}
+
+		// console.log(shape_arr);
+		return shape_arr;
+	}
 
 	onMount(() => {
 		threeScene = new ThreeScene(canvas, sceneWidth, sceneHeight);
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
-		fetch("/motion1-2.bin")
-			.then((response) => response.arrayBuffer())
-			.then((buffer) => {
-				const arr = new Float32Array(buffer);
+		const motion_tasks = [];
 
-				const shape_arr = [];
+		for (let m of motion_data) {
+			motion_tasks.push(fetch("/motion/motion" + m + ".bin"));
+		}
 
-				for (let i = 0; i < arr.length; i += 66) {
-					const tmp = [];
-
-					for (let j = 0; j < 66; j += 1) {
-						tmp.push(arr[i + j]);
-					}
-
-					const tmp2 = [];
-
-					for (let j = 0; j < 66; j += 3) {
-						tmp2.push({ x: tmp[j], y: tmp[j + 1], z: tmp[j + 2] });
-					}
-
-					// console.log(tmp);
-					shape_arr.push(tmp2);
-
-					// for (let j = 0; j < 66; j += 3) {
-					// 	shape_arr.push({
-					// 		x: tmp[i],
-					// 		y: tmp[i + 1],
-					// 		z: tmp[i + 2],
-					// 	});
-					// }
-				}
-
-				console.log(shape_arr);
-
-				motionData = shape_arr;
-			})
-			.catch((error) => console.error(error));
+		Promise.all(motion_tasks).then((results) => {
+			for (let i in results) {
+				results[i].arrayBuffer().then((buffer) => {
+					motionData[motion_data[i]] = readBuffer(buffer);
+				});
+			}
+		});
 
 		Promise.all([
 			loadGLTF("/glb/dors.glb"),
@@ -114,6 +139,16 @@
 
 		animationPointer = requestAnimationFrame(animate);
 	}
+
+	function playMotion(data) {
+		(async () => {
+			for (let i = 0; i < data.length; i++) {
+				poseToRotation.applyPoseToBone(data[i]);
+
+				await sleep(30);
+			}
+		})();
+	}
 </script>
 
 <div class="bg">
@@ -132,6 +167,15 @@
 	<canvas bind:this={canvas} />
 
 	<div class="controls">
+		<div>
+			{#each motion_data as suffix}
+				<button
+					on:click={() => {
+						playMotion(motionData[suffix]);
+					}}>{suffix}</button
+				>
+			{/each}
+		</div>
 		<div>
 			<button
 				on:click={() => {
