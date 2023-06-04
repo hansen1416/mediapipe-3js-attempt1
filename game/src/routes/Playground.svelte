@@ -13,6 +13,10 @@
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
 	import Toss from "../lib/Toss";
+	// import Deque from "../lib/Deque";
+
+	// const data_recorder = new Deque();
+	// const big_obj = [];
 
 	let threeScene, cannonWorld, video, canvas;
 	let player1,
@@ -55,7 +59,7 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
-		cannonWorld.addGround()
+		cannonWorld.addGround();
 
 		if (true) {
 			invokeCamera(video, () => {
@@ -88,7 +92,7 @@
 				}
 			});
 
-			poseToRotation = new PoseToRotation(player1Bones, 'mediapipe');
+			poseToRotation = new PoseToRotation(player1Bones, "mediapipe");
 
 			threeScene.scene.add(player1);
 
@@ -219,6 +223,16 @@
 		if (result && result.worldLandmarks && result.worldLandmarks[0]) {
 			const pose3D = cloneDeep(result.worldLandmarks[0]);
 
+			// data_recorder.addBack({ data: pose3D, t: performance.now() });
+
+			// if (data_recorder.size() > 30) {
+			// 	data_recorder.removeFront();
+			// }
+
+			// if (data_recorder.size() === 30) {
+			// 	big_obj.push(data_recorder.toArray());
+			// }
+
 			const width_ratio = 30;
 			const height_ratio = (width_ratio * 480) / 640;
 
@@ -342,6 +356,8 @@
 				<button
 					on:click={() => {
 						runAnimation = !runAnimation;
+
+						// console.log(big_obj);
 					}}>stop animation</button
 				>
 			{:else}
