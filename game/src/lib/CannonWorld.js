@@ -30,6 +30,13 @@ export default class CannonWorld {
 
 		// this.world.addContactMaterial(planeContactMaterial);
 
+		this.rigid = [];
+		this.mesh = [];
+		// @ts-ignore
+		this.debuggerInstance = new CannonDebugger(this.scene, this.world);
+	}
+
+	addGround() {
 		// add floor
 		const groundBody = new CANNON.Body({ mass: 0 });
 		// @ts-ignore
@@ -56,11 +63,6 @@ export default class CannonWorld {
 		groundMesh.receiveShadow = true;
 
 		this.scene.add(groundMesh);
-
-		this.rigid = [];
-		this.mesh = [];
-		// @ts-ignore
-		this.debuggerInstance = new CannonDebugger(this.scene, this.world);
 	}
 
 	daneelBody(glb) {

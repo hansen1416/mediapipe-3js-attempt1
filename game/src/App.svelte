@@ -1,9 +1,9 @@
 <script>
-	import { Router, Link, Route } from "svelte-routing";
+	import { Router, Route } from "svelte-routing";
 	import Playground from "./routes/Playground.svelte";
 	import Walk from "./routes/Walk.svelte";
+	import Terrain from "./routes/Terrain.svelte";
 
-	// export let url = "/";
 </script>
 
 <Router>
@@ -14,7 +14,7 @@
 	</nav> -->
 
 	<!-- <Route path="/blog/:id" component={BlogPost} /> -->
-	<Route path="/walk" component={Walk} />
 	<Route path="/playground" component={Playground} />
-	<!-- <Route path="/"><Home /></Route> -->
+	<Route path="/walk" component={Walk} />
+	<Route path="/terrain"><Terrain /></Route>
 </Router>

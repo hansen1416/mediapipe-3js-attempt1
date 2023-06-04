@@ -55,6 +55,8 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
+		cannonWorld.addGround()
+
 		if (true) {
 			invokeCamera(video, () => {
 				cameraReady = true;

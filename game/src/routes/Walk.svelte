@@ -79,6 +79,8 @@
 
 		cannonWorld = new CannonWorld(threeScene.scene);
 
+		cannonWorld.addGround();
+
 		const motion_tasks = [];
 
 		for (let m of motion_data) {
