@@ -3,7 +3,7 @@ import json
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-
+from dtw import dtw
 
 def read_xyz(data):
 
@@ -94,35 +94,46 @@ def read_pose_slice(filename):
 
 if __name__ == "__main__":
 
-    seed = [1, 2, 3, 4]
-    samp = [0, 1, 2]
+    # seed = [1, 2, 3, 4]
+    # samp = [0, 1, 2]
 
-    motion_data = []
+    # motion_data = []
 
-    for se in seed:
-        for sa in samp:
-            filename = os.path.join(
-                './motion', 'motion' + str(se) + '-' + str(sa) + '.bin')
+    # for se in seed:
+    #     for sa in samp:
+    #         filename = os.path.join(
+    #             './motion', 'motion' + str(se) + '-' + str(sa) + '.bin')
 
-            motion_data.append(read_motion(filename))
+    #         motion_data.append(read_motion(filename))
 
-    motion_data = np.array(motion_data)
+    # motion_data = np.array(motion_data)
 
-    # print(motion_data.shape) # (12, 120, 22, 3), there are 12 motion data
+    # # print(motion_data.shape) # (12, 120, 22, 3), there are 12 motion data
 
-    # plot_joints(motion_data[8][100])
+    # # plot_joints(motion_data[8][100])
 
-    # posedata1.json length 442
-    # posedata2.json length 516
-    pose_data1, pose_ts1 = read_pose_slice(
-        os.path.join('./pose_data', 'posedata1.json'))
-    pose_data2, pose_ts2 = read_pose_slice(
-        os.path.join('./pose_data', 'posedata2.json'))
+    # # posedata1.json length 442
+    # # posedata2.json length 516
+    # pose_data1, pose_ts1 = read_pose_slice(
+    #     os.path.join('./pose_data', 'posedata1.json'))
+    # pose_data2, pose_ts2 = read_pose_slice(
+    #     os.path.join('./pose_data', 'posedata2.json'))
 
-    # print(pose_data1.shape) # (442, 29, 33, 3)
-    # print(pose_ts1.shape) # (442, 29)
+    # # print(pose_data1.shape) # (442, 29, 33, 3)
+    # # print(pose_ts1.shape) # (442, 29)
 
-    # print(pose_data2.shape) # (516, 29, 33, 3)
-    # print(pose_ts2.shape) # (516, 29)
+    # # print(pose_data2.shape) # (516, 29, 33, 3)
+    # # print(pose_ts2.shape) # (516, 29)
 
-    # plot_joints(pose_data2[100][20])
+    # # plot_joints(pose_data2[100][20])
+
+
+    # a = np.random.random((100, 2))
+    # b = np.random.random((200, 2))
+
+    a = [ 9, 93, 15, 19, 24 ]
+    b = [ 10, 10, 9, 93, 15, 19, 24, 100, 200, 300 ]
+
+    alignment = dtw(a, b)
+
+    print(alignment.distance)

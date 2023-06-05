@@ -20,6 +20,7 @@
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.0",
     "cannon-es": "^0.20.0",
+    "dynamic-time-warping": "^1.0.0",
     "lodash": "^4.17.21",
     "three": "^0.152.2"
   }
