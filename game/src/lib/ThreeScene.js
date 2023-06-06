@@ -44,6 +44,11 @@ export default class ThreeScene {
 		this.camera.zoom = 60; // zoom in by 50%
 		this.camera.position.set(0, 300, -width);
 
+		// for walk testing
+		this.camera.zoom = 195;
+		this.camera.position.set(-998.0815884477113, 0, 11);
+		// for walk testing
+
 		this.camera.updateProjectionMatrix(); // update the camera's projection matrix
 
 		{

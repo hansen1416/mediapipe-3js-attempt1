@@ -1,11 +1,12 @@
 <script>
+	import * as THREE from "three";
 	import { onDestroy, onMount } from "svelte";
 	import { GROUND_LEVEL } from "../lib/constants";
 	import { loadGLTF, sleep } from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
-	import {subsequenceDTW} from "subsequence-dtw"
+	import { subsequenceDTW } from "subsequence-dtw";
 
 	let threeScene, cannonWorld, video, canvas;
 	let player1,
@@ -118,6 +119,8 @@
 
 			threeScene.scene.add(player1);
 
+			player1Bones.LeftForeArm.add(new THREE.AxesHelper(5));
+
 			// all models ready
 			cameraReady = true;
 			mannequinReady = true;
@@ -183,10 +186,129 @@
 			<button
 				on:click={() => {
 					(async () => {
-						for (let i = 0; i < motionData.length; i++) {
-							poseToRotation.applyPoseToBone(motionData[i]);
+						const left_arm_rotation = [];
+						const right_arm_rotation = [];
 
-							await sleep(30);
+						const left_forearm_rotation = [];
+						const right_forearm_rotation = [];
+
+						for (let i = -19; i <= 30; i++) {
+							left_arm_rotation.push([70, 0, i]);
+							right_arm_rotation.push([70, 0, i - 11]);
+
+							if (i >= 15) {
+								left_forearm_rotation.push([
+									0,
+									0,
+									(i - 15) * 1.5,
+								]);
+								// console.log('left', (i - 15) * 1.5)
+							} else {
+								left_forearm_rotation.push([0, 0, 0]);
+							}
+
+							if (i - 11 <= -15) {
+								right_forearm_rotation.push([
+									0,
+									0,
+									(i+4)*1.5,
+								]);
+								// console.log('right', (i+19)*-1.5)
+							} else {
+								right_forearm_rotation.push([0, 0, 0]);
+							}
+						}
+
+						for (let i = 30; i >= -19; i--) {
+							left_arm_rotation.push([70, 0, i]);
+							right_arm_rotation.push([70, 0, i - 11]);
+
+							if (i >= 15) {
+								left_forearm_rotation.push([
+									0,
+									0,
+									(i - 15) * 1.5,
+								]);
+							} else {
+								left_forearm_rotation.push([0, 0, 0]);
+							}
+							if (i - 11 <= -15) {
+								right_forearm_rotation.push([
+									0,
+									0,
+									(i+4)*1.5,
+								]);
+								// console.log('right', (i+4)*1.5, i)
+							} else {
+								right_forearm_rotation.push([0, 0, 0]);
+							}
+						}
+
+						// player1Bones.LeftArm.rotation.set(
+						// 		THREE.MathUtils.degToRad(
+						// 			70
+						// 		),
+						// 		THREE.MathUtils.degToRad(
+						// 			0
+						// 		),
+						// 		THREE.MathUtils.degToRad(
+						// 			30
+						// 		)
+						// 	);
+
+						for (let i = 0; i < left_arm_rotation.length; i++) {
+							// break
+							player1Bones.LeftArm.rotation.set(
+								THREE.MathUtils.degToRad(
+									left_arm_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									left_arm_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									left_arm_rotation[i][2]
+								)
+							);
+							player1Bones.RightArm.rotation.set(
+								THREE.MathUtils.degToRad(
+									right_arm_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									right_arm_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									right_arm_rotation[i][2]
+								)
+							);
+
+							player1Bones.LeftForeArm.rotation.set(
+								THREE.MathUtils.degToRad(
+									left_forearm_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									left_forearm_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									left_forearm_rotation[i][2]
+								)
+							);
+							player1Bones.RightForeArm.rotation.set(
+								THREE.MathUtils.degToRad(
+									right_forearm_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									right_forearm_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									right_forearm_rotation[i][2]
+								)
+							);
+
+							await sleep(20);
+
+							if (i === left_arm_rotation.length - 1) {
+								i = 0;
+							}
 						}
 					})();
 				}}>walk</button
