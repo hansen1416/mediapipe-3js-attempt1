@@ -5,6 +5,7 @@
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
+	import {subsequenceDTW} from "subsequence-dtw"
 
 	let threeScene, cannonWorld, video, canvas;
 	let player1,
@@ -123,24 +124,6 @@
 			modelReady = true;
 			// hand is ready for ball mesh
 		});
-
-
-
-
-
-
-
-
-
-		var ser1 = [ 9, 93, 15, 19, 24 ];
-		var ser2 = [ 31, 97, 81, 82, 39, 91, 9, 93, 15, 19, 24, 98, 106, 1010 ];
-		var distFunc = function( a, b ) {
-			return Math.abs( a - b );
-		};
-		
-		var dtw = new DynamicTimeWarping(ser1, ser2, distFunc);
-
-		console.log(dtw.getDistance())
 	});
 
 	onDestroy(() => {
