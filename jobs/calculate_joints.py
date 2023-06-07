@@ -208,6 +208,12 @@ def dtw_metric(a, b):
 
 if __name__ == "__main__":
 
+    
+    a = np.array([1,2,3,4,5,6,7,8,9,10,11])
+
+    print(a[8:6])
+    exit()
+
     leftarm_positions = load_joints_pos('1.json')
     rightarm_positions = load_joints_pos('2.json')
     leftforearm_positions = load_joints_pos('3.json')
@@ -227,11 +233,11 @@ if __name__ == "__main__":
     rightlowerarm = calculate_limb_vec(
         rightforearm_positions, righthand_positions)
 
-    res = concatenate_limb_vec(
+    walking_cycle = concatenate_limb_vec(
         leftupperarm, leftlowerarm, rightupperarm, rightlowerarm)
 
     # print(res[99])
-    print(res.shape)
+    print(walking_cycle.shape)
 
     # plot_joints(res[50:60], 'tmp/std.png')
 
@@ -247,15 +253,43 @@ if __name__ == "__main__":
     print(armslice.shape)
 
     score = float('inf')
+    is_walking = False
+    start_idx = 0
+    end_idx = 0
 
     for i in range(armslice.shape[0]):
 
-        dtw_res = subsequenceDTW(armslice[i], res, metric=dtw_metric)
+        if not is_walking:
+            # first time detect walking status
+            dtw_res = subsequenceDTW(armslice[i], walking_cycle, metric=dtw_metric)
 
-        score = dtw_res['accumulated_cost']
+            score = dtw_res['accumulated_cost']
 
-        if score < 50:
-            pass
+            if score < 50:
+                is_walking = True
+
+                start_idx = score['a*']
+                end_idx = score['b*'] + 30
+
+                if end_idx > len(walking_cycle):
+                    end_idx = len(walking_cycle) - end_idx
+
+        else:
+            # already in walking status, detect if walking is continuing
+
+            dtw_res = subsequenceDTW(armslice[i], walking_cycle[start_idx: end_idx], metric=dtw_metric)
+
+            score = dtw_res['accumulated_cost']
+
+            if score < 50:
+                start_idx = start_idx + score['a*']
+                end_idx = start_idx + score['b*'] + 30
+
+                if end_idx > len(walking_cycle):
+                    end_idx = len(walking_cycle) - end_idx
+            else:
+                is_walking = False
+
 
         print("{}, {}, {}".format(dtw_res['accumulated_cost'], score['a*'], score['b*']))
 
@@ -272,3 +306,5 @@ if __name__ == "__main__":
     # print(rightforearm_positions)
     # print(lefthand_positions)
     # print(righthand_positions)
+
+
