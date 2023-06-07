@@ -70,6 +70,49 @@ def plot_joints(data):
 
     plt.savefig('tmp/tmp.png')
 
+
+def read_pose_slice(filename):
+
+    with open(filename, 'r') as f:
+        data_json = json.load(f)
+
+    data = None
+    ts = None
+
+    for i in range(len(data_json)):
+
+        tmp_data = None
+        tmp_ts = None
+
+        for dic in data_json[i]:
+
+            arr = np.array([[[v['x'], v['y'], v['z']] for v in dic['data']]])
+
+            if tmp_data is None:
+                tmp_data = arr
+            else:
+                tmp_data = np.append(tmp_data, arr, axis=0)
+
+            if tmp_ts is None:
+                tmp_ts = np.array([dic['t']])
+            else:
+                tmp_ts = np.append(tmp_ts, np.array([dic['t']]), axis=0)
+
+        tmp_data = np.expand_dims(tmp_data, axis=0)
+        tmp_ts = np.expand_dims(tmp_ts, axis=0)
+
+        if data is None:
+            data = tmp_data
+        else:
+            data = np.append(data, tmp_data, axis=0)
+
+        if ts is None:
+            ts = tmp_ts
+        else:
+            ts = np.append(ts, tmp_ts, axis=0)
+
+    return data, ts
+
 if __name__ == "__main__":
 
     leftarm_positions = load_joints_pos('1.json')
@@ -97,7 +140,15 @@ if __name__ == "__main__":
     print(res[99])
     print(res.shape)
 
-    plot_joints(res)
+    # plot_joints(res)
+
+    pose_data1, pose_ts1 = read_pose_slice(
+        os.path.join('./pose_data', 'posedata1.json'))
+    # pose_data2, pose_ts2 = read_pose_slice(
+    #     os.path.join('./pose_data', 'posedata2.json'))
+
+    print(pose_data1)
+
 
     # print(leftupperarm[0])
     # print(rightupperarm.shape)
