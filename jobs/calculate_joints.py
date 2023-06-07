@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
     # print(res[99])
     print(walking_cycle.shape)
-    exit()
+    # exit()
 
     # plot_joints(res[50:60], 'tmp/std.png')
 
@@ -282,8 +282,8 @@ if __name__ == "__main__":
                 end_idx = len(walking_cycle) - end_idx
 
             if end_idx < start_idx:
-                dtw_res = subsequenceDTW(armslice[i], walking_cycle[start_idx: len(
-                    walking_cycle)] + walking_cycle[0: -end_idx], metric=dtw_metric)
+                dtw_res = subsequenceDTW(armslice[i], np.concatenate((walking_cycle[start_idx: len(
+                    walking_cycle)], walking_cycle[0: -end_idx]), axis=0), metric=dtw_metric)
             else:
                 dtw_res = subsequenceDTW(
                     armslice[i], walking_cycle[start_idx: end_idx], metric=dtw_metric)
