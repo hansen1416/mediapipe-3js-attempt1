@@ -236,8 +236,8 @@ if __name__ == "__main__":
         leftupperarm, leftlowerarm, rightupperarm, rightlowerarm)
 
     # print(res[99])
-    print(walking_cycle.shape)
-    # exit()
+    print(walking_cycle)
+    exit()
 
     # plot_joints(res[50:60], 'tmp/std.png')
 

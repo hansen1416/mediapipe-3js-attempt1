@@ -42,6 +42,8 @@
 		"4-2",
 	];
 
+	let walking_cycle;
+
 	function readBuffer(buffer) {
 		const arr = new Float32Array(buffer);
 
@@ -96,6 +98,16 @@
 				});
 			}
 		});
+
+		fetch("/motion/walking_cycle.bin")
+			.then((res) => {
+				return res.arrayBuffer();
+			})
+			.then((buffer) => {
+				const arr = new Float32Array(buffer);
+
+				console.log(arr);
+			});
 
 		Promise.all([
 			loadGLTF("/glb/dors.glb"),
@@ -305,13 +317,19 @@
 							const rightforearmvec = new THREE.Vector3();
 							const lefthandvec = new THREE.Vector3();
 							const righthandvec = new THREE.Vector3();
-							
-							player1Bones.LeftArm.getWorldPosition(leftarmvec)
-							player1Bones.RightArm.getWorldPosition(rightarmvec)
-							player1Bones.LeftForeArm.getWorldPosition(leftforearmvec)
-							player1Bones.RightForeArm.getWorldPosition(rightforearmvec)
-							player1Bones.LeftHand.getWorldPosition(lefthandvec)
-							player1Bones.RightHand.getWorldPosition(righthandvec)
+
+							player1Bones.LeftArm.getWorldPosition(leftarmvec);
+							player1Bones.RightArm.getWorldPosition(rightarmvec);
+							player1Bones.LeftForeArm.getWorldPosition(
+								leftforearmvec
+							);
+							player1Bones.RightForeArm.getWorldPosition(
+								rightforearmvec
+							);
+							player1Bones.LeftHand.getWorldPosition(lefthandvec);
+							player1Bones.RightHand.getWorldPosition(
+								righthandvec
+							);
 
 							leftarm_positions.push(leftarmvec);
 							rightarm_positions.push(rightarmvec);
@@ -327,12 +345,12 @@
 							// }
 						}
 
-						console.log(leftarm_positions)
-						console.log(rightarm_positions)
-						console.log(leftforearm_positions)
-						console.log(rightforearm_positions)
-						console.log(lefthand_positions)
-						console.log(righthand_positions)
+						console.log(leftarm_positions);
+						console.log(rightarm_positions);
+						console.log(leftforearm_positions);
+						console.log(rightforearm_positions);
+						console.log(lefthand_positions);
+						console.log(righthand_positions);
 					})();
 				}}>walk</button
 			>
