@@ -211,7 +211,7 @@
 								right_forearm_rotation.push([
 									0,
 									0,
-									(i+4)*1.5,
+									(i + 4) * 1.5,
 								]);
 								// console.log('right', (i+19)*-1.5)
 							} else {
@@ -236,7 +236,7 @@
 								right_forearm_rotation.push([
 									0,
 									0,
-									(i+4)*1.5,
+									(i + 4) * 1.5,
 								]);
 								// console.log('right', (i+4)*1.5, i)
 							} else {
@@ -244,17 +244,12 @@
 							}
 						}
 
-						// player1Bones.LeftArm.rotation.set(
-						// 		THREE.MathUtils.degToRad(
-						// 			70
-						// 		),
-						// 		THREE.MathUtils.degToRad(
-						// 			0
-						// 		),
-						// 		THREE.MathUtils.degToRad(
-						// 			30
-						// 		)
-						// 	);
+						const leftarm_positions = [];
+						const rightarm_positions = [];
+						const leftforearm_positions = [];
+						const rightforearm_positions = [];
+						const lefthand_positions = [];
+						const righthand_positions = [];
 
 						for (let i = 0; i < left_arm_rotation.length; i++) {
 							// break
@@ -304,12 +299,40 @@
 								)
 							);
 
+							const leftarmvec = new THREE.Vector3();
+							const rightarmvec = new THREE.Vector3();
+							const leftforearmvec = new THREE.Vector3();
+							const rightforearmvec = new THREE.Vector3();
+							const lefthandvec = new THREE.Vector3();
+							const righthandvec = new THREE.Vector3();
+							
+							player1Bones.LeftArm.getWorldPosition(leftarmvec)
+							player1Bones.RightArm.getWorldPosition(rightarmvec)
+							player1Bones.LeftForeArm.getWorldPosition(leftforearmvec)
+							player1Bones.RightForeArm.getWorldPosition(rightforearmvec)
+							player1Bones.LeftHand.getWorldPosition(lefthandvec)
+							player1Bones.RightHand.getWorldPosition(righthandvec)
+
+							leftarm_positions.push(leftarmvec);
+							rightarm_positions.push(rightarmvec);
+							leftforearm_positions.push(leftforearmvec);
+							rightforearm_positions.push(rightforearmvec);
+							lefthand_positions.push(lefthandvec);
+							righthand_positions.push(righthandvec);
+
 							await sleep(20);
 
-							if (i === left_arm_rotation.length - 1) {
-								i = 0;
-							}
+							// if (i === left_arm_rotation.length - 1) {
+							// 	i = 0;
+							// }
 						}
+
+						console.log(leftarm_positions)
+						console.log(rightarm_positions)
+						console.log(leftforearm_positions)
+						console.log(rightforearm_positions)
+						console.log(lefthand_positions)
+						console.log(righthand_positions)
 					})();
 				}}>walk</button
 			>
