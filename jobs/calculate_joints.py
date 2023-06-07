@@ -2,6 +2,50 @@ import json
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+
+from dtw import subsequenceDTW
+
+NOSE = 0
+LEFT_EYE_INNER = 1
+LEFT_EYE = 2
+LEFT_EYE_OUTER = 3
+RIGHT_EYE_INNER = 4
+RIGHT_EYE = 5
+RIGHT_EYE_OUTER = 6
+LEFT_EAR = 7
+RIGHT_EAR = 8
+MOUTH_LEFT = 9
+MOUTH_RIGHT = 10
+LEFT_SHOULDER = 11
+RIGHT_SHOULDER = 12
+LEFT_ELBOW = 13
+RIGHT_ELBOW = 14
+LEFT_WRIST = 15
+RIGHT_WRIST = 16
+LEFT_PINKY = 17
+RIGHT_PINKY = 18
+LEFT_INDEX = 19
+RIGHT_INDEX = 20
+LEFT_THUMB = 21
+RIGHT_THUMB = 22
+LEFT_HIP = 23
+RIGHT_HIP = 24
+LEFT_KNEE = 25
+RIGHT_KNEE = 26
+LEFT_ANKLE = 27
+RIGHT_ANKLE = 28
+LEFT_HEEL = 29
+RIGHT_HEEL = 30
+LEFT_FOOT_INDEX = 31
+RIGHT_FOOT_INDEX = 32
+
+
+def normalize_vec(arr):
+
+    vec = np.array(arr)
+    mag = np.linalg.norm(vec)
+    return vec / mag
 
 
 def load_joints_pos(filename):
@@ -17,8 +61,8 @@ def calculate_limb_vec(start_joints_pos, end_joints_pos):
     result = []
 
     for i in range(len(start_joints_pos)):
-        result.append([end_joints_pos[i][0] - start_joints_pos[i][0], end_joints_pos[i]
-                      [1] - start_joints_pos[i][1], end_joints_pos[i][2] - start_joints_pos[i][2]])
+        result.append(normalize_vec([end_joints_pos[i][0] - start_joints_pos[i][0], end_joints_pos[i]
+                      [1] - start_joints_pos[i][1], end_joints_pos[i][2] - start_joints_pos[i][2]]))
 
     return np.array(result)
 
@@ -36,11 +80,13 @@ def concatenate_limb_vec(leftupperarm, leftlowerarm, rightupperarm, rightlowerar
 
     return res
 
+
 def read_xyz(data):
 
     return data[:, :, 0].flatten(), data[:, :, 1].flatten(), data[:, :, 2].flatten()
 
-def plot_joints(data):
+
+def plot_joints(data, filename='tmp/tmp.png'):
 
     x, y, z = read_xyz(data)
 
@@ -68,7 +114,7 @@ def plot_joints(data):
     ax.set_ylabel("y")
     ax.set_zlabel("z")
 
-    plt.savefig('tmp/tmp.png')
+    plt.savefig(filename)
 
 
 def read_pose_slice(filename):
@@ -113,6 +159,53 @@ def read_pose_slice(filename):
 
     return data, ts
 
+
+def get_arm_pose_slice(pose_data):
+
+    res = []
+
+    for i in range(pose_data.shape[0]):
+
+        res.append([])
+
+        for j in range(pose_data.shape[1]):
+
+            res[i].append([])
+
+            res[i][j].append(normalize_vec([pose_data[i][j][LEFT_ELBOW][0] - pose_data[i][j][LEFT_SHOULDER][0],
+                                            pose_data[i][j][LEFT_ELBOW][1] -
+                                            pose_data[i][j][LEFT_SHOULDER][1],
+                                            pose_data[i][j][LEFT_ELBOW][2] - pose_data[i][j][LEFT_SHOULDER][2]]))
+
+            res[i][j].append(normalize_vec([pose_data[i][j][LEFT_WRIST][0] - pose_data[i][j][LEFT_ELBOW][0],
+                                            pose_data[i][j][LEFT_WRIST][1] -
+                                            pose_data[i][j][LEFT_ELBOW][1],
+                                            pose_data[i][j][LEFT_WRIST][2] - pose_data[i][j][LEFT_ELBOW][2]]))
+
+            res[i][j].append(normalize_vec([pose_data[i][j][RIGHT_ELBOW][0] - pose_data[i][j][RIGHT_SHOULDER][0],
+                                            pose_data[i][j][RIGHT_ELBOW][1] -
+                                            pose_data[i][j][RIGHT_SHOULDER][1],
+                                            pose_data[i][j][RIGHT_ELBOW][2] - pose_data[i][j][RIGHT_SHOULDER][2]]))
+
+            res[i][j].append(normalize_vec([pose_data[i][j][RIGHT_WRIST][0] - pose_data[i][j][RIGHT_ELBOW][0],
+                                            pose_data[i][j][RIGHT_WRIST][1] -
+                                            pose_data[i][j][RIGHT_ELBOW][1],
+                                            pose_data[i][j][RIGHT_WRIST][2] - pose_data[i][j][RIGHT_ELBOW][2]]))
+
+    res = np.array(res)
+
+    return res
+
+
+def points_diff(v1, v2):
+
+    return math.sqrt((v1[0] - v2[0])**2 + (v1[1] - v2[1])**2 + (v1[2] - v2[2])**2)
+
+
+def dtw_metric(a, b):
+    return points_diff(a[0], b[0]) + points_diff(a[1], b[1]) + points_diff(a[2], b[2]) + points_diff(a[3], b[3])
+
+
 if __name__ == "__main__":
 
     leftarm_positions = load_joints_pos('1.json')
@@ -137,18 +230,38 @@ if __name__ == "__main__":
     res = concatenate_limb_vec(
         leftupperarm, leftlowerarm, rightupperarm, rightlowerarm)
 
-    print(res[99])
+    # print(res[99])
     print(res.shape)
 
-    # plot_joints(res)
+    # plot_joints(res[50:60], 'tmp/std.png')
 
     pose_data1, pose_ts1 = read_pose_slice(
         os.path.join('./pose_data', 'posedata1.json'))
-    # pose_data2, pose_ts2 = read_pose_slice(
-    #     os.path.join('./pose_data', 'posedata2.json'))
+    pose_data2, pose_ts2 = read_pose_slice(
+        os.path.join('./pose_data', 'posedata2.json'))
 
-    print(pose_data1)
+    # print(pose_data1.shape)
 
+    armslice = get_arm_pose_slice(pose_data2)
+
+    print(armslice.shape)
+
+    score = float('inf')
+
+    for i in range(armslice.shape[0]):
+
+        dtw_res = subsequenceDTW(armslice[i], res, metric=dtw_metric)
+
+        score = dtw_res['accumulated_cost']
+
+        if score < 50:
+            pass
+
+        print("{}, {}, {}".format(dtw_res['accumulated_cost'], score['a*'], score['b*']))
+
+        # break
+
+    # plot_joints(armslice[50][:10])
 
     # print(leftupperarm[0])
     # print(rightupperarm.shape)
