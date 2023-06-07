@@ -237,6 +237,7 @@ if __name__ == "__main__":
 
     # print(res[99])
     print(walking_cycle.shape)
+    exit()
 
     # plot_joints(res[50:60], 'tmp/std.png')
 
