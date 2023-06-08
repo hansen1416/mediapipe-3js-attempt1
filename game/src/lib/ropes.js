@@ -1434,6 +1434,15 @@ export async function createPoseLandmarker() {
 	});
 }
 
+export function pointsDiff(v1, v2) {
+    return Math.sqrt(Math.pow(v1[0] - v2[0], 2) + Math.pow(v1[1] - v2[1], 2) + Math.pow(v1[2] - v2[2], 2));
+}
+
+export function dtwMetric(a, b) {
+    return pointsDiff(a[0], b[0]) + pointsDiff(a[1], b[1]) + pointsDiff(a[2], b[2]) + pointsDiff(a[3], b[3]);
+}
+
+
 /**
  * calf_l
 calf_r

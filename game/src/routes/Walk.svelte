@@ -8,11 +8,13 @@
 		sleep,
 		createPoseLandmarker,
 		invokeCamera,
+		dtwMetric,
 	} from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
 	import { subsequenceDTW } from "subsequence-dtw";
+	import Deque from "../lib/Deque";
 
 	let threeScene, cannonWorld, video, canvas;
 	let player1,
@@ -52,6 +54,8 @@
 	];
 
 	const walking_cycle = [];
+
+	const motion_slice = new Deque();
 
 	function readBuffer(buffer) {
 		const arr = new Float32Array(buffer);
@@ -210,6 +214,8 @@
 		cannonWorld.onFrameUpdate();
 
 		animationPointer = requestAnimationFrame(animate);
+
+		recordMotion();
 	}
 
 	function onPoseCallback(result) {
@@ -251,6 +257,61 @@
 				await sleep(30);
 			}
 		})();
+	}
+
+	function recordMotion() {
+		const leftarm = new THREE.Vector3();
+		const leftforearm = new THREE.Vector3();
+		const lefthand = new THREE.Vector3();
+		const rightarm = new THREE.Vector3();
+		const rightforearm = new THREE.Vector3();
+		const righthand = new THREE.Vector3();
+
+		player1Bones.LeftArm.getWorldPosition(leftarm);
+		player1Bones.LeftForeArm.getWorldPosition(leftforearm);
+		player1Bones.LeftHand.getWorldPosition(lefthand);
+		player1Bones.RightArm.getWorldPosition(rightarm);
+		player1Bones.RightForeArm.getWorldPosition(rightforearm);
+		player1Bones.RightHand.getWorldPosition(righthand);
+
+		const stvck = [];
+
+		stvck.push([
+			leftforearm.x - leftarm.x,
+			leftforearm.y - leftarm.y,
+			leftforearm.z - leftarm.z,
+		]);
+
+		stvck.push([
+			lefthand.x - leftforearm.x,
+			lefthand.y - leftforearm.y,
+			lefthand.z - leftforearm.z,
+		]);
+
+		stvck.push([
+			rightforearm.x - rightarm.x,
+			rightforearm.y - rightarm.y,
+			rightforearm.z - rightarm.z,
+		]);
+
+		stvck.push([
+			righthand.x - rightforearm.x,
+			righthand.y - rightforearm.y,
+			righthand.z - rightforearm.z,
+		]);
+
+		motion_slice.addBack(stvck);
+
+		if (motion_slice.size() > 10) {
+			motion_slice.removeFront();
+		}
+
+		if (motion_slice.size() === 10) {
+			const res = subsequenceDTW(motion_slice.toArray(), walking_cycle, dtwMetric)
+
+			console.log(res)
+		}
+		
 	}
 </script>
 

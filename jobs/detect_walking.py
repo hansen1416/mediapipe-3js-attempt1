@@ -173,8 +173,7 @@ def get_arm_pose_slice(pose_data):
             res[i].append([])
 
             res[i][j].append(normalize_vec([pose_data[i][j][LEFT_ELBOW][0] - pose_data[i][j][LEFT_SHOULDER][0],
-                                            pose_data[i][j][LEFT_ELBOW][1] -
-                                            pose_data[i][j][LEFT_SHOULDER][1],
+                                            pose_data[i][j][LEFT_ELBOW][1] -pose_data[i][j][LEFT_SHOULDER][1],
                                             pose_data[i][j][LEFT_ELBOW][2] - pose_data[i][j][LEFT_SHOULDER][2]]))
 
             res[i][j].append(normalize_vec([pose_data[i][j][LEFT_WRIST][0] - pose_data[i][j][LEFT_ELBOW][0],
@@ -237,7 +236,7 @@ if __name__ == "__main__":
 
     # print(res[99])
     # walking_cycle.flatten().tofile('walking_cycle.bin')
-    # print(walking_cycle.shape)
+    print(walking_cycle.shape)
     # print(walking_cycle.dtype)
     # exit()
 
@@ -253,6 +252,7 @@ if __name__ == "__main__":
     armslice = get_arm_pose_slice(pose_data2)
 
     print(armslice.shape)
+    exit()
 
     score = float('inf')
     is_walking = False
