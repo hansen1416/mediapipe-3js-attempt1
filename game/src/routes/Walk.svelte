@@ -24,7 +24,7 @@
 
 	let poseDetector, poseDetectorAvailable;
 
-	let runAnimation = true,
+	let runDetector = false,
 		showVideo = false,
 		animationPointer;
 
@@ -191,7 +191,7 @@
 
 	function animate() {
 		if (
-			runAnimation &&
+			runDetector &&
 			video &&
 			video.readyState >= 2 &&
 			poseDetectorAvailable &&
@@ -440,17 +440,17 @@
 				}}>walk</button
 			>
 
-			{#if runAnimation}
+			{#if runDetector}
 				<button
 					on:click={() => {
-						runAnimation = !runAnimation;
-					}}>stop animation</button
+						runDetector = !runDetector;
+					}}>stop detector</button
 				>
 			{:else}
 				<button
 					on:click={() => {
-						runAnimation = !runAnimation;
-					}}>run animation</button
+						runDetector = !runDetector;
+					}}>run detector</button
 				>
 			{/if}
 
