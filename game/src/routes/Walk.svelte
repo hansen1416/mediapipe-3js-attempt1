@@ -407,8 +407,12 @@
 								right_forearm_rotation.push([0, 0, 0]);
 							}
 
-							left_thigh_rotation.push(combineEulerAngles([0, 0, -3.14], [0,0,0]));
-							right_thigh_rotation.push(combineEulerAngles([0, 0, 3.14], [0,0,0]));
+							left_thigh_rotation.push(
+								combineEulerAngles([0, 0, -3.14], [0, 0, 0])
+							);
+							right_thigh_rotation.push(
+								combineEulerAngles([0, 0, 3.14], [0, 0, 0])
+							);
 							left_calf_rotation.push([0, 0, 0]);
 							right_calf_rotation.push([0, 0, 0]);
 						}
@@ -437,8 +441,12 @@
 								right_forearm_rotation.push([0, 0, 0]);
 							}
 
-							left_thigh_rotation.push(combineEulerAngles([0, 0, -3.14], [0,0,0]));
-							right_thigh_rotation.push(combineEulerAngles([0, 0, 3.14], [0,0,0]));
+							left_thigh_rotation.push(
+								combineEulerAngles([0, 0, -3.14], [0, 0, 0])
+							);
+							right_thigh_rotation.push(
+								combineEulerAngles([0, 0, 3.14], [0, 0, 0])
+							);
 							left_calf_rotation.push([0, 0, 0]);
 							right_calf_rotation.push([0, 0, 0]);
 						}
