@@ -162,7 +162,7 @@
 
 			threeScene.scene.add(player1);
 
-			player1Bones.LeftForeArm.add(new THREE.AxesHelper(5));
+			player1Bones.LeftUpLeg.add(new THREE.AxesHelper(5));
 
 			// all models ready
 			cameraReady = true;
@@ -307,11 +307,36 @@
 		}
 
 		if (motion_slice.size() === 10) {
-			const res = subsequenceDTW(motion_slice.toArray(), walking_cycle, dtwMetric)
+			const res = subsequenceDTW(
+				motion_slice.toArray(),
+				walking_cycle,
+				dtwMetric
+			);
 
-			console.log(res)
+			// console.log(res);
 		}
-		
+	}
+
+	function combineEulerAngles(euler1, euler2) {
+		const e1 = new THREE.Euler(euler1[0], euler1[1], euler1[2]);
+		const e2 = new THREE.Euler(euler2[0], euler2[1], euler2[2]);
+
+		// Convert Euler angles to rotation matrices
+		const matrix1 = new THREE.Matrix4().makeRotationFromEuler(e1);
+		const matrix2 = new THREE.Matrix4().makeRotationFromEuler(e2);
+
+		// Multiply matrices
+		const combinedMatrix = new THREE.Matrix4().multiplyMatrices(
+			matrix1,
+			matrix2
+		);
+
+		// Convert combined matrix back to Euler angles
+		const combinedEuler = new THREE.Euler().setFromRotationMatrix(
+			combinedMatrix
+		);
+
+		return [combinedEuler.x, combinedEuler.y, combinedEuler.z];
 	}
 </script>
 
@@ -350,6 +375,12 @@
 						const left_forearm_rotation = [];
 						const right_forearm_rotation = [];
 
+						const left_thigh_rotation = [];
+						const left_calf_rotation = [];
+
+						const right_thigh_rotation = [];
+						const right_calf_rotation = [];
+
 						for (let i = -19; i <= 30; i++) {
 							left_arm_rotation.push([70, 0, i]);
 							right_arm_rotation.push([70, 0, i - 11]);
@@ -375,6 +406,11 @@
 							} else {
 								right_forearm_rotation.push([0, 0, 0]);
 							}
+
+							left_thigh_rotation.push(combineEulerAngles([0, 0, -3.14], [0,0,0]));
+							right_thigh_rotation.push(combineEulerAngles([0, 0, 3.14], [0,0,0]));
+							left_calf_rotation.push([0, 0, 0]);
+							right_calf_rotation.push([0, 0, 0]);
 						}
 
 						for (let i = 30; i >= -19; i--) {
@@ -400,6 +436,11 @@
 							} else {
 								right_forearm_rotation.push([0, 0, 0]);
 							}
+
+							left_thigh_rotation.push(combineEulerAngles([0, 0, -3.14], [0,0,0]));
+							right_thigh_rotation.push(combineEulerAngles([0, 0, 3.14], [0,0,0]));
+							left_calf_rotation.push([0, 0, 0]);
+							right_calf_rotation.push([0, 0, 0]);
 						}
 
 						const leftarm_positions = [];
@@ -483,6 +524,56 @@
 							rightforearm_positions.push(rightforearmvec);
 							lefthand_positions.push(lefthandvec);
 							righthand_positions.push(righthandvec);
+
+							// move legs
+
+							player1Bones.LeftUpLeg.rotation.set(
+								THREE.MathUtils.degToRad(
+									left_thigh_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									left_thigh_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									left_thigh_rotation[i][2]
+								)
+							);
+
+							player1Bones.LeftLeg.rotation.set(
+								THREE.MathUtils.degToRad(
+									left_calf_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									left_calf_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									left_calf_rotation[i][2]
+								)
+							);
+
+							player1Bones.RightUpLeg.rotation.set(
+								THREE.MathUtils.degToRad(
+									right_thigh_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									right_thigh_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									right_thigh_rotation[i][2]
+								)
+							);
+
+							player1Bones.RightLeg.rotation.set(
+								THREE.MathUtils.degToRad(
+									right_calf_rotation[i][0]
+								),
+								THREE.MathUtils.degToRad(
+									right_calf_rotation[i][1]
+								),
+								THREE.MathUtils.degToRad(
+									right_calf_rotation[i][2]
+								)
+							);
 
 							await sleep(20);
 
