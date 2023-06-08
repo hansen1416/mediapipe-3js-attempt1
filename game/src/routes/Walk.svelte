@@ -2,7 +2,13 @@
 	import * as THREE from "three";
 	import { onDestroy, onMount } from "svelte";
 	import { GROUND_LEVEL } from "../lib/constants";
-	import { loadGLTF, sleep } from "../lib/ropes";
+	import { cloneDeep } from "lodash";
+	import {
+		loadGLTF,
+		sleep,
+		createPoseLandmarker,
+		invokeCamera,
+	} from "../lib/ropes";
 	import ThreeScene from "../lib/ThreeScene";
 	import CannonWorld from "../lib/CannonWorld";
 	import PoseToRotation from "../lib/PoseToRotation";
@@ -16,11 +22,14 @@
 		mannequinReady = false,
 		modelReady = false;
 
+	let poseDetector, poseDetectorAvailable;
+
 	let runAnimation = true,
 		showVideo = false,
 		animationPointer;
 
-	let poseToRotation;
+	let poseToRotationMP;
+	let poseToRotationMDM;
 
 	let motionData = {};
 
@@ -106,25 +115,23 @@
 			.then((buffer) => {
 				const arr = new Float64Array(buffer);
 
-				for (let i = 0; i < arr.length; i+= 12) {
-					const tmp1 = []
+				for (let i = 0; i < arr.length; i += 12) {
+					const tmp1 = [];
 					for (let j = 0; j < 12; j++) {
-
-						tmp1.push(arr[i+j])
+						tmp1.push(arr[i + j]);
 					}
 
-					const tmp2 = []
+					const tmp2 = [];
 
 					for (let m = 0; m < 4; m += 1) {
-						
-						tmp2.push([])
-						
-						for (let n = 0; n < 3; n+= 1) {
-							tmp2[m].push(tmp1[m*3+n])
+						tmp2.push([]);
+
+						for (let n = 0; n < 3; n += 1) {
+							tmp2[m].push(tmp1[m * 3 + n]);
 						}
 					}
 
-					walking_cycle.push(tmp2)
+					walking_cycle.push(tmp2);
 				}
 			});
 
@@ -146,7 +153,8 @@
 				}
 			});
 
-			poseToRotation = new PoseToRotation(player1Bones, "mdm");
+			poseToRotationMP = new PoseToRotation(player1Bones, "mediapipe");
+			poseToRotationMDM = new PoseToRotation(player1Bones, "mdm");
 
 			threeScene.scene.add(player1);
 
@@ -158,6 +166,18 @@
 			modelReady = true;
 			// hand is ready for ball mesh
 		});
+
+		if (true) {
+			invokeCamera(video, () => {
+				cameraReady = true;
+			});
+
+			createPoseLandmarker().then((pose) => {
+				poseDetector = pose;
+
+				poseDetectorAvailable = true;
+			});
+		}
 	});
 
 	onDestroy(() => {
@@ -170,6 +190,21 @@
 	}
 
 	function animate() {
+		if (
+			runAnimation &&
+			video &&
+			video.readyState >= 2 &&
+			poseDetectorAvailable &&
+			poseDetector
+		) {
+			poseDetectorAvailable = false;
+			poseDetector.detectForVideo(
+				video,
+				performance.now(),
+				onPoseCallback
+			);
+		}
+
 		threeScene.onFrameUpdate();
 
 		cannonWorld.onFrameUpdate();
@@ -177,10 +212,41 @@
 		animationPointer = requestAnimationFrame(animate);
 	}
 
+	function onPoseCallback(result) {
+		if (result && result.worldLandmarks && result.worldLandmarks[0]) {
+			const pose3D = cloneDeep(result.worldLandmarks[0]);
+
+			// data_recorder.addBack({ data: pose3D, t: performance.now() });
+
+			// if (data_recorder.size() > 30) {
+			// 	data_recorder.removeFront();
+			// }
+
+			// if (data_recorder.size() === 30) {
+			// 	big_obj.push(data_recorder.toArray());
+			// }
+
+			const width_ratio = 30;
+			const height_ratio = (width_ratio * 480) / 640;
+
+			// multiply x,y by differnt factor
+			for (let v of pose3D) {
+				v["x"] *= width_ratio;
+				v["y"] *= -height_ratio;
+				v["z"] *= -width_ratio;
+			}
+
+			// console.log(pose3D)
+			poseToRotationMP.applyPoseToBone(pose3D);
+		}
+
+		poseDetectorAvailable = true;
+	}
+
 	function playMotion(data) {
 		(async () => {
 			for (let i = 0; i < data.length; i++) {
-				poseToRotation.applyPoseToBone(data[i]);
+				poseToRotationMDM.applyPoseToBone(data[i], true);
 
 				await sleep(30);
 			}

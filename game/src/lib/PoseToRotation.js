@@ -188,7 +188,7 @@ export default class PoseToRotation {
 	// 	this.pose3D = pose3D
 	// }
 
-	applyPoseToBone(pose3D) {
+	applyPoseToBone(pose3D, lower_body = false) {
 		this.pose3D = pose3D;
 
 		const swap_left_right = false;
@@ -275,69 +275,71 @@ export default class PoseToRotation {
 			// }
 		);
 
-		this.rotateLimb(
-			"LeftUpLeg",
-			"Hips",
-			swap_left_right ? "RIGHT_HIP" : "LEFT_HIP",
-			swap_left_right ? "RIGHT_KNEE" : "LEFT_KNEE",
-			new THREE.Euler(0, 0, -3.14),
-			new THREE.Vector3(0, -1, 0)
-		);
+		if (lower_body) {
+			this.rotateLimb(
+				"LeftUpLeg",
+				"Hips",
+				swap_left_right ? "RIGHT_HIP" : "LEFT_HIP",
+				swap_left_right ? "RIGHT_KNEE" : "LEFT_KNEE",
+				new THREE.Euler(0, 0, -3.14),
+				new THREE.Vector3(0, -1, 0)
+			);
 
-		this.rotateLimb(
-			"LeftLeg",
-			"LeftUpLeg",
-			swap_left_right ? "RIGHT_KNEE" : "LEFT_HIP",
-			swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
-			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0),
-			{
-				x: [-1.8, 0.6],
-				y: [-1, 1],
-				z: [-3.14, 3.14],
-			}
-		);
+			this.rotateLimb(
+				"LeftLeg",
+				"LeftUpLeg",
+				swap_left_right ? "RIGHT_KNEE" : "LEFT_HIP",
+				swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
+				new THREE.Euler(0, 0, 0),
+				new THREE.Vector3(0, 1, 0),
+				{
+					x: [-1.8, 0.6],
+					y: [-1, 1],
+					z: [-3.14, 3.14],
+				}
+			);
 
-		this.rotateLimb(
-			"LeftFoot",
-			"LeftLeg",
-			swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
-			swap_left_right ? "RIGHT_FOOT_INDEX" : "LEFT_FOOT_INDEX",
-			new THREE.Euler(1.035, 0, 0),
-			new THREE.Vector3(0, 0, 1)
-		);
+			this.rotateLimb(
+				"LeftFoot",
+				"LeftLeg",
+				swap_left_right ? "RIGHT_ANKLE" : "LEFT_ANKLE",
+				swap_left_right ? "RIGHT_FOOT_INDEX" : "LEFT_FOOT_INDEX",
+				new THREE.Euler(1.035, 0, 0),
+				new THREE.Vector3(0, 0, 1)
+			);
 
-		this.rotateLimb(
-			"RightUpLeg",
-			"Hips",
-			swap_left_right ? "LEFT_HIP" : "RIGHT_HIP",
-			swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
-			new THREE.Euler(0, 0, 3.14),
-			new THREE.Vector3(0, -1, 0),
-			{
-				x: [-1.8, 0.6],
-				y: [-1, 1],
-				z: [-3.14, 3.14],
-			}
-		);
+			this.rotateLimb(
+				"RightUpLeg",
+				"Hips",
+				swap_left_right ? "LEFT_HIP" : "RIGHT_HIP",
+				swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
+				new THREE.Euler(0, 0, 3.14),
+				new THREE.Vector3(0, -1, 0),
+				{
+					x: [-1.8, 0.6],
+					y: [-1, 1],
+					z: [-3.14, 3.14],
+				}
+			);
 
-		this.rotateLimb(
-			"RightLeg",
-			"RightUpLeg",
-			swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
-			swap_left_right ? "LEFT_ANKLE" : "RIGHT_ANKLE",
-			new THREE.Euler(0, 0, 0),
-			new THREE.Vector3(0, 1, 0)
-		);
+			this.rotateLimb(
+				"RightLeg",
+				"RightUpLeg",
+				swap_left_right ? "LEFT_KNEE" : "RIGHT_KNEE",
+				swap_left_right ? "LEFT_ANKLE" : "RIGHT_ANKLE",
+				new THREE.Euler(0, 0, 0),
+				new THREE.Vector3(0, 1, 0)
+			);
 
-		this.rotateLimb(
-			"RightFoot",
-			"RightLeg",
-			swap_left_right ? "LEFT_ANKLE" : "RIGHT_ANKLE",
-			swap_left_right ? "LEFT_FOOT_INDEX" : "RIGHT_FOOT_INDEX",
-			new THREE.Euler(1.035, 0, 0),
-			new THREE.Vector3(0, 0, 1)
-		);
+			this.rotateLimb(
+				"RightFoot",
+				"RightLeg",
+				swap_left_right ? "LEFT_ANKLE" : "RIGHT_ANKLE",
+				swap_left_right ? "LEFT_FOOT_INDEX" : "RIGHT_FOOT_INDEX",
+				new THREE.Euler(1.035, 0, 0),
+				new THREE.Vector3(0, 0, 1)
+			);
+		}
 	}
 
 	rotateLimb(

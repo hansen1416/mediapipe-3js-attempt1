@@ -237,9 +237,9 @@ if __name__ == "__main__":
 
     # print(res[99])
     # walking_cycle.flatten().tofile('walking_cycle.bin')
-    print(walking_cycle.shape)
-    print(walking_cycle.dtype)
-    exit()
+    # print(walking_cycle.shape)
+    # print(walking_cycle.dtype)
+    # exit()
 
     # plot_joints(res[50:60], 'tmp/std.png')
 
