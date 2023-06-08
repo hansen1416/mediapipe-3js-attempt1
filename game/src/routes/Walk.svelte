@@ -42,7 +42,7 @@
 		"4-2",
 	];
 
-	let walking_cycle;
+	const walking_cycle = [];
 
 	function readBuffer(buffer) {
 		const arr = new Float32Array(buffer);
@@ -104,9 +104,28 @@
 				return res.arrayBuffer();
 			})
 			.then((buffer) => {
-				const arr = new Float32Array(buffer);
+				const arr = new Float64Array(buffer);
 
-				console.log(arr);
+				for (let i = 0; i < arr.length; i+= 12) {
+					const tmp1 = []
+					for (let j = 0; j < 12; j++) {
+
+						tmp1.push(arr[i+j])
+					}
+
+					const tmp2 = []
+
+					for (let m = 0; m < 4; m += 1) {
+						
+						tmp2.push([])
+						
+						for (let n = 0; n < 3; n+= 1) {
+							tmp2[m].push(tmp1[m*3+n])
+						}
+					}
+
+					walking_cycle.push(tmp2)
+				}
 			});
 
 		Promise.all([
