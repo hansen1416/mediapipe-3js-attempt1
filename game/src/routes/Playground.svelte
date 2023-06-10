@@ -243,14 +243,14 @@
 				v["z"] *= -width_ratio;
 			}
 
-			poseToRotation.applyPoseToBone(pose3D);
+			poseToRotation.applyPoseToBone(pose3D, true);
 
 			// move the position of model
 			const pose2D = cloneDeep(result.landmarks[0]);
 
 			const to_pos = poseToRotation.applyPosition(pose2D, FLOOR_WIDTH);
 
-			if (to_pos && false) {
+			if (to_pos) {
 				player1.position.set(to_pos.x, GROUND_LEVEL, PLAYER_Z);
 			}
 
@@ -315,8 +315,8 @@
 	<video
 		bind:this={video}
 		autoPlay={true}
-		width="480"
-		height="360"
+		width={480 / 2}
+		height={360 / 2}
 		style="position: absolute; top:0; left: 0; display: {showVideo
 			? 'block'
 			: 'none'}"

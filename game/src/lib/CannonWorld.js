@@ -33,7 +33,7 @@ export default class CannonWorld {
 		this.rigid = [];
 		this.mesh = [];
 		// @ts-ignore
-		this.debuggerInstance = new CannonDebugger(this.scene, this.world);
+		// this.debuggerInstance = new CannonDebugger(this.scene, this.world);
 	}
 
 	addGround() {
@@ -123,7 +123,7 @@ export default class CannonWorld {
 	onFrameUpdate() {
 		this.world.fixedStep();
 
-		this.debuggerInstance.update();
+		// this.debuggerInstance.update();
 
 		for (let i in this.rigid) {
 			this.mesh[i].position.copy(this.rigid[i].position);

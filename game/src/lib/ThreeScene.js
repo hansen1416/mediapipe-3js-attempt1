@@ -37,16 +37,18 @@ export default class ThreeScene {
 		this.camera.zoom = 160; // zoom in by 50%
 
 		// far angle for throw testing
-		// this.camera.zoom = 30; // zoom in by 50%
-		// this.camera.position.set(600, 600, -width);
+		this.camera.zoom = 30; // zoom in by 50%
+		this.camera.position.set(600, 600, -width);
 		// far angle for throw testing
 
 		this.camera.zoom = 60; // zoom in by 50%
-		this.camera.position.set(0, 300, -width);
+		this.camera.position.set(840, 969, -width);
+
+		console.log(Math.sin(THREE.MathUtils.degToRad(30)) * width);
 
 		// for walk testing
-		this.camera.zoom = 195;
-		this.camera.position.set(-998.0815884477113, 0, 11);
+		// this.camera.zoom = 195;
+		// this.camera.position.set(-998.0815884477113, 0, 11);
 		// for walk testing
 
 		this.camera.updateProjectionMatrix(); // update the camera's projection matrix
